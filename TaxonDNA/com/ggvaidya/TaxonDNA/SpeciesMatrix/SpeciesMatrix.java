@@ -95,14 +95,12 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 	public void actionPerformed(ActionEvent evt) {
 		String cmd = evt.getActionCommand();
 
-		/*
 		//
 		// File -> New. Just close the present file. 
 		// 
 		if(cmd.equals("New"))
 			closeFile();
 
-			*/
 		//
 		// File -> Open. Tries to load the file specified.
 		// The current file is closed before anything 
@@ -115,8 +113,26 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 			FileDialog fd = new FileDialog(mainFrame, "Which file would you like to open?", FileDialog.LOAD);
 			fd.setVisible(true);
 
-			if(fd.getFile() != null)
-				loadFile(new File(fd.getDirectory() + fd.getFile()));
+			if(fd.getFile() != null) {
+				if(fd.getDirectory() != null) {
+					loadFile(new File(fd.getDirectory() + fd.getFile()));
+				} else {
+					loadFile(new File(fd.getFile()));
+				}
+			}
+		}
+
+		if(cmd.equals("Export as NEXUS")) {
+			FileDialog fd = new FileDialog(mainFrame, "Where would you like to export this set to?", FileDialog.SAVE);
+			fd.setVisible(true);
+
+			if(fd.getFile() != null) {
+				if(fd.getDirectory() != null) {
+					exportAsNexus(new File(fd.getDirectory() + fd.getFile()));
+				} else {
+					exportAsNexus(new File(fd.getFile()));
+				}
+			}
 		}
 
 		/*
@@ -147,6 +163,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 			}
 		}
 		
+		*/
 		//
 		// File -> Exit. Close the present file,
 		// then dispose of the main window.
@@ -158,6 +175,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 							// other stuff is running.
 		}
 
+		/*
 		//
 		// Export -> *
 		//
@@ -238,6 +256,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 				loadFile(new File(filename), handler);
 			}
 		}
+		*/
 		
 		//
 		// Help -> About. We should put something
@@ -245,17 +264,14 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 		// working in the Help -> * menu.
 		//
 		if(cmd.equals("About")) {
-			String copyrightNotice = new String("TaxonDNA " + version + ", Copyright (C) 2005 Gaurav Vaidya. \nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+			String copyrightNotice = new String("SpeciesMatrix " + version + ", Copyright (C) 2006 Gaurav Vaidya. \nSpeciesMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
-					+ "Thanks to Guanyang and Prof Rudolf Meier for extensively testing.\n\n"
-					+ "Thanks to Kathy for single-handedly figuring out the reason for the 'Cluster' bug, now fixed!\n\n"
-					+ "This program was written with Vim (http://vim.org) and later parts in Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/). I use BrowserLauncher (http://browserlauncher.sf.net/) to handle opening a website in a cross-platform way."
+					+ "This program was written with Vim (http://vim.org) with occasional help from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/)." 
 			);
 			mb.showMessageBox();
 		}
-		*/
 	}
 
 	/**
@@ -290,6 +306,25 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 //		they need to pull a unlockSequenceList(list), and want to ensure that the
 //		last file is closed properly.
 //
+	public void exportAsNexus(File f) {
+		try {
+			matrixModel.exportAsNexus(f);
+			MessageBox mb = new MessageBox(
+					mainFrame,
+					"Success!",
+					"This set was successfully exported to '" + f + "' in the Nexus format."
+					);
+			mb.go();
+
+		} catch(IOException e) {
+			MessageBox mb = new MessageBox(
+					mainFrame,
+					"Error while exporting file",
+					"There was an error while exporting this set to '" + f + "'. Please ensure that you have adequate permissions and that your hard disk is not full.\n\nThe technical description of this error is: " + e);
+			mb.go();
+		}
+	}
+
 	/**
 	 * Saves the current file.
 	 *
@@ -418,8 +453,11 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 	/**
 	 * Closes the current file. Program is reset to a waiting state, with
 	 * SequenceList in particular being set back to null.
-	 *//*
+	 */
 	private void closeFile() {
+		matrixModel.clear();
+
+		/*
 		lockSequenceList();
 		
 		if(sequences != null && modified) {
@@ -442,6 +480,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 		}
 
 		unlockSequenceList(null);
+		*/
 	}
 
 	/**
@@ -497,15 +536,21 @@ public class SpeciesMatrix implements WindowListener, ActionListener, ItemListen
 		Menu 	file		=	new Menu("File");
 		file.add(new MenuItem("New", new MenuShortcut(KeyEvent.VK_N)));
 		file.add(new MenuItem("Open", new MenuShortcut(KeyEvent.VK_O)));
-		file.addSeparator();
-		file.add(new MenuItem("Save", new MenuShortcut(KeyEvent.VK_S)));
-		file.add(new MenuItem("Save As", null));
+//		file.addSeparator();
+//		file.add(new MenuItem("Save", new MenuShortcut(KeyEvent.VK_S)));
+//		file.add(new MenuItem("Save As", null));
 				// new MenuShortcut(KeyEvent.VK_V))); --> Gets in the way of Ctrl-C Ctrl-V
 				// new MenuShortcut(KeyEvent.VK_A)) --> deleting the shortcut since it gets in the way of Ctrl-A on Windows
 		file.addSeparator();
 		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
 		menubar.add(file);
+
+		// Export menu
+		Menu	export 		= 	new Menu("Export");
+		export.add(new MenuItem("Export as NEXUS", new MenuShortcut(KeyEvent.VK_X)));
+		export.addActionListener(this);
+		menubar.add(export);
 
 		// Help menu
 		Menu	help		=	new Menu("Help");

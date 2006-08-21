@@ -53,11 +53,24 @@ public class MatrixModel implements TableModel {
 	Vector speciesNames = new Vector();		// change this every time we update 'speciesList'
 	Hashtable speciesList = new Hashtable();
 
+	int totalWidth = 0;
+
 	public MatrixModel(SpeciesMatrix matrix) {
 		this.matrix = matrix;
 
 		columns.add(null);
 		columnNames.add("");
+	}
+
+	public void clear() {
+		columns = new Vector();
+		columnNames = new Vector();
+		speciesNames = new Vector();		// change this every time we update 'speciesList'
+		speciesList = new Hashtable();
+
+		totalWidth = 0;
+		
+		updateDisplay();
 	}
 		
 	public void addSequenceList(SequenceList sl) {
@@ -72,6 +85,9 @@ public class MatrixModel implements TableModel {
 		} else {
 			columnNames.add("Unknown");
 		}
+
+		// 2.1. set the new total width
+		totalWidth += sl.getMaxLength();
 
 		// 3. Modify the speciesNames vector to match the new combined species lists.
 		try {
@@ -176,5 +192,107 @@ public class MatrixModel implements TableModel {
 
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		return;
+	}
+
+	public void exportAsNexus(File f) throws IOException {
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+		StringBuffer buff_sets = new StringBuffer();
+
+		buff_sets.append("BEGIN SETS;\n");
+
+
+		writer.println("#NEXUS");
+		writer.println("[Written by SpeciesMatrix on " + new Date() + "]");
+
+		writer.println("");
+
+		writer.println("BEGIN DATA;");
+		writer.println("\tDIMENSIONS NTAX=" + speciesNames.size() + " NCHAR=" + totalWidth + ";");
+		writer.println("\tFORMAT DATATYPE=DNA GAP=- MISSING=? INTERLEAVE;");
+		writer.println("MATRIX");
+
+		int widthThusFar = 0;
+		for(int x = 1; x < columnNames.size(); x++) {
+			String columnName = (String)columnNames.get(x);
+			writer.println("[beginning " + columnName + "]");	
+		
+			columnName = columnName.replaceAll("\\.nex", "");
+			columnName = columnName.replace('.', '_');
+			columnName = columnName.replace(' ', '_');
+
+			SequenceList sl = (SequenceList) columns.get(x);
+			if(sl == null)
+				break;
+			
+			buff_sets.append("\tCHARSET " + columnName + " = " + (widthThusFar + 1) + "-" + (widthThusFar + sl.getMaxLength()) + ";\n");
+			widthThusFar += (sl.getMaxLength());
+
+			SpeciesDetails det = null;
+			try {
+				det = sl.getSpeciesDetails(null);
+			} catch(DelayAbortedException e) {
+				// ignore
+			}
+
+			Iterator i = speciesNames.iterator();
+			while(i.hasNext()) {
+				String name = (String) i.next();
+				String name_for_output = nexusName(name);
+
+				// TODO: figure out proper, unique names etc.
+
+				if(det.getSpeciesDetailsByName(name) == null) {
+					// it doesn't exist!
+					writer.print(name_for_output + " ");
+					for(int c = 0; c < sl.getMaxLength(); c++) {
+						writer.print('-');
+					}
+					writer.println("");
+				} else {
+					Sequence seq = null;
+					Sequence seq_longest = null;
+					Iterator i2 = sl.iterator();
+
+					while(i2.hasNext()) {
+						seq = (Sequence) i2.next();
+
+						if(seq.getSpeciesName().equals(name)) {
+							seq_longest = seq;
+							sl.lock();
+							i2 = sl.conspecificIterator(seq);
+
+							while(i2.hasNext()) {
+								seq = (Sequence) i2.next();
+
+								if(seq.getActualLength() > seq_longest.getActualLength())
+									seq_longest = seq;
+							}
+							
+							sl.unlock();
+							break;
+						}
+					}
+								
+					writer.println(nexusName(seq_longest.getSpeciesName()) + " " + seq_longest.getSequence());
+				}
+			}
+
+			writer.println("[end of " + (String)columnNames.get(x) + "]");	
+			writer.println("");	
+		}
+
+		// end the DATA block
+		writer.println(";");
+		writer.println("END;");
+		
+		// end and write the SETS block
+		buff_sets.append("END;");
+		writer.println(buff_sets);
+
+		writer.close();
+	}
+
+	private String nexusName(String x) {
+		return x.replaceAll("'", "''").replace(' ', '_');
 	}
 }
