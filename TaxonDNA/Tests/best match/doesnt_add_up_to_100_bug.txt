@@ -1,0 +1,33 @@
+>Test test
+ATGAATCCTCAGGCAAAACTAATCTTCGTCATCAGCTTACTCCTAGGATCAACCATCACAATCTCAAGCA
+ACCATTGAGTTATGGCCTGAACCGGGCTTGAGATCAACACACTAGCCATCCTCCCCCTAATCTCAAAATC
+CCACCACCCCCGTGCTATCGAGGCAGCAACCAAATACTTTCTGGTCCAAGCAGCTGCTTCTGCCTTAGTG
+TTATTCTCTAGCATA------ACCAATGCATGATACACCGGACAATGAGACATTACACAGCTAACGCACC
+CAACATCCTGCCTGGTCCTAACAGCAGCCATCGCCATAAAATTAGGTCTAGTTCCGTTCCACTTTTGATT
+CCCTGAAGTTCTCCAAGGTACTTCCCTAGTCACTAGCCTCCTACTATCAACAGCCATAAAATTTCCACCG
+ATCACCCTACTATACCTCACCTCCAACTCATTAAACCCTTCATTATTGGTTACTATGGCCATTCTATCCA
+CAGCCCTAGGAGGATGAATAGGCCTCAACCAAACACAAATCCGTAAAATCTTGGCTTTCTCCTCTATTTC
+ACATCTAGGCTGAATGGCCATTATTCTCTCCTACAATCCTAAACTAACCCTACTAAACTTCTATCTATAC
+AGCCTAATAACCGCAACTGTATTTCTCACCCTGAACACCATAAAAGCTCTAAAACTATCAACACTAATAA
+CTGCATGAACAAAAACTCCATCCCTCAGCACCATCCTCGTCATCACACTACTTTCCCTGGCTGGCCTCCC
+TCCACTGACAGGTTTCCTGCCCAAATGACTCATCATCCAAGAGCTTACCAAACAGGATATAGCCCTCACA
+GCATTACTTATCTCCATACTCTCACTGCTTAGCCTGTTCTTCTACCTCCGTCTCGCATACTGCACAGCAA
+TCACGCTTCCTCCTCATACGACAAATCACATGAAACTATGGCACGTTAACAAA------CCAACCAATAC
+CTCAATCGCCGTCTTGGCCACCCTATCCATCACCCTCCTCCCCCTTTCCCCCATACTACTCGCCATTGTT
+
+>Test testee
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+----------------------------------------------------------------------
