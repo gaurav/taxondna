@@ -1,0 +1,73 @@
+<project default="TaxonDNA">
+	<property name="build.dir" location="build"/>
+	<property resource="version.txt" />
+	
+	<target name="compile">
+		<javac 
+			srcdir="." 
+			debug="yes" 
+			optimize="yes" 
+			deprecation="yes" 
+			source="1.4"
+			excludes="Tests/**,Backup/**,Documentation/**,Release/**,build/**"
+			destdir="${build.dir}/classes"
+		>
+			<compilerarg value="-Xlint:unchecked" />
+		</javac>
+	</target>
+
+	<target name="TaxonDNA" depends="compile">
+		<jar  destfile="Release/TaxonDNA.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,SpeciesSummary/**" includes="**/*.class" >
+			<manifest>
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.Modules.TaxonDNA" />
+			</manifest>
+		</jar>
+
+		<jar  destfile="Release/SpeciesMatrix.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,Modules/**" includes="**/*.class" >
+			<manifest>
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesMatrix.SpeciesMatrix" />
+			</manifest>
+		</jar>
+		<!--
+		<signjar jar="TaxonDNA.jar" alias="ggvaidya" storepass="567Gandhi^(" />
+		-->
+	</target>
+
+	<target name="release" depends="TaxonDNA">
+		<copy file="CHANGELOG.txt" todir="Release" />
+		<copy file="README.txt" todir="Release" overwrite="yes" />
+
+		<zip 
+			destfile="../TaxonDNA-${version}.zip"
+			basedir="Release/"
+			comment="(c) Gaurav Vaidya, 2006"
+			update="true"
+		/>
+	</target>
+
+	<target name="src">
+		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
+		<zip 
+			destfile="../TaxonDNA-src-${version}.zip"
+			basedir="../"
+			includes="TaxonDNA/**"
+			excludes="**/.svn"
+			comment="(c) Gaurav Vaidya, 2006"
+		/>
+	</target>
+
+	<target name="javadocs" depends="TaxonDNA">
+		<javadoc 
+			packagenames="com.ggvaidya.TaxonDNA.*"
+			sourcepath="."
+			source="1.4"
+			destdir="Documentation/Javadocs/"
+		/>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}" />
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${build.dir}/classes" />
+	</target>
+</project>
