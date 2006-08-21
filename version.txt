@@ -1,0 +1,5 @@
+# Change version number here to change:
+# 1.	The version used in 'TaxonDNA-$VERSION$.zip'
+# 2.	The version used in 'TaxonDNA-src-$VERSION$.zip'
+#
+version=0.9.4a-2

@@ -1,0 +1,684 @@
+/**
+ * AlignmentHelperPlugin.java
+ *	Since the AlignmentHelper stuff is likely to be a horrible hack, I think it makes sense
+ *	to make it it's OWN horrible hack, and leave it at that. If you don't want it, just remove
+ *	the corresponding gridBag.addUIExtension() line from TaxonDNA. 
+ *
+ * How this works:
+ * 1.	The exported AlignmentHelper input file is actually a complete FASTA file, with 
+ * 	fullNames changed.
+ * 		fullName(new) = "seq" + uniqueId;
+ * 	Here, the uniqueId is the GI, unless no GI exists, in which case
+ * 	we use the Sequences' UUID (note that the UUID contains a '_').
+ * 	Furthermore, the GI will NOT include the sequence information
+ * 	(i.e., if the reported GI is '10241:&lt;1034-1234', TaxonDNA
+ * 	will use only consider the '10241' as the GI number)
+ * 	
+ * 	Example names include:
+ * 		&gt;seq12930110 (GI number)
+ * 		&gt;seqU11129439_103 (UUID)
+ * 		
+ * 	Yes, this does mean complete duplication of the dataset, but the only
+ * 	alternative (feed in the original file again) will involve a further
+ * 	complication of an already cluttered user interface, we won't go there.	
+ *
+ * 	Note that where UUIDs are used, the original file is REPLACED (and saved
+ * 	back in its new position), with '[uniqueid:11129439_103]' added to the
+ * 	end of the sequence. IF THIS HAPPENS, WE WILL RESAVE THIS FILE.
+ * 
+ * 2.	To avoid confusion, we ALWAYS close the present file before we do anything
+ * 	else. This is also confusing, but hopefully less so. Oh well.
+ * 	
+ */
+/*
+    TaxonDNA
+    Copyright (C) Gaurav Vaidya, 2005
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+*/
+
+package com.ggvaidya.TaxonDNA.Modules;
+
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
+import java.awt.*;
+import java.awt.event.*;
+
+import com.ggvaidya.TaxonDNA.Common.*;
+import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.UI.*;
+
+
+public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionListener {	
+	private static final long serialVersionUID = 8416632223894402546L;
+
+	private TaxonDNA	taxonDNA;
+
+	// instructions will be mostly handled in labels
+	// there are some fields we are interested in, however
+	TextField 	tf_Input	=	new TextField(80);
+	Button		btn_Input_Browse = 	new Button("Browse ...");
+	Button		btn_Export	=	new Button("Export now!");
+	TextField 	tf_Output =		new TextField(80);
+	Button		btn_Output_Browse = 	new Button("Browse ...");
+	Button		btn_Import_Here =	new Button("Import into this dataset");
+	Button		btn_Import_New =	new Button("Import into a new dataset");
+	
+	/**
+	 * No, no commands to add, thank you very much.
+	 */
+	public boolean addCommandsToMenu(Menu menu) {
+		return false;
+	}
+ 
+	public AlignmentHelperPlugin(TaxonDNA view) {
+		super();
+
+		taxonDNA = view;
+		
+		// create the panel
+		Panel gridBag = new Panel();
+		gridBag.setLayout(new GridBagLayout());
+
+		GridBagConstraints cons = new GridBagConstraints(); 
+		cons.anchor = 		GridBagConstraints.WEST;
+		cons.fill = 		GridBagConstraints.NONE;
+		cons.gridheight =	1;
+		cons.gridwidth =	1;
+		cons.gridx =		0;
+		cons.gridy =		0;
+		cons.insets = 		new Insets(2, 5, 2, 5);	
+		cons.ipadx =		0;	// tweak if components are too small
+		cons.ipady =		0;	// tweak if components are too small
+		cons.weightx =		0;
+		cons.weighty =		0;
+
+
+		// layout the title
+		Label title = new Label("AlignmentHelper Mapping");
+		title.setFont(new Font("Serif", Font.PLAIN, 24));
+		cons.gridx = 0;
+		cons.gridy = 0;
+		cons.gridwidth = 4;
+		gridBag.add(title, cons);
+
+		// layout part 1 
+		cons.gridx = 0;
+		cons.gridy = 1;
+		cons.gridwidth = 4;
+		gridBag.add(new Label("1. Export sequences as input for AlignmentHelper"), cons);
+
+		// layout components for part 1: input
+		cons.gridy = 2; 
+		cons.gridwidth = 1;
+
+		cons.gridx = 1;
+		gridBag.add(new Label("AlignmentHelper input:"), cons);
+
+		cons.gridx = 2;
+		cons.weightx = 0.5d;
+		gridBag.add(tf_Input, cons);
+		cons.weightx = 0;
+
+		cons.gridx = 3;
+		btn_Input_Browse.addActionListener(this);
+		gridBag.add(btn_Input_Browse, cons);
+	
+/*
+		// layout components for part 1: map
+		cons.gridy = 3; 
+		cons.gridwidth = 1;
+
+		cons.gridx = 1;
+		gridBag.add(new Label("AlignmentHelper map file:"), cons);
+
+		cons.gridx = 2;
+		cons.weightx = 0.5d;
+		gridBag.add(tf_OutMapFile, cons);
+		cons.weightx = 0;
+
+		cons.gridx = 3;
+		btn_OutMapFile_Browse.addActionListener(this);
+		gridBag.add(btn_OutMapFile_Browse, cons);
+*/
+
+		// layout components for part 1: export
+		cons.gridy = 4; 
+		cons.gridx = 0;
+		cons.gridwidth = 4;
+		cons.anchor = GridBagConstraints.CENTER;
+		btn_Export.addActionListener(this);
+		gridBag.add(btn_Export, cons);
+		cons.anchor = GridBagConstraints.WEST;
+		
+		// layout part 2
+		cons.gridy = 5;
+		cons.gridx = 0;
+		cons.gridwidth = 4;
+		gridBag.add(new Label("2. Import results back from AlignmentHelper"), cons);
+		
+		// layout components for part 2: input
+		cons.gridy = 6; 
+		cons.gridwidth = 1;
+
+		cons.gridx = 1;
+		gridBag.add(new Label("AlignmentHelper output:"), cons);
+
+		cons.gridx = 2;
+		cons.weightx = 0.5d;
+		gridBag.add(tf_Output, cons);
+		cons.weightx = 0;
+
+		cons.gridx = 3;
+		btn_Output_Browse.addActionListener(this);
+		gridBag.add(btn_Output_Browse, cons);
+/*
+		// layout components for part 2: map file
+		cons.gridy = 7; 
+		cons.gridwidth = 1;
+
+		cons.gridx = 1;
+		gridBag.add(new Label("AlignmentHelper map file:"), cons);
+
+		cons.gridx = 2;
+		cons.weightx = 0.5d;
+		gridBag.add(tf_InMapFile, cons);
+		cons.weightx = 0;
+
+		cons.gridx = 3;
+		btn_InMapFile_Browse.addActionListener(this);
+		gridBag.add(btn_InMapFile_Browse, cons);
+		// layout components for part 2: missing sequences file
+		cons.gridy = 8; 
+		cons.gridwidth = 1;
+
+		cons.gridx = 1;
+		gridBag.add(new Label("File where missing sequences should be placed:"), cons);
+
+		cons.gridx = 2;
+		cons.weightx = 0.5d;
+		gridBag.add(tf_MissingSequences, cons);
+		cons.weightx = 0;
+
+		cons.gridx = 3;
+		btn_MissingSequences_Browse.addActionListener(this);
+		gridBag.add(btn_MissingSequences_Browse, cons);
+		
+		*/
+		// layout components for part 1: import
+		cons.gridy = 9; 
+		cons.gridx = 0;
+		cons.gridwidth = 4;
+		cons.anchor = GridBagConstraints.CENTER;
+		Panel buttons = new Panel();
+		btn_Import_Here.addActionListener(this);
+		buttons.add(btn_Import_Here);
+		btn_Import_New.addActionListener(this);
+//		buttons.add(btn_Import_New);
+		gridBag.add(buttons, cons);
+		cons.anchor = GridBagConstraints.WEST;
+
+		// finally, put the gridBag onto the Big Screen
+		setLayout(new BorderLayout()); 
+		add(gridBag, BorderLayout.NORTH);
+	}
+
+	/* 
+	 * If the data changed, we should update. At any rate, this will keep us in sync
+	 * with everybody else.
+	 */
+	public void dataChanged() {
+	}
+
+/*
+	/**
+	 * This function is called when we need to merge species information from another file.
+	 
+	public void insertSpeciesInfo() {
+		FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Please select the file to obtain the species information from", FileDialog.LOAD);
+
+		fd.show();
+
+		if(fd.getFile() != null) {
+			String filename = "";
+			if(fd.getDirectory() != null) {
+				filename = fd.getDirectory();
+			}
+			filename += fd.getFile();
+			SequenceList other = taxonDNA.loadSequenceListFromFile(fd.getDirectory() + fd.getFile());
+			if(other != null) {
+				ProgressDialog pd = new ProgressDialog(taxonDNA.getFrame(), "Please wait, inserting information ...", "I am inserting species information from '" + filename + "' into the currently loaded file. Please note that DATA IN THE CURRENT FILE WILL BE OVERWRITTEN if you save your file. Only the species information will be used; all sequence data in this file can be deleted without any problems.");
+				// TODO: magic binding code. dark, evil magic. be warned.
+				set = taxonDNA.lockSequenceSet();
+
+				pd.begin();	
+
+				Iterator i = set.iterator();
+				int count = 0;
+				while(i.hasNext()) {
+					Sequence seq = (Sequence) i.next();
+
+					try {
+						pd.delay(count, set.count());
+					} catch(DelayAbortedException e) {
+						taxonDNA.unlockSequenceSet();	
+						return;
+					}
+					count++;
+
+					/*
+					 * cos I'm hacking this *overbloodynight*, I'm using a linear search,
+					 * better searches ought to be used. Feel free to jump ahead if you have
+					 * any bright ideas...
+					 
+					Iterator search = other.iterator();
+					while(search.hasNext()) {
+						Sequence seq2 = (Sequence) search.next();
+						if(!seq2.getGI().equals("") && seq2.getGI().equals(seq.getGI())) {
+							seq.changeName(seq2.getFullName());
+							break;
+						}
+					}
+				}
+
+				// clear the buffer and unlock
+				Sequence.resetAllDistances();
+				taxonDNA.unlockSequenceSet(set);
+				
+				pd.end();
+			}
+		}
+	}
+	*/
+
+	/* Creates the actual Panel */
+	public Panel getPanel() {
+		return this;
+	}
+
+	/**
+	 * Imports all the data in inputFile (combined with the present file, which acts as
+	 * a mapfile) into a NEW sequenceSet, which is spawned off into it's own TaxonDNA.
+	 * (it's the only way i can think of of doing this without confusing the user, or
+	 * obliterating his dataset without any complaints). Missing sequences will have
+	 * the warning flag set, so they "fall" to the bottom of the list.
+	 */
+	public SequenceList importSequenceSet(SequenceList set_initial, File inputFile) {
+		SequenceList set_final = null;
+		SequenceList set_map = new SequenceList(set_initial);	
+								// we need to work on set_map,
+								// but can't rewrite the original
+								// (particularly not iMap.remove!)
+								// so cloning it for future use
+
+		// what if we have NO set_map? (i.e. no files loaded into TaxonDNA)
+		// go with nothing at all :) [or an empty list, to be fractionally less poetic]
+		if(set_map == null) 
+			set_map = new SequenceList();
+
+		FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+		String error_occured_in = "";
+
+		// Load up the datafile 
+		error_occured_in = inputFile.toString();
+		try {
+			set_final = new SequenceList(inputFile, ff,
+					new ProgressDialog(
+						taxonDNA.getFrame(),
+						"Loading '" + inputFile + "' ...",
+						"Loading the sequences from '" + inputFile + "', please wait."
+					)
+				);
+		} catch(SequenceListException e) {
+			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "There is an error in '" + error_occured_in + "'!", "The following error occured while trying to read '" + error_occured_in + "'. Please make sure that it has been formatted correctly."); 
+			mb.go();
+			return null;
+		} catch(DelayAbortedException e) {
+			// go on
+			return null;
+		}
+
+		if(set_final == null)		// what happened? probably aborted.
+			return null;		// can't be a problem with the file,
+						// because then we would have thrown
+						// a SequenceListException
+		
+		// the following is a three-step process:
+		// 1.	Go through set_map, fixing the names as you go.
+		// 		i.e. 	see if $no exists in set and fix
+		// 			set a Vector based on what's done
+		// 2.	Go through vector, adding the missing into set_missing
+		// 		(from set_map)
+		// Note that this:
+		// 1.	Leaves unfixed sequence names as is in set. Which is fine.
+		// 2.	? Can't think of any other problems. Let's see.
+		//
+		Pattern pSequenceDDD = Pattern.compile("^seq(.*)$");
+		Iterator i = set_final.iterator();
+		while(i.hasNext()) {
+			Sequence seq = (Sequence) i.next();
+			String name = seq.getFullName();
+
+			Matcher m = pSequenceDDD.matcher(name);
+			if(m.matches() && m.groupCount() == 1) {
+				String no = m.group(1);
+
+				// no == 0 if there was an error in parseInt
+				// but no cannot be zero (unless ... UUID is
+				// really zero, which would be odd).
+				if(!no.equals("")) {
+					// it's valid; so let's change.
+
+					Iterator iMap = set_map.iterator();
+
+					while(iMap.hasNext()) {
+						Sequence seq2 = (Sequence) iMap.next();
+						
+						// gi number? 
+						String compareTo = "gi|" + no + "|";
+						if(seq2.getFullName().indexOf(compareTo) != -1) {
+//							System.err.println("Match!: " + seq + ", " + seq2);
+							seq.changeName(seq2.getFullName());
+							iMap.remove();	// get rid of this particular map
+							break;
+						}
+						
+						// gi number, now with '_'?
+						compareTo = "gi|" + no + ":";
+						if(seq2.getFullName().indexOf(compareTo) != -1) {
+//							System.err.println("Match!: " + seq + ", " + seq2);
+							seq.changeName(seq2.getFullName());
+							iMap.remove();	// get rid of this particular map
+							break;
+						}
+
+						
+						// uniqueid
+						if(no.length() > 0 && no.charAt(0) == 'U') {
+//							System.err.println("Match!: " + seq + ", " + seq2);
+							compareTo = "[uniqueid:" + no.substring(1) + "]";
+							if(seq2.getFullName().indexOf(compareTo) != -1) {
+								seq.changeName(seq2.getFullName());
+								iMap.remove();	// get rid of this particular map
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		// chuck in set_map
+		// wait, no.
+		// i'm assuming it's stupid and kinda foolhardy to quash these two together like this:
+		// 1.	we used the map to fix sequences
+		// 2.	now, the map should have the "fixed" sequences
+		// 3.	let's just chuck the "mapped" sequences elsewhere?
+		if(set_map.count() > 0) {
+			String path = "";
+			SequenceList list = taxonDNA.lockSequenceList();
+			if(list.getFile() != null)
+				path = list.getFile().getParent() + File.separator;
+			taxonDNA.unlockSequenceList();
+			
+			set_map.setFile(new File(path + "missing_sequences.txt"));
+			new TaxonDNA(set_map);
+		}
+
+		return set_final;
+	}
+
+	/**
+	 * This method checks to see if every sequence in the specified 
+	 * SequenceList has a (hopefully unique, and we DO test this)
+	 * identifier. We assume that GIs are completely unique. We also
+	 * create an arbitrary value called the '[uniqueid:([\d\-]+)]', which
+	 * uniquely identifies the sequence. Since we're the only one
+	 * who uses the 'uniqueid', we'll work it entirely out of here.
+	 * Nobody else needs unique id's at this point, but in case
+	 * they do ... err ... code's going to move.
+	 */
+	public void createUniqueIds (SequenceList list) throws RuntimeException {
+		boolean warned = false;
+		MessageBox mb = null;
+		Hashtable unique = new Hashtable();
+		Iterator i = list.iterator();
+
+		list.lock();
+		
+		while(i.hasNext()) {
+			Sequence seq = (Sequence) i.next();
+
+			String id = seq.getGI();
+			if(id.equals("")) {
+				// no id? no problem! we 'get' the id from the seq
+				// assuming we've given it a uniqueId before ...
+				Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
+				Matcher m = p.matcher(seq.getFullName());
+				if(m.find())
+					id = m.group(1);
+				 
+			}
+
+			// now, let's see what this here id is *really* made of
+			if(id.equals("")) {
+				// there is no GI
+				if(!warned) {
+					mb = new MessageBox(taxonDNA.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create AlignmentHelper input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
+					if(mb.showMessageBox() == MessageBox.MB_YES) {
+						// yes! go ahead
+						warned = true;
+					} else {
+						// no ... so, don't process at all.
+						mb = new MessageBox(taxonDNA.getFrame(), "AlignmentHelper export failed.", "I can't export files for AlignmentHelper without assigning unique identifiers to each sequence. Please re-run if you would like to export files for AlignmentHelper.");
+						mb.go();
+
+						throw new RuntimeException();
+					}
+				}
+				// if we're here, we have warned the user, and he's okay with rewriting files. So ...
+				seq.changeName(seq.getFullName() + " [uniqueid:" + seq.getId().toString() + "]");
+
+				unique.put(seq.getId(), new Boolean(true));
+			} else if(unique.get(id) != null) {
+				// there is a GI, but it's non identical
+				// barf biggly and noisily
+				mb = new MessageBox(taxonDNA.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
+				mb.go();
+
+				throw new RuntimeException();
+			} else {
+				// we have a GI, and it looks okay ...
+				// so ... do nothing!
+				unique.put(seq.getId(), new Boolean(true)); 
+			}
+//			System.err.println("Sequence: " + seq);
+		}
+
+		
+		list.unlock();
+		
+		if(warned)
+			taxonDNA.saveFile();
+	}
+
+	/**
+	 * Exports all the data in 'set' into an output file. This means we check to
+	 * see if the present dataset is "mappable", and change it if it isn't. The 
+	 * output file will contain a list of all the sequences, in appropriate FASTA 
+	 * format (good for passing into AlignmentHelper). See docs for this class on 
+	 * how this works.
+	 */
+	public void exportSequenceSet(SequenceList set, File outputFile) {
+		// our output writers
+		PrintWriter	output = null;
+		Hashtable 	uniques = new Hashtable();
+		
+		if(set == null)		// nothing to do!
+			return;
+
+		set.lock();
+
+		try {
+			createUniqueIds(set);
+		} catch(RuntimeException e) {
+			// something went wrong with createUniqueIds() 
+			// but it's already been reported to the reader
+			return; 
+		}
+
+		try {
+			output = 		new PrintWriter(new FileWriter(outputFile));
+			
+			Iterator i = set.iterator();
+			int no = 0;			
+			while(i.hasNext()) {
+				Sequence seq = (Sequence) i.next();
+				String id = seq.getGI();
+
+				if(id.equals("")) {
+					// since we've run it thru createUniqueIds(), this is guaranteed to work ...
+					Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
+					Matcher m = p.matcher(seq.getFullName());
+					if(m.find())
+						id = "U" + m.group(1);
+					else {
+						System.err.println("Sequence: " + seq.getFullName());
+						throw new RuntimeException("Something wrong with this program in AlignmentHelperPlugin:exportSequenceSet()");
+					}
+				}
+
+				// by this point, 'id' should be pointing at a valid id
+				// note that id might be GI (number) or non-GI (preceded by 'U')
+				if(uniques.get(id) != null) {
+					// our ID is non unique? Die with extreme prejudice!
+
+					MessageBox mb = new MessageBox(taxonDNA.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
+					mb.go();
+				
+					return;	
+				}
+				uniques.put(id, new Boolean(true));
+				
+				// write this one into the output file ...
+				output.println(">seq" + id);
+				output.println(seq.getSequenceWrapped(80));
+				
+				// next!
+				no++;
+			}
+		
+			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Success!", no + " sequences were exported successfully. You may now run AlignmentHelper on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
+			mb.go();
+
+		} catch(IOException e) {
+			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the AlignmentHelper input and the map file? The technical description of this error is: " + e);
+			mb.go();
+			return;
+		} finally {
+			if(output != null)
+				output.close();
+			set.unlock();
+		}
+
+	}
+
+	// action listener  
+	public void actionPerformed(ActionEvent evt) {
+		// what a catastrophe!
+		Class buttonClass = btn_Input_Browse.getClass();
+		if(evt.getSource().getClass().equals(buttonClass)) {
+			// it's a button!  
+			Button btn = (Button)evt.getSource();
+			TextField target = null;
+
+			if(btn.equals(btn_Input_Browse))
+				target = tf_Input;
+			if(btn.equals(btn_Output_Browse))
+				target = tf_Output;
+
+			if(target != null) {
+				String action = "save";
+				int saveOrLoad = FileDialog.SAVE;
+
+				if(target.equals(tf_Output)) {
+					saveOrLoad = FileDialog.LOAD;
+					action = "load";
+				}
+
+				FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Please choose a location to "+action+" this file ...", saveOrLoad);			
+				fd.setVisible(true);
+				if(fd.getFile() != null) {
+					if(fd.getDirectory() != null)
+						target.setText(fd.getDirectory() + fd.getFile());
+					else
+						target.setText(fd.getFile());
+				}
+
+				return;
+			}
+			
+			if(btn.equals(btn_Export)) {
+				File file_input = 	new File(tf_Input.getText());
+
+				SequenceList set = taxonDNA.lockSequenceList();
+				if(set != null)
+					exportSequenceSet(set, file_input);
+				taxonDNA.unlockSequenceList();
+
+				return;
+			}
+
+			// imports work together
+			if(btn.equals(btn_Import_Here)) {
+				File file_output =	new File(tf_Output.getText());	
+
+				SequenceList set = taxonDNA.lockSequenceList();
+				System.err.println("Before ISS: " + set);
+				SequenceList set_fixed = importSequenceSet(set, file_output);
+				System.err.println("After ISS: " + set);				
+				if(set_fixed == null)
+					set_fixed = new SequenceList();
+				
+				String path = "";
+				if(set.getFile() != null)
+					path = set.getFile().getParent() + File.separator;
+				
+				set_fixed.setFile(new File(path + "valid_sequences.txt"));
+				TaxonDNA tdna = new TaxonDNA(set_fixed);
+
+				System.err.println("New has: " + tdna.lockSequenceList());
+				System.err.println("Old has: " + taxonDNA.lockSequenceList());				
+
+				tdna.unlockSequenceList();
+				taxonDNA.unlockSequenceList();
+				
+				taxonDNA.unlockSequenceList();
+
+				return;
+			}
+		}
+	}
+	
+	// UIExtension stuff
+	public String getShortName() { return "AlignmentHelper Mapping"; }
+	
+	public String getDescription() { return "Produces files for, and returns output from, AlignmentHelper"; }
+	
+	public Frame getFrame() { return null; }
+	
+}
