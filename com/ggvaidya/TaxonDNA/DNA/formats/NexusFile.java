@@ -154,8 +154,6 @@ public class NexusFile implements FormatHandler {
 		        tok.wordChars('-','-');
 		        tok.wordChars('0','9');
 
-			// TODO: we need to add the 'gap' chars into tok so they come out okay.
-		        tok.wordChars('?','?');
 
 			tok.wordChars('_', '_');
 					// we need to replace this manually. they form one 'word' in NEXUS.
@@ -170,7 +168,11 @@ public class NexusFile implements FormatHandler {
 			boolean		inDataBlock =		false;
 			boolean		inStrangeBlock =	false;		// strange -> i.e. unknown to us, foreign.
 			char		missingChar =		'?';
-			char		gapChar =		'-';		// this is against the standard, but oh well
+			char		gapChar =		':';		// this is against the standard, but oh well
+
+			// TODO: we need to add the 'gap' chars into tok so they come out okay.
+		        tok.wordChars(gapChar,gapChar);
+		        tok.wordChars(missingChar,missingChar);
 
 			// flags
 			boolean isDatasetInterleaved = false;
@@ -263,6 +265,8 @@ public class NexusFile implements FormatHandler {
 									type = tok.nextToken();
 
 									if(type == StreamTokenizer.TT_WORD) {
+										tok.sval = tok.sval.replace(gapChar, '-');
+										tok.sval = tok.sval.replace(missingChar, '?');
 										try {
 											Sequence seq = null;
 											if(!isDatasetInterleaved || hash_names.get(name) == null) {
@@ -335,6 +339,9 @@ public class NexusFile implements FormatHandler {
 				delay.end();
 			appendTo.unlock();
 		}
+		
+		appendTo.setFile(fileFrom);
+		appendTo.setFormatHandler(this);
 	}
 
 	/**
