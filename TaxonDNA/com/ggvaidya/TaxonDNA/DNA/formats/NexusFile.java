@@ -9,6 +9,12 @@
  * forget that we read out of a file, and write back exactly
  * whatever we got out of it. 
  *
+ * TODO:
+ * 1.	Nexus has a different way of handling polymorphisms: [AT]
+ * 	instead of one letter shortages. So we need to convert
+ * 	it both ways (right now, we convert NEITHER) 
+ * 2.	'block CHARACTERS: FORMAT symbols'
+ *
  */
 
 /*
@@ -42,10 +48,10 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 public class NexusFile implements FormatHandler {
 		// what is the maximum lengh of taxon names allowed?
 	private int MAX_TAXON_LENGTH = 	32;
-		// when sequences get bigger than INTERLACE_AT, we'll
+		// when sequences get bigger than INTERLEAVE_AT, we'll
 		// interlace to avoid confusion. Of course, we can't
 		// interlace unless we interlace EVERYTHING, so we
-	private int INTERLACE_AT = 	100;	
+	private int INTERLEAVE_AT = 	80;	
 	
 	/**
 	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name.
@@ -119,7 +125,238 @@ public class NexusFile implements FormatHandler {
 	 * @throws DelayAbortedException if the DelayCallback was aborted by the user.
 	 */
 	public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException {
-		// TODO
+		// set up the delay
+		if(delay != null)
+			delay.begin();
+
+		appendTo.lock();
+
+		try {
+			BufferedReader reader = new BufferedReader(new FileReader(fileFrom));
+
+			// count lines
+			int count_lines = 0;
+			while(reader.ready()) {
+				reader.readLine();
+				count_lines++;
+			}
+
+			reader = new BufferedReader(new FileReader(fileFrom));
+			StreamTokenizer tok = new StreamTokenizer(reader);
+
+			tok.ordinaryChar('/');	// this is the default StringTokenizer comment char, so we need to set it back to nothingness
+
+			// turn off parseNumbers()
+		        tok.ordinaryChar('.');
+		        tok.ordinaryChar('-');
+		        tok.ordinaryChars('0','9');
+		        tok.wordChars('.','.');
+		        tok.wordChars('-','-');
+		        tok.wordChars('0','9');
+
+			// TODO: we need to add the 'gap' chars into tok so they come out okay.
+		        tok.wordChars('?','?');
+
+			tok.wordChars('_', '_');
+					// we need to replace this manually. they form one 'word' in NEXUS.
+
+			tok.ordinaryChar('[');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
+			tok.ordinaryChar(']');	// We need this to be a 'word' so that we can use it to discriminate comments
+			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to discriminate comments
+		
+			// states
+			int 		commentLevel = 		0;
+			boolean		newCommand =		true;
+			boolean		inDataBlock =		false;
+			boolean		inStrangeBlock =	false;		// strange -> i.e. unknown to us, foreign.
+			char		missingChar =		'?';
+			char		gapChar =		'-';		// this is against the standard, but oh well
+
+			// flags
+			boolean isDatasetInterleaved = false;
+
+			while(true) {
+				int type = tok.nextToken();
+				
+				// is it an ordinary char?
+				if(type == '[')
+					commentLevel++;
+
+				if(type == ']')
+					commentLevel--;
+
+				if(commentLevel > 0)
+					continue;
+
+				// semi-colons indicate end of line. mostly, anybody interested should have already flagged this off.
+				if(type == ';') {
+					newCommand = true;
+					continue;
+				}
+
+				// break at end of file
+				if(type == StreamTokenizer.TT_EOF) {
+					break;
+				}
+
+				// is it a word?
+				else if(type == StreamTokenizer.TT_WORD) {
+					String str = tok.sval;
+
+					// if we are in a foreign block, we ONLY watch out for the 'END;'.
+					// This way, foreign blocks can safely contain 'BEGIN foo' without
+					// tripping us over.
+					if(inStrangeBlock) {
+						if(str.equalsIgnoreCase("END")) {
+							System.err.println("Leaving strange block");
+							if(newCommand && tok.nextToken() == ';') {
+								// okay, it's an 'END;'
+								// and a new command ... so ';END;'
+								inStrangeBlock = false;
+								continue;
+							}
+						}
+					}
+
+					if(inDataBlock) {
+						if(str.equalsIgnoreCase("INTERLEAVE")) {
+							// turn interleaving on
+							isDatasetInterleaved = true;
+						}
+
+						if(str.equalsIgnoreCase("MATRIX")) {
+							System.err.println("Entering the matrix");
+							// okay, at this point, we import in the entire friggin'
+							// data matrix. It might be interleaved (see boolean 'interleave') 
+							Hashtable hash_names = new Hashtable();		// String name -> Sequence
+							while(true) {
+								type = tok.nextToken();
+
+								if(tok.sval != null)
+									System.err.println("Word in Matrix: " + tok.sval);
+
+								if(tok.nval != 0)
+									System.err.println("Numb in Matrix: " + tok.nval);
+
+								if(type == ';')
+									break;
+
+								// is it an ordinary char?
+								else if(type == '[')
+									commentLevel++;
+
+								else if(type == ']')
+									commentLevel--;
+
+								else if(commentLevel > 0)
+									continue;
+
+								else if(type == StreamTokenizer.TT_WORD) {
+									String name = tok.sval;
+
+									System.err.println("Processing: " + name);
+
+									// put spaces back
+									name = name.replace('_', ' ');		// we do NOT support '. Pfft.
+
+									// get the sequence
+									type = tok.nextToken();
+
+									if(type == StreamTokenizer.TT_WORD) {
+										try {
+											Sequence seq = null;
+											if(!isDatasetInterleaved || hash_names.get(name) == null) {
+												// doesn't exist, just add it
+												seq = new Sequence(name, tok.sval);
+												appendTo.add(seq);
+												hash_names.put(name, seq);
+											} else {
+												// it DOES exist, append it
+												seq = (Sequence) hash_names.get(name);
+												seq.changeSequence(seq.getSequence() + tok.sval);
+											}
+										} catch(SequenceException e) {
+											throw new FormatException("There is an error in line " + tok.lineno() + ": the sequence for taxon '" + name + "' is invalid: " + e);
+										}
+									} else if(type == ';') {
+										throw new FormatException("There is an error in line " + tok.lineno() + ": I can't currently handle comments inside a MATRIX, sorry!");
+									} else {
+										throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected " + (char) type + ".");
+									}
+
+								} else {
+									throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected " + (char) type + ".");
+								}
+							}
+							continue;
+						}	
+						if(str.equalsIgnoreCase("END")) {
+							System.err.println("Leaving data block");
+							if(newCommand && tok.nextToken() == ';') {
+								// okay, it's an 'END;'
+								// and a new command ... so ';END;'
+								inDataBlock = false;
+								continue;
+							}
+						}
+					}
+					
+					// the BEGIN command
+					if(str.equalsIgnoreCase("BEGIN")) {
+						// begin what?
+						if(tok.nextToken() == StreamTokenizer.TT_WORD) {
+							String beginWhat = tok.sval;	
+
+							System.err.println("Begin block: " + beginWhat + ".");
+							
+							if(beginWhat.equalsIgnoreCase("DATA"))
+								inDataBlock = true;
+							else if(beginWhat.equalsIgnoreCase("CHARACTERS"))
+								inDataBlock = true;
+								// the reference says they *are* identical
+								// (except that NEWTAXA is implicit in DATA)
+								// TODO: we might want to care about this.
+								// you know. to be anal, and all that.
+							else
+								inStrangeBlock = true;
+							
+							continue;
+						} else {
+							// something is wrong!
+							throw new FormatException("There is an error in line " + tok.lineno() + ": BEGIN is specified without a valid block name.");
+						}
+					}
+
+					newCommand = false;		// this will be reset at the end of the line -- i.e, by ';'
+				}
+			}
+		} finally {
+			if(delay != null)
+				delay.end();
+			appendTo.unlock();
+		}
+	}
+
+	/**
+	 * Gets the integer value of the key=value pair from the StreamTokenizer.
+	 * I assume you've already got the 'key', so I'll get the '=' token,
+	 * followed by a TT_WORD, and return the Integer.parseInt of that word.
+	 *
+	 * I'll return Integer.MIN_VALUE if something goes wrong.
+	 *
+	 * @throws IOException if the tokenizer gets IO issues.
+	 */
+	private int getIntValueOfKey(StreamTokenizer tok) throws IOException {
+		if(tok.nextToken() == '=') {
+			// all good so far
+			if(tok.nextToken() == StreamTokenizer.TT_WORD) {
+				// yay! we got the number!
+				return Integer.parseInt(tok.sval);
+			}
+		}
+
+		// something went wrong
+		return Integer.MIN_VALUE;
 	}
 	
 	/**
@@ -146,6 +383,61 @@ public class NexusFile implements FormatHandler {
 		writer.println("BEGIN TAXA;");
 		writer.println("\tDIMENSIONS NTAX=" + set.count() + ";");
 		// TAXLABELS - otherwise, no point of having a TAXA block
+		/*
+		 * The following piece of code has to:
+		 * 1.	Figure out VALID, UNIQUE names to output.
+		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
+		 * 	assume 32 chars for now - see MAX_TAXON_LENGTH - and work
+		 * 	around things when we need to).
+		 * 3.	Do interlacing, something no other part of the program does yet.
+		 * 	(Unless I wrote it for Mega and forgot. See INTERLEAVE_AT)
+		 */
+
+		Hashtable names = new Hashtable();		// Hashtable(Strings) -> Sequence	of all the names currently in use
+		Vector vec_names = new Vector();		// Vector(String)
+		Iterator i = set.iterator();
+		while(i.hasNext()) {
+			Sequence seq = (Sequence) i.next();
+
+			String name = seq.getSpeciesName(MAX_TAXON_LENGTH);
+			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
+			name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+
+			int no = 2;
+			while(names.get(name) != null) {
+				int digits = 5;
+				if(no > 0 && no < 10)		digits = 1;
+				if(no >= 10 && no < 100)	digits = 2;
+				if(no >= 100 && no < 1000)	digits = 3;
+				if(no >= 1000 && no < 10000)	digits = 4;
+
+				name = seq.getSpeciesName(MAX_TAXON_LENGTH - digits);
+				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
+				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+				name += "_" + no;
+
+				no++;
+
+				if(no == 10000) {
+					// this has gone on long enough!
+					throw new IOException("There are 9999 sequences named '" + seq.getSpeciesName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
+				}
+			}
+			
+			names.put(name, seq);
+			vec_names.add(name);
+		}
+
+		writer.print("\tTaxLabels ");
+		i = vec_names.iterator();
+		while(i.hasNext()) {
+			String name = (String) i.next();
+
+			writer.print(name + " ");
+		}
+
+		writer.println(";\n");
+
 		writer.println("END;\n");
 		
 		writer.println("BEGIN DATA;");		// DATA because I *think* CHARACTERS is not allowed
@@ -169,69 +461,47 @@ public class NexusFile implements FormatHandler {
 							// It's just how we do things around here.
 							// So we can hard code this.
 		
-		if(set.getMaxLength() > INTERLACE_AT)
-			interleaved = true;
-
 		writer.println("\tFORMAT DATATYPE=DNA MISSING=? GAP=-;");
-		writer.println("\tMATRIX");
-		
-		/*
-		 * The following piece of code has to:
-		 * 1.	Figure out VALID, UNIQUE names to output.
-		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
-		 * 	assume 32 chars for now - see MAX_TAXON_LENGTH - and work
-		 * 	around things when we need to).
-		 * 3.	Do interlacing, something no other part of the program does yet.
-		 * 	(Unless I wrote it for Mega and forgot. See INTERLACE_AT)
-		 */
-
-		Hashtable names = new Hashtable();		// Hashtable(Strings)	of all the names currently in use
-		Vector vec_names = new Vector();
-		Iterator i = set.iterator();
-		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
-
-			String name = seq.getSpeciesName(MAX_TAXON_LENGTH);
-			int no = 1;
-			while(names.get(name) != null) {
-				int digits = 5;
-				if(no > 0 && no < 10)		digits = 1;
-				if(no >= 10 && no < 100)	digits = 2;
-				if(no >= 100 && no < 1000)	digits = 3;
-				if(no >= 1000 && no < 10000)	digits = 4;
-
-				name = seq.getSpeciesName(MAX_TAXON_LENGTH - digits) + "_" + no;	
-				no++;
-
-				if(no == 10000) {
-					// this has gone on long enough!
-					throw new IOException("There are 9999 sequences named '" + seq.getSpeciesName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
-				}
-			}
-			names.put(name, seq);
-
-			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
-			name = name.replace(' ', '_');		// we do NOT support '. Pfft.
-		
-			// so now, we have a name. brilliant. What do we do with it?	
-			if(interleaved)
-				vec_names.add(name);
-			else
-				writer.println(name + "\t" + seq.getSequence() + "\t[" + seq.getLength() + "]");
+		if(set.getMaxLength() > INTERLEAVE_AT) {
+			interleaved = true;
+			writer.println("\tINTERLEAVE;\n");
 		}
+
+		writer.println("\tMATRIX");
 
 		// if we're not interleaved, we're done at this point.
 		// if we ARE interleaved, we actually need to write out the sequences
 		if(interleaved) {
 			// go over all the 'segments'
-			for(int x = 0; x < set.getMaxLength() + INTERLACE_AT; x+= INTERLACE_AT) {
-				Iterator i = vec_names.iterator();
+			for(int x = 0; x < set.getMaxLength(); x+= INTERLEAVE_AT) {
+				Iterator i_names = vec_names.iterator();
 
 				// go over all the taxa 
-				while(i.hasNext()) {
-					String name = (String) i.next();
+				while(i_names.hasNext()) {
+					String name = (String) i_names.next();
+					Sequence seq = (Sequence) names.get(name);
+					Sequence subseq = null;
 
+					int until = 0;
+
+					try {
+						until = x + INTERLEAVE_AT;
+
+						// thanks to the loop, we *will* walk off the end of this 
+						if(until > seq.getLength()) {
+							until = seq.getLength();
+						}
+
+						subseq = seq.getSubsequence(x + 1, until);
+					} catch(SequenceException e) {
+						delay.end();
+						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error.");
+					}
+
+					writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
 				}
+
+				writer.println("");	// print a blank line
 			}
 		}
 
@@ -247,6 +517,22 @@ public class NexusFile implements FormatHandler {
 			delay.end();
 
 		set.unlock();
+	}
+
+	/* Pad a string to a size */
+	private String pad_string(String x, int size) {
+		StringBuffer buff = new StringBuffer();
+		
+		if(x.length() < size) {
+			buff.append(x);
+			for(int c = 0; c < (size - x.length()); c++)
+				buff.append(' ');
+		} else if(x.length() == size)
+			return x;
+		else	// length is LESS than size, so we actually need to 'play tricks'
+			return x.substring(x.length() - 3) + "___";
+
+		return buff.toString();
 	}
 
 	/**
