@@ -175,6 +175,7 @@ public class SpeciesDetails {
 	private SpeciesDetail process_species(String name, Vector conspecifics) {
 		int count_valid = 0;
 		int count_invalid = 0;
+		int largest_length = 0;
 
 		if(name.equals(""))
 			return null;
@@ -187,6 +188,9 @@ public class SpeciesDetails {
 		Iterator i1 = conspecifics.iterator();
 		while(i1.hasNext()) {
 			Sequence seq_1 = (Sequence) i1.next();
+			
+			if(seq_1.getActualLength() > largest_length)
+				largest_length = seq_1.getActualLength();
 	
 			if(!seq_1.getGI().equals("")) {
 				detail.pushSequenceIdentifier("gi|" + seq_1.getGI() + "|");
@@ -224,6 +228,7 @@ public class SpeciesDetails {
 		detail.setSequencesCount(conspecifics.size());
 		detail.setSequencesWithValidMatchesCount(count_valid);				
 		detail.setSequencesWithoutValidMatchesCount(count_invalid);
+		detail.setLargestSequenceLength(largest_length);
 
 		if(count_valid > 1) {
 			count_species_valid++;

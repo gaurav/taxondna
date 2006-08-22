@@ -37,6 +37,7 @@ public class SpeciesDetail {
 	private int	sequences;
 	private int 	sequences_with_valid_matches;
 	private int 	sequences_with_no_valid_matches;
+	private int	length_largestSequence;
 	private Vector	gi_numbers = new Vector();
 
 	/**
@@ -69,6 +70,8 @@ public class SpeciesDetail {
 	public void setSequencesWithValidMatchesCount(int count) 	{ 	sequences_with_valid_matches = count; 	}
 	public int getSequencesWithoutValidMatchesCount()		{ 	return sequences_with_no_valid_matches; }
 	public void setSequencesWithoutValidMatchesCount(int count)	{ 	sequences_with_no_valid_matches = count;}
+	public void setLargestSequenceLength(int len)			{	length_largestSequence = len;		}
+	public 	int getLargestSequenceLength()				{	return length_largestSequence; 		}
 
 	public Vector getIdentifiers() 					{ return gi_numbers; }
 	public Iterator getIdentifiersIterator() 			{ return gi_numbers.iterator(); }
