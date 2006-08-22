@@ -128,7 +128,7 @@ public class MatrixModel implements TableModel {
 		while(i.hasNext()) {
 			TableModelListener l = (TableModelListener)i.next();	
 
-			System.err.println("Sending notification to " + l);
+			//System.err.println("Sending notification to " + l);
 			l.tableChanged(new TableModelEvent(this, TableModelEvent.HEADER_ROW));	// TODO: Optimize this! Let's not redraw EVERYTHING, can?
 		}
 	}
@@ -146,12 +146,12 @@ public class MatrixModel implements TableModel {
 	}
 
 	public int getColumnCount() {
-		System.err.println("Request for col count: " + columns.size());
+		//System.err.println("Request for col count: " + columns.size());
 		return columns.size();
 	}
 
         public String getColumnName(int columnIndex) {
-		System.err.println("Request for col name: " + columnIndex + ": " + columnNames.get(columnIndex));
+		//System.err.println("Request for col name: " + columnIndex + ": " + columnNames.get(columnIndex));
 		return (String) columnNames.get(columnIndex);
 	}
 
@@ -181,9 +181,9 @@ public class MatrixModel implements TableModel {
 		}
 
 		if(det == null)
-			return "0";
+			return "(N/A)";
 
-		return String.valueOf(det.getSequencesCount());
+		return String.valueOf(det.getLargestSequenceLength()) + " bp";
 	}
 
         public boolean isCellEditable(int rowIndex, int columnIndex) {
