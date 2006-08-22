@@ -28,9 +28,8 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesMatrix.SpeciesMatrix" />
 			</manifest>
 		</jar>
-		<!--
-		<signjar jar="TaxonDNA.jar" alias="ggvaidya" storepass="567Gandhi^(" />
-		-->
+		<signjar jar="Release/TaxonDNA.jar" alias="mykey" storepass="567Gandhi^(" />
+		<signjar jar="Release/SpeciesMatrix.jar" alias="mykey" storepass="567Gandhi^(" />
 	</target>
 
 	<target name="release" depends="TaxonDNA">
