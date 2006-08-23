@@ -46,17 +46,25 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 
 	//
 	// Options
+	
+	// How should Nexus output be formatted?
 	//
 	/** Nexus output should be interleaved. Returned by getNexusOutput(). */
 	public static final int		PREF_NEXUS_INTERLEAVED	=	0;
 	/** Nexus output should be in blocks. Returned by getNexusOutput(). */
 	public static final int		PREF_NEXUS_BLOCKS	=	1;
 
+	// Should we use the full name or the species name?
+	//
+	public static final int		PREF_USE_FULL_NAME	=	0;	
+	public static final int		PREF_USE_SPECIES_NAME	=	0;	
+
 	// 
 	// Our User Interface
 	//
 	private Choice 			choice_nexusOutput 	= 	new Choice();
 	private TextField		tf_nexusOutputInterleaved =	new TextField("1000");
+	private Choice			choice_useWhichName	=	new Choice();
 	private Button 			btn_Ok 			=	new Button("OK");
 
 	/**
@@ -84,6 +92,11 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 
 		rl.add(new Label("Interleave Nexus files at (in base pairs): "), RightLayout.NEXTLINE);
 		rl.add(tf_nexusOutputInterleaved, RightLayout.BESIDE | RightLayout.STRETCH_X);
+
+		choice_useWhichName.add("Use the sequence's full name");
+		choice_useWhichName.add("Use the sequence's species name");
+		rl.add(new Label("Which name should I use?"), RightLayout.NEXTLINE);
+		rl.add(choice_useWhichName, RightLayout.NEXTLINE);
 
 		dialog.add(options);
 
@@ -138,6 +151,11 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 			// shouldn't happen (see verify()), but just in case
 			return -1;
 		}
+	}
+
+	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
+	public int getUseWhichName() {
+		return choice_useWhichName.getSelectedIndex();	
 	}
 
 	//
