@@ -3,6 +3,11 @@ CHANGELOG for TaxonDNA
 From 0.9.4 to 0.9.5
 ===================
 Notes
+	*	The reported 'actual length' now ignores missing
+		information ENTIRELY. So a sequence with 30bp of
+		'?' in the middle will be reported as being 30bp
+		smaller than it really is. This makes sense to ME,
+		let me know if it doesn't make sense to you.
 	*	From this release, I'm changing the version number
 		format; pre-releases will be marked 'a', so I'm
 		currently working on 0.9.4a. This will be changed
