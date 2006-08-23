@@ -62,8 +62,9 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	private DropTarget	dropTargetTable		= null;
 
 	// Other components of SpeciesMatrix
-	private MatrixModel	matrixModel		= new MatrixModel(this);
+	private SequenceGrid	seqgrid			= new SequenceGrid(this);
 	private Preferences	prefs			= new Preferences(this);
+	private TableModel	tableModel		= new TableModel(this);
 
 	// Our variables
 	private Vector		filesToLoad		= new Vector();
@@ -387,6 +388,14 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 //		things, such as poke a sequence straight onto the screen.
 //		
 	/**
+	 * Updates the display. In our case, we just need to call the TableModel
+	 * and tell it about this.
+	 */
+	public void updateDisplay() {
+		tableModel.updateDisplay();
+	}
+
+	/**
 	 * Creates the user interface of SpeciesMatrix.
 	 */
 	private void createUI() {
@@ -397,7 +406,8 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
 
-		mainTable = new JTable(matrixModel);
+		tableModel = new TableModel(this)
+		mainTable = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
 		// don't blame me and change them if you like, etc.
@@ -493,7 +503,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 */
 	public void exportAsNexus(File f) {
 		try {
-			matrixModel.exportAsNexus(f);
+			seqgrid.exportAsNexus(f);
 			MessageBox mb = new MessageBox(
 					mainFrame,
 					"Success!",
@@ -605,18 +615,14 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		synchronized(filesToLoad) {
 			filesToLoad.add(file);
 			filesToLoad.add(handler);	// primitive two-variable list
-		}
 
-		lockInterface();
 			Thread t = new Thread(this);
 			t.start();
+		}
 	}
 
 	/**
 	 * The Thread responsible for the asynchronous addFile().
-	 *
-	 * Please remember to call unlockInterface() before you
-	 * leave this function: it turns the UI back on.
 	 *
 	 */
 	public void run() {
@@ -673,23 +679,19 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 							)
 						);
 
-				matrixModel.addSequenceList(sequences);
+				seqgrid.addSequenceList(sequences);
 
 			} catch(SequenceListException e) {
 				MessageBox mb = new MessageBox(getFrame(), "Could not read file " + file + "!", e.toString());
 				mb.go();
 
-				unlockInterface();
-
 				return;
 			
 			} catch(DelayAbortedException e) {
-				unlockInterface();
 				return;
 			}
 		}
 
-		unlockInterface();
 	}
 
 	/**
@@ -709,7 +711,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 * SequenceList in particular being set back to null.
 	 */
 	private void closeFile() {
-		matrixModel.clear();
+		seqgrid.clear();
 
 		/*
 		lockSequenceList();
@@ -735,32 +737,6 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 
 		unlockSequenceList(null);
 		*/
-	}
-
-//
-//	X.	UI Locks.	When we're loading files, we turn off the UI to prevent accidental
-//		use of the program while in an 'inconsistant' state.
-//
-	private int lockInterface_count = 0;
-	private void lockInterface() {
-		lockInterface_count++;
-
-		if(lockInterface_count == 1) {
-			// only lock things the first time through
-			isInterfaceLocked = true;			
-			mainTable.setEnabled(false);
-		}
-	}
-
-	private void unlockInterface() {
-		lockInterface_count--;
-
-		if(lockInterface_count == 0) {
-			// only unlock things the last time through
-			isInterfaceLocked = false;
-			mainTable.setEnabled(true);
-			mainTable.validate();
-		}
 	}
 
 //
