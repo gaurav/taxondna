@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// the current TaxonDNA version number 
-	private static String 	version 		= "0.9.4.2";
+	private static String 	version 		= "0.9.4.3";
 
 	// the following is information specific to this particular TaxonDNA.
 	private SequenceList 	sequences		= null;
@@ -203,12 +203,8 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		// File -> Exit. Close the present file,
 		// then dispose of the main window.
 		//
-		if(cmd.equals("Exit")) {
-			closeFile(); 
-			mainFrame.dispose();		// this "closes" this window; whether or not this 
-							// terminates the application depends on whether 
-							// other stuff is running.
-		}
+		if(cmd.equals("Exit"))
+			exitTaxonDNA();
 
 		//
 		// Export -> *
@@ -303,7 +299,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
 					+ "Thanks to Guanyang and Prof Rudolf Meier for extensively testing.\n\n"
 					+ "Thanks to Kathy for single-handedly figuring out the reason for the 'Cluster' bug, now fixed!\n\n"
-					+ "This program was written with Vim (http://vim.org) and later parts in Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/). I use BrowserLauncher (http://browserlauncher.sf.net/) to handle opening a website in a cross-platform way."
+					+ "This program was written with Vim (http://vim.org), with some refactoring assistance from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/). I use BrowserLauncher (http://browserlauncher.sf.net/) to handle opening a website in a cross-platform way."
 			);
 			mb.showMessageBox();
 		}
@@ -328,18 +324,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	 * If somebody tries to close the window, call closeFile() before closing the Window
 	 */
 	public void windowClosing(WindowEvent e) {
-		lockSequenceList();
-		closeFile();
-		// tricky case: if the sequences != null here,
-		// that means the user canceled out of closeFile.
-		if(lockSequenceList() != null) {
-			unlockSequenceList();
-			unlockSequenceList();
-			return;
-		} else {
-			mainFrame.dispose();
-			unlockSequenceList();
-		}
+		exitTaxonDNA();
 	}
 
 	//
@@ -519,6 +504,29 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		}
 
 		unlockSequenceList(null);
+	}
+
+	public void exitTaxonDNA() {
+		lockSequenceList();
+		closeFile();
+		// tricky case: if the sequences != null here,
+		// that means the user canceled out of closeFile.
+		if(lockSequenceList() != null) {
+			unlockSequenceList();
+			unlockSequenceList();
+			return;
+		} else {
+			mainFrame.dispose();
+			unlockSequenceList();
+		}	
+
+		// A simple, if elegant solution to the entire
+		// 'TaxonDNA won't close because a thread is
+		// still running somewhere'. Note that this
+		// will NOT solve all the other thread related
+		// issues will have, although it will save
+		// the user *some* angst.
+		System.exit(0);
 	}
 
 //
