@@ -145,6 +145,24 @@ public class Sequence  implements Comparable, Testable {
 		changeSequence(seq.toUpperCase().trim());
 	}	
 
+	/**
+	 * Creates a sequence consisting entirely of 'missing'.
+	 */
+	public static Sequence makeEmptySequence(int size) {
+		StringBuffer buff = new StringBuffer();
+		for(int x = 0; x < size; x++) {
+			buff.append('?');
+		}
+
+		try {
+			Sequence seq = new Sequence("Empty sequence", buff.toString());
+			return seq;
+		} catch(SequenceException e) {
+			// shouldn't happen as long as '-' is the gap character
+			throw new RuntimeException("The gap character was changed without changing Sequence.makeEmptySequence(int)!");
+		}
+	}
+
 //
 //	3.	GETTERS. Functions to retrieve values.
 //
@@ -289,7 +307,7 @@ public class Sequence  implements Comparable, Testable {
 		int count = len;
 
 		for(int x = 0; x < len; x++) {
-			if(isGap(seq[x]) && !isInternalGap(seq[x]))
+			if((isGap(seq[x]) || isMissing(seq[x])) && !isInternalGap(seq[x]))
 				count--;
 		}
 
@@ -457,6 +475,18 @@ public class Sequence  implements Comparable, Testable {
 			return new Sequence(getFullName() + "(segment:" + from + "-" + to + ":inclusive)", seq_str);
 		} catch(SequenceException e) { 
 			throw new AssertionError("Generating a subsequence (from " + this + ") caused strange characters to enter the sequence. This should never happen!");
+		}
+	}
+
+	/**
+	 * Append sequence 'seq' to the end of our sequence.
+	 */
+	public void appendSequence(Sequence seq) {
+		try {
+			changeSequence(getSequence() + seq.getSequence());	
+		} catch(SequenceException e) {
+			// shouldn't happen!
+			throw new RuntimeException("The combination of " + this + " and " + seq + " is not a valid sequence!");
 		}
 	}
 	
@@ -1006,6 +1036,14 @@ public class Sequence  implements Comparable, Testable {
 						return 'G';
 					else	// -
 						return '-';
+	}
+
+	/**
+	 * Returns true if this is the 'missing' character.
+	 * By current specification, this is '?'.
+	 */
+	public static boolean isMissing(char ch) {
+		return (ch == '?');
 	}
 
 	/**
