@@ -109,6 +109,8 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 
 			addFile(f);
 		}
+
+		resetFrameTitle();
 	}
 
 //
