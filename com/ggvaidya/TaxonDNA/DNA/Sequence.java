@@ -323,7 +323,8 @@ public class Sequence  implements Comparable, Testable {
 
 
 	/**
-	 * Returns the species/genus name
+	 * Returns the species/genus name. If we haven't been able to
+	 * figure one out, we'll return "".
 	 */
 	public String getSpeciesName() {
 		if(species.equals("") || genus.equals("")) 
