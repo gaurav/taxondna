@@ -53,7 +53,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SpeciesMatrix implements WindowListener, ActionListener, DropTargetListener, Runnable {
 	// SpeciesMatrix version number 
-	private static String 	version 		= "0.2";
+	private static String 	version 		= "0.2.1";
 	
 	// The following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
@@ -697,8 +697,6 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 * Tries to load a particular file into the present SequenceList. If successful, it will sequences the present
 	 * file to be whatever was specified. If not successful, it will leave the external situation (file, sequences)
 	 * unchanged.
-	 *
-	 * @return true, if the file was successfully loaded.
 	 */
 	public void addFile(File file) {
 		addFile(file, null);
