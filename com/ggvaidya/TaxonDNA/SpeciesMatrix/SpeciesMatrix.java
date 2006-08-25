@@ -406,7 +406,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
 
-		tableModel = new TableModel(this)
+		tableModel = new TableModel(this);
 		mainTable = new JTable(tableModel);
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
@@ -503,7 +503,13 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 */
 	public void exportAsNexus(File f) {
 		try {
-			seqgrid.exportAsNexus(f);
+			seqgrid.exportAsNexus(f, 
+					new ProgressDialog(
+						mainFrame, 
+						"Please wait, exporting dataset ...",
+						"The dataset is being exported. Sorry for the delay."
+						)
+			);
 			MessageBox mb = new MessageBox(
 					mainFrame,
 					"Success!",
@@ -516,6 +522,12 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 					mainFrame,
 					"Error while exporting file",
 					"There was an error while exporting this set to '" + f + "'. Please ensure that you have adequate permissions and that your hard disk is not full.\n\nThe technical description of this error is: " + e);
+			mb.go();
+		} catch(DelayAbortedException e) {
+			MessageBox mb = new MessageBox(
+					mainFrame,
+					"File export cancelled",
+					"Your file export was cancelled. The file '" + f + "' has probably be left incomplete.");
 			mb.go();
 		}
 	}
@@ -628,32 +640,17 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	public void run() {
 		Thread.yield();		// wait until we've got nothing better to do ... i think =/
 		
+		synchronized(filesToLoad) {
 		Iterator i = filesToLoad.iterator();
-
 		while(i.hasNext()) {
 			File file = null;
 			FormatHandler handler = null;
 
-			// The following is threadsafe because:
-			// 1.	the two adds are specifically synchronized: we will never see a filesToLoad
-			// 	with only ONE of the two.
-			// 2.	we atomically check, copy and remove a file and a handler. This allows the
-			// 	outer loop to add more. It also - more importantly - allows loads to be
-			// 	asynchronous - we'll start up ALL loads, and then just let them finish
-			// 	whenever. The modal ProgressDialogs will make sure we don't overlap.
-			// 	Since all subcomponents lock the SequenceList, we know this won't
-			// 	screw things up entirely. Note that they will all run in the SAME thread,
-			// 	unless they don't :p. It's pretty friggin' random. I know, I'm sorry, I
-			// 	shouldn't sacrifice stability and error-resilience for sheer coolness,
-			// 	but ... 
- 
-			synchronized(filesToLoad) {
-				file = (File) i.next();
-				i.remove();
-				handler = (FormatHandler) i.next();
-				i.remove();
-			}
-
+			file = (File) i.next();
+			i.remove();
+			handler = (FormatHandler) i.next();
+			i.remove();
+		
 			SequenceList sequences = null;
 		
 			try {
@@ -690,8 +687,10 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 			} catch(DelayAbortedException e) {
 				return;
 			}
-		}
 
+			updateDisplay();
+		}
+		}
 	}
 
 	/**
@@ -754,5 +753,12 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 */
 	public Preferences getPrefs() {
 		return prefs;
+	}
+
+	/**
+	 * Returns the SequenceGrid object, if anyone wants it.
+	 */
+	public SequenceGrid getSequenceGrid() {
+		return seqgrid;
 	}
 }

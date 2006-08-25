@@ -46,6 +46,9 @@ public class TableModel implements javax.swing.table.TableModel {
 	SpeciesMatrix 	matrix = null;
 	SequenceGrid 	seqGrid = null;
 
+	Vector 		seq_names = new Vector();
+	Vector		col_names = new Vector();
+
 	/** We are required to keep track of classes which would like to be notified of changes */
 	Vector listeners = new Vector();
 
@@ -55,7 +58,7 @@ public class TableModel implements javax.swing.table.TableModel {
 	/**
 	 * Creates a TableModel which will uses the specified SpeciesMatrix.
 	 */
-	public MatrixModel(SpeciesMatrix matrix) {
+	public TableModel(SpeciesMatrix matrix) {
 		this.matrix = matrix;
 		seqGrid = matrix.getSequenceGrid();
 	}
@@ -65,6 +68,10 @@ public class TableModel implements javax.swing.table.TableModel {
 	 * everybody who knows, who will - presumably - be in touch.
 	 */
 	public void updateDisplay() {
+		// refresh the seq and col lists
+		seq_names = seqGrid.getSequences();
+		col_names = seqGrid.getColumns();
+
 		// let everybody know
 		Iterator i = listeners.iterator();
 		while(i.hasNext()) {
@@ -86,21 +93,24 @@ public class TableModel implements javax.swing.table.TableModel {
 	 * Gets the number of columns.
 	 */
 	public int getColumnCount() {
-		return seqGrid.getColumns().size() + 1; 
+		return col_names.size() + 1; 
 	}
 	
 	/**
 	 * Gets the number of rows.
 	 */
 	public int getRowCount() {
-		return seqGrid.getSequenceNames().size() + 1;
+		return seq_names.size();
 	}
 
 	/**
 	 * Gets the name of column number 'columnIndex'.
 	 */
         public String getColumnName(int columnIndex) {
-		return seqGrid.getColumns().get(columnIndex);
+		if(columnIndex == 0)
+			return "";		// upper left hand box
+
+		return (String) col_names.get(columnIndex - 1);
 	}
 
 	/**
@@ -111,30 +121,23 @@ public class TableModel implements javax.swing.table.TableModel {
 	 * 3.	(0, 0) is to be a blank box (new String("")).
 	 */
         public Object getValueAt(int rowIndex, int columnIndex) {
-		if(rowIndex == 0) {
-			// is it the empty box in the upper left corner?
-			if(columnIndex == 0)
-				return new String("");
-			
-			// it's row 0: the column names
-			return seqGrid.getColumns().get(columnIndex - 1);
-		}
+		if(seq_names.size() == 0)
+			return "No sequences loaded";
 
-		if(colIndex == 0) {
+		if(columnIndex == 0) {
 			// can't be the empty box: we've already got that.
-
-			return seqGrid.getSequenceNames().get(rowIndex - 1);
+			return seq_names.get(rowIndex);
 		}
 
-		String seqName 	= seqGrid.getSequenceNames().get(rowIndex - 1);
-		int setNo 	= colIndex - 1;
-		Sequence seq 	= seqGrid.getSequence(seqName, setNo);
+		String seqName 	= (String) seq_names.get(rowIndex);
+		String colName  = (String) col_names.get(columnIndex - 1);
+		Sequence seq 	= seqGrid.getSequence(colName, seqName);
 
 		// is it perhaps not defined for this column?
 		if(seq == null)
 			return "(N/A)";	
 
-		return seq.getActualSize() + " bp";
+		return seq.getActualLength() + " bp";
 	}
 
 	/**
