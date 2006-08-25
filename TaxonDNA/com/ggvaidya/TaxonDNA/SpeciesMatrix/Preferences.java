@@ -53,11 +53,13 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	public static final int		PREF_NEXUS_INTERLEAVED	=	0;
 	/** Nexus output should be in blocks. Returned by getNexusOutput(). */
 	public static final int		PREF_NEXUS_BLOCKS	=	1;
+	/** Nexus output should be in single, long lines. Returned by getNexusOutput(). */
+	public static final int		PREF_NEXUS_SINGLE_LINE	=	2;
 
 	// Should we use the full name or the species name?
 	//
 	public static final int		PREF_USE_FULL_NAME	=	0;	
-	public static final int		PREF_USE_SPECIES_NAME	=	0;	
+	public static final int		PREF_USE_SPECIES_NAME	=	1;	
 
 	// 
 	// Our User Interface
@@ -85,6 +87,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 		// Output Nexus files as: (choice_nexusOutput)
 		choice_nexusOutput.add("Interleaved");
 		choice_nexusOutput.add("Blocks (NOT usable on Macintosh versions of PAUP* and MacClade!)");
+		choice_nexusOutput.add("One single (potentially very long) line");
 
 		choice_nexusOutput.addItemListener(this);
 		rl.add(new Label("Output Nexus files as: "), RightLayout.LEFT);
@@ -96,7 +99,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 		choice_useWhichName.add("Use the sequence's full name");
 		choice_useWhichName.add("Use the sequence's species name");
 		rl.add(new Label("Which name should I use?"), RightLayout.NEXTLINE);
-		rl.add(choice_useWhichName, RightLayout.NEXTLINE);
+		rl.add(choice_useWhichName, RightLayout.BESIDE);
 
 		dialog.add(options);
 
@@ -133,7 +136,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	//
 	// get the Preferences themselves
 	//
-	/** Returns either PREF_NEXUS_INTERLEAVED or PREF_NEXUS_BLOCKS */
+	/** Returns either PREF_NEXUS_INTERLEAVED, PREF_NEXUS_SINGLE_LINE or PREF_NEXUS_BLOCKS */
 	public int getNexusOutput() {
 		return choice_nexusOutput.getSelectedIndex();
 	}
