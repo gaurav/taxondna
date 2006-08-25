@@ -126,12 +126,18 @@ public class Sequence  implements Comparable, Testable {
 //	
 	/**
 	 * Empty constructor. Creates a blank, zero-length sequence.
+	 * This is actually fairly important, since this is the
+	 * ONLY way of creating a Sequence without throwing a
+	 * SequenceException.
 	 */	
 	public Sequence() {
-		name = "Unknown";
-		seq = new char[1];
-		len = 1;
-		seq[0] = '_';
+		try {
+			changeName("Empty sequence");
+			changeSequence("");
+		} catch(SequenceException e) {
+			// shouldn't happen!
+			throw new RuntimeException("Can't create empty Sequence!");
+		}
 	}
 
 	/**
@@ -471,11 +477,10 @@ public class Sequence  implements Comparable, Testable {
 			seq_str += buff.toString();
 		}
 
-
 		try {
 			return new Sequence(getFullName() + "(segment:" + from + "-" + to + ":inclusive)", seq_str);
 		} catch(SequenceException e) { 
-			throw new AssertionError("Generating a subsequence (from " + this + ") caused strange characters to enter the sequence. This should never happen!");
+			throw new AssertionError("Generating a subsequence (from " + this + ": " + from + "-" + to + ") caused strange characters to enter the sequence. This should never happen! The exception reported was: " + e);
 		}
 	}
 
@@ -612,6 +617,8 @@ public class Sequence  implements Comparable, Testable {
 			else if(sequence[x] == '-') {
 				forwardStrokeStoppedAt = x;
 				sequence[x] = '_';
+			} else if(sequence[x] == '?') {
+				continue;
 			} else
 				break;
 		}	
@@ -629,6 +636,8 @@ public class Sequence  implements Comparable, Testable {
 							"programme use. '_' was used at index " + x + ".");
 			} else if(sequence[x] == '-')
 				sequence[x] = '_';
+			else if(sequence[x] == '?')
+				continue;	// keep going
 			else
 				break;
 		}
