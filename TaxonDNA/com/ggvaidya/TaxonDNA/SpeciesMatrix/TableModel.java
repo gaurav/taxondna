@@ -141,17 +141,25 @@ public class TableModel implements javax.swing.table.TableModel {
 	}
 
 	/**
-	 * Determines if you can edit anything. Right now, no, you can't.
-	 * But soon. Very soon.
+	 * Determines if you can edit anything. Which is only the sequences column.
 	 */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if(columnIndex == 0)
+			return true;
 		return false;
 	}
 
-	/** Allows the user to set the value of a particular cell. This, too, will happen.
+	/** Allows the user to set the value of a particular cell. That is, the
+	 * sequences column. 
 	 */
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		return;
+		if(columnIndex == 0) {
+			String strOld = (String) getValueAt(rowIndex, columnIndex);
+			String strNew = (String) aValue;
+
+			seqGrid.renameSequence(strOld, strNew);
+		}
+			
 	}
 
 	//
