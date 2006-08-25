@@ -358,11 +358,11 @@ public class NexusFile implements FormatHandler {
 									} else if(type == ';') {
 										throw new FormatException("There is an error in line " + tok.lineno() + ": The sequence named '" + name + "' has no DNA sequence associated with it.");
 									} else {
-										throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected " + (char) type + ".");
+										throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected '" + (char) type + "'.");
 									}
 
 								} else {
-									throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected " + (char) type + ".");
+									throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected '" + (char) type + "'.");
 								}
 							}
 							continue;
@@ -461,13 +461,24 @@ public class NexusFile implements FormatHandler {
 	 * @throws DelayAbortedException if the DelayCallback was aborted by the user.
 	 */
 	public void writeFile(File file, SequenceList set, DelayCallback delay) throws IOException, DelayAbortedException {
+		writeNexusFile(file, set, INTERLEAVE_AT, "", delay);
+	}
+	
+	/**
+	 * A species NexusFile-only method to have a bit more control over how
+	 * the Nexus file gets written.
+	 *
+	 * @param interleaveAt Specifies where you want to interleave. Note that NexusFile.INTERLEAVE_AT will be entirely ignored here, and that if the sequence is less than interleaveAt, it will not be interleaved at all.
+	 * @param otherBlocks We put this into the file at the very bottom. It should be one or more proper 'BLOCK's, unless you really know what you're doing.
+	 */
+	public void writeNexusFile(File file, SequenceList set, int interleaveAt, String otherBlocks, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean interleaved = false;
 
 		set.lock();
 		
 		// it has begun ...
 		if(delay != null)
-			delay.begin();	
+			delay.begin();
 
 		// write out a 'preamble'
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
@@ -548,17 +559,18 @@ public class NexusFile implements FormatHandler {
 							//
 							// TODO tomorrow.
 							//
-		writer.println("\tDIMENSION NCHAR=" + set.getMaxLength() + ";");
+		writer.println("\tDIMENSION NTAX=" + set.count() + " NCHAR=" + set.getMaxLength() + ";");
 
 							// The following is standard 'TaxonDNA' speak.
 							// It's just how we do things around here.
 							// So we can hard code this.
 		
-		writer.println("\tFORMAT DATATYPE=DNA MISSING=? GAP=-;");
-		if(set.getMaxLength() > INTERLEAVE_AT) {
+		writer.print("\tFORMAT DATATYPE=DNA MISSING=? GAP=- ");
+		if(set.getMaxLength() > interleaveAt) {
 			interleaved = true;
-			writer.println("\tINTERLEAVE;\n");
+			writer.print("\tINTERLEAVE");
 		}
+		writer.println(";");
 
 		writer.println("\tMATRIX");
 
@@ -566,8 +578,18 @@ public class NexusFile implements FormatHandler {
 		// if we ARE interleaved, we actually need to write out the sequences
 		if(interleaved) {
 			// go over all the 'segments'
-			for(int x = 0; x < set.getMaxLength(); x+= INTERLEAVE_AT) {
+			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
 				Iterator i_names = vec_names.iterator();
+
+				// report the delay
+				if(delay != null)
+					try {
+						delay.delay(x, set.getMaxLength());
+					} catch(DelayAbortedException e) {
+						writer.close();
+						set.unlock();
+						throw e;
+					}
 
 				// go over all the taxa 
 				while(i_names.hasNext()) {
@@ -578,7 +600,7 @@ public class NexusFile implements FormatHandler {
 					int until = 0;
 
 					try {
-						until = x + INTERLEAVE_AT;
+						until = x + interleaveAt;
 
 						// thanks to the loop, we *will* walk off the end of this 
 						if(until > seq.getLength()) {
@@ -601,7 +623,11 @@ public class NexusFile implements FormatHandler {
 		// wrap up.
 		writer.println(";");
 		
-		writer.println("END;");
+		writer.println("END;\n");
+
+		// put in any other blocks
+		if(otherBlocks != null)
+			writer.println(otherBlocks);
 
 		writer.close();
 
