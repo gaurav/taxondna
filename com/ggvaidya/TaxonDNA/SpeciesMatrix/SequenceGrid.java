@@ -289,6 +289,74 @@ public class SequenceGrid {
 	}
 
 	/**
+	 * Rename sequence seqOld to seqNew,
+	 * and update everything.
+	 */
+	public void renameSequence(String seqOld, String seqNew) {
+		StringBuffer buff_replaced = new StringBuffer();
+
+		// actually rename things in the Master Hash
+		Iterator i_cols = hash_cols.keySet().iterator();
+		while(i_cols.hasNext()) {
+			String colName = (String) i_cols.next();	
+			Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
+
+			if(hash_seqs.get(seqOld) != null) {
+				// replace
+				Sequence old = (Sequence) hash_seqs.get(seqOld);
+				hash_seqs.remove(seqOld);
+				
+				if(hash_seqs.get(seqNew) != null) {
+					// the new name already exists!
+					Sequence seq = (Sequence) hash_seqs.get(seqNew);	
+					
+					if(old.getActualLength() > seq.getActualLength()) {
+						buff_replaced.append("\t" + seqNew + " was replaced by the sequence formerly known as " + seqOld + ", since it is longer.\n");
+						hash_seqs.put(seqNew, old);
+					} else {
+						buff_replaced.append("\t" + seqOld + " was removed, since " + seqNew + " is longer than it is.\n");
+						// don't do anything - the sequence known as seqNew wins
+					}
+				} else {
+					// the new name does NOT exist
+					hash_seqs.put(seqNew, old); 
+				}
+
+				// did we just get rid of the last sequence in this column?
+				if(hash_seqs.isEmpty()) {
+					// get rid of this column
+					i_cols.remove();
+					// and its length
+					int length = getColumnLength(colName);
+					col_lengths.remove(colName);
+					// and subtract this from the total length
+					total_length -= length;
+				}
+			}
+		}
+
+		// remove the name from the sequences record
+		seq_names.remove(seqOld);						
+
+		// does the new name have an entry?
+		// if not, we need to provide it one!
+		if(seq_names.get(seqNew) == null)
+			seq_names.put(seqNew, new Object());
+
+
+		if(buff_replaced.length() > 0) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Some name collisions occured!",
+					"Renaming '" + seqOld + "' to '" + seqNew + "' was tricky because there is already a '" + seqNew + "' in the dataset. The following was carried out:\n" + buff_replaced.toString()
+					);
+			mb.go();
+		}
+
+		updateDisplay();
+	}
+
+	/**
 	 * Export the current matrix as Nexus. Note that this function might
 	 * change or move somewhere else -- I haven't decided yet.
 	 *
