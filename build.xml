@@ -17,19 +17,19 @@
 	</target>
 
 	<target name="TaxonDNA" depends="compile">
-		<jar  destfile="Release/TaxonDNA.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/SpeciesMatrix/**" includes="**/*.class" >
+		<jar  destfile="Release/TaxonDNA.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**" includes="**/*.class" >
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.Modules.TaxonDNA" />
 			</manifest>
 		</jar>
 
-		<jar  destfile="Release/SpeciesMatrix.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**" includes="**/*.class" >
+		<jar  destfile="Release/SequenceMatrix.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**" includes="**/*.class" >
 			<manifest>
-				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesMatrix.SpeciesMatrix" />
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
 		</jar>
 		<signjar jar="Release/TaxonDNA.jar" alias="mykey" storepass="567Gandhi^(" />
-		<signjar jar="Release/SpeciesMatrix.jar" alias="mykey" storepass="567Gandhi^(" />
+		<signjar jar="Release/SequenceMatrix.jar" alias="mykey" storepass="567Gandhi^(" />
 	</target>
 
 	<target name="release" depends="TaxonDNA">
