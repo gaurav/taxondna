@@ -7,7 +7,7 @@
 
 /*
  *
- *  SpeciesMatrix
+ *  SequenceMatrix
  *  Copyright (C) 2006 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
@@ -26,7 +26,7 @@
  *  
  */
 
-package com.ggvaidya.TaxonDNA.SpeciesMatrix;
+package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -43,7 +43,7 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TableModel implements javax.swing.table.TableModel {
-	SpeciesMatrix 	matrix = null;
+	SequenceMatrix 	matrix = null;
 	SequenceGrid 	seqGrid = null;
 
 	Vector 		seq_names = new Vector();
@@ -56,9 +56,9 @@ public class TableModel implements javax.swing.table.TableModel {
 	//	1.	CONSTRUCTORS.
 	//
 	/**
-	 * Creates a TableModel which will uses the specified SpeciesMatrix.
+	 * Creates a TableModel which will uses the specified SequenceMatrix.
 	 */
-	public TableModel(SpeciesMatrix matrix) {
+	public TableModel(SequenceMatrix matrix) {
 		this.matrix = matrix;
 		seqGrid = matrix.getSequenceGrid();
 	}
@@ -122,7 +122,7 @@ public class TableModel implements javax.swing.table.TableModel {
 		if(columnIndex == 0)
 			return "";		// upper left hand box
 
-		return (String) col_names.get(columnIndex - 1);
+		return (String) col_names.get(columnIndex - 1) + " (bp)";
 	}
 
 	/**
@@ -149,7 +149,7 @@ public class TableModel implements javax.swing.table.TableModel {
 		if(seq == null)
 			return "(N/A)";	
 
-		return seq.getActualLength() + " bp";
+		return String.valueOf(seq.getActualLength());
 	}
 
 	/**

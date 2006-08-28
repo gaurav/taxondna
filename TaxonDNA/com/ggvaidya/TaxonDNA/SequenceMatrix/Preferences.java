@@ -5,7 +5,7 @@
 
 /*
  *
- *  SpeciesMatrix
+ *  SequenceMatrix
  *  Copyright (C) 2006 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
  *  
  */
 
-package com.ggvaidya.TaxonDNA.SpeciesMatrix;
+package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -41,7 +41,7 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class Preferences implements WindowListener, ItemListener, ActionListener {
-	private SpeciesMatrix 		matrix 	= null;			// the SpeciesMatrix object
+	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object
 	private Dialog 			dialog 	= null;			// the Dialog which we need to display
 
 	//
@@ -73,8 +73,8 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	 * Constructor. Sets up the UI (on the dialog object, which isn't madeVisible just yet)
 	 * and 
 	 */
-	public Preferences(SpeciesMatrix matrix) {
-		// set up the SpeciesMatrix
+	public Preferences(SequenceMatrix matrix) {
+		// set up the SequenceMatrix
 		this.matrix = matrix;
 
 		// set up 'dialog'
