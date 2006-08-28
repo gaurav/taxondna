@@ -1,14 +1,14 @@
 /**
- * SpeciesMatrix represents datasets in a matrix of sequences versus genes.
+ * SequenceMatrix represents datasets in a matrix of sequences versus genes.
  * This gives it an edge against TaxonDNA, which really sees datasets as
- * a sequence-to-polypeptide map. SpeciesMatrix can therefore *really*
+ * a sequence-to-polypeptide map. SequenceMatrix can therefore *really*
  * import in GenBank and Nexus formats (it's import will, I suppose, be
  * something to behold). God only knows if it will 'live' within TaxonDNA
  * forever: one supposes that it'll eventually break free, but while a
  * lot of the code (DNA.*, for a big instance) is living together, it
  * probably makes a lot of sense to keep them joined at the hip.
  *
- * SpeciesMatrix will, hopefully, be a much SMALLER program than TaxonDNA.
+ * SequenceMatrix will, hopefully, be a much SMALLER program than TaxonDNA.
  * We will also experiment with Swing, just to see how that goes (and because
  * JTable would save work like nobody's business).
  *
@@ -16,7 +16,7 @@
 
 /*
  *
- *  SpeciesMatrix
+ *  SequenceMatrix
  *  Copyright (C) 2006 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
@@ -35,7 +35,7 @@
  *  
  */
 
-package com.ggvaidya.TaxonDNA.SpeciesMatrix;
+package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -51,8 +51,8 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class SpeciesMatrix implements WindowListener, ActionListener, DropTargetListener, Runnable {
-	// SpeciesMatrix version number 
+public class SequenceMatrix implements WindowListener, ActionListener, DropTargetListener, Runnable {
+	// SequenceMatrix version number 
 	private static String 	version 		= "0.2.2";
 	
 	// The following variables create and track our AWT interface
@@ -61,7 +61,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	private DropTarget	dropTarget		= null;
 	private DropTarget	dropTargetTable		= null;
 
-	// Other components of SpeciesMatrix
+	// Other components of SequenceMatrix
 	private SequenceGrid	seqgrid			= new SequenceGrid(this);
 	private Preferences	prefs			= new Preferences(this);
 	private TableModel	tableModel		= new TableModel(this);
@@ -71,11 +71,11 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	private boolean		isInterfaceLocked	= false;
 
 //
-//	1.	ENTRYPOINT. The entrypoint is where the entire SpeciesMatrix system starts up.
-//		As usual, you can just create a new SpeciesMatrix to 'do everything'.
+//	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
+//		As usual, you can just create a new SequenceMatrix to 'do everything'.
 //
 	/**
-	 * SpeciesMatrix's entry point. Our arguments are the files we must open
+	 * SequenceMatrix's entry point. Our arguments are the files we must open
 	 * initially.
 	 */
 	public static void main(String[] args) {
@@ -85,22 +85,22 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 			files.add(new File(args[x]));	
 		}
 
-		new SpeciesMatrix( files );
+		new SequenceMatrix( files );
 	}
 	
 //
 // 	2.	CONSTRUCTORS.
 //
 	/**
-	 * Creates a new SpeciesMatrix object. We create a new toplevel.
+	 * Creates a new SequenceMatrix object. We create a new toplevel.
 	 * Be warned that we do NOT spawn a thread: if TaxonDNA wants
-	 * to create a SpeciesMatrix for whatever reason, it will have
+	 * to create a SequenceMatrix for whatever reason, it will have
 	 * to do this IN a thread - otherwise when TaxonDNA exits,
 	 * we will automatically exit as well.
 	 *
 	 * @param files A vector of files to load in.
 	 */
-	public SpeciesMatrix(Vector files) {
+	public SequenceMatrix(Vector files) {
 		createUI();			// create our user interface
 
 		// now load up all the files
@@ -159,6 +159,59 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		if(cmd.equals("Exit"))
 			exit();		
 
+		// Export -> Export table as tab delimited. Should be fairly
+		// easy: we could just query the table and spit it out!
+		if(cmd.equals("Export table as tab-delimited")) {
+			// This much code copy-paste makes my blood boil :(
+			File file = null;
+
+			FileDialog fd = new FileDialog(mainFrame, "Where would you like to export this table to?", FileDialog.SAVE);
+			fd.setVisible(true);
+
+			if(fd.getFile() != null) {
+				if(fd.getDirectory() != null) {
+					file = new File(fd.getDirectory() + fd.getFile());
+				} else {
+					file = new File(fd.getFile());
+				}
+			}
+
+			if(file == null)		// nothing selected?
+				return;
+
+			// export the table to the file, etc.
+			try {
+				PrintWriter writer = new PrintWriter(new FileWriter(file));
+
+				// intro
+				writer.println("Exported by SequenceMatrix " + version + " at " + new Date());
+
+				// print columns
+				int cols = tableModel.getColumnCount();
+				for(int x = 0; x < cols; x++) {
+					writer.print(tableModel.getColumnName(x) + "\t");
+				}
+				writer.println();
+
+				// print table 
+				int rows = tableModel.getRowCount();	
+				for(int y = 0; y < rows; y++) {
+					for(x = 0; x < cols; x++) {
+						writer.print((String)tableModel.getValueAt(y, x) + "\t");
+					}
+					writer.println();
+				}
+
+			} catch(IOException e) {
+				MessageBox mb = new MessageBox(
+						mainFrame,
+						"Error while exporting table!",
+						"There was an error while exporting the table. Please make sure you have permission to write to '" + file + "'.\n\nThe error was: " + e);
+				mb.go();
+				return;
+			}
+		}
+
 		//
 		// Export -> Export as NEXUS. Since TaxonDNA doesn't understand
 		// complex sequences, we do all of these manually. Thankfully,
@@ -181,7 +234,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		}
 
 		//
-		// Settings -> Preferences. Allows you to change how SpeciesMatrix
+		// Settings -> Preferences. Allows you to change how SequenceMatrix
 		// works.
 		//
 		if(cmd.equals("Preferences")) {
@@ -194,7 +247,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		// working in the Help -> * menu.
 		//
 		if(cmd.equals("About")) {
-			String copyrightNotice = new String("SpeciesMatrix " + version + ", Copyright (C) 2006 Gaurav Vaidya. \nSpeciesMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+			String copyrightNotice = new String("SequenceMatrix " + version + ", Copyright (C) 2006 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -383,7 +436,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 //
 //	4.	FUNCTIONAL CODE. It does things.
 //
-//		Mostly, it's used by us to call bits of code to 'do' things: exit SpeciesMatrix,
+//		Mostly, it's used by us to call bits of code to 'do' things: exit SequenceMatrix,
 //		exportAsNexus, etc. Public functions can be called by other components to do
 //		things, such as poke a sequence straight onto the screen.
 
@@ -396,11 +449,11 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	}
 
 	/**
-	 * Creates the user interface of SpeciesMatrix.
+	 * Creates the user interface of SequenceMatrix.
 	 */
 	private void createUI() {
 		// main frame
-		mainFrame = new Frame("SpeciesMatrix");
+		mainFrame = new Frame("SequenceMatrix");
 		mainFrame.addWindowListener(this);
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setMenuBar(createMenuBar());
@@ -423,8 +476,8 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		// 	a blank component on the top of the screen.
 
 		// Start the mainFrame!
-		mainFrame.setVisible(true);		
 		mainFrame.pack();
+		mainFrame.setVisible(true);
 
 		// set up the DropTarget
 		// Warning: this will need to be changed if table is ever not
@@ -441,7 +494,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 	 * unlockSequenceList(sequences) and this will be handled.
 	 */
 	private void resetFrameTitle() {
-		StringBuffer title = new StringBuffer("SpeciesMatrix " + version);
+		StringBuffer title = new StringBuffer("SequenceMatrix " + version);
 
 		mainFrame.setTitle(title.toString());
 	}
@@ -470,7 +523,9 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
+		export.add(new MenuItem("Export table as tab-delimited"));
 		export.add(new MenuItem("Export as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export as TNT"));
 		export.addActionListener(this);
 		menubar.add(export);
 
