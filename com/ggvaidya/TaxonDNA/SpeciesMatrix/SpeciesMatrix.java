@@ -53,7 +53,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SpeciesMatrix implements WindowListener, ActionListener, DropTargetListener, Runnable {
 	// SpeciesMatrix version number 
-	private static String 	version 		= "0.2.1";
+	private static String 	version 		= "0.2.2";
 	
 	// The following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
@@ -386,7 +386,7 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 //		Mostly, it's used by us to call bits of code to 'do' things: exit SpeciesMatrix,
 //		exportAsNexus, etc. Public functions can be called by other components to do
 //		things, such as poke a sequence straight onto the screen.
-//		
+
 	/**
 	 * Updates the display. In our case, we just need to call the TableModel
 	 * and tell it about this.
@@ -411,8 +411,16 @@ public class SpeciesMatrix implements WindowListener, ActionListener, DropTarget
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
 		// don't blame me and change them if you like, etc.
-		mainTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
+		//
+		// p.s. Commented out, this causes a funky MacOS X GUI bug.
+//		mainTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
 		mainFrame.add(scrollPane);
+
+		// HACK: MacOS X (or BorderLayout?) places the ScrollPane at (0, 0)
+		// 	which on OS X is the upper left corner of the title bar.
+		// 	We need it to be at the top of the client area, which ought
+		// 	to be stored in getInsets(). So we're going to place
+		// 	a blank component on the top of the screen.
 
 		// Start the mainFrame!
 		mainFrame.setVisible(true);		
