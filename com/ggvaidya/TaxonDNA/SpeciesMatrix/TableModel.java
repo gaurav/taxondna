@@ -72,8 +72,20 @@ public class TableModel implements javax.swing.table.TableModel {
 		seq_names = seqGrid.getSequences();
 		col_names = seqGrid.getColumns();
 
+		// update the current width of the leftmost column to
+		// the size of the largest sequence name
+		Iterator i = seq_names.iterator();
+		int largest_length = 0;
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+
+			if(seqName.length() > largest_length)
+				largest_length = seqName.length();
+		}
+//		matrix.setColumnWidthByChars(0, largest_length);
+
 		// let everybody know
-		Iterator i = listeners.iterator();
+		i = listeners.iterator();
 		while(i.hasNext()) {
 			TableModelListener l = (TableModelListener)i.next();	
 
