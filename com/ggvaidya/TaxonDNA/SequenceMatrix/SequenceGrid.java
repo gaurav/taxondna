@@ -49,7 +49,7 @@
 
 /*
  *
- *  SpeciesMatrix
+ *  SequenceMatrix
  *  Copyright (C) 2006 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
@@ -68,7 +68,7 @@
  *  
  */
 
-package com.ggvaidya.TaxonDNA.SpeciesMatrix;
+package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -85,7 +85,7 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceGrid {
-	SpeciesMatrix	matrix 		= null;
+	SequenceMatrix	matrix 		= null;
 	
 	Hashtable	hash_cols	= new Hashtable();		// the master hash:
 									// Hashtable[colName => String] = Hashtable[seqName => String] = Sequence
@@ -97,10 +97,10 @@ public class SequenceGrid {
 //	1.	CONSTRUCTOR.
 //	
 	/**
-	 * Constructor. Gives us a SpeciesMatrix to play with,
+	 * Constructor. Gives us a SequenceMatrix to play with,
 	 * if we want it.
 	 */
-	public SequenceGrid(SpeciesMatrix matrix) {
+	public SequenceGrid(SequenceMatrix matrix) {
 		this.matrix = matrix;
 	}
 
@@ -443,7 +443,7 @@ public class SequenceGrid {
 			writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
 			writer.println("#NEXUS");
-			writer.println("[Written by SpeciesMatrix on " + new Date() + "]");
+			writer.println("[Written by " + matrix.getName() + " on " + new Date() + "]");
 
 			writer.println("");
 
@@ -565,6 +565,94 @@ public class SequenceGrid {
 	}
 
 	private String getNexusName(String x) {
+		// we don't worry about duplicates because:
+		// 1.	we don't particularly care about taxon name lengths (atleast, not right now)
+		// 2.	
+		//
+		return x.replaceAll("'", "''").replace(' ', '_');
+	}	
+
+	/**
+	 * Export the current matrix as TNT. Note that this function might
+	 * change or move somewhere else -- I haven't decided yet.
+	 *
+	 * TODO: interleaved: we really ought to output this as [ACTG], etc.
+	 *
+	 * @throws IOException if there was a problem writing this file
+	 */
+	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
+		boolean writeAnyway = false;
+		StringBuffer buff_sets = new StringBuffer();
+
+		if(getColumns().size() > 32) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Too many files!",
+					"According to the manual, TNT can only handle 32 groups. You have " + getColumns().size() + " groups. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to write out only the first 32 groups, and ignore the rest.",
+					MessageBox.MB_YESNO);
+
+			if(mb.showMessageBox() == MessageBox.MB_YES)
+				writeAnyway = true;
+		}
+
+		if(delay != null)
+			delay.begin();		
+
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+
+		writer.print("nstates dna;");
+		writer.print("xread\n'Exported by " + matrix.getName() + " on " + new Date() + "'\n");
+		writer.println(total_length + " " + getSequencesCount());
+
+		Iterator i_rows = getSequences().iterator();
+		int count_rows = 0;
+		int interval = getSequences().size() / 100;
+		if(interval == 0)
+			interval = 1;
+		while(i_rows.hasNext()) {
+			if(count_rows % interval == 0)
+				delay.delay(count_rows, interval);
+
+			count_rows++;
+
+			String seqName = (String) i_rows.next();
+			Sequence seq_interleaved = null;
+			int length = 0;
+
+			writer.print(getNexusName(seqName) + " ");
+
+			Iterator i_cols = getColumns().iterator();
+			while(i_cols.hasNext()) {
+				String colName = (String) i_cols.next();
+				Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
+				Sequence seq = null;
+
+				if(hash_seqs.get(seqName) != null)
+					seq = (Sequence) hash_seqs.get(seqName);
+				else
+					seq = Sequence.makeEmptySequence(getColumnLength(colName));
+
+				length += seq.getLength();
+
+				writer.print(seq.getSequence());
+			}
+
+			writer.println();
+		}
+
+		writer.println(";");
+		
+//		writer.println(buff_sets);
+
+		writer.flush();
+		writer.close();
+
+		// shut down delay 
+		if(delay != null)
+			delay.end();
+	}	
+
+	private String getTNTName(String x) {
 		// we don't worry about duplicates because:
 		// 1.	we don't particularly care about taxon name lengths (atleast, not right now)
 		// 2.	
