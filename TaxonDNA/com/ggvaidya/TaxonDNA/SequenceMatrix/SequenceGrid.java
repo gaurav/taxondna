@@ -74,6 +74,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
@@ -85,6 +86,10 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceGrid {
+	// these sort modes apply to the sequences
+	public static final int		SORT_BYNAME =		0;		// sort names alphabetically
+	public static final int		SORT_BYSECONDNAME =	1;		// sort names alphabetically
+
 	SequenceMatrix	matrix 		= null;
 	
 	Hashtable	hash_cols	= new Hashtable();		// the master hash:
@@ -92,6 +97,11 @@ public class SequenceGrid {
 	Hashtable 	seq_names	= new Hashtable();		// Hashtable[seqName => String]	= Integer(count_cols)
 	Hashtable	col_lengths	= new Hashtable();		// Hashtable[colName => String] = Integer(length)
 	int		total_length 	= 0;
+
+	int		rowSortMethod 	= SORT_BYNAME;
+
+	Vector		vec_rows	= null;
+	Vector		vec_cols	= null;
 
 //
 //	1.	CONSTRUCTOR.
@@ -109,16 +119,12 @@ public class SequenceGrid {
 //
 	/**	Returns a vector of all the column names */
 	public Vector getColumns() {
-		Vector v = new Vector(hash_cols.keySet());
-		Collections.sort(v);
-		return v;
+		return vec_cols;
 	}
 
 	/**	Returns a vector of all the sequence names */
 	public Vector getSequences() {
-		Vector v = new Vector(seq_names.keySet());
-		Collections.sort(v);
-		return v;
+		return vec_rows;
 	}
 
 	/**	Returns the number of sequence names */
@@ -149,6 +155,14 @@ public class SequenceGrid {
 		Integer i = (Integer) col_lengths.get(colName);
 		if(i == null) return -1;
 		return i.intValue();
+	}
+
+	/**
+	 * 	Resort the table into the order specified by the constants.
+	 */
+	public void resort(int sort) {
+		rowSortMethod = sort;
+		updateDisplay();
 	}
 
 //
@@ -280,11 +294,62 @@ public class SequenceGrid {
 	}
 
 	/**
+	 * A sort Comparator which sorts a collection of Strings by - of all things - their SECOND name. Such is life.
+	 */
+	private class SortByName implements Comparator {
+		public int 	compare(Object o1, Object o2) {
+			String str1 = (String) o1;
+			String str2 = (String) o2;
+
+			String str1_second = null;
+			String str2_second = null;
+
+			Pattern p = Pattern.compile("\\w+\\s+(\\w+)\\b");	// \b = word boundary
+
+			Matcher m = p.matcher(str1);
+			if(m.lookingAt())
+				str1_second = m.group(1);
+			
+			m = p.matcher(str2);
+			if(m.lookingAt())
+				str2_second = m.group(1);
+
+			if(str1_second == null) {
+				if(str2_second == null)
+					return 0;		// identical
+				else 
+					return +1;		// str2 is valid
+			}
+
+			if(str2_second == null)
+				return -1;			// str1 is valid
+
+			return str1_second.compareTo(str2_second);
+		}
+	}
+
+	/**
 	 * Our private let-everybody-know-we've-changed function.
 	 * Since only one object cares (TableModel), this is
 	 * ridiculously easy.
 	 */
 	private void updateDisplay() {
+		// figure out cols
+		vec_cols = new Vector(hash_cols.keySet());
+		Collections.sort(vec_cols);
+
+		// figure out rows
+		vec_rows = new Vector(seq_names.keySet());
+		switch(rowSortMethod) {
+			case SORT_BYSECONDNAME:
+				Collections.sort(vec_rows, new SortByName());
+				break;
+			case SORT_BYNAME:
+			default:
+				Collections.sort(vec_rows);
+		}
+
+		// update the display on the screen
 		matrix.updateDisplay();	
 	}
 

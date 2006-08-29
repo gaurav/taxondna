@@ -51,7 +51,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class SequenceMatrix implements WindowListener, ActionListener, DropTargetListener {
+public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener {
 	// SequenceMatrix version number 
 	private static String 	version 		= "0.2.2";
 	
@@ -257,6 +257,27 @@ public class SequenceMatrix implements WindowListener, ActionListener, DropTarge
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {}
 
+	private CheckboxMenuItem last_chmi = null;
+	/**
+	 * An item listener, used for the sort sub-menu
+	 */
+	public void	itemStateChanged(ItemEvent e) {
+		CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();
+
+		if(last_chmi != null)
+			last_chmi.setState(false);
+
+		String label = chmi.getLabel();
+		if(label.equals("By name"))
+			seqgrid.resort(SequenceGrid.SORT_BYNAME);
+
+		if(label.equals("By second name"))
+			seqgrid.resort(SequenceGrid.SORT_BYSECONDNAME);
+
+		chmi.setState(true);
+		last_chmi = chmi;
+	}
+
 //
 //	4.	FUNCTIONAL CODE. It does things.
 //
@@ -351,6 +372,26 @@ public class SequenceMatrix implements WindowListener, ActionListener, DropTarge
 		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
 		menubar.add(file);
+		
+		// View menu
+		Menu	view		=	new Menu("View");
+		
+		// Sort sub-menu
+		Menu 	sort		=	new Menu("Sort all sequences");
+
+		CheckboxMenuItem chmi = new CheckboxMenuItem("By name", true);
+		chmi.addItemListener(this);
+		sort.add(chmi);
+		last_chmi = chmi;		// primes the clear-the-last-box option
+		chmi = new CheckboxMenuItem("By second name", false);
+		chmi.addItemListener(this);
+		sort.add(chmi);
+
+		sort.addActionListener(this);
+		view.add(sort);
+
+		view.addActionListener(this);
+		menubar.add(view);
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
