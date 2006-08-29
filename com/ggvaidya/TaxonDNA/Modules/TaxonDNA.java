@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// the current TaxonDNA version number 
-	private static String 	version 		= "0.9.4.3";
+	private static String 	version 		= "0.9.4.4";
 
 	// the following is information specific to this particular TaxonDNA.
 	private SequenceList 	sequences		= null;
