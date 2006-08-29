@@ -646,8 +646,7 @@ public class SequenceGrid {
 	 * @throws IOException if there was a problem writing this file
 	 */
 	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
-		boolean writeAnyway = false;
-		StringBuffer buff_sets = new StringBuffer();
+		boolean writeAnyway = true;
 
 		if(getColumns().size() > 32) {
 			MessageBox mb = new MessageBox(
@@ -656,8 +655,34 @@ public class SequenceGrid {
 					"According to the manual, TNT can only handle 32 groups. You have " + getColumns().size() + " groups. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to write out only the first 32 groups, and ignore the rest.",
 					MessageBox.MB_YESNO);
 
+			writeAnyway = false;
 			if(mb.showMessageBox() == MessageBox.MB_YES)
 				writeAnyway = true;
+		}
+		
+		// set up the 'sets' buffer
+		StringBuffer buff_sets = new StringBuffer();
+		if(writeAnyway) {
+			buff_sets.append("xgroup\n");
+
+			Iterator i = getColumns().iterator();	
+			int at = 0;
+			int colid = 0;
+			while(i.hasNext()) {
+				String colName = (String) i.next();
+
+				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+				colid++;
+
+				for(int x = 0; x < getColumnLength(colName); x++) {
+					buff_sets.append(at + " ");
+					at++;
+				}
+				
+				buff_sets.append("\n");
+			}
+			
+			buff_sets.append("\n;\n\n");
 		}
 
 		if(delay != null)
@@ -705,9 +730,9 @@ public class SequenceGrid {
 			writer.println();
 		}
 
-		writer.println(";");
+		writer.println(";\n");
 		
-//		writer.println(buff_sets);
+		writer.println(buff_sets);
 
 		writer.flush();
 		writer.close();
