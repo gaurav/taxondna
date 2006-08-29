@@ -7,7 +7,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005, 2006
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -54,10 +54,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 
 	private Button 		btn_Export_Results = new Button("Export all results");
 	private Button 		btn_Export_Fasta = new Button("Export this block as FASTA");
-
-	private StringBuffer	str_halftable = new StringBuffer();
-	private StringBuffer 	str_intra = new StringBuffer();
-	private StringBuffer 	str_inter = new StringBuffer();
 
 	private int 		step_width = 300;
 	private double		ambiguous_percent = 1;
@@ -253,7 +249,29 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		Button btn = null;
 
 		if(evt.getSource().equals(btn_Calculate)) {
-			new Thread(this, "LargestCompleteBlock").start();			
+			btn = (Button) evt.getSource();
+
+			if(btn.getLabel().equals("Clear results")) {
+				// unfreeze controls
+				check_wellDefinedOnly.setEnabled(true);
+				tf_minimumBlockLength.setEnabled(true);
+				tf_ambiguousLimit.setEnabled(true);
+
+				// clear results
+				list_results.removeAll();
+				ta_matches.setText("");
+
+				// restore button
+				btn.setLabel("Calculate!");
+			} else {
+				// freeze controls
+				check_wellDefinedOnly.setEnabled(false);
+				tf_minimumBlockLength.setEnabled(false);
+				tf_ambiguousLimit.setEnabled(false);
+
+				btn.setLabel("Clear results");
+				new Thread(this, "LargestCompleteBlock").start();			
+			}
 			return;	
 		}
 
@@ -291,12 +309,13 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 					// NOT MY FAULT DON'T BLAME ME
 					//
 					// __USES_LIST_STRING__
+					//
 					str = str.replaceFirst(" to ", ",");
 					str = str.replaceFirst(": ", ",");
-					str = str.replaceFirst(" sequences \\(", ",");
-					str = str.replaceFirst(" defined\\) across ", ",");
+					str = str.replaceFirst(" sequences, ", ",");
+					str = str.replaceFirst(" defined sequences across ", ",");
 					str = str.replaceFirst(" species \\(with ", ",");
-				       	str = str.replaceFirst(" species having more than one sequence in the dataset\\)","");
+				       	str = str.replaceFirst(" non-singleton sequences\\)","");
 
 					pw.println(str);
 				}
@@ -406,9 +425,9 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 							//	- no of species completely in this block
 							//	- no of non-singleton species completely in this block
 		int no_sequences = 0;
-		int no_sequences_defined = 0;
 		int no_species = 0;
 		int no_singletons = 0;
+		int no_sequences_defined = 0;
 
 		sl.lock();
 
@@ -457,6 +476,14 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 					continue;
 
 				// if we're here, 'seq' is valid!
+				if(check_wellDefinedOnly.getState()) {
+					// skip undefineds!
+					if(no_ambiguous_bases > ambiguous_allowed) {
+						continue;
+					}
+				}
+				
+				// if we're here, we need to add this sequences to the statistics
 				no_sequences++;
 
 				if(no_ambiguous_bases <= ambiguous_allowed)
@@ -486,9 +513,9 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			}
 
 			results[0] = no_sequences;
-			results[1] = no_sequences_defined;
-			results[2] = no_species;
-			results[3] = no_species - no_singletons;
+			results[1] = no_species;
+			results[2] = no_species - no_singletons;
+			results[3] = no_sequences_defined;
 
 			return results;
 
@@ -557,18 +584,30 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			interval = 1;
 
 		list_results.removeAll();
+		String defined = "";
+		if(check_wellDefinedOnly.getState()) {
+			// ONLY the defined sequences	
+			defined = " defined";
+		}
+
 		for(int x = 0; x < no_of_entries; x++) {
 			int results[] = sequencesInBlock(sl, x, x + step_width, ambiguous_allowed);
-			int score = results[0];
-			int score_defined = results[1];
-			int species = results[2];
-			int non_singletons = results[3];
-			
+			int sequences = results[0];
+			int species = results[1];
+			int non_singletons = results[2];
+			int sequences_defined = results[3];
+
+			if(!check_wellDefinedOnly.getState()) {
+				// if we're NOT in 'defined only' mode
+				// we should report the number of defined as well
+				defined = " sequences, " + sequences_defined + " defined";
+			}
+
 			// We add 1 to it to make it *indices* and not *offsets*
 			//
 			// if you edit this line, please search for __USES_LIST_STRING__ and
 			// fix those too.
-			list_results.add((x + 1) + " to " + (x + step_width) + ": " + score + " sequences (" + score_defined + " defined) across " + species + " species (with " + non_singletons + " species having more than one sequence in the dataset)");
+			list_results.add((x + 1) + " to " + (x + step_width) + ": " + sequences + defined + " sequences across " + species + " species (with " + non_singletons + " non-singleton sequences)");
 
 			// do the delay
 			if(x % interval == 0)
