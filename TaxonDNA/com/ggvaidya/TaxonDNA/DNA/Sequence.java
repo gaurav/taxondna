@@ -1480,7 +1480,11 @@ public class Sequence  implements Comparable, Testable {
 	public void setProperty(String name, Object value) {
 		if(properties == null)
 			properties = new Properties();
-		properties.put(name, value);
+
+		if(value == null)
+			properties.remove(name);
+		else
+			properties.put(name, value);
 	}
 
 	/**
