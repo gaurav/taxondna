@@ -122,7 +122,14 @@ public class TableModel implements javax.swing.table.TableModel {
 		if(columnIndex == 0)
 			return "";		// upper left hand box
 
-		return (String) col_names.get(columnIndex - 1) + " (bp)";
+		return (String) col_names.get(columnIndex - 1);
+	}
+
+	/**
+	 * Convenience function.
+	 */
+	public String getRowName(int rowIndex) {
+		return (String) getValueAt(rowIndex, 0);
 	}
 
 	/**
@@ -143,6 +150,8 @@ public class TableModel implements javax.swing.table.TableModel {
 
 		String seqName 	= (String) seq_names.get(rowIndex);
 		String colName  = (String) col_names.get(columnIndex - 1);
+		if(seqGrid.isCancelled(colName, seqName))
+			return "(CANCELLED)";
 		Sequence seq 	= seqGrid.getSequence(colName, seqName);
 
 		// is it perhaps not defined for this column?

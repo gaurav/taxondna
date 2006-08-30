@@ -51,7 +51,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener {
+public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
 	// SequenceMatrix version number 
 	private static String 	version 		= "0.2.2";
 	
@@ -278,6 +278,49 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		last_chmi = chmi;
 	}
 
+	// MouseListener: for listening in on the Table model
+	private PopupMenu popupMenu = null;
+	public void mouseClicked(MouseEvent e) {
+		if(e.getSource().equals(mainTable)) {
+			// check for right clicks
+			if(e.isPopupTrigger())
+				rightClick(e);
+
+			// check for double clicks
+			if(e.getClickCount() == 2)
+				doubleClick(e);
+		}
+	}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {} 
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		if(e.getSource().equals(mainTable)) {
+			if(e.isPopupTrigger())
+				rightClick(e);
+		}	
+	}
+
+	public void rightClick(MouseEvent e) {
+		/*
+		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
+		*/
+	}
+
+	public void doubleClick(MouseEvent e) {
+		int row = mainTable.rowAtPoint(e.getPoint());
+		int col = mainTable.columnAtPoint(e.getPoint());
+
+		if(row != -1 && col != -1 && col != 0) {
+			// it's, like, valid, dude.
+			seqgrid.toggleCancelled(
+					tableModel.getColumnName(col),
+					tableModel.getRowName(row)
+			);
+		}
+
+	}
+
 //
 //	4.	FUNCTIONAL CODE. It does things.
 //
@@ -313,6 +356,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		tableModel = new TableModel(this);
 		mainTable = new JTable(tableModel);
+		mainTable.addMouseListener(this);
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
 		// don't blame me and change them if you like, etc.
@@ -377,7 +421,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		Menu	view		=	new Menu("View");
 		
 		// Sort sub-menu
-		Menu 	sort		=	new Menu("Sort all sequences");
+		Menu 	sort		=	new Menu("Sort all sequences ");
 
 		CheckboxMenuItem chmi = new CheckboxMenuItem("By name", true);
 		chmi.addItemListener(this);
@@ -413,6 +457,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		help.addActionListener(this);
 		menubar.add(help);
 		menubar.setHelpMenu(help);
+		
+		// Creates a popup menu for later use
+		/*
+		popupMenu =  PopupMenu("Matrix options");
+
+		mainFrame.add(popupMenu);
+		*/
 
 		return menubar;
 	}
