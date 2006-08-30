@@ -117,6 +117,43 @@ public class SequenceGrid {
 //
 //	X.	GETTERS. Code to report on things.
 //
+
+	/**	Returns the Sequence at colName, sequenceName.
+	 * 	It is pretty important that you use this, since
+	 * 	it handles 'cancelled' sequences, returning
+	 * 	'null' on them.
+	 */
+	public Sequence getSequence(String colName, String seqName) {
+		Hashtable h = (Hashtable) hash_cols.get(colName);
+		if(h == null) return null;
+		Sequence seq = (Sequence) h.get(seqName);
+		
+		if(seq == null)
+			return null;
+
+		if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled") != null)
+			return null;
+
+		return seq;
+	}
+
+	/**
+	 * Returns true if this sequence has been 'cancelled'.
+	 */
+	public boolean isCancelled(String colName, String seqName) {
+		Hashtable h = (Hashtable) hash_cols.get(colName);
+		if(h == null) return false;
+		Sequence seq = (Sequence) h.get(seqName);
+		
+		if(seq == null)
+			return false;
+
+		if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled") != null)
+			return true;
+
+		return false;
+	}
+
 	/**	Returns a vector of all the column names */
 	public Vector getColumns() {
 		return vec_cols;
@@ -131,15 +168,7 @@ public class SequenceGrid {
 	public int getSequencesCount() {
 		return seq_names.keySet().size();
 	}
-	
 
-	/**	Returns the Sequence at the specified (colName, seqName) */
-	public Sequence getSequence(String colName, String seqName) {
-		Hashtable h = (Hashtable) hash_cols.get(colName);
-		if(h == null) return null;
-		return (Sequence) h.get(seqName);
-	}
-	
 	/**	Returns the numbers of Sequences in this 'row' */
 	public int getSequenceCountByRow(String seqName) {
 		Integer i = (Integer) seq_names.get(seqName);  
@@ -163,6 +192,27 @@ public class SequenceGrid {
 	public void resort(int sort) {
 		rowSortMethod = sort;
 		updateDisplay();
+	}
+//
+// 	X.	SETTERS
+//
+	/**
+	 *	Toggles 'cancelled' state on the specified sequence.
+	 */
+	public void toggleCancelled(String colName, String seqName) {
+		Hashtable h = (Hashtable) hash_cols.get(colName);
+		if(h == null) return;
+		Sequence seq = (Sequence) h.get(seqName);
+
+		if(seq == null)
+			return;
+
+		if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled") == null)
+			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", new Object());
+		else
+			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", null);
+		
+		updateDisplay();		// TODO: indicate ONLY a single-cell change
 	}
 
 //
@@ -366,20 +416,20 @@ public class SequenceGrid {
 			String colName = (String) i_cols.next();	
 			Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
 
-			if(hash_seqs.get(seqOld) != null) {
+			if(getSequence(colName, seqOld) != null) {
 				// replace
-				Sequence old = (Sequence) hash_seqs.get(seqOld);
+				Sequence old = getSequence(colName, seqOld);
 				hash_seqs.remove(seqOld);
 				
-				if(hash_seqs.get(seqNew) != null) {
+				if(getSequence(colName, seqNew) != null) {
 					// the new name already exists!
-					Sequence seq = (Sequence) hash_seqs.get(seqNew);	
+					Sequence seq = getSequence(colName, seqNew);
 					
 					if(old.getActualLength() > seq.getActualLength()) {
-						buff_replaced.append("\t" + seqNew + " was replaced by the sequence formerly known as " + seqOld + ", since it is longer.\n");
+						buff_replaced.append("\tIn column '" + colName + ": " + seqNew + " was replaced by the sequence formerly known as " + seqOld + ", since it is longer.\n");
 						hash_seqs.put(seqNew, old);
 					} else {
-						buff_replaced.append("\t" + seqOld + " was removed, since " + seqNew + " is longer than it is.\n");
+						buff_replaced.append("\tIn column '" + colName + ": " + seqOld + " was removed, since " + seqNew + " is longer than it is.\n");
 						// don't do anything - the sequence known as seqNew wins
 					}
 				} else {
@@ -540,17 +590,15 @@ public class SequenceGrid {
 				Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
 				int colLength = getColumnLength(colName);
 				
-				colName = fixColumnName(colName);
-
 				// first of all, write the column name in as a comment (if in block mode)
-				writer.println("[beginning " + colName + "]");
+				writer.println("[beginning " + fixColumnName(colName) + "]");
 
 				// then loop over all the sequences
 				int interval = getSequencesCount();
 				Iterator i_seqs = getSequences().iterator();
 				while(i_seqs.hasNext()) {
 					String seqName = (String) i_seqs.next();
-					Sequence seq = (Sequence) hash_seqs.get(seqName); 
+					Sequence seq = getSequence(colName, seqName); 
 
 					if(seq == null)
 						seq = Sequence.makeEmptySequence(colLength);
@@ -558,7 +606,7 @@ public class SequenceGrid {
 					writer.println(getNexusName(seqName) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
 				}
 				
-				writer.println("[end of " + colName + "]");
+				writer.println("[end of " + fixColumnName(colName) + "]");
 				writer.println("");	// leave a blank line
 			}
 
@@ -580,11 +628,9 @@ public class SequenceGrid {
 				while(i_cols.hasNext()) {
 					String colName = (String) i_cols.next();
 					Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
-					Sequence seq = null;
+					Sequence seq = getSequence(colName, seqName);
 
-					if(hash_seqs.get(seqName) != null)
-						seq = (Sequence) hash_seqs.get(seqName);
-					else
+					if(seq == null)
 						seq = Sequence.makeEmptySequence(getColumnLength(colName));
 
 					length += seq.getLength();
@@ -715,11 +761,9 @@ public class SequenceGrid {
 			while(i_cols.hasNext()) {
 				String colName = (String) i_cols.next();
 				Hashtable hash_seqs = (Hashtable) hash_cols.get(colName);
-				Sequence seq = null;
-
-				if(hash_seqs.get(seqName) != null)
-					seq = (Sequence) hash_seqs.get(seqName);
-				else
+				Sequence seq = getSequence(colName, seqName); 
+				
+				if(seq == null)
 					seq = Sequence.makeEmptySequence(getColumnLength(colName));
 
 				length += seq.getLength();
