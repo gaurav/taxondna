@@ -53,7 +53,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
 	// SequenceMatrix version number 
-	private static String 	version 		= "0.2.2";
+	private static String 	version 		= "0.2.3";
 	
 	// The following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
