@@ -154,7 +154,7 @@ public class NexusFile implements FormatHandler {
 		        tok.wordChars('-','-');
 		        tok.wordChars('0','9');
 
-
+		        tok.wordChars('|','|');		// this is officially allowed in Nexus, and pretty convenient for us
 			tok.wordChars('_', '_');
 					// we need to replace this manually. they form one 'word' in NEXUS.
 
