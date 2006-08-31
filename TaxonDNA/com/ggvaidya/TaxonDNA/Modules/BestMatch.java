@@ -48,7 +48,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 	private Button		btn_recalculate = new Button(" Calculate ");
 	private Button		btn_Copy;
-	private Button		btn_threshold = new Button("From Pairwise Summary");
+	private Button		btn_threshold = new Button("Compute from Pairwise Summary");
 
 	private boolean		processingDone = false;
 	private double		threshold = 0;

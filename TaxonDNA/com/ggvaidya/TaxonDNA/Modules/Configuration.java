@@ -34,8 +34,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Configuration extends Panel implements UIExtension, ActionListener, FocusListener {
-	private static final long serialVersionUID = 2613697150040991087L;
-	
 	TaxonDNA 		taxonDNA;
 	SequenceList		set;
 	Panel 			settings = 	new Panel();	// Settings panel
@@ -248,7 +246,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	 * From UIExtension, add commands. We'll add one called "Configuration.
 	 */
 	public boolean addCommandsToMenu(Menu menu) {
-		menu.add("Change Settings");
+		menu.add("Configuration");
 		menu.addActionListener(this);
 
 		return true;
