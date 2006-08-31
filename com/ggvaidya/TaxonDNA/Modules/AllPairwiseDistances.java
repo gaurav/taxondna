@@ -68,6 +68,19 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource().equals(btn_Calculate)) {
+			if(
+					finp_allDistances.getFile() == null &&
+					finp_intraDistances.getFile() == null &&
+					finp_interDistances.getFile() == null
+			) {
+				MessageBox mb = new MessageBox(
+						taxonDNA.getFrame(),
+						"No files specified!",
+						"You did not specify a file to write distances into. So: I did nothing."
+						);
+				mb.go();
+				return;
+			}
 			new Thread(this, "AllPairwiseDistances").start();
 		}
 	}
