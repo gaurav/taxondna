@@ -54,11 +54,11 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 
 		rl.add(new Label("You can leave any of the following fields blank if you do not need that output"),
 				RightLayout.FILL_2 | RightLayout.STRETCH_X);
-		finp_allDistances = new FileInputPanel("Print all pairwise distances: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
+		finp_allDistances = new FileInputPanel("Save all pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_allDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
-		finp_intraDistances = new FileInputPanel("Print all intraspecific pairwise distances: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
+		finp_intraDistances = new FileInputPanel("Save all intraspecific pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_intraDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
-		finp_interDistances = new FileInputPanel("Print all interspecific pairwise distances: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
+		finp_interDistances = new FileInputPanel("Save all interspecific pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_interDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
 		btn_Calculate.addActionListener(this);
 		rl.add(btn_Calculate, RightLayout.NEXTLINE | RightLayout.FILL_2); 

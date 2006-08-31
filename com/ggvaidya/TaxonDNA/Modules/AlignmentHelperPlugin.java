@@ -64,8 +64,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionListener {	
-	private static final long serialVersionUID = 8416632223894402546L;
-
 	private TaxonDNA	taxonDNA;
 
 	// instructions will be mostly handled in labels
@@ -109,7 +107,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 
 		// layout the title
-		Label title = new Label("AlignmentHelper Mapping");
+		Label title = new Label("Clustal Mapping");
 		title.setFont(new Font("Serif", Font.PLAIN, 24));
 		cons.gridx = 0;
 		cons.gridy = 0;
@@ -120,14 +118,14 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		cons.gridx = 0;
 		cons.gridy = 1;
 		cons.gridwidth = 4;
-		gridBag.add(new Label("1. Export sequences as input for AlignmentHelper"), cons);
+		gridBag.add(new Label("1. Export sequences as input for Clustal"), cons);
 
 		// layout components for part 1: input
 		cons.gridy = 2; 
 		cons.gridwidth = 1;
 
 		cons.gridx = 1;
-		gridBag.add(new Label("AlignmentHelper input:"), cons);
+		gridBag.add(new Label("Clustal input:"), cons);
 
 		cons.gridx = 2;
 		cons.weightx = 0.5d;
@@ -169,14 +167,14 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		cons.gridy = 5;
 		cons.gridx = 0;
 		cons.gridwidth = 4;
-		gridBag.add(new Label("2. Import results back from AlignmentHelper"), cons);
+		gridBag.add(new Label("2. Import results back from Clustal"), cons);
 		
 		// layout components for part 2: input
 		cons.gridy = 6; 
 		cons.gridwidth = 1;
 
 		cons.gridx = 1;
-		gridBag.add(new Label("AlignmentHelper output:"), cons);
+		gridBag.add(new Label("Clustal output:"), cons);
 
 		cons.gridx = 2;
 		cons.weightx = 0.5d;
@@ -478,13 +476,13 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			if(id.equals("")) {
 				// there is no GI
 				if(!warned) {
-					mb = new MessageBox(taxonDNA.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create AlignmentHelper input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
+					mb = new MessageBox(taxonDNA.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create Clustal input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
 					if(mb.showMessageBox() == MessageBox.MB_YES) {
 						// yes! go ahead
 						warned = true;
 					} else {
 						// no ... so, don't process at all.
-						mb = new MessageBox(taxonDNA.getFrame(), "AlignmentHelper export failed.", "I can't export files for AlignmentHelper without assigning unique identifiers to each sequence. Please re-run if you would like to export files for AlignmentHelper.");
+						mb = new MessageBox(taxonDNA.getFrame(), "Clustal export failed.", "I can't export files for Clustal without assigning unique identifiers to each sequence. Please re-run if you would like to export files for Clustal.");
 						mb.go();
 
 						throw new RuntimeException();
@@ -558,7 +556,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 						id = "U" + m.group(1);
 					else {
 						System.err.println("Sequence: " + seq.getFullName());
-						throw new RuntimeException("Something wrong with this program in AlignmentHelperPlugin:exportSequenceSet()");
+						throw new RuntimeException("Something wrong with this program in Clustal:exportSequenceSet()");
 					}
 				}
 
@@ -582,11 +580,11 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				no++;
 			}
 		
-			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Success!", no + " sequences were exported successfully. You may now run AlignmentHelper on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
+			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Success!", no + " sequences were exported successfully. You may now run Clustal on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
 			mb.go();
 
 		} catch(IOException e) {
-			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the AlignmentHelper input and the map file? The technical description of this error is: " + e);
+			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the Clustal input and the map file? The technical description of this error is: " + e);
 			mb.go();
 			return;
 		} finally {
@@ -675,9 +673,9 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 	}
 	
 	// UIExtension stuff
-	public String getShortName() { return "AlignmentHelper Mapping"; }
+	public String getShortName() { return "Clustal Mapping"; }
 	
-	public String getDescription() { return "Produces files for, and returns output from, AlignmentHelper"; }
+	public String getDescription() { return "Produces files for, and returns output from, Clustal"; }
 	
 	public Frame getFrame() { return null; }
 	

@@ -38,8 +38,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BlockAnalysis extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
-	private static final long serialVersionUID = 679952181938090504L;
-	
 	private TaxonDNA	taxonDNA = null;
 	private SequenceList	set = null;
 
@@ -48,7 +46,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 	private Button		btn_recalculate = new Button(" Calculate ");
 	private Button		btn_Copy;
-	private Button		btn_threshold = new Button("From Pairwise Summary");
+	private Button		btn_threshold = new Button("Compute from Pairwise Summary");
 
 	private boolean		processingDone = false;
 	private double		threshold = 0;
