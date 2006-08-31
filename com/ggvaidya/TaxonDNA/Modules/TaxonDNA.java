@@ -288,11 +288,24 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		}
 		
 		//
+		// Help -> Citing TaxonDNA. Gives information
+		// for citing TaxonDNA
+		//
+		if(cmd.equals("Citing TaxonDNA")) {
+			MessageBox mb = new MessageBox(mainFrame,
+					"Citing TaxonDNA",
+					"You should cite TaxonDNA as follows:\n\t"
+			);
+
+			mb.go();
+		}
+
+		//
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
 		//
-		if(cmd.equals("About")) {
+		if(cmd.equals("About TaxonDNA")) {
 			String copyrightNotice = new String("TaxonDNA " + version + ", Copyright (C) 2005 Gaurav Vaidya. \nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
@@ -301,7 +314,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 					+ "Thanks to Kathy for single-handedly figuring out the reason for the 'Cluster' bug, now fixed!\n\n"
 					+ "This program was written with Vim (http://vim.org), with some refactoring assistance from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/). I use BrowserLauncher (http://browserlauncher.sf.net/) to handle opening a website in a cross-platform way."
 			);
-			mb.showMessageBox();
+			mb.go();
 		}
 	}
 
@@ -857,7 +870,8 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		
 		// Help menu
 		Menu	help		=	new Menu("Help");
-		help.add("About");
+		help.add("Citing TaxonDNA");
+		help.add("About TaxonDNA");
 		help.addActionListener(this);
 		menubar.add(help);
 		menubar.setHelpMenu(help);
