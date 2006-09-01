@@ -294,7 +294,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		if(cmd.equals("Citing TaxonDNA")) {
 			MessageBox mb = new MessageBox(mainFrame,
 					"Citing TaxonDNA",
-					"You should cite TaxonDNA as follows:\n\t"
+					"You should cite TaxonDNA as follows:\n\t" + getCitation()
 			);
 
 			mb.go();
@@ -677,6 +677,17 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 
 		return null;
 	}	
+
+	/**
+	 *	Returns the citation for the program this code is found in.
+	 */
+	public String getCitation() {
+		return "TODO: Insert citation here";
+	}
+
+//
+//	X.	CONFIGURATION ETC.
+//
 	
 	/**
 	 * Add UIExtensions to be loaded in this function.
