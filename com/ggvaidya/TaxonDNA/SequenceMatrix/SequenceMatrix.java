@@ -166,7 +166,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.equals("Export as NEXUS"))
 			fileMan.exportAsNexus();
 
-		// INSERT COMMENT HERE <---------------- TODO
+		//
+		// Export -> Export as TNT
+		// Exports the current dataset in TNT.
+		//
 		if(cmd.equals("Export as TNT"))
 			fileMan.exportAsTNT();
 
@@ -178,11 +181,23 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			prefs.setVisible(true);	// modal!
 
 		//
+		// Help -> Citing SequenceMatrix. 
+		//
+		if(cmd.equals("Citing SequenceMatrix")) {
+			MessageBox mb = new MessageBox(mainFrame, 
+					"Citing SequenceMatrix", 
+					"You may cite this program as follows:\n\t" + getCitation()
+			);
+			mb.showMessageBox();
+		}		
+		
+
+		//
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
 		//
-		if(cmd.equals("About")) {
+		if(cmd.equals("About SequenceMatrix")) {
 			String copyrightNotice = new String(getName() + ", Copyright (C) 2006 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
@@ -453,7 +468,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// Help menu
 		Menu	help		=	new Menu("Help");
-		help.add("About");
+		help.add("Citing SequenceMatrix");
+		help.add("About SequenceMatrix");
 		help.addActionListener(this);
 		menubar.add(help);
 		menubar.setHelpMenu(help);
@@ -522,5 +538,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 */
 	public TableModel getTableModel() {
 		return tableModel;
+	}
+
+	/**
+	 * Returns the citation used by SequenceMatrix.
+	 */
+	public String getCitation() {
+		return "TODO: Write citation here";
 	}
 }
