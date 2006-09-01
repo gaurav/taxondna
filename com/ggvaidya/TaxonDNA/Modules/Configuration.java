@@ -72,12 +72,14 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		
 		// put in a title
 		//
+		/*
 		cons.gridx = 0;
 		cons.gridy = 0;
 		cons.gridwidth = 3;
 		Label label = new Label("Configuration");
 		label.setFont(new Font("Serif", Font.PLAIN, 24));
 		settings.add(label, cons);
+		*/
 
 		cons.gridx = 0;
 		cons.gridy = 1;

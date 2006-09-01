@@ -107,12 +107,14 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 
 		// layout the title
+		/*
 		Label title = new Label("Clustal Mapping");
 		title.setFont(new Font("Serif", Font.PLAIN, 24));
 		cons.gridx = 0;
 		cons.gridy = 0;
 		cons.gridwidth = 4;
 		gridBag.add(title, cons);
+		*/
 
 		// layout part 1 
 		cons.gridx = 0;
