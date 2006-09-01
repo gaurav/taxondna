@@ -52,13 +52,16 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 		RightLayout rl = new RightLayout(this);
 		setLayout(rl);
 
-		rl.add(new Label("You can leave any of the following fields blank if you do not need that output"),
-				RightLayout.FILL_2 | RightLayout.STRETCH_X);
-		finp_allDistances = new FileInputPanel("Save all pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
+		rl.add(new Label("WARNING: This calculation can take a very long time!"), RightLayout.FILL_2 | RightLayout.STRETCH_X); 
+		rl.add(new Label("This module will only write out the half-table (if sequence X is compared with Y, it won't write out the distance of Y with X)."),
+				RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
+		rl.add(new Label("You can leave any of the following fields blank if you do not need those values."),
+				RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
+		finp_allDistances = new FileInputPanel("Save all pairwise distances (including intrageneric distances) into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_allDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
 		finp_intraDistances = new FileInputPanel("Save all intraspecific pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_intraDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
-		finp_interDistances = new FileInputPanel("Save all interspecific pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
+		finp_interDistances = new FileInputPanel("Save all congeneric, interspecific pairwise distances into a file: ", FileInputPanel.MODE_FILE_WRITE, taxonDNA.getFrame());
 		rl.add(finp_interDistances, RightLayout.NEXTLINE | RightLayout.FILL_2 | RightLayout.STRETCH_X);
 		btn_Calculate.addActionListener(this);
 		rl.add(btn_Calculate, RightLayout.NEXTLINE | RightLayout.FILL_2); 
@@ -76,7 +79,7 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 				MessageBox mb = new MessageBox(
 						taxonDNA.getFrame(),
 						"No files specified!",
-						"You did not specify a file to write distances into. So: I did nothing."
+						"You did not specify a file to write distances into.\nSo: I did nothing."
 						);
 				mb.go();
 				return;
