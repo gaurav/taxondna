@@ -388,7 +388,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 			}
 			btn_Copy.setLabel("Copy to Clipboard");	
 
-		} else {
+		} else if(btn.equals(btn_dumpIntra) || btn.equals(btn_dumpInter)) {
 			PairwiseDistribution pd = intra;	// in case of programmer stupidity
 			String these = "";
 
