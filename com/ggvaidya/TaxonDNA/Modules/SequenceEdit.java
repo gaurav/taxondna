@@ -285,26 +285,48 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	}
 
 	// Key listener
-	/** We don't need to check for gained foci */ 
-	public void 	focusGained(FocusEvent e) {}
+	/** We save the text in the 'name' and 'sequence' field when we gain focus.
+	 * Then, when we loose it, we can check to see if anything changed.
+	 */ 
+	private String 	focusGained_name = "";
+	private String 	focusGained_sequence = "";
+	public void 	focusGained(FocusEvent e) {
+		if(e.getSource().equals(text_name))
+			focusGained_name = text_name.getText().trim();
+
+		if(e.getSource().equals(text_sequence))
+			focusGained_sequence = text_sequence.getText().trim();
+	}
 	/** When our editable fields loose foci, we need to update the information */	
 	public void 	focusLost(FocusEvent e) {
 		if(currentSequence == null)
 			return;
 
 		if(e.getSource().equals(text_name)) {
+			if(text_name.getText().trim().equals(focusGained_name)) {
+				// text_name didn't change
+				focusGained_name = "";
+				return;
+			}
+
 			set = taxonDNA.lockSequenceList();
 			
 			// sequence name changed
 			String newName = text_name.getText().trim();
 			currentSequence.changeName(newName);
 			updateInfo(currentSequence);
+
+			set.modified();
 			
-			weEditedTheSet = true;
-			taxonDNA.unlockSequenceList(set);
-			weEditedTheSet = false;
+			taxonDNA.unlockSequenceList();
 
 		} else if(e.getSource().equals(text_sequence)) {
+			if(text_sequence.getText().trim().equals(focusGained_sequence)) {
+				// text_sequence didn't change
+				focusGained_sequence = "";
+				return;
+			}
+
 			set = taxonDNA.lockSequenceList();
 			
 			// sequence changed
@@ -315,15 +337,18 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				// 9	ACCF ... format
 			try {
 				currentSequence.changeSequence(newSequence);
+				updateInfo(currentSequence);	// this is actually the easiest way to do this
+		
+				set.modified();			
 			} catch(SequenceException ex) {
 				MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error in sequence!", "There is an error in this sequence: " + ex);
 				mb.go();
-			}
-			updateInfo(currentSequence);	// this is actually the easiest way to do this
 
-			weEditedTheSet = true;
-			taxonDNA.unlockSequenceList(set);
-			weEditedTheSet = false;
+				// change the text back to the old one
+				text_sequence.setText(focusGained_sequence);
+			}
+
+			taxonDNA.unlockSequenceList();
 		}
 
 		

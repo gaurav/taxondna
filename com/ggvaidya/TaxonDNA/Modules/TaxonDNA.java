@@ -50,7 +50,6 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 
 	// the following is information specific to this particular TaxonDNA.
 	private SequenceList 	sequences		= null;
-	private boolean		modified		= false;
 	
 	// the following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
@@ -406,7 +405,6 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 						)
 					);
 			
-			modified = false;
 			unlockSequenceList();
 
 			return true;	
@@ -483,7 +481,6 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		// closeFile at all!)
 		closeFile();
 		unlockSequenceList(sequences);
-		modified = false;
 		resetFrameTitle();
 		return true; 
 	}
@@ -507,7 +504,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	private void closeFile() {
 		lockSequenceList();
 		
-		if(sequences != null && modified) {
+		if(sequences != null && sequences.isModified()) {
 			MessageBox mb = new MessageBox(
 					mainFrame, 
 					"Save file now?", 
@@ -588,12 +585,11 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	 * function returns. Don't do this unless you KNOW what you're doing.
 	 *
 	 */
-	public void unlockSequenceList(SequenceList list) {
+	private void unlockSequenceList(SequenceList list) {
 		if(list != null) {
 			if(sequences != null)
 				sequences.unlock();
 			sequences = list;
-			modified = true;
 			// We don't need to unlock 'list' since list was never locked by us.
 			// Since list is in all likelihood only used by one thread, it
 			// probably doesn't even need locking. If it does, it's upto the
@@ -827,7 +823,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			if(sequences.count() > 0)
 				title.append(" (" + sequences.count() + " sequences)");
 		
-			if(modified)
+			if(sequences.isModified())
 				title.append(" (modified)");
 		}
 

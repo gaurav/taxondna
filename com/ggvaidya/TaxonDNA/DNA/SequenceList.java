@@ -99,7 +99,7 @@ public class SequenceList implements List {
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.NexusFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.GenBankFile());
 
-			formatsHandled = "Fasta, Mega and Nexus";
+			formatsHandled = "Fasta, Mega, Nexus and GenBank";
 		}
 	}
 
@@ -163,6 +163,8 @@ public class SequenceList implements List {
 					"'. Please check the format and ensure that the format is " +
 					"correct.\nThe error reported is: " + e, e);
 		}
+
+		modified = false;	// we are being backed by a valid file, and Everything is Okay.
 	}
 
 	/**
@@ -178,6 +180,9 @@ public class SequenceList implements List {
 		formatHandler = null;		// 	where you're from
 						//	what you did
 		addAll(c);			// as long as you add 'c'
+
+		modified = true;		// normally, it'll be off except that
+						// we're backed by a non-working file
 	}
 
 //
@@ -652,7 +657,7 @@ public class SequenceList implements List {
 	public SpeciesDetails getSpeciesDetails(DelayCallback delay) throws DelayAbortedException {
 		lock();
 		
-		if(details == null || modified)
+		if(details == null)
 			try {
 				details = new SpeciesDetails(this, delay);
 			} catch(DelayAbortedException e) {
@@ -703,6 +708,17 @@ public class SequenceList implements List {
 //
 //	8.	SETTERS. Set values in this file (not the same as *modifying* the list, mentioned above)
 //
+
+	/**
+	 * Somebody modified either this dataset itself (add, remove, etc.), or
+	 * one of the sequences which comprise us.
+	 */
+	public void modified() {
+		modified = true;	
+		sortedBy = SORT_UNSORTED;
+		details = null;
+	}
+
 	/**
 	 * Sets the file this sequence list is associated with.
 	 */
@@ -725,12 +741,20 @@ public class SequenceList implements List {
 	 * Adds a Sequence to this SequenceList.
 	 */
 	public boolean add(Sequence seq) {
-		sortedBy = SORT_UNSORTED;
-		return sequences.add(seq);
+		if(sequences.add(seq)) {
+			sortedBy = SORT_UNSORTED;
+			modified = true;
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
 	 * Adds a Sequence to this SequenceSet.
+	 * This is only a stub to handle the
+	 * conversion: we really do prefer
+	 * add(Sequence).
 	 */
 	public boolean add(Object o) {
 		Sequence seq = (Sequence) o;
@@ -793,12 +817,14 @@ public class SequenceList implements List {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			if(add((Object)seq))
+			if(add(seq))
 				changed = true;
 		}
 
-		if(changed)
+		if(changed) {
 			sortedBy = SORT_UNSORTED;
+			modified = true;
+		}
 
 		return changed;		
 	}
@@ -861,6 +887,7 @@ public class SequenceList implements List {
 	 */
 	public void writeToFile(DelayCallback delay) throws IOException, DelayAbortedException {
 		formatHandler.writeFile(file, this, delay);
+		modified = false;
 	}
 
 	/**
@@ -868,6 +895,7 @@ public class SequenceList implements List {
 	 */
 	public void writeToFile(File writeTo, DelayCallback delay) throws IOException, DelayAbortedException {
 		formatHandler.writeFile(writeTo, this, delay);
+		modified = false;
 	}
 }
 
