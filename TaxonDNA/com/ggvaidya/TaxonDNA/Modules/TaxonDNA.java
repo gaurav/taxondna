@@ -58,7 +58,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// This is the 'left hand side' of our screen - the action list,
 	// the sequence list, and a label with a count of the number of
 	// sequences.
-	private java.awt.List	list_actions 		= new java.awt.List(5, false);	
+	private java.awt.List	list_actions 		= new java.awt.List(8, false);	
 	private SequencePanel	list_sequences 		= new SequencePanel(this);
 	private Label		label_sequencecount 	= new Label();
 
@@ -66,6 +66,8 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// in and out of the mainView.
 	private CardLayout	cardLayout 		= new CardLayout();
 	private Panel		mainView 		= new Panel();
+	private Label		label_moduleTitle	= new Label();
+	private TextArea	ta_moduleInfo		= new TextArea();
 
 	// all TaxonDNAs have a list of uiExtensions which they display, and
 	// this is where they're saved. There's a chance that eventually,
@@ -206,6 +208,14 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		if(cmd.equals("Exit"))
 			exitTaxonDNA();
 
+		// Modules -> *
+		//
+		if((cmd.length() > 7) && (cmd.substring(0, 7).equals("Module_"))) {
+			String uiExtName = cmd.substring(7);
+
+			goToExtension(uiExtName);
+		}
+
 		//
 		// Export -> *
 		//
@@ -328,7 +338,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			int item = ((Integer)e.getItem()).intValue();
 
 			if(item > -1) {
-				cardLayout.show(mainView, ((UIExtension) uiExtensions.get(item)).getShortName());
+				goToExtension(((UIExtension) uiExtensions.get(item)).getShortName());
 			}
 		}
 	}	
@@ -622,6 +632,10 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			if(ex.getShortName().equals(extName)) {
 				list_actions.select(x);
 				cardLayout.show(mainView, extName);
+
+				label_moduleTitle.setText(ex.getShortName());
+				ta_moduleInfo.setText(ex.getDescription());
+
 				return;
 			}
 			x++;
@@ -771,12 +785,30 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			mainView.add(ext.getPanel(), (Object)ext.getShortName());
 		}
 		cardLayout.first(mainView);
+
+		// Put the mainView into a Panel (the rightPanel) which also provides
+		// information on the currently selected 'action'
+		label_moduleTitle = new Label("Module");
+		label_moduleTitle.setFont(new Font("Serif", Font.PLAIN, 20));
+		ta_moduleInfo = new TextArea("Module information", 2, 80, TextArea.SCROLLBARS_NONE);
+		ta_moduleInfo.setEditable(false);
+
+		Panel info = new Panel();
+		info.setLayout(new BorderLayout());
+		info.add(label_moduleTitle, BorderLayout.NORTH);
+		info.add(ta_moduleInfo);
+
+		Panel rightLayout = new Panel();
+		rightLayout.setLayout(new BorderLayout());
+		rightLayout.add(info, BorderLayout.NORTH);
+		rightLayout.add(mainView);
 		
-		mainFrame.add(mainView);
+		mainFrame.add(rightLayout);
 
 		// Start the mainFrame!
-		mainFrame.setVisible(true);		
+		goToExtension(((UIExtension)uiExtensions.get(0)).getShortName());
 		mainFrame.pack();
+		mainFrame.setVisible(true);
 	}
 	
 	/**
@@ -831,6 +863,25 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
 		menubar.add(file);
+		
+		// Modules menu
+		Menu	modules	=	new Menu("Modules");
+
+		i = uiExtensions.iterator();	
+		count = 0;
+		while(i.hasNext()) {
+			UIExtension ui = (UIExtension) i.next();
+			
+			MenuItem menuItem = new MenuItem(ui.getShortName() + ": " + ui.getDescription());
+			menuItem.setActionCommand("Module_" + ui.getShortName());
+			menuItem.addActionListener(this);
+			modules.add(menuItem);
+
+			count++;
+		}
+		
+		menubar.add(modules);
+
 
 		// Import from menu
 		Menu	importMenu	=	new Menu("Import");
