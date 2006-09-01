@@ -433,9 +433,10 @@ public class GenBankFile implements FormatHandler, Testable {
 				
 				keep_sequences_without_CDS = ((Boolean)args[0]).booleanValue();
 				hash_genes = ((Hashtable)args[1]);
+			} catch(ClassNotFoundException e) {
+				throw new FormatException("An essential component of TaxonDNA (the CDS Examiner) was not found. Please ensure that your TaxonDNA setup is not missing any files.\n\nThe technical description is as follows: " + e);
 			} catch(Exception e) {
-				// that's okay; we just remove everything from the hashtable
-				hash_genes.clear();
+				throw new FormatException("There have been strange changes in the CDS Examiner since installation. This is probably a programming error. Please inform the programmers at [http://taxondna.sf.net/].\n\nThe technical description is as follows: " + e);
 			}
 
 			// Now, we run through the list, deleting any [taxondna_cds...] tags
