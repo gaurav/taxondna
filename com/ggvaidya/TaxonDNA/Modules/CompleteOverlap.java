@@ -46,7 +46,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	private TextField	tf_minimumBlockLength = new TextField("300");
 	private TextArea	ta_matches = new TextArea();
 
-	private Checkbox	check_wellDefinedOnly = new Checkbox("Choose only sequences which have less than ");
+	private Checkbox	check_wellDefinedOnly = new Checkbox("Drop all sequences which have more than ");
 	private TextField	tf_ambiguousLimit = new TextField("1"); 
 	private Label		label_wellDefinedOnly = new Label(" percent ambiguous bases.");
 
@@ -68,12 +68,15 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		RightLayout rl = new RightLayout(options);
 		options.setLayout(rl);
 
+		/*
 		Label l = new Label("This module will determine the largest complete block (the largest section without gaps) in your dataset."); 
 //		ta.setEditable(false);
 		rl.add(l, RightLayout.FILL_3 | RightLayout.STRETCH_X);
+		*/
 
-		rl.add(new Label("How many base pairs should the largest complete block have at minimum?"), RightLayout.NEXTLINE);
-		rl.add(tf_minimumBlockLength, RightLayout.BESIDE | RightLayout.FILL_2);
+		rl.add(new Label("Find and extract blocks of sequences "), RightLayout.NEXTLINE);
+		rl.add(tf_minimumBlockLength, RightLayout.BESIDE);
+		rl.add(new Label(" bp long."), RightLayout.BESIDE  | RightLayout.STRETCH_X);
 
 		rl.add(check_wellDefinedOnly, RightLayout.NEXTLINE);
 		rl.add(tf_ambiguousLimit, RightLayout.BESIDE);
@@ -625,7 +628,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	}
 
 	public String getShortName() {		return "Complete Overlap"; 	}
-	public String getDescription() {	return "Finds large areas of sequence overlap in your dataset"; }
+	public String getDescription() {	return "Find and extract sequences with complete overlap."; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;
