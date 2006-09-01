@@ -191,48 +191,50 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	 */
 	public void run() {
 		SequenceList list = taxonDNA.lockSequenceList();
+		SpeciesDetails species = null;
 
 		try {
-			SpeciesDetails species = list.getSpeciesDetails(
+			species = list.getSpeciesDetails(
 					new ProgressDialog(taxonDNA.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
 				);
-
-			// now we use information from 'info' to populate stuff up.
-			//
-			StringBuffer str = new StringBuffer();
-
-			str.append("Number of sequences: " + list.count() + "\n");			// check
-			str.append("Number of species: " + species.count() + "\n\n");			// check
-			str.append("Number of sequences without a species name: " + species.getSequencesWithoutASpeciesNameCount()+ "\n\n");
-												// check
-
-			str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
-			str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + "\n");										 
-			// set up list_species
-			//
-			list_species.removeAll();
-
-			Iterator i = species.getSpeciesNamesIterator();
-			int index = 0;
-			while(i.hasNext()) {
-				String name = (String) i.next();
-				SpeciesDetail det = species.getSpeciesDetailsByName(name);
-
-				int count_total = det.getSequencesCount();
-				int count_valid = det.getSequencesWithValidMatchesCount();
-				int count_invalid = det.getSequencesWithoutValidMatchesCount();
-				String gi_list = det.getIdentifiersAsString();
-			
-				index++;
-				list_species.add(index + ". " + name + " (" + count_total + " sequences, " + count_valid + " valid, " + count_invalid + " invalid): " + gi_list);
-			}
-
-			text_main.setText(str.toString());
 		} catch(DelayAbortedException e) {
-			// we could care less	
+			// we could care less
+			return;
 		}
 
-		taxonDNA.unlockSequenceList();	
+		// now we use information from 'info' to populate stuff up.
+		//
+		StringBuffer str = new StringBuffer();
+
+		str.append("Number of sequences: " + list.count() + "\n");			// check
+		str.append("Number of species: " + species.count() + "\n\n");			// check
+		str.append("Number of sequences without a species name: " + species.getSequencesWithoutASpeciesNameCount()+ "\n\n");
+												// check
+
+		str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
+
+		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + DNA.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all sequences)\n");										 
+		// set up list_species
+		//
+		list_species.removeAll();
+
+		Iterator i = species.getSpeciesNamesIterator();
+		int index = 0;
+		while(i.hasNext()) {
+			String name = (String) i.next();
+			SpeciesDetail det = species.getSpeciesDetailsByName(name);
+
+			int count_total = det.getSequencesCount();
+			int count_valid = det.getSequencesWithValidMatchesCount();
+			int count_invalid = det.getSequencesWithoutValidMatchesCount();
+			String gi_list = det.getIdentifiersAsString();
+		
+			index++;
+			list_species.add(index + ". " + name + " (" + count_total + " sequences, " + count_valid + " valid, " + count_invalid + " invalid): " + gi_list);
+		}
+
+		text_main.setText(str.toString());
+		taxonDNA.unlockSequenceList();
 	}
 
 	// OUR USUAL UIINTERFACE CRAP
