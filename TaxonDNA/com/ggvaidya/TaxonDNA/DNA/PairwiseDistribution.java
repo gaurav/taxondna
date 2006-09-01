@@ -141,7 +141,7 @@ public class PairwiseDistribution {
 					delay.delay(count_sequences, list.count());
 				} catch(DelayAbortedException e) {
 					list.unlock();
-					return;
+					throw e;	// get outta here
 				}
 			}
 			

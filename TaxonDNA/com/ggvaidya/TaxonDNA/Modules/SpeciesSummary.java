@@ -227,8 +227,6 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				list_species.add(index + ". " + name + " (" + count_total + " sequences, " + count_valid + " valid, " + count_invalid + " invalid): " + gi_list);
 			}
 
-
-
 			text_main.setText(str.toString());
 		} catch(DelayAbortedException e) {
 			// we could care less	
