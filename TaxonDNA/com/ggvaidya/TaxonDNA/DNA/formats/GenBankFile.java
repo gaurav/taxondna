@@ -420,7 +420,7 @@ public class GenBankFile implements FormatHandler, Testable {
 			Class class_cdsexaminer = null;
 			boolean keep_sequences_without_CDS = false;
 			try {
-				class_cdsexaminer = ClassLoader.getSystemClassLoader().loadClass("com.ggvaidya.TaxonDNA.Modules.CDSExaminer");
+				class_cdsexaminer = com.ggvaidya.TaxonDNA.Modules.CDSExaminer.class;
 				Class[] signature = new Class[2];
 				signature[0] = String.class;
 				signature[1] = Hashtable.class;
@@ -433,8 +433,6 @@ public class GenBankFile implements FormatHandler, Testable {
 				
 				keep_sequences_without_CDS = ((Boolean)args[0]).booleanValue();
 				hash_genes = ((Hashtable)args[1]);
-			} catch(ClassNotFoundException e) {
-				throw new FormatException("An essential component of TaxonDNA (the CDS Examiner) was not found. Please ensure that your TaxonDNA setup is not missing any files.\n\nThe technical description is as follows: " + e);
 			} catch(Exception e) {
 				throw new FormatException("There have been strange changes in the CDS Examiner since installation. This is probably a programming error. Please inform the programmers at [http://taxondna.sf.net/].\n\nThe technical description is as follows: " + e);
 			}
