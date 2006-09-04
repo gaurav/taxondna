@@ -181,8 +181,7 @@ public class SequenceList implements List, Testable {
 						//	what you did
 		addAll(c);			// as long as you add 'c'
 
-		modified = true;		// normally, it'll be off except that
-						// we're backed by a non-working file
+		modified();
 	}
 
 //
@@ -593,6 +592,7 @@ public class SequenceList implements List, Testable {
 			seq = (Sequence) sequences.get(index);
 			if(seq != null && seq.getSpeciesName().equals(speciesName))
 				break;
+			index++;
 		}
 
 		if(seq == null) {
@@ -760,7 +760,7 @@ public class SequenceList implements List, Testable {
 	 */
 	public void setFile(File file) {
 		if(this.file != null && !file.equals(this.file)) {	// if the two files are different
-			modified = true;	// we've been modified!
+			modified();	
 		}
 		this.file = file;
 	}
@@ -779,7 +779,7 @@ public class SequenceList implements List, Testable {
 	public boolean add(Sequence seq) {
 		if(sequences.add(seq)) {
 			sortedBy = SORT_UNSORTED;
-			modified = true;
+			modified();	
 			return true;
 		} else {
 			return false;
@@ -805,7 +805,7 @@ public class SequenceList implements List, Testable {
 		Sequence seq = (Sequence) o;
 
 		if(sequences.remove(seq)) {
-			modified = true;
+			modified();	
 			return true;
 		}
 		return false;
@@ -823,7 +823,7 @@ public class SequenceList implements List, Testable {
 	public Object remove(int x) {
 		Object o = null;
 		if((o = sequences.remove(x)) != null)
-			modified = true;
+			modified();	
 			
 		return o;
 	}
@@ -859,7 +859,7 @@ public class SequenceList implements List, Testable {
 
 		if(changed) {
 			sortedBy = SORT_UNSORTED;
-			modified = true;
+			modified();	
 		}
 
 		return changed;		
@@ -991,7 +991,7 @@ class ConspecificIterator implements Iterator {
 	}
 
 	public boolean hasNext() {
-		if(x >= list.count())
+		if(x < 0 || x >= list.count())
 			return false;
 		Sequence seq = (Sequence) list.get(x);
 		if(seq.getSpeciesName().equals(target.getSpeciesName()))
