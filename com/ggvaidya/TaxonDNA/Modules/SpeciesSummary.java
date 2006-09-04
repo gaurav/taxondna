@@ -42,15 +42,19 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 	private java.awt.List	list_species = new java.awt.List();
 	private Button		btn_Calculate = new Button("Calculate now!");
+	private Button		btn_Delete = new Button("Delete all sequences of the selected species");
 	private Button		btn_export_multiple = new Button("Export sequences with species having more than one sequence");
 	private Button		btn_Copy = new Button("Copy species list");
 	
+	/*
 	private Hashtable	species	=		null;			// all species names, mapped to Integers
 	private int		lastIndex = 		-1;			// the last used index in species
 	private int[]		sequences;					// the number of sequences for each species
 	private int[]		invalid_conspecifics;
 	private int[]		valid_conspecifics;
 	private StringBuffer[]	gi_list;
+	*/
+	private Vector		vec_Species =		null;
 
 	/**
 	 * Constructor. Needs one taxonDNA object.
@@ -71,6 +75,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 		btn_Calculate.addActionListener(this);
 		buttons.add(btn_Calculate);
+
+		btn_Delete.addActionListener(this);
+		buttons.add(btn_Delete);
 
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);
@@ -172,6 +179,61 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				btn_Copy.setLabel("Oops, try again?");
 			}
 		}
+
+		if(e.getSource().equals(btn_Delete)) {
+			if(vec_Species == null)
+				return;
+
+			int selected = list_species.getSelectedIndex();
+			if(selected == -1)
+				return;
+
+			String sp_name = (String) vec_Species.get(selected);
+			SequenceList list = taxonDNA.lockSequenceList();
+			SpeciesDetail det = null;
+			try {
+				det = list.getSpeciesDetails(null).getSpeciesDetailsByName(sp_name);
+			} catch(DelayAbortedException ex) {
+				// wtf
+				return;
+			}
+			if(det == null) {
+				MessageBox mb = new MessageBox(
+						taxonDNA.getFrame(),
+						"This species does not exist!",
+						"I cannot find any sequences with the species '" + sp_name + "'! Are you sure you have't already removed or renamed sequences?\n\nTry recalculating the Species Summary. If this species still appears, there might be a programming error in this program.");
+				mb.go();
+				
+				taxonDNA.unlockSequenceList();
+				return;
+			}
+			int count = det.getSequencesCount();
+
+			MessageBox mb = new MessageBox(
+				taxonDNA.getFrame(),
+				"Are you sure?",
+				"Are you sure you want to delete all " + count + " sequences belonging to the species '" + sp_name + "'?\n\nThis cannot be undone!",
+				MessageBox.MB_YESNO);
+			if(mb.showMessageBox() == MessageBox.MB_YES) {
+				list = taxonDNA.lockSequenceList();
+				Iterator i = list.conspecificIterator(sp_name);
+				int x = 0;
+				while(i.hasNext()) {
+					i.next();
+					i.remove();
+					x++;
+				}
+				taxonDNA.sequenceListChanged();
+				taxonDNA.unlockSequenceList();
+
+				mb = new MessageBox(
+						taxonDNA.getFrame(),
+						"Sequences deleted!",
+						x + " sequences were successfully deleted."
+						);
+				mb.go();
+			}
+		}
 	}
 	
 	/**
@@ -182,7 +244,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		if(list == null) {
 			text_main.setText("");
 			list_species.removeAll();
-		}	
+			vec_Species = null;
+		}
 		taxonDNA.unlockSequenceList();
 	}
 
@@ -201,6 +264,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			// we could care less
 			return;
 		}
+
+		vec_Species = new Vector();		
 
 		// now we use information from 'info' to populate stuff up.
 		//
@@ -231,6 +296,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		
 			index++;
 			list_species.add(index + ". " + name + " (" + count_total + " sequences, " + count_valid + " valid, " + count_invalid + " invalid): " + gi_list);
+
+			vec_Species.add(name);
 		}
 
 		text_main.setText(str.toString());
