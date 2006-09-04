@@ -9,7 +9,7 @@
 			optimize="yes" 
 			deprecation="yes" 
 			source="1.4"
-			excludes="Tests/**,Backup/**,Documentation/**,Release/**,build/**"
+			excludes="Tests/**,Backup/**,Documentation/**,Release/**,build/**,Redacted/**"
 			destdir="${build.dir}/classes"
 		>
 			<compilerarg value="-Xlint:unchecked" />
