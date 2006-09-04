@@ -43,7 +43,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 
 
-public class SequenceList implements List {
+public class SequenceList implements List, Testable {
 	// variables essential to this class	
 	private LinkedList 	sequences =	new LinkedList();	// specified solely by order (based on sortedBy)
 	private SpeciesDetails	details = 	null;			// the species summary for this SequenceList
@@ -573,8 +573,45 @@ public class SequenceList implements List {
 	}	
 
 	/**
+	 * Returns a conspecificIterator using the species name instead
+	 * of a Sequence. It does this by searching for the first matching
+	 * sequence.
+	 *
+	 * TODO: Optimize this if required.
+	 *
+	 * @return An iterator to all species named 'speciesName' in this list,
+	 * 	or 'null' if there are no such species.
+	 */
+	public Iterator conspecificIterator(String speciesName) {
+		lock();
+		resort(SORT_BYNAME);
+
+		Sequence seq = null;
+
+		int index = 0;
+		while(index < sequences.size()) {
+			seq = (Sequence) sequences.get(index);
+			if(seq != null && seq.getSpeciesName().equals(speciesName))
+				break;
+		}
+
+		if(seq == null) {
+			unlock();
+			return null;
+		}
+
+		Iterator i = conspecificIterator(seq);
+
+		unlock();
+		return i;
+	}
+
+	/**
 	 * Returns an iterator which will only iterate over the
-	 * conspecifics of the specified Sequence.
+	 * conspecifics of the specified Sequence. Note that
+	 * this Sequence must actually be IN this sequence list.
+	 * To search by species name, use the slighly slower
+	 * conspecificIterator(String speciesName).
 	 *
 	 * PLEASE remember to lock the sequence before you play
 	 * around with a conspecificIterator! Otherwise, the
@@ -596,7 +633,6 @@ public class SequenceList implements List {
 
 		return i;
 	}
-
 	/**
 	 * Returns an Array version of this list
 	 */
@@ -897,12 +933,56 @@ public class SequenceList implements List {
 		formatHandler.writeFile(writeTo, this, delay);
 		modified = false;
 	}
+
+	/**
+	 * Tests the SequenceList class.
+	 */
+	public void test(TestController testMaster, DelayCallback delay) throws DelayAbortedException {
+		testMaster.begin("DNA.SequenceList");
+
+		SequenceList sl = new SequenceList();
+		Sequence seq = Sequence.makeEmptySequence("Test pretest", 32);
+		sl.add(seq);
+		sl.add(seq);
+		Sequence seq1 = Sequence.makeEmptySequence("Test test", 32);
+		sl.add(seq1);
+		sl.add(seq1);
+		sl.add(seq1);
+		sl.add(seq1);
+		sl.add(seq1);
+		seq = Sequence.makeEmptySequence("Test posttest", 32);
+		sl.add(seq);
+		sl.add(seq);
+
+		testMaster.beginTest("Is ConspecificIterator actually returning all the sequences?");
+		Iterator i = sl.conspecificIterator(seq1);
+		int x = 0;
+		while(i.hasNext()) {
+			Sequence s = (Sequence) i.next();
+			i.remove();
+			x++;
+		}
+		
+		if(x == 5)
+			testMaster.succeeded();
+		else
+			testMaster.failed("I 'found' " + x + " conspecific sequences instead of 5!");
+
+		testMaster.beginTest("Does 'remove' work?");
+		if(sl.count() == 4)
+			testMaster.succeeded();
+		else
+			testMaster.failed("After removing, there should be 4 sequences; instead, there are " + sl.count() + "!");
+
+		testMaster.done();
+	}
 }
 
 class ConspecificIterator implements Iterator {
 	private static SequenceList list;
 	private static Sequence target;
 	private static int x;
+	private static boolean justDeleted = false;
 			
 	public ConspecificIterator(SequenceList list, Sequence target, int index) {
 		ConspecificIterator.list = list;
@@ -911,23 +991,36 @@ class ConspecificIterator implements Iterator {
 	}
 
 	public boolean hasNext() {
-		if(x + 1 >= list.count())
+		if(x >= list.count())
 			return false;
-		Sequence seq = (Sequence) list.get(x + 1);
+		Sequence seq = (Sequence) list.get(x);
 		if(seq.getSpeciesName().equals(target.getSpeciesName()))
 			return true;
 		return false;
 	}
 
 	public Object next() throws NoSuchElementException {
+		justDeleted = false;
+
 		if(!hasNext())
 			throw new NoSuchElementException();
 				
-		Sequence seq = (Sequence) list.get(x + 1);
+		Sequence seq = (Sequence) list.get(x);
 		x++;
 		return seq;
 	}
 
 	public void remove() {
+		if(justDeleted)
+			throw new IllegalStateException("You can't call remove() twice after a single call to next()");
+		
+		// the trick is: we decrement 'x' (to move 'back' one) and remove whatever is at 'x'. x is now pointing at the 'new' x.
+		x--;
+		Sequence seq = (Sequence) list.get(x);
+		if(seq != null && seq.getSpeciesName().equals(target.getSpeciesName())) {
+			list.remove(list.get(x));
+		}
+
+		justDeleted = true;
 	}
 };
