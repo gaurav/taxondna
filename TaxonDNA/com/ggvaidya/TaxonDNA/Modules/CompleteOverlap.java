@@ -147,10 +147,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 
 		Iterator i = sl.iterator();
 		int x = 0;
-		int interval = sl.count() / 100;
-
-		if(interval == 0)
-			interval = 1;
 
 		Sequence cons = null;
 		while(i.hasNext()) {
@@ -160,7 +156,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				cons = seq;
 
 			x++;
-			if(delay != null && x % interval == 0)
+			if(delay != null)
 				try {
 					delay.delay(x, sl.count());
 				} catch(DelayAbortedException e) {
@@ -177,7 +173,8 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 						"Unable to extract subsequence",
 						e.toString());
 				mb.go();
-				delay.end();
+				if(delay != null)
+					delay.end();
 				sl.unlock();
 				return "An error occurred while processing this view.";
 			}
@@ -611,7 +608,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			list_results.add((x + 1) + " to " + (x + step_width) + ": " + sequences + defined + " sequences across " + species + " species (with " + non_singletons + " non-singleton sequences)");
 
 			// do the delay
-			if(x % interval == 0)
 				try {
 					pd.delay(x, sl.getMaxLength() - step_width);
 				} catch(DelayAbortedException e) {

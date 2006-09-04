@@ -349,11 +349,7 @@ public class Randomizer extends Panel implements UIExtension, ActionListener, It
 				0
 				);
 		pd.begin();
-		int interval = replicates / 100;
-		if(interval == 0)
-			interval = 1;
 		for(int x = 1; x <= replicates; x++) {
-			if(x % interval == 0) 
 				try {
 					pd.delay(x, replicates);
 				} catch(DelayAbortedException e) {

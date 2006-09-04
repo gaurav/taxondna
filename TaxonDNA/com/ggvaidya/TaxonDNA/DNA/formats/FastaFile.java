@@ -164,10 +164,6 @@ public class FastaFile implements FormatHandler, Testable {
 
 		list.lock();
 				
-		int interval = count_sequences / 50;
-		if(interval == 0)
-			interval = 1;
-
 		if(count_sequences == 0)
 			if(!mightBe(file))
 				return;			// we do nothing to show disrespect for this file 
@@ -208,7 +204,7 @@ public class FastaFile implements FormatHandler, Testable {
 				seq = "";
 
 				try {
-					if(delay != null && sequences % interval == 0) {
+					if(delay != null) {
 						delay.delay(sequences, count_sequences);
 					}	
 				} catch(DelayAbortedException e) {
@@ -236,7 +232,7 @@ public class FastaFile implements FormatHandler, Testable {
 				seq = "";
 
 				try {
-					if(delay != null && sequences % interval == 0) {
+					if(delay != null) {
 						delay.delay(sequences, count_sequences);
 					}	
 				} catch(DelayAbortedException e) {
@@ -288,9 +284,6 @@ public class FastaFile implements FormatHandler, Testable {
 		Iterator i = set.iterator();
 		int count = set.count();
 		int x = 0;
-		int interval = count / 50;
-		if(interval == 0)
-			interval = 1;
 
 		if(delay != null)
 			delay.begin();
@@ -302,7 +295,7 @@ public class FastaFile implements FormatHandler, Testable {
 			writer.println(seq.getSequenceWrapped(70));
 
 			try {
-				if(delay != null && x % interval == 0)
+				if(delay != null)
 					delay.delay(x, count);
 			} catch(DelayAbortedException e) {
 				writer.close();

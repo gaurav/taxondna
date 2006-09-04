@@ -170,7 +170,11 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			fd.setVisible(true);
 
 			if(fd.getFile() != null)
-				loadFile(new File(fd.getDirectory() + fd.getFile()));
+				if(fd.getDirectory() != null) {
+					loadFile(new File(fd.getDirectory() + fd.getFile()));
+				} else {
+					loadFile(new File(fd.getFile()));
+				}
 		}
 
 		//
@@ -481,7 +485,6 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		// closeFile at all!)
 		closeFile();
 		unlockSequenceList(sequences);
-		resetFrameTitle();
 		return true; 
 	}
 

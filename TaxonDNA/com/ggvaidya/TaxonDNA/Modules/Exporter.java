@@ -340,7 +340,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			
 		}
 
-
+		taxonDNA.unlockSequenceList();
 
 		ProgressDialog pd = new ProgressDialog(
 				taxonDNA.getFrame(),
@@ -374,11 +374,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 		int maxLength = sl.getMaxLength();
 
-
 		int count = 0;
-		int interval = sl.count() / 100;
-		if(interval == 0)
-			interval = 1;
 		Iterator i = sl.iterator();
 		String lastFamily = "";
 		StringBuffer current_file = new StringBuffer();		// only used in multiple mode
@@ -392,15 +388,13 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 					"\n\n");
 		}
 
-
 		try {
 			while(i.hasNext()) {
 				Sequence s = (Sequence)i.next();
 
 				count++;
 				try {
-					if(count % interval == 0)
-						pd.delay(count, sl.count());
+					pd.delay(count, sl.count());
 				} catch(DelayAbortedException e) {
 					tf_status.setText("Aborted by user");
 					return;

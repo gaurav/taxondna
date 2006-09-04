@@ -342,16 +342,12 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 
 		int count = 0;
 		int total = v.size();
-		int interval = (total) % 100;
-		if(interval == 0)
-			interval = 1;
 		while(i.hasNext()) {
 			Float f = (Float)i.next();
 			pw.println(f);
 			
 			if(delay != null) {
-				if(count % interval == 0)
-				       delay.delay(count, total);	
+				delay.delay(count, total);	
 			}
 			count++;
 		}

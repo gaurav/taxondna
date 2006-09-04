@@ -263,7 +263,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					new ProgressDialog(taxonDNA.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
 				);
 		} catch(DelayAbortedException e) {
-			// we could care less
+			taxonDNA.unlockSequenceList();
 			return;
 		}
 

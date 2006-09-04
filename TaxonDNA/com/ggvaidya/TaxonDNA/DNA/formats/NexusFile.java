@@ -185,7 +185,7 @@ public class NexusFile implements FormatHandler {
 				interval = 1;
 			while(true) {
 				/* Before anything else, do the delay */
-				if(tok.lineno() % interval == 0) 
+				if(delay != null) 
 					delay.delay(tok.lineno(), count_lines);
 
 				/* Now ... to business! */
@@ -297,8 +297,7 @@ public class NexusFile implements FormatHandler {
 							Hashtable hash_names = new Hashtable();		// String name -> Sequence
 							while(true) {
 								/* Before anything else, do the delay */
-								if(tok.lineno() % interval == 0) 
-									delay.delay(tok.lineno(), count_lines);
+								delay.delay(tok.lineno(), count_lines);
 
 								/* To business, etc. */
 								type = tok.nextToken();

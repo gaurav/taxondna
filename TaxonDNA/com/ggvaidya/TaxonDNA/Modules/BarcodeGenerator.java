@@ -138,9 +138,6 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		delay.begin();
 
 		// first, collate into species groups
-		int interval = (set.count() ) / 50;
-		if(interval == 0)
-			interval = 1;
 		Vector groups = new Vector(); 
 		Iterator i = set.iterator();
 		count = 0;
@@ -150,8 +147,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 
 			count++;
 			try {
-				if(count % interval == 0)
-					delay.delay(count, set.count() * 2);
+				delay.delay(count, set.count() * 2);
 			} catch(DelayAbortedException e) {
 				delay.end();
 				taxonDNA.unlockSequenceList();
@@ -196,15 +192,11 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		
 		count = 0;
 		try {
-		interval = set.count() / 50;
-		if(interval < 1)
-			interval = 1;		
 		while(i.hasNext()) {
 			Vector group = (Vector) i.next();
 
 			count++;
-			if(count % interval == 0)
-				delay.delay(set.count() + count, set.count() * 2);
+			delay.delay(set.count() + count, set.count() * 2);
 			
 			if(group.size() == 1) {
 				results.add((Sequence)group.get(0));	

@@ -110,12 +110,7 @@ public class SpeciesDetails {
 				Sequence seq = (Sequence) i.next();
 				String speciesName = (String) seq.getSpeciesName();
 
-				// handle all the increments and delay callbacking here
-				int increment = list.count()/100;
-				if(increment == 0)
-                        		increment = 1;
-
-				if(delay != null && count_sequences % increment == 0) {
+				if(delay != null) {
 					try {
 						delay.delay(count_sequences, list.count());
 					} catch(DelayAbortedException e) {
