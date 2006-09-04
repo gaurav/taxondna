@@ -57,6 +57,7 @@ public class Tester extends Panel implements UIExtension, ActionListener, Runnab
 	private void initTestables() {
 		testables.clear();
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.Sequence());
+		testables.add(new com.ggvaidya.TaxonDNA.DNA.SequenceList());
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.GenBankFile());
