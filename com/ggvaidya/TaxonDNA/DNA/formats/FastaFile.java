@@ -70,6 +70,12 @@ public class FastaFile implements FormatHandler, Testable {
 	 * also saves us a count later on, and it seems
 	 * unlikely that we'll ever run readFile() without
 	 * calling this first.
+	 *
+	 * Note: in the interests of saving time, we will
+	 * NOT test past the 2nd '&gt;'. We'll just count
+	 * the number of '&gt;' we get after this point.
+	 * This should be "good enough".
+	 *
 	 */
 	public boolean mightBe(File file) {
 		BufferedReader reader = null;
@@ -84,12 +90,23 @@ public class FastaFile implements FormatHandler, Testable {
 			Pattern 	pComment =	Pattern.compile("^\\s*#.*$");
 			Pattern		pName =		Pattern.compile("^>\\s*(.*)\\s*$");
 			Pattern		pNameNotEmpty =	Pattern.compile("^>\\s*(.+)\\s*$");
+
+			boolean		dontTest =	false;
 	
 			while(reader.ready()) {
-				String line = reader.readLine();
+				String line = reader.readLine().trim();
+
+				if(dontTest) {
+					// don't test the full para - just count '>'s
+					if(line.length() > 0 && line.charAt(0) == '>')
+						count_sequences++;
+					continue;
+				}
 			
 				if(pNameNotEmpty.matcher(line).matches()) {
 					// it matches a name "^>.......$", so let's say it *might* be
+					if(count_sequences > 2)
+						dontTest = true;	// turn off reg ex testing
 					count_sequences++;
 				} else if(pName.matcher(line).matches()) {
 					count_sequences++;
