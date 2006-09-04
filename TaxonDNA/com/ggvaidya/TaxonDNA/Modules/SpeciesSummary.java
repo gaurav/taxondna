@@ -223,7 +223,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					i.remove();
 					x++;
 				}
-				taxonDNA.sequenceListChanged();
+				taxonDNA.sequencesChanged();
 				taxonDNA.unlockSequenceList();
 
 				mb = new MessageBox(

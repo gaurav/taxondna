@@ -343,6 +343,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			selectSequence(seqNext);
 			
 			// and ... we've changed!
+			taxonDNA.sequencesChanged();
 			taxonDNA.unlockSequenceList();
 		}
 		
