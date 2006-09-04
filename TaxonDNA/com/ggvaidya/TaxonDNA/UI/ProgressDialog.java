@@ -31,7 +31,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005	Gaurav Vaidya
+    Copyright (C) 2005, 2006	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -140,17 +140,25 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 		dispose();
 	}
 
+	private float lastPercentage = 0;
 	/**
 	 * The delay function. Right now, we just change our text to report
 	 * the percentage done, and inform our ProgressBar about the change.
+	 *
+	 * Big change: now, WE will handle the reporting, i.e. unless the
+	 * new fraction is significantly (0.1%) larger than the last one,
+	 * we will ignore it. This means EVERYBODY - effective immediately -
+	 * must use delay.delay() without going through that interval shit.
 	 */	
 	public void delay(int done, int total) throws DelayAbortedException {
 		if(!isVisible())
 			return;
 
 		float percentage = (float)done / total * 100;
-		textarea.setText(message + "\n\nPercentage done: " + percentage + "%");	
-		pi.changeIndicator(done, total);
+		if(percentage == 0 || Math.abs(percentage - lastPercentage) > 0.1) {
+			textarea.setText(message + "\n\nPercentage done: " + percentage + "%");	
+			pi.changeIndicator(done, total);
+		}
 
 		if(abort) {
 			end();
