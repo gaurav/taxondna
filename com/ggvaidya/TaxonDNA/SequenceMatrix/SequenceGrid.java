@@ -601,7 +601,7 @@ public class SequenceGrid {
 					Sequence seq = getSequence(colName, seqName); 
 
 					if(seq == null)
-						seq = Sequence.makeEmptySequence(colLength);
+						seq = Sequence.makeEmptySequence(seqName, colLength);
 
 					writer.println(getNexusName(seqName) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
 				}
@@ -631,7 +631,7 @@ public class SequenceGrid {
 					Sequence seq = getSequence(colName, seqName);
 
 					if(seq == null)
-						seq = Sequence.makeEmptySequence(getColumnLength(colName));
+						seq = Sequence.makeEmptySequence(colName, getColumnLength(colName));
 
 					length += seq.getLength();
 
@@ -764,7 +764,7 @@ public class SequenceGrid {
 				Sequence seq = getSequence(colName, seqName); 
 				
 				if(seq == null)
-					seq = Sequence.makeEmptySequence(getColumnLength(colName));
+					seq = Sequence.makeEmptySequence(colName, getColumnLength(colName));
 
 				length += seq.getLength();
 
