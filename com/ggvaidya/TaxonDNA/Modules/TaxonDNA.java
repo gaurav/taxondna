@@ -599,9 +599,20 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			// don't need to unlock because ... who cares?
 		}			
 		
+		sequencesChanged();
+
+		// and tell the user we've changed
+		resetFrameTitle();
+	}
+
+	/**
+	 * This function rewrites the SequencePanel and notifies everybody
+	 * that data has changed.
+	 */
+	public void sequencesChanged() {
 		// tell everybody we've changed
 		list_sequences.dataChanged();
-		
+
 		Iterator i = uiExtensions.iterator();
 		while(i.hasNext()) {
 			UIExtension ext = (UIExtension) i.next();
@@ -610,7 +621,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		}
 
 		// and tell the user we've changed
-		resetFrameTitle();
+		resetFrameTitle();		
 	}
 
 //

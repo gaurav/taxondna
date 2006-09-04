@@ -339,7 +339,8 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				currentSequence.changeSequence(newSequence);
 				updateInfo(currentSequence);	// this is actually the easiest way to do this
 		
-				set.modified();			
+				set.modified();	
+				taxonDNA.sequencesChanged();
 			} catch(SequenceException ex) {
 				MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error in sequence!", "There is an error in this sequence: " + ex);
 				mb.go();
