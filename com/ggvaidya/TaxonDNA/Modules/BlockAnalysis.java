@@ -165,7 +165,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			text_threshold.setText("3.0");
 		} else {
 			processingDone = false;
-			text_main.setText("Please press the 'Calculate' button to conduct an all species barcodes.");
+			text_main.setText("Please press the 'Calculate' button to conduct an all species barcodes analysis.");
 		}
 
 		taxonDNA.unlockSequenceList();

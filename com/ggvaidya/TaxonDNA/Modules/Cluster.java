@@ -373,13 +373,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 	/* Data changed: in our case, SequenceSet changed */
 	public void dataChanged() {
-		set = taxonDNA.lockSequenceList();
-		if(set == null) {
-			text_threshold.setText("3");
-			list_clusters.removeAll();
-			text_main.setText("");
-		}
-		taxonDNA.unlockSequenceList();
+		text_threshold.setText("3");
+		list_clusters.removeAll();
+		text_main.setText("");
 
 		//btn_MakeClusters.setLabel("THE DATA HAS CHANGED SINCE THE LAST CLUSTERING. Recluster?");
 	}

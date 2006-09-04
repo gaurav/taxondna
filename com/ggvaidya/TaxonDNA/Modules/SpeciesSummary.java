@@ -46,15 +46,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	private Button		btn_export_multiple = new Button("Export sequences with species having more than one sequence");
 	private Button		btn_Copy = new Button("Copy species list");
 	
-	/*
-	private Hashtable	species	=		null;			// all species names, mapped to Integers
-	private int		lastIndex = 		-1;			// the last used index in species
-	private int[]		sequences;					// the number of sequences for each species
-	private int[]		invalid_conspecifics;
-	private int[]		valid_conspecifics;
-	private StringBuffer[]	gi_list;
-	*/
 	private Vector		vec_Species =		null;
+
+	private boolean		flag_weChangedTheData = false;
 
 	/**
 	 * Constructor. Needs one taxonDNA object.
@@ -223,6 +217,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					i.remove();
 					x++;
 				}
+				flag_weChangedTheData = true;
 				taxonDNA.sequencesChanged();
 				taxonDNA.unlockSequenceList();
 
@@ -240,6 +235,11 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	 * Data got changed. We just reset everything and wait.
 	 */
 	public void dataChanged() {
+		if(flag_weChangedTheData) {
+			flag_weChangedTheData = false;
+			return;
+		}
+
 		SequenceList list = taxonDNA.lockSequenceList();
 		if(list == null) {
 			text_main.setText("");

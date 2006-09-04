@@ -91,13 +91,8 @@ public class GenerateSubSet extends Panel implements UIExtension, ActionListener
 	}
 	
 	public void dataChanged()	{
-
-		set = taxonDNA.lockSequenceList();
-		if(set == null) {
-			text_main.setText("");
-			text_overlap.setText("");
-		}
-		taxonDNA.unlockSequenceList();
+		text_main.setText("");
+		text_overlap.setText("");
 	}
 
 	public String getShortName() {		return "Generate subsets"; 	}

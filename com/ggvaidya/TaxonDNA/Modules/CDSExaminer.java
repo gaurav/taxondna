@@ -140,6 +140,7 @@ public class CDSExaminer implements UIExtension, ActionListener {
 
 	/* Data changed: couldn't care less */
 	public void dataChanged() {
+		return;
 	}
 
 	// UIExtension stuff

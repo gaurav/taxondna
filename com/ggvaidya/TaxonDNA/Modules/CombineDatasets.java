@@ -211,13 +211,9 @@ public class CombineDatasets extends Panel implements UIExtension, Runnable, Act
 	}
 	
 	public void dataChanged()	{
-		list = taxonDNA.lockSequenceList();
-		if(list == null) {
-			list_Species.removeAll();	
-			seqlistThis = null;
-			seqlistThat = null;
-		}
-		taxonDNA.unlockSequenceList();
+		list_Species.removeAll();	
+		seqlistThis = null;
+		seqlistThat = null;
 	}
 
 	private void cleanupRun(ProgressDialog pd) {

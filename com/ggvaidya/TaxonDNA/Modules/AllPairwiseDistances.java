@@ -89,13 +89,9 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 	}
 	
 	public void dataChanged()	{
-		set = taxonDNA.lockSequenceList();
-		if(set == null) {
-			finp_allDistances.setFile(null);
-			finp_intraDistances.setFile(null);
-			finp_interDistances.setFile(null);
-		}
-		taxonDNA.unlockSequenceList();
+		finp_allDistances.setFile(null);
+		finp_intraDistances.setFile(null);
+		finp_interDistances.setFile(null);
 	}
 
 	private void print(PrintWriter pw, String str) throws IOException {
