@@ -191,6 +191,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				// wtf
 				return;
 			}
+			taxonDNA.unlockSequenceList();
+
 			if(det == null) {
 				MessageBox mb = new MessageBox(
 						taxonDNA.getFrame(),
@@ -198,7 +200,6 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 						"I cannot find any sequences with the species '" + sp_name + "'! Are you sure you have't already removed or renamed sequences?\n\nTry recalculating the Species Summary. If this species still appears, there might be a programming error in this program.");
 				mb.go();
 				
-				taxonDNA.unlockSequenceList();
 				return;
 			}
 			int count = det.getSequencesCount();
@@ -217,6 +218,11 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					i.remove();
 					x++;
 				}
+				System.err.flush();
+
+				vec_Species.remove(sp_name);
+				list_species.remove(selected);
+
 				flag_weChangedTheData = true;
 				taxonDNA.sequencesChanged();
 				taxonDNA.unlockSequenceList();
@@ -240,13 +246,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			return;
 		}
 
-		SequenceList list = taxonDNA.lockSequenceList();
-		if(list == null) {
-			text_main.setText("");
-			list_species.removeAll();
-			vec_Species = null;
-		}
-		taxonDNA.unlockSequenceList();
+		text_main.setText("");
+		list_species.removeAll();
+		vec_Species = null;
 	}
 
 	/**
