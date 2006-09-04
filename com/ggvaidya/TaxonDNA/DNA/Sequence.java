@@ -154,14 +154,14 @@ public class Sequence  implements Comparable, Testable {
 	/**
 	 * Creates a sequence consisting entirely of 'missing'.
 	 */
-	public static Sequence makeEmptySequence(int size) {
+	public static Sequence makeEmptySequence(String name, int size) {
 		StringBuffer buff = new StringBuffer();
 		for(int x = 0; x < size; x++) {
 			buff.append('?');
 		}
 
 		try {
-			Sequence seq = new Sequence("Empty sequence", buff.toString());
+			Sequence seq = new Sequence(name, buff.toString());
 			return seq;
 		} catch(SequenceException e) {
 			// shouldn't happen as long as '-' is the gap character
