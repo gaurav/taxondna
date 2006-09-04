@@ -508,7 +508,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 			MessageBox mb = new MessageBox(
 					mainFrame, 
 					"Save file now?", 
-					"This file has been changed since the last time you saved it. Would you like to save it now?", 
+					"The file currently loaded has been changed since the last time you saved it. Would you like to save it now?", 
 					MessageBox.MB_YESNOCANCEL
 				);
 

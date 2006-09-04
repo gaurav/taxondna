@@ -409,10 +409,8 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	}
 	
 	public void dataChanged()	{
-		set = taxonDNA.lockSequenceList();
 		list_results.removeAll();
 		ta_matches.setText("");
-		taxonDNA.unlockSequenceList();
 	}
 
 	/**

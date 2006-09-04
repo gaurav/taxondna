@@ -107,6 +107,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 	}
 	
 	public void dataChanged()	{
+		return;
 	}
 
 	public void run() {

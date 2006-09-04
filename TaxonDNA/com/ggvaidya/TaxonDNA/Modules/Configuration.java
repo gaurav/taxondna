@@ -6,7 +6,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005-06
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -49,6 +49,12 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	public Configuration(TaxonDNA taxonDNA) {
 		this.taxonDNA = taxonDNA;
 
+		// Set the initial values. We DON'T need to change them
+		// every time something happens - nobody changes these
+		// values but us.
+		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
+
+		
 		// prime the overlaps
 		//
 		tfMinOverlap.addFocusListener(this);
@@ -114,6 +120,12 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		settings.add(new Label("How should this program treat ambiguous codons?"), cons);
 		choice_ambiguity.add("Ambiguous codons are used ('H' is treated as a combination of 'W' and 'C')"); 
 		choice_ambiguity.add("Ambiguous codons NOT used (they are all converted into 'N')"); 
+
+		if(Sequence.areAmbiguousBasesAllowed()) {
+			choice_ambiguity.select(0);
+		} else {
+			choice_ambiguity.select(1);
+		}		
 
 		cons.gridx = 1;
 		cons.gridy = 3;
@@ -209,39 +221,24 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	public Panel getPanel() { return this; }
 
 	/**
-	 * From UIExtension, we don't care if data changes.
+	 * From UIExtension. We'd like to know whether a new file is
+	 * loaded (and we should be LOCKED) or if a 'null' was loaded,
+	 * in which case we should be UNLOCKED.
 	 */
 	public void dataChanged() {
-		if(set == null) { 	// data is changing from null to ... ?
-					// in any case, this means we set from what we've got
-			Sequence.setMinOverlap(new Integer(tfMinOverlap.getText()).intValue());
-			
-			if(choice_ambiguity.getSelectedIndex() == 1) {
-				Sequence.ambiguousBasesAllowed(false);
-			} else {
-				Sequence.ambiguousBasesAllowed(true);
-			}
-		}
+		SequenceList list = taxonDNA.lockSequenceList();
 		
-		set = taxonDNA.lockSequenceList();
-		
-		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
-
-		if(Sequence.areAmbiguousBasesAllowed()) {
-			choice_ambiguity.select(0);
-		} else {
-			choice_ambiguity.select(1);
-		}
-
-		if(set == null) {
+		if(list == null) {
 			unlock();
 			lock_button.setEnabled(true);
 		} else {
 			lock();
-			lock_button.setEnabled(false);			
+			lock_button.setEnabled(false);
 		}
 
 		taxonDNA.unlockSequenceList();
+
+		return;
 	}
 
 	/**

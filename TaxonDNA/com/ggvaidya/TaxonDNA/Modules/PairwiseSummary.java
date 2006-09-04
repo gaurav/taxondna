@@ -111,11 +111,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 
 		fivePercentCutoff = 0;
 
-		set = taxonDNA.lockSequenceList();
-		if(set == null) {
-			text_main.setText("");
-		}
-		taxonDNA.unlockSequenceList();
+		text_main.setText("");
 	}
 
 	public void run() {

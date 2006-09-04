@@ -47,6 +47,8 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 
 	private	int		sort =	BY_NAME;
 
+	private boolean		flag_weDeletedIt = false;
+
 	// limits
 	private static final int MAX_DISPLAY_NAME = 30;		// use only the first 30 characters of display names
 	
@@ -187,6 +189,11 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	 * Dataset has changed.
 	 */
 	public void dataChanged() {
+		if(flag_weDeletedIt) {
+			flag_weDeletedIt = false;
+			return;
+		}
+
 		list = taxonDNA.lockSequenceList();
 		
 		if(list == null) {
@@ -203,7 +210,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		// now, we need to restore the sequence which we are at right this
 		// minute, so:
 		saveState();
-			
+
 		prepareSequences();
 		rewriteAll();
 
@@ -343,6 +350,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			selectSequence(seqNext);
 			
 			// and ... we've changed!
+			flag_weDeletedIt = true;
 			taxonDNA.sequencesChanged();
 			taxonDNA.unlockSequenceList();
 		}

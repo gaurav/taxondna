@@ -242,6 +242,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 	 * with everybody else.
 	 */
 	public void dataChanged() {
+		return;
 	}
 
 /*

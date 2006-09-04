@@ -102,6 +102,7 @@ public class SystemUsage extends Panel implements UIExtension, ActionListener, C
 	}
 	
 	public void dataChanged()	{
+		return;
 	}
 
 	public String getShortName() {		return "System Usage"; 	}

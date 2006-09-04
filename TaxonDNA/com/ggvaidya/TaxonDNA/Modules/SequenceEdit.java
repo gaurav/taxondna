@@ -175,8 +175,10 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 
 	/** Data changed: in our case, SequenceSet changed */
 	public void dataChanged() {
-		if(weEditedTheSet)
+		if(weEditedTheSet) {
+			weEditedTheSet = false;
 			return;
+		}
 
 		text_name.setText("");
 		text_family.setText("");
@@ -317,6 +319,8 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 			updateInfo(currentSequence);
 
 			set.modified();
+			weEditedTheSet = true;
+			taxonDNA.sequencesChanged();
 			
 			taxonDNA.unlockSequenceList();
 
@@ -340,6 +344,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				updateInfo(currentSequence);	// this is actually the easiest way to do this
 		
 				set.modified();	
+				weEditedTheSet = true;
 				taxonDNA.sequencesChanged();
 			} catch(SequenceException ex) {
 				MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error in sequence!", "There is an error in this sequence: " + ex);
