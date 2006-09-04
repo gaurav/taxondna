@@ -182,8 +182,7 @@ public class AllPairwiseDistances extends Panel implements UIExtension, Runnable
 			if(interval == 0)
 				interval = 1;
 			while(i.hasNext()) {
-				if(x % interval == 0)
-					pd.delay(x, set.count());
+				pd.delay(x, set.count());
 
 				seq = (Sequence) i.next(); 
 				print(pwAll, seq.getFullName() + "\t");

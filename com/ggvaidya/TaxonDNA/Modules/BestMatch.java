@@ -230,10 +230,6 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 			// notify user
 			int count_sequences = set.count();
-			int interval = (count_sequences / 100);
-			if(interval == 0)
-				interval = 1;
-			if(x % interval == 0) {
 				try {
 					pd.delay(x, count_sequences);
 				} catch(DelayAbortedException e) {
@@ -241,7 +237,6 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 					taxonDNA.unlockSequenceList();
 					return;
 				}
-			}
 			
 			// for each query, we run a SortedSequenceSet.
 			try { 

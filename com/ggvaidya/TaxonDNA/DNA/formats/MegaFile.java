@@ -108,9 +108,6 @@ public class MegaFile implements FormatHandler, Testable {
 	 */
 	public void writeFile(File file, SequenceList list, DelayCallback delay) throws IOException, DelayAbortedException {
 		int count = 0;
-		int interval = list.count()/50;
-		if(interval == 0)
-			interval = 1;
 
 		if(file == null)
 			throw new FileNotFoundException("No filename specified!\n\nThis is probably a programming error.");
@@ -151,7 +148,7 @@ public class MegaFile implements FormatHandler, Testable {
 			writer.println("#" + name + "\t" + seq.getSequence());
 
 			try {
-				if(delay != null && count % interval == 0)
+				if(delay != null)
 					delay.delay(count, list.count());
 			} catch(DelayAbortedException e) {
 				writer.close();
@@ -322,20 +319,13 @@ public class MegaFile implements FormatHandler, Testable {
 			int total		= 	spid;
 			Iterator iterator = names.keySet().iterator();
 	
-			if(delay != null)
-				delay.begin();
-
 			while(iterator.hasNext()) {
 				String name 	= (String) iterator.next();
 				int i			= ((Integer)names.get(name)).intValue();
 				StringBuffer seq	= (StringBuffer) sequences.get(i);
 
 				int count = (total - spid--);
-				int increment = (total / 100);
-				if(increment < 1)
-					increment = 1;
-				
-				if(count % increment == 0)
+				if(delay != null)
 					delay.delay(count, total);
 
 				list.add(new Sequence(name, seq.toString()));

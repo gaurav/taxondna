@@ -742,12 +742,9 @@ public class SequenceGrid {
 
 		Iterator i_rows = getSequences().iterator();
 		int count_rows = 0;
-		int interval = getSequences().size() / 100;
-		if(interval == 0)
-			interval = 1;
 		while(i_rows.hasNext()) {
-			if(count_rows % interval == 0)
-				delay.delay(count_rows, interval);
+			if(delay != null)
+				delay.delay(count_rows, getSequencesCount());
 
 			count_rows++;
 

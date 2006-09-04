@@ -165,9 +165,6 @@ public class GenBankFile implements FormatHandler, Testable {
 			Hashtable currentCDSs = new Hashtable();
 
 			int line_no = 1;
-			int interval = total_lines / 100;
-			if(interval == 0)
-				interval = 1;
 			while(reader.ready()) {
 				String line = reader.readLine().trim();
 
@@ -177,7 +174,7 @@ public class GenBankFile implements FormatHandler, Testable {
 
 
 				// handle 'delay'
-				if(delay != null && line_no % interval == 0)
+				if(delay != null)
 					try {
 						delay.delay(line_no, total_lines);
 					} catch(DelayAbortedException e) {

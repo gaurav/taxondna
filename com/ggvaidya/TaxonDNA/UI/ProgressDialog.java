@@ -56,7 +56,6 @@ import java.awt.event.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 
 public class ProgressDialog extends Dialog implements DelayCallback, ActionListener, Runnable, WindowListener {
-	private static final long serialVersionUID = -1358783749528278162L;
 	public static final int FLAG_NOMODAL	=	1;
 	public static final int FLAG_NOCANCEL	=	2;
 	private TextArea	textarea;
@@ -155,9 +154,10 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 			return;
 
 		float percentage = (float)done / total * 100;
-		if(percentage == 0 || Math.abs(percentage - lastPercentage) > 0.1) {
+		if(percentage == 0 || Math.abs(percentage - lastPercentage) > 0.5) {
 			textarea.setText(message + "\n\nPercentage done: " + percentage + "%");	
 			pi.changeIndicator(done, total);
+			lastPercentage = percentage;
 		}
 
 		if(abort) {

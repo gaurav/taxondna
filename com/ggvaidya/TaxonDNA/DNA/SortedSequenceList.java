@@ -79,7 +79,6 @@ public class SortedSequenceList {
 	 */
 	public void sortAgainst(Sequence query, DelayCallback delay) throws DelayAbortedException {
 		int count = 0;
-		int interval = 0;
 
 		// get rid of (and, hopefully, free) the last object
 		sorted = null;
@@ -91,11 +90,6 @@ public class SortedSequenceList {
 
 		// store the query
 		this.query = query;
-
-		// figure out a nice interval
-		interval = original.count() / 100;
-		if(interval == 0)
-			interval = 1;
 
 		// let's make sure nobody changes the original from "under" us
 		original.lock();
@@ -115,7 +109,7 @@ public class SortedSequenceList {
 			Sequence seq = (Sequence) listIterator.next();
 
 			// delay
-			if(delay != null && count % interval == 0)
+			if(delay != null)
 				delay.delay(count, original.count());
 
 			// is it a valid comparison? 

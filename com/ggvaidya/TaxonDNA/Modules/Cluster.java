@@ -111,15 +111,10 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 	public void writeupItemStrings(DelayCallback delay) throws DelayAbortedException {	
 		int delaySteps = clusters.size() + clusters.size();
-		int delayInterval = 0;
 
 		if(set != null)
 			delaySteps += set.count() * 2;	// try to get as accurate a guess as possible
 
-		delayInterval = delaySteps / 100;
-		if(delayInterval == 0)
-			delayInterval = 1;
-			
 		item_strings = new String[1 + clusters.size()];
 
 		if(delay != null)		
@@ -169,7 +164,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				Sequence seq = (Sequence) i1.next();
 
 				try {
-					if(delay != null && delay_count % delayInterval == 0)
+					if(delay != null)
 						delay.delay(delay_count, delaySteps);
 					delay_count++;
 				} catch(DelayAbortedException e) {
@@ -328,7 +323,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				Sequence seq1 = (Sequence)i1.next();
 
 				try {
-					if(delay != null && delay_count % delayInterval == 0)
+					if(delay != null)
 						delay.delay(delay_count, delaySteps);
 				} catch(DelayAbortedException e) {
 					item_strings[0] = "Clustering incomplete; please recluster.";
@@ -440,12 +435,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					Sequence seq = (Sequence) iter.next();
 					Vector our_first_bin = null;
 	
-					int increment = set.count()/100;
-					if(increment == 0)
-						increment = 1;
 					try {
-						if(c % increment == 0)
-							pb.delay(c, set.count());
+						pb.delay(c, set.count());
 					} catch(DelayAbortedException e) {
 						taxonDNA.unlockSequenceList();
 						return;

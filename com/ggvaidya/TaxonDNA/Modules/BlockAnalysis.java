@@ -226,10 +226,6 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			String name_query = query.getSpeciesName();
 
 			// notify user
-			int interval = (count_sequences / 100);
-			if(interval == 0)
-				interval = 1;
-			if(x % interval == 0) {
 				try {
 					pd.delay(x, count_sequences);
 				} catch(DelayAbortedException e) {
@@ -237,7 +233,6 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 					taxonDNA.unlockSequenceList();
 					return;
 				}
-			}
 			
 			
 			// for each query, we run a SortedSequence...thingie
