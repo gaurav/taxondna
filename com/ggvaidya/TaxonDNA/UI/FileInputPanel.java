@@ -59,6 +59,9 @@ public class FileInputPanel extends Panel implements ActionListener, TextListene
 	/**
 	 * Set us up a very simple file input panel. This is just a big 
 	 * TextField, with a "Browse ..." button on one side.
+	 *
+	 * If a 'label' is specified, we will add that as well. It will
+	 * be added to the left of the 'file input' part of the dialog.
 	 */
 	public FileInputPanel(String label, int mode, Frame frame) {
 		this.frame = frame;
