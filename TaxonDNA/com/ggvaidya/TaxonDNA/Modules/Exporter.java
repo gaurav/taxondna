@@ -208,10 +208,10 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		Panel buttons = new Panel();
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		btn_Copy.addActionListener(this);
-		buttons.add(btn_Copy);
 		btn_Export.addActionListener(this);
 		buttons.add(btn_Export);
+		btn_Copy.addActionListener(this);
+		buttons.add(btn_Copy);
 		
 		add(buttons, BorderLayout.SOUTH);
 	}

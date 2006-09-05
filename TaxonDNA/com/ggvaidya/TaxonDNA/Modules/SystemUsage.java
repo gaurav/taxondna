@@ -31,30 +31,20 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class SystemUsage extends Panel implements UIExtension, ActionListener, ComponentListener {
-	private static final long serialVersionUID = 7041536621763907730L;
 	private TextArea	text_main = new TextArea();
-	private Button		button_collectGarbage = new Button("Free spare memory (call gc)");
-	private Button		button_Refresh = new Button("Refresh");
+	private Button		button_Refresh = new Button("Optimize and refresh");
 
 	public SystemUsage(TaxonDNA taxonDNA) {
 		// layouting
 		setLayout(new BorderLayout());	
+		
+		button_Refresh.addActionListener(this);
+		add(button_Refresh, BorderLayout.NORTH);
 	       	
 		text_main.setEditable(false);
 		text_main.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		addComponentListener(this);
 		add(text_main);
-
-		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		
-		button_collectGarbage.addActionListener(this);
-		buttons.add(button_collectGarbage);
-
-		button_Refresh.addActionListener(this);
-		buttons.add(button_Refresh);
-
-		add(buttons, BorderLayout.SOUTH);
 	}
 
 	public void itemStateChanged(ItemEvent e) {

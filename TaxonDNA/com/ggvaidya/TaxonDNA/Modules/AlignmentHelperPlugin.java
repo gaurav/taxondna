@@ -68,13 +68,10 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 	// instructions will be mostly handled in labels
 	// there are some fields we are interested in, however
-	TextField 	tf_Input	=	new TextField(80);
-	Button		btn_Input_Browse = 	new Button("Browse ...");
+	FileInputPanel	finp_Input	=	null; 
+	FileInputPanel	finp_Output 	=	null; 
 	Button		btn_Export	=	new Button("Export now!");
-	TextField 	tf_Output =		new TextField(80);
-	Button		btn_Output_Browse = 	new Button("Browse ...");
 	Button		btn_Import_Here =	new Button("Import into this dataset");
-	Button		btn_Import_New =	new Button("Import into a new dataset");
 	
 	/**
 	 * No, no commands to add, thank you very much.
@@ -87,154 +84,44 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		super();
 
 		taxonDNA = view;
+
+		setLayout(new BorderLayout());
 		
-		// create the panel
-		Panel gridBag = new Panel();
-		gridBag.setLayout(new GridBagLayout());
+		Panel panel = new Panel();
+		RightLayout rl = new RightLayout(panel);
+		panel.setLayout(rl);
 
-		GridBagConstraints cons = new GridBagConstraints(); 
-		cons.anchor = 		GridBagConstraints.WEST;
-		cons.fill = 		GridBagConstraints.NONE;
-		cons.gridheight =	1;
-		cons.gridwidth =	1;
-		cons.gridx =		0;
-		cons.gridy =		0;
-		cons.insets = 		new Insets(2, 5, 2, 5);	
-		cons.ipadx =		0;	// tweak if components are too small
-		cons.ipady =		0;	// tweak if components are too small
-		cons.weightx =		0;
-		cons.weighty =		0;
+		// The 'input-to-clustal' part.
+		rl.add(new Label("1. Export sequences as input for Clustal"), RightLayout.FILL_2);
 
+		finp_Input = new FileInputPanel("Clustal input: ", FileInputPanel.MODE_FILE_WRITE, view.getFrame());
+		rl.add(finp_Input, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 
-		// layout the title
-		/*
-		Label title = new Label("Clustal Mapping");
-		title.setFont(new Font("Serif", Font.PLAIN, 24));
-		cons.gridx = 0;
-		cons.gridy = 0;
-		cons.gridwidth = 4;
-		gridBag.add(title, cons);
-		*/
-
-		// layout part 1 
-		cons.gridx = 0;
-		cons.gridy = 1;
-		cons.gridwidth = 4;
-		gridBag.add(new Label("1. Export sequences as input for Clustal"), cons);
-
-		// layout components for part 1: input
-		cons.gridy = 2; 
-		cons.gridwidth = 1;
-
-		cons.gridx = 1;
-		gridBag.add(new Label("Clustal input:"), cons);
-
-		cons.gridx = 2;
-		cons.weightx = 0.5d;
-		gridBag.add(tf_Input, cons);
-		cons.weightx = 0;
-
-		cons.gridx = 3;
-		btn_Input_Browse.addActionListener(this);
-		gridBag.add(btn_Input_Browse, cons);
-	
-/*
-		// layout components for part 1: map
-		cons.gridy = 3; 
-		cons.gridwidth = 1;
-
-		cons.gridx = 1;
-		gridBag.add(new Label("AlignmentHelper map file:"), cons);
-
-		cons.gridx = 2;
-		cons.weightx = 0.5d;
-		gridBag.add(tf_OutMapFile, cons);
-		cons.weightx = 0;
-
-		cons.gridx = 3;
-		btn_OutMapFile_Browse.addActionListener(this);
-		gridBag.add(btn_OutMapFile_Browse, cons);
-*/
-
-		// layout components for part 1: export
-		cons.gridy = 4; 
-		cons.gridx = 0;
-		cons.gridwidth = 4;
-		cons.anchor = GridBagConstraints.CENTER;
 		btn_Export.addActionListener(this);
-		gridBag.add(btn_Export, cons);
-		cons.anchor = GridBagConstraints.WEST;
-		
-		// layout part 2
-		cons.gridy = 5;
-		cons.gridx = 0;
-		cons.gridwidth = 4;
-		gridBag.add(new Label("2. Import results back from Clustal"), cons);
-		
-		// layout components for part 2: input
-		cons.gridy = 6; 
-		cons.gridwidth = 1;
+		rl.add(btn_Export, RightLayout.BESIDE);
+	
 
-		cons.gridx = 1;
-		gridBag.add(new Label("Clustal output:"), cons);
+		// the 'output-from-clustal' part.
+		rl.add(new Label("2. Import results back from Clustal"), RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		cons.gridx = 2;
-		cons.weightx = 0.5d;
-		gridBag.add(tf_Output, cons);
-		cons.weightx = 0;
+		finp_Output = new FileInputPanel("Clustal output: ", FileInputPanel.MODE_FILE_READ, view.getFrame());
+		rl.add(finp_Output, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 
-		cons.gridx = 3;
-		btn_Output_Browse.addActionListener(this);
-		gridBag.add(btn_Output_Browse, cons);
-/*
-		// layout components for part 2: map file
-		cons.gridy = 7; 
-		cons.gridwidth = 1;
-
-		cons.gridx = 1;
-		gridBag.add(new Label("AlignmentHelper map file:"), cons);
-
-		cons.gridx = 2;
-		cons.weightx = 0.5d;
-		gridBag.add(tf_InMapFile, cons);
-		cons.weightx = 0;
-
-		cons.gridx = 3;
-		btn_InMapFile_Browse.addActionListener(this);
-		gridBag.add(btn_InMapFile_Browse, cons);
-		// layout components for part 2: missing sequences file
-		cons.gridy = 8; 
-		cons.gridwidth = 1;
-
-		cons.gridx = 1;
-		gridBag.add(new Label("File where missing sequences should be placed:"), cons);
-
-		cons.gridx = 2;
-		cons.weightx = 0.5d;
-		gridBag.add(tf_MissingSequences, cons);
-		cons.weightx = 0;
-
-		cons.gridx = 3;
-		btn_MissingSequences_Browse.addActionListener(this);
-		gridBag.add(btn_MissingSequences_Browse, cons);
-		
-		*/
-		// layout components for part 1: import
-		cons.gridy = 9; 
-		cons.gridx = 0;
-		cons.gridwidth = 4;
-		cons.anchor = GridBagConstraints.CENTER;
-		Panel buttons = new Panel();
 		btn_Import_Here.addActionListener(this);
-		buttons.add(btn_Import_Here);
-		btn_Import_New.addActionListener(this);
-//		buttons.add(btn_Import_New);
-		gridBag.add(buttons, cons);
-		cons.anchor = GridBagConstraints.WEST;
+		rl.add(btn_Import_Here, RightLayout.BESIDE);
 
-		// finally, put the gridBag onto the Big Screen
-		setLayout(new BorderLayout()); 
-		add(gridBag, BorderLayout.NORTH);
+		// if ANYBODY knows a better way to do this, please let me know!
+		//
+		// hack: since we need to be in a flexible-width layout (i.e. BorderLayout's CENTER)
+		// as well as aligned to the top of the panel (BorderLayout's NORTH),
+		// we'll put our panel into a BorderLayout.NORTH *INSIDE* a BorderLayout.CENTER.
+		//
+		// ... and it works! Ha!
+		Panel sigh = new Panel();
+		sigh.setLayout(new BorderLayout());
+		sigh.add(panel, BorderLayout.NORTH);
+
+		add(sigh);
 	}
 
 	/* 
@@ -600,78 +487,42 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 	// action listener  
 	public void actionPerformed(ActionEvent evt) {
-		// what a catastrophe!
-		Class buttonClass = btn_Input_Browse.getClass();
-		if(evt.getSource().getClass().equals(buttonClass)) {
-			// it's a button!  
-			Button btn = (Button)evt.getSource();
-			TextField target = null;
+		Button btn = (Button) evt.getSource();
+		
+		if(btn.equals(btn_Export)) {
+			File file_input = 	finp_Input.getFile();
 
-			if(btn.equals(btn_Input_Browse))
-				target = tf_Input;
-			if(btn.equals(btn_Output_Browse))
-				target = tf_Output;
+			SequenceList set = taxonDNA.lockSequenceList();
+			if(set != null)
+				exportSequenceSet(set, file_input);
+			taxonDNA.unlockSequenceList();
 
-			if(target != null) {
-				String action = "save";
-				int saveOrLoad = FileDialog.SAVE;
+			return;
+		}
 
-				if(target.equals(tf_Output)) {
-					saveOrLoad = FileDialog.LOAD;
-					action = "load";
-				}
+		// imports work together
+		if(btn.equals(btn_Import_Here)) {
+			File file_output =	finp_Output.getFile();	
 
-				FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Please choose a location to "+action+" this file ...", saveOrLoad);			
-				fd.setVisible(true);
-				if(fd.getFile() != null) {
-					if(fd.getDirectory() != null)
-						target.setText(fd.getDirectory() + fd.getFile());
-					else
-						target.setText(fd.getFile());
-				}
+			SequenceList set = taxonDNA.lockSequenceList();
 
-				return;
-			}
+			SequenceList set_fixed = importSequenceSet(set, file_output);
+			if(set_fixed == null)
+				set_fixed = new SequenceList();
+				
+			String path = "";
+			if(set.getFile() != null)
+				path = set.getFile().getParent() + File.separator;
+				
+			set_fixed.setFile(new File(path + "valid_sequences.txt"));
+			TaxonDNA tdna = new TaxonDNA(set_fixed);
+
+			tdna.unlockSequenceList();
+
+			taxonDNA.sequencesChanged();
+			taxonDNA.unlockSequenceList();
 			
-			if(btn.equals(btn_Export)) {
-				File file_input = 	new File(tf_Input.getText());
-
-				SequenceList set = taxonDNA.lockSequenceList();
-				if(set != null)
-					exportSequenceSet(set, file_input);
-				taxonDNA.unlockSequenceList();
-
-				return;
-			}
-
-			// imports work together
-			if(btn.equals(btn_Import_Here)) {
-				File file_output =	new File(tf_Output.getText());	
-
-				SequenceList set = taxonDNA.lockSequenceList();
-				System.err.println("Before ISS: " + set);
-				SequenceList set_fixed = importSequenceSet(set, file_output);
-				System.err.println("After ISS: " + set);				
-				if(set_fixed == null)
-					set_fixed = new SequenceList();
-				
-				String path = "";
-				if(set.getFile() != null)
-					path = set.getFile().getParent() + File.separator;
-				
-				set_fixed.setFile(new File(path + "valid_sequences.txt"));
-				TaxonDNA tdna = new TaxonDNA(set_fixed);
-
-				System.err.println("New has: " + tdna.lockSequenceList());
-				System.err.println("Old has: " + taxonDNA.lockSequenceList());				
-
-				tdna.unlockSequenceList();
-				taxonDNA.unlockSequenceList();
-				
-				taxonDNA.unlockSequenceList();
-
-				return;
-			}
+			return;
 		}
 	}
 	

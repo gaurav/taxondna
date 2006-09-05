@@ -44,7 +44,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 	private TextArea	text_main = new TextArea();
 	private TextField	text_threshold = new TextField();
 
-	private Button		btn_recalculate = new Button(" Calculate ");
+	private Button		btn_recalculate = new Button(" Calculate! ");
 	private Button		btn_Copy;
 	private Button		btn_threshold = new Button("Compute from Pairwise Summary");
 
@@ -59,12 +59,21 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		setLayout(new BorderLayout());
 
 		Panel top = new Panel();
-		top.add(new Label("Please enter the threshold for all species barcodes:"));
-		top.add(text_threshold);
-		text_threshold.setText("3.0");
-		top.add(new Label("%"));
+		RightLayout rl = new RightLayout(top);
+		top.setLayout(rl);
+
+		rl.add(new Label("Please enter the threshold for best close match:"), RightLayout.NONE);
+
+		text_threshold.setText("03.000");
+		rl.add(text_threshold, RightLayout.BESIDE);
+
+		rl.add(new Label("%"), RightLayout.BESIDE);
+
 		btn_threshold.addActionListener(this);
-		top.add(btn_threshold);
+		rl.add(btn_threshold, RightLayout.BESIDE);
+		
+		btn_recalculate.addActionListener(this);
+		rl.add(btn_recalculate, RightLayout.NEXTLINE | RightLayout.FILL_4);
 
 		add(top, BorderLayout.NORTH);
 
@@ -80,9 +89,6 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);		
 	
-		btn_recalculate.addActionListener(this);
-		buttons.add(btn_recalculate);
-		
 		add(buttons, BorderLayout.SOUTH);
 	}
 

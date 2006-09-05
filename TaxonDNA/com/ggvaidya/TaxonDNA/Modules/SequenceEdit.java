@@ -8,7 +8,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005, 2006.
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -38,7 +38,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class SequenceEdit extends Panel implements UIExtension, ActionListener, ItemListener, FocusListener {	
-	private static final long serialVersionUID = -5611046287558975084L;
 	private TaxonDNA	taxonDNA;
 	private SequenceList	set = null;
 	
@@ -149,11 +148,11 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
+		button_query.addActionListener(this);
+		buttons.add(button_query);	
+		
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);
-	
-		button_query.addActionListener(this);
-		buttons.add(button_query);		
 
 		add(buttons, c);
 		

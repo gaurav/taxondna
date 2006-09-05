@@ -78,9 +78,10 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		
 		// create the panel
 		setLayout(new BorderLayout());
-		
-		add(new Label("Pairwise distances summary"), BorderLayout.NORTH);
 
+		btn_Calculate.addActionListener(this);
+		add(btn_Calculate, BorderLayout.NORTH);
+		
 		text_main.setEditable(false);
 		text_main.setFont(new Font("Monospaced", Font.PLAIN, 12));
 		add(text_main);
@@ -88,18 +89,15 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		Panel buttons = new Panel();
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-		btn_Copy.addActionListener(this);
-		buttons.add(btn_Copy);
-
 		btn_dumpIntra.addActionListener(this);
 		buttons.add(btn_dumpIntra);
 
 		btn_dumpInter.addActionListener(this);
 		buttons.add(btn_dumpInter);
 		
-		btn_Calculate.addActionListener(this);
-		buttons.add(btn_Calculate);
-		
+		btn_Copy.addActionListener(this);
+		buttons.add(btn_Copy);
+
 		add(buttons, BorderLayout.SOUTH);
 		
 	}
@@ -363,10 +361,9 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 			return;
 		}
 		
-		// All the rest of the buttons copy stuff into the
-		// clipboard
 		Button btn = (Button) evt.getSource();
 		if(btn.equals(btn_Copy)) {
+			// clipboard
 			try {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
 				StringSelection selection = new StringSelection(text_main.getText());
@@ -401,6 +398,9 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 				);
 
 			dialog.setVisible(true);
+
+			if(dialog.getFile() == null)
+				return;
 			
 			if(dialog.getDirectory() != null)
 				file = new File(dialog.getDirectory() + dialog.getFile());
