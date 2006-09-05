@@ -160,7 +160,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	/**
 	 * From UIExtension, our description.
 	 */
-	public String getDescription() 	{ return "Allows you to configure the basic settings of this program, such as minimum overlap, base pair comparison, etc."; }
+	public String getDescription() 	{ return "Allows you to change the settings used by all parts of this program."; }
 
 	/**
 	 * From UIExtension, our panel
