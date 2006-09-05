@@ -724,7 +724,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		uiExtensions.add((UIExtension)new CompleteOverlap(this));
 		uiExtensions.add((UIExtension)new SpeciesSummary(this));
 		uiExtensions.add((UIExtension)new PairwiseSummary(this));
-		uiExtensions.add((UIExtension)new AllPairwiseDistances(this));
+//		uiExtensions.add((UIExtension)new AllPairwiseDistances(this));
 		uiExtensions.add((UIExtension)new BestMatch(this));
 		uiExtensions.add((UIExtension)new BlockAnalysis(this));
 		uiExtensions.add((UIExtension)new Cluster(this));
