@@ -422,7 +422,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 	}
 	
 	public String getShortName() {		return "Best Match/Best Close Match"; 	}
-	public String getDescription() {	return "Determines the best match and best close match for all the sequences."; }
+	public String getDescription() {	return "Determines the best match and best close match for all the sequences"; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;

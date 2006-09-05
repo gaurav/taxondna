@@ -441,7 +441,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 	// UIExtension stuff
 	public String getShortName() { return "Pairwise Summary"; }
 	
-	public String getDescription() { return "Summarises the pairwise distances"; }
+	public String getDescription() { return "Summarises the pairwise distances present in this dataset"; }
 	
 	public Frame getFrame() { return null; }	
 }
