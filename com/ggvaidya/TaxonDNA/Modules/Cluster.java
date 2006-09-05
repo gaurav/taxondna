@@ -39,8 +39,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	private TaxonDNA	taxonDNA;
 	private SequenceList	set = null;
 
-	private Button		btn_MakeClusters = new Button("Make clusters now?");
-	private TextField	text_threshold = new TextField("3");
+	private Button		btn_MakeClusters = new Button(" Make clusters now! ");
+	private TextField	text_threshold = new TextField("03.000");
 	private java.awt.List	list_clusters = new java.awt.List();
 	private TextArea	text_main = new TextArea();
 
@@ -417,6 +417,14 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	
 	public void run() {
 		set = taxonDNA.lockSequenceList();
+		
+		if(set == null) {
+			taxonDNA.unlockSequenceList();
+			
+			text_main.setText("No sequences loaded!");
+
+			return;
+		}
 				
 		ProgressDialog pb = new ProgressDialog(taxonDNA.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
 				

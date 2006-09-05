@@ -36,15 +36,15 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
-public class SpeciesSummary extends Panel implements UIExtension, Runnable, ActionListener {
+public class SpeciesSummary extends Panel implements UIExtension, Runnable, ActionListener, ItemListener {
 	private TaxonDNA	taxonDNA = null;
 	private TextArea	text_main = new TextArea();
 
 	private java.awt.List	list_species = new java.awt.List();
 	private Button		btn_Calculate = new Button("Calculate now!");
-	private Button		btn_Delete = new Button("Delete all sequences of the selected species");
-	private Button		btn_export_multiple = new Button("Export sequences with species having more than one sequence");
-	private Button		btn_Copy = new Button("Copy species list");
+	private Button		btn_Delete = new Button("Remove selected species");
+	private Button		btn_export_multiple = new Button("Export species with multiple sequences");
+	private Button		btn_Copy = new Button("Copy list to clipboard");
 	
 	private Vector		vec_Species =		null;
 
@@ -57,28 +57,35 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		this.taxonDNA = taxonDNA;
 	
 		// layouting
-		setLayout(new BorderLayout());	
-	       	
-		text_main.setEditable(false);
-		add(text_main, BorderLayout.NORTH);
+		setLayout(new BorderLayout());
 
+		Panel top = new Panel();
+		top.setLayout(new BorderLayout());
+
+		btn_Calculate.addActionListener(this);
+		top.add(btn_Calculate, BorderLayout.NORTH);
+
+		text_main.setEditable(false);
+		top.add(text_main);
+
+		add(top, BorderLayout.NORTH);
+
+		list_species.addItemListener(this);
 		add(list_species);
 
 		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.LEFT));
-
-		btn_Calculate.addActionListener(this);
-		buttons.add(btn_Calculate);
+		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		btn_Delete.addActionListener(this);
+		btn_Delete.setEnabled(false);
 		buttons.add(btn_Delete);
+		
+		btn_export_multiple.addActionListener(this);
+		buttons.add(btn_export_multiple);
 
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);
 
-		btn_export_multiple.addActionListener(this);
-		buttons.add(btn_export_multiple);
-		
 		add(buttons, BorderLayout.SOUTH);
 	}
 
@@ -233,6 +240,22 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 						x + " sequences were successfully deleted."
 						);
 				mb.go();
+			}
+		}
+	}
+
+	/**
+	 * Somebody selected something in list_species.
+	 */
+	public void  itemStateChanged(ItemEvent e) {
+		if(e.getSource().equals(list_species)) {
+			switch(e.getStateChange()) {
+				case ItemEvent.DESELECTED:
+					btn_Delete.setEnabled(false);
+					break;
+				case ItemEvent.SELECTED:
+					btn_Delete.setEnabled(true);
+					break;
 			}
 		}
 	}

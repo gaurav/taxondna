@@ -36,8 +36,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BarcodeGenerator extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
-	private static final long serialVersionUID = 1L;
-	
 	private TaxonDNA	taxonDNA = null;
 	private SequenceList	set = null;
 
@@ -85,16 +83,26 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		cons.gridy = 1;
 		cons.gridwidth = 2;
 		settings.add(new Label("We will use the inclusivity algorithm to generate consensus sequences. Thus, A+T will become W, and W+C will become H."), cons);
+		
+		calc = new Button("Generate");
+		calc.addActionListener(this);
+
+		cons.gridx = 0;
+		cons.gridy = 2;
+		cons.gridwidth = 2;
+		settings.add(calc, cons);
 
 		add(settings, BorderLayout.NORTH);
 
+		/*
 		Panel buttons = new Panel();
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-		calc = new Button("Generate");
-		calc.addActionListener(this);
-		buttons.add(calc);
+*/
 
+/*
+		buttons.add(calc);
 		add(buttons, BorderLayout.SOUTH);
+		*/
 	}
 
 	public void itemStateChanged(ItemEvent e) {

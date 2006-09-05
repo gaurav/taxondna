@@ -48,6 +48,9 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// the current TaxonDNA version number 
 	private static String 	version 		= "0.9.4.4";
 
+	// the following information is shared amongst all TaxonDNAs.
+	private static int	countTaxonDNAs		= 0;
+
 	// the following is information specific to this particular TaxonDNA.
 	private SequenceList 	sequences		= null;
 	
@@ -122,6 +125,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		lockSequenceList();
 		registerUIExtensions();		// register the required UIExtensions
 		createUI();			// create our user interface
+		countTaxonDNAs++;
 		unlockSequenceList(null);
 	}
 
@@ -347,7 +351,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	}	
 	
 	/**
-	 * If somebody tries to close the window, call closeFile() before closing the Window
+	 * If somebody tries to close the window, try to exit. exitTaxonDNA might not let us, though.
 	 */
 	public void windowClosing(WindowEvent e) {
 		exitTaxonDNA();
@@ -549,7 +553,12 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		// will NOT solve all the other thread related
 		// issues will have, although it will save
 		// the user *some* angst.
-		System.exit(0);
+		countTaxonDNAs--;
+		if(countTaxonDNAs == 0) {
+			// all done! we can exit now.
+			System.exit(0);
+		}
+		System.gc();
 	}
 
 //

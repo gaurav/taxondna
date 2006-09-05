@@ -38,15 +38,13 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BestMatch extends Panel implements UIExtension, ActionListener, Runnable {
-	private static final long serialVersionUID = -1927724638139868037L;
-
 	private TaxonDNA	taxonDNA = null;
 
 	private TextArea	text_main = new TextArea();			// displays the results
 	private TextField	text_threshold = new TextField();		// tiny textfield, to display the
 										// threshold (etc. 3%) 
 
-	private Button		btn_recalculate = new Button(" Calculate ");
+	private Button		btn_recalculate = new Button(" Calculate! ");
 	private Button		btn_Copy;
 	private Button		btn_threshold = new Button("Compute from Pairwise Summary");
 
@@ -59,12 +57,21 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		setLayout(new BorderLayout());
 
 		Panel top = new Panel();
-		top.add(new Label("Please enter the threshold for best close match:"));
-		top.add(text_threshold);
+		RightLayout rl = new RightLayout(top);
+		top.setLayout(rl);
+
+		rl.add(new Label("Please enter the threshold for best close match:"), RightLayout.NONE);
+
 		text_threshold.setText("03.000");
-		top.add(new Label("%"));
+		rl.add(text_threshold, RightLayout.BESIDE);
+
+		rl.add(new Label("%"), RightLayout.BESIDE);
+
 		btn_threshold.addActionListener(this);
-		top.add(btn_threshold);
+		rl.add(btn_threshold, RightLayout.BESIDE);
+		
+		btn_recalculate.addActionListener(this);
+		rl.add(btn_recalculate, RightLayout.NEXTLINE | RightLayout.FILL_4);
 
 		add(top, BorderLayout.NORTH);
 
@@ -80,9 +87,6 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);		
 	
-		btn_recalculate.addActionListener(this);
-		buttons.add(btn_recalculate);
-		
 		add(buttons, BorderLayout.SOUTH);
 	}
 
@@ -123,7 +127,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		// Calculate the BestMatch (via new Thread->run(this))
 		if(e.getSource().equals(btn_recalculate)) {
 			// Recalculate!
-			btn_recalculate.setLabel("Recalculate"); 
+			btn_recalculate.setLabel("Recalculate!"); 
 			if(text_threshold.getText().trim().equals("")) {	// no threshold specified
 				MessageBox mb = new MessageBox(
 					taxonDNA.getFrame(),
