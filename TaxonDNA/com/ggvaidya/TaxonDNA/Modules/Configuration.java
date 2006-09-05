@@ -35,15 +35,14 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class Configuration extends Panel implements UIExtension, ActionListener, FocusListener {
 	TaxonDNA 		taxonDNA;
-	SequenceList		set;
 	Panel 			settings = 	new Panel();	// Settings panel
 
-	Label			warningLabel;			// warning: please set up BEFORE loading files
+	Label			warningLabel = new Label("Please wait, loading TaxonDNA ...");	// warning: please set up BEFORE loading files
 	
 	TextField		tfMinOverlap = new TextField("", 5);
 	Choice			choice_ambiguity = new Choice();
 	
-	Button			lock_button = new Button(" Lock Settings ");
+	Button			lock_button = new Button("Lock Settings");
 	boolean			locked = false;
 	
 	public Configuration(TaxonDNA taxonDNA) {
@@ -53,7 +52,6 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		// every time something happens - nobody changes these
 		// values but us.
 		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
-
 		
 		// prime the overlaps
 		//
@@ -61,20 +59,8 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		
 		// Layouting the UI for the settings 
 		//
-		settings.setLayout(new GridBagLayout());
-		GridBagConstraints	cons = new GridBagConstraints();
-
-		// default arguments
-		//
-		cons.gridwidth = 1;
-		cons.gridheight = 1;
-		cons.weightx = 0;
-		cons.weighty = 0;
-		cons.anchor = GridBagConstraints.NORTHWEST;
-		cons.fill = GridBagConstraints.BOTH;
-		cons.insets = new Insets(5, 5, 5, 5);
-		cons.ipadx = 0;
-		cons.ipady = 0;	
+		RightLayout rl = new RightLayout(settings);
+		settings.setLayout(rl);
 		
 		// put in a title
 		//
@@ -87,37 +73,21 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		settings.add(label, cons);
 		*/
 
-		cons.gridx = 0;
-		cons.gridy = 1;
-		cons.gridwidth = 3;
-		warningLabel = new Label();
-		settings.add(warningLabel, cons);
+		rl.add(warningLabel, RightLayout.NONE);		
+		rl.add(lock_button, RightLayout.BESIDE | RightLayout.FLUSHRIGHT | RightLayout.FILL_2);
 		
 		// add the minimum overlap setting
 		//
-		cons.gridx = 0;
-		cons.gridy = 2;
-		cons.gridwidth = 1;		
-		cons.weightx = 1;
-		settings.add(new Label("Do not compare two sequences unless they have atleast these many basepairs in common: "), cons);
+		rl.add(new Label("Do not compare two sequences unless they have atleast "), RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 
-		cons.gridx = 1;
-		cons.gridy = 2;
-		cons.weightx = 0;
-		cons.fill = GridBagConstraints.NONE;
 		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
-		settings.add(tfMinOverlap, cons);
+		rl.add(tfMinOverlap, RightLayout.BESIDE);
 
-		cons.gridx = 2;
-		cons.gridy = 2;
-		settings.add(new Label("bp"), cons);
+		rl.add(new Label("bp in common."), RightLayout.BESIDE);
 
 		// ambiguity codons
 		//
-		cons.gridx = 0;
-		cons.gridy = 3;
-		cons.fill = GridBagConstraints.HORIZONTAL;
-		settings.add(new Label("How should this program treat ambiguous codons?"), cons);
+		rl.add(new Label("How should this program treat ambiguous codons?"), RightLayout.NEXTLINE);
 		choice_ambiguity.add("Ambiguous codons are used ('H' is treated as a combination of 'W' and 'C')"); 
 		choice_ambiguity.add("Ambiguous codons NOT used (they are all converted into 'N')"); 
 
@@ -125,46 +95,23 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 			choice_ambiguity.select(0);
 		} else {
 			choice_ambiguity.select(1);
-		}		
+		}
 
-		cons.gridx = 1;
-		cons.gridy = 3;
-		cons.fill = GridBagConstraints.NONE;
-		settings.add(choice_ambiguity, cons);
+		rl.add(choice_ambiguity, RightLayout.BESIDE | RightLayout.FILL_2);
 
 		// note about how we treat leading and lagging sequences
-		cons.gridx = 0;
-		cons.gridy = 4;
-		cons.gridwidth = 2;
-		settings.add(new Label("Note that differences in leading and trailing gaps are ignored, while differences in internal gaps will be counted."), cons);
+		rl.add(new Label("Note that differences in leading and trailing gaps are ignored, while differences in internal gaps will be counted."), RightLayout.NEXTLINE | RightLayout.FILL_3);
 		
-
 		// add settings into the main panel
 		//
 		setLayout(new BorderLayout());
 		add(settings, BorderLayout.NORTH);		
-		
-		// Buttons
-		//
-		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		lock_button.addActionListener(this);
-		buttons.add(lock_button);
-		
-		add(buttons, BorderLayout.SOUTH);
 	}
 
 	public void lock() {
 		tfMinOverlap.setEditable(false);
 		choice_ambiguity.setEnabled(false);
 
-		if(set != null)
-			warningLabel.setText("There is a file loaded into this program. You cannot change these settings unless you reload it.");
-		else
-			warningLabel.setText("You have locked these settings. Please click on the \"Unlock\" button to unlock it.");
-		lock_button.setLabel("Unlock Settings");
-		
 		locked = true;
 	}
 
@@ -234,6 +181,9 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		} else {
 			lock();
 			lock_button.setEnabled(false);
+			
+			warningLabel.setText("There is a file loaded into this program. You cannot change these settings unless you reload it.");
+			lock_button.setLabel("Unlock Settings");
 		}
 
 		taxonDNA.unlockSequenceList();
@@ -263,8 +213,11 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		if(e.getSource().equals(lock_button)) {
 			if(locked)
 				unlock();
-			else
+			else {
 				lock();
+				warningLabel.setText("You have locked these settings. Please click on the \"Unlock\" button to unlock it.");
+				lock_button.setLabel("Unlock Settings");
+			}
 		}
 	}
 }
