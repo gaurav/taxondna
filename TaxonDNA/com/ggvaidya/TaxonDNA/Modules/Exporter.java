@@ -756,7 +756,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 	// UIExtension stuff
 	public String getShortName() { return "Export this dataset"; }
 	
-	public String getDescription() { return "Allows you to export this dataset, customizing export options as you go."; }
+	public String getDescription() { return "Allows you to export this dataset in a custom format"; }
 	
 	public Frame getFrame() { return null; }
 	

@@ -555,7 +555,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	// UIExtension stuff
 	public String getShortName() { return "Cluster"; }
 	
-	public String getDescription() { return "Clusters the dataset."; }
+	public String getDescription() { return "Identifies clusters of similar sequences"; }
 	
 	public Frame getFrame() { return null; }
 	

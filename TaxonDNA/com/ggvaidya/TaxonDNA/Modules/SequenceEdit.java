@@ -362,7 +362,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	// UIExtension stuff
 	public String getShortName() { return "Sequences"; }
 	
-	public String getDescription() { return "Used to edit sequences. An integral part of TaxonDNA"; }
+	public String getDescription() { return "Edit individual sequences"; }
 	
 	public Frame getFrame() { return null; }
 	

@@ -318,7 +318,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 	}
 	
 	public String getShortName() {		return "Consensus Barcode Generator"; 	}
-	public String getDescription() {	return "Creates a new dataset, containing species-level barcode sequences."; }
+	public String getDescription() {	return "Generates a consensus sequence for every species in the dataset"; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;

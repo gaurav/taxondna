@@ -315,7 +315,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 	// UIExtension stuff
 	public String getShortName() { return "Query against sequences"; }
 	
-	public String getDescription() { return "Allows you to query the dataset for a sequence"; }
+	public String getDescription() { return "Query a sequence against the other sequences in this dataset"; }
 	
 	public Frame getFrame() { return null; }
 	

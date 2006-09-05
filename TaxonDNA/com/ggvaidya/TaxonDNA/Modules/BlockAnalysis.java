@@ -343,7 +343,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 	}
 	
 	public String getShortName() {		return "All Species Barcodes"; 	}
-	public String getDescription() {	return "Does an all species barcodes analysis on the sequences"; }
+	public String getDescription() {	return "Determines which sequences can be successfully used as barcodes"; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;

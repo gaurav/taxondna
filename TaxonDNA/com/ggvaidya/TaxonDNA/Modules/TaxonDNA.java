@@ -738,10 +738,10 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		uiExtensions.add((UIExtension)new BlockAnalysis(this));
 		uiExtensions.add((UIExtension)new Cluster(this));
 		uiExtensions.add((UIExtension)new BarcodeGenerator(this));
+		uiExtensions.add((UIExtension)new AlignmentHelperPlugin(this));
 		uiExtensions.add((UIExtension)new Exporter(this));
 //		uiExtensions.add((UIExtension)new Randomizer(this));
-		uiExtensions.add((UIExtension)new AlignmentHelperPlugin(this));
-		uiExtensions.add((UIExtension)new Tester(this));
+//		uiExtensions.add((UIExtension)new Tester(this));
 		uiExtensions.add((UIExtension)new SystemUsage(this));
 //		uiExtensions.add((UIExtension)new CombineDatasets(this));
 //		uiExtensions.add((UIExtension)new GenerateSubSet(this));

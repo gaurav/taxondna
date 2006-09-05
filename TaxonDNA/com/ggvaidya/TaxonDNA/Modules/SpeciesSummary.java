@@ -331,7 +331,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 	// OUR USUAL UIINTERFACE CRAP
 	public String getShortName() {		return "Species Summary"; 	}
-	public String getDescription() {	return "Summarises known information on species"; }
+	public String getDescription() {	return "Information on the species present in this dataset"; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;
