@@ -242,7 +242,6 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 					x++;
 				}
 
-				
 				// calculate the usual suspects
 				// 
 				overlap = Math.abs(max_intra_distance - min_inter_distance);
@@ -258,9 +257,10 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 				 *
 				 */ 
 
-				fivePercentCutoff = (float) percentage(min_inter_distance, 1);
+				fivePercentCutoff = (float) percentage(max_intra_distance, 1);
 				
 				println(str, "Overlap with 5% error margins on both ends:\t " + percentage(overlap, 1) + "% (from " + percentage(min_inter_distance, 1) + "% to " + percentage(max_intra_distance, 1) + "%, covering " + percentage(within, count_comparisons) + "% of intra and interspecific but intrageneric sequences)");
+				println(str, "Five percent intraspecific cutoff:\t " + fivePercentCutoff + "%");
 			}
 		}
 
