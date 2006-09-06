@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	// the current TaxonDNA version number 
-	private static String 	version 		= "0.9.4.4";
+	private static String 	version 		= "0.9.5";
 
 	// the following information is shared amongst all TaxonDNAs.
 	private static int	countTaxonDNAs		= 0;
