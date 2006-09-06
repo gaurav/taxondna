@@ -229,9 +229,6 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				// seq available for this species
 				// in the database.
 
-				// of course, we just cancel
-				// unless the SpeciesSummary
-				// module is loaded
 				String speciesName = ( (String) (hash_species_this.keySet().toArray())[0]);
 				if(sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidMatchesCount() == bin.size())
 					no_of_clusters_with_all_sequences_for_a_species++;
