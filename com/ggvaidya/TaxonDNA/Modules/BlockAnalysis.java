@@ -186,6 +186,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		// counts
 		int valid_sequences = 0;
+		int count_seq_without_species_name = 0;
 		
 		int block_correct = 0;
 		int block_incorrect = 0;
@@ -195,6 +196,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		// sequence listing
 		StringBuffer str_listings = new StringBuffer("Query\tFound in a complete block?\n");
+		StringBuffer str_noSpeciesName = new StringBuffer("Sequences without an identifiable species name\n");
 		
 		// get the new threshold
 		double threshold = Double.parseDouble(text_threshold.getText());
@@ -230,6 +232,13 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		while(i.hasNext()) {
 			Sequence query =	(Sequence) i.next();
 			String name_query = query.getSpeciesName();
+
+			// skip it if it doesn't have a species name
+			if(name_query.equals("")) {
+				count_seq_without_species_name++;
+				str_noSpeciesName.append(query.getFullName() + "\n");
+				continue;
+			}
 
 			// notify user
 				try {
@@ -303,7 +312,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			// done processing blocks
 		
 			// set the string
-			str_listings.append(name_query);
+			str_listings.append(query.getFullName());
 			if(is_block_correct) {
 				str_listings.append("\tcorrect\t");
 			} else if(is_block_incorrect) {
@@ -325,12 +334,14 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		text_main.setText(
 				"Sequences:\t" + count_sequences + 
+				"\nSequences without valid species names:\t" + count_seq_without_species_name + 
 				"\nSequences with atleast one sequence with an overlap of " + Sequence.getMinOverlap() + " base pairs:\t" + valid_sequences +
 				"\n\nCorrect identifications according to \"All Species Barcodes\":\t" + block_correct + " (" + percentage(block_correct, valid_sequences) + "%)" +
 				"\nAmbiguous according to \"All Species Barcodes\":\t" + block_ambiguous + " (" + percentage(block_ambiguous, valid_sequences) + "%)" +
 				"\nIncorrect identifications according to \"All Species Barcodes\":\t" + block_incorrect + " (" + percentage(block_incorrect, valid_sequences) + "%)" + 
 				"\nSequences with no match closer than " + percentage(threshold, 1) + "%:\t" + block_nomatch + " (" + percentage(block_nomatch, valid_sequences) + "%)" + 
-				"\n\n" + str_listings.toString());
+				"\n\n" + str_listings.toString() +
+				"\n\n" + str_noSpeciesName.toString());
 
 		pd.end();
 		
