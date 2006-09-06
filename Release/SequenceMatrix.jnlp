@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<!-- JNLP file for SpeciesMatrix -->
+<!-- JNLP file for SequenceMatrix -->
 <!-- Based on the JNLP File for SwingSet2 Demo Application [http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/syntax.html] --> 
 
 <jnlp 
 	spec="1.0+" 
 	codebase="http://taxondna.sf.net/"
-	href="webstart/SpeciesMatrix.jnlp"> 
+	href="webstart/SequenceMatrix.jnlp"> 
 <!--  codebase="http://my_company.com/jaws/apps" -->
   <information> 
-    <title>SpeciesMatrix</title> 
+    <title>SequenceMatrix</title> 
     <vendor>Evolution Lab, National University of Singapore</vendor> 
     <homepage href="http://taxondna.sf.net/"/> 
     <description kind="tooltip">Assembles DNA sequence files</description>
@@ -22,7 +22,7 @@
   </security> 
   <resources> 
     <j2se version="1.4+" max-heap-size="1000M" /> 
-    <jar href="jars/SpeciesMatrix.jar" /> 
+    <jar href="jars/SequenceMatrix.jar" /> 
   </resources> 
-  <application-desc main-class="com.ggvaidya.TaxonDNA.SpeciesMatrix.SpeciesMatrix" /> 
+  <application-desc main-class="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" /> 
 </jnlp>
