@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<!-- JNLP file for TaxonDNA -->
+<!-- JNLP file for SpeciesIdentifier -->
 <!-- Based on the JNLP File for SwingSet2 Demo Application [http://java.sun.com/j2se/1.4.2/docs/guide/jws/developersguide/syntax.html] --> 
 
 <jnlp 
 	spec="1.0+" 
 	codebase="http://taxondna.sf.net/"
-	href="webstart/TaxonDNA.jnlp"> 
+	href="webstart/SpeciesIdentifier.jnlp"> 
 <!--  codebase="http://my_company.com/jaws/apps" -->
   <information> 
     <title>TaxonDNA</title> 
@@ -13,7 +13,7 @@
     <homepage href="http://taxondna.sf.net/"/> 
     <description kind="tooltip">DNA dataset reader/writer/analyser</description>
     <description kind="one-line">Reads, writes and analyses DNA sequence files</description>
-    <description kind="short">TaxonDNA allows you to read and write a number of common DNA formats, convert between them, and perform DNA barcoding analyses on them.</description>
+    <description kind="short">SpeciesIdentifier allows you to read and write a number of common DNA formats, convert between them, and perform DNA barcoding analyses on them.</description>
 	<!-- icon has kind="splash", but that's about it -->
     <offline-allowed/> 
   </information> 
@@ -24,5 +24,5 @@
     <j2se version="1.4+" max-heap-size="1000M" /> 
     <jar href="jars/TaxonDNA.jar" /> 
   </resources> 
-  <application-desc main-class="com.ggvaidya.TaxonDNA.Modules.TaxonDNA" /> 
+  <application-desc main-class="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" /> 
 </jnlp>

@@ -19,7 +19,7 @@
 	<target name="TaxonDNA" depends="compile">
 		<jar  destfile="Release/TaxonDNA.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**" includes="**/*.class" >
 			<manifest>
-				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.Modules.TaxonDNA" />
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
 			</manifest>
 		</jar>
 
