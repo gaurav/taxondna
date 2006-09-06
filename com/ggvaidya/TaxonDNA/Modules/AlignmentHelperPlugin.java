@@ -529,7 +529,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 	// UIExtension stuff
 	public String getShortName() { return "Clustal Mapping"; }
 	
-	public String getDescription() { return "Produces files for, and returns output from, Clustal"; }
+	public String getDescription() { return "Exports and re-imports special datasets with shortened names"; }
 	
 	public Frame getFrame() { return null; }
 	
