@@ -2,25 +2,34 @@ CHANGELOG for TaxonDNA
 
 From 0.9.4 to 0.9.5
 ===================
+Major bug
+	*	The value being used for pairwise distance was
+		being reported incorrectly - the 5% interspecific
+		cutoff was being used instead of the 5% intraspecific
+		cutoff. Yes, this does mean that all best match and 
+		block analyses before 0.9.5 will probably have to be
+		redone. I'm sorry.
+
+Architecture redesign
+	*	This will be the last version of TaxonDNA to be released
+		as a single package. Our goal for TaxonDNA 0.9.6 will be
+		two complete, separate programs - SpeciesIdentifier (?)
+		and SequenceMatrix. This will be joined by GenBankExplorer
+		and (maybe) Randomizer eventually. All these will be released
+		in a single package (still called "TaxonDNA"), but will
+		be independent interfaces onto the internals.
+	*	SequenceMatrix is out as an independent release already,
+		though not on SourceForge =)
+
 Notes
 	*	The reported 'actual length' now ignores missing
 		information ENTIRELY. So a sequence with 30bp of
 		'?' in the middle will be reported as being 30bp
 		smaller than it really is. This makes sense to ME,
 		let me know if it doesn't make sense to you.
-	*	From this release, I'm changing the version number
-		format; pre-releases will be marked 'a', so I'm
-		currently working on 0.9.4a. This will be changed
-		to 'b' once features are fixed, and 0.9.5 once it's
-		all done. For convenience sake, the Help->About
-		will NOT change to 'b' or later; it will go from
-		0.9.4a to 0.9.5
-	*	At the same time, the versions IN TaxonDNA will
-		increment along with release 0.9.4.1, .2, etc.
-		This can go on FOREVER (i.e. expect 0.9.4.9999, etc.)
-		but will be reset to 0.9.5 at release.
-		Changelogs will reflect ONLY FULL VERSION CHANGES.
-		This makes things easier for me.
+		
+		Because of this, '?'s are now ignored in determining
+		external gaps.
 	*	Nobody noticed this, but BlockAnalysis should have
 		stopped working because of the SpeciesSummary 
 		changes. I've fixed this now, BUT BlockAnalysis
@@ -37,6 +46,8 @@ Notes
 
 Major changes
 	*	Randomization is finally done! (It's called "Randomizer")
+		(but it's temporarily out of TaxonDNA 0.9.5. It'll come
+		back eventually. Sorry!)
 	*	The GenBank file reader now uses 'CDS' instead of
 		'gene' to filter for certain CDS features. There is
 		also a new option to decided whether you want to keep
@@ -52,6 +63,16 @@ Major changes
 		easy to work with; this might change later. Still,
 		it's a simple format, and it won't be too hard to
 		convert it about any.
+	*	The simple file is also deprecated. We're now on Google Code.
+		New system - TaxonDNA will maintain it's own versions.
+		SpeciesIdentifier will start off at 0.5. We'll tag Bug reports
+		by 'applies to', with a tag for AllVersions. That way, we
+		can update CHANGELOGs from the bug reports, rather than the
+		(much messier) SVN logs.
+	*	Nexus loading works, although it's not fully done yet. It'll
+		work on simple files, but barf on complicated stuff/odd
+		mistakes.
+	*	Plenty of cleanup in the run up to v1.0.
 
 Warnings
 Bugs fixed
@@ -71,6 +92,8 @@ Bugs fixed
 		of more false 'warning' sequences. (sourceforge #1491379)
 	*	You can now cancel SpeciesSummary =).
 	*	Tiny but critical bug in CompleteOverlap fixed.
+	*	Many other bug fixes, but I've completely lost track, and
+		we switched repositories midway. Sigh.
 
 Tested
 Interesting
