@@ -23,7 +23,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.io.*;
@@ -37,7 +37,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class SpeciesSummary extends Panel implements UIExtension, Runnable, ActionListener, ItemListener {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 	private TextArea	text_main = new TextArea();
 
 	private java.awt.List	list_species = new java.awt.List();
@@ -51,10 +51,10 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	private boolean		flag_weChangedTheData = false;
 
 	/**
-	 * Constructor. Needs one taxonDNA object.
+	 * Constructor. Needs one seqId object.
 	 */
-	public SpeciesSummary(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public SpeciesSummary(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 	
 		// layouting
 		setLayout(new BorderLayout());
@@ -98,7 +98,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			return;
 		}
 		if(e.getSource().equals(btn_export_multiple)) {
-			SequenceList list = taxonDNA.lockSequenceList();
+			SequenceList list = seqId.lockSequenceList();
 				
 			if(list == null)
 				return;
@@ -135,7 +135,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				}
 			}
 
-			FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Export sequences to Fasta file ...", FileDialog.SAVE);
+			FileDialog fd = new FileDialog(seqId.getFrame(), "Export sequences to Fasta file ...", FileDialog.SAVE);
 			fd.setVisible(true);
 
 			File file = null;
@@ -155,7 +155,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				}
 			}
 
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 		}
 
 		if(e.getSource().equals(btn_Copy)) {
@@ -190,7 +190,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				return;
 
 			String sp_name = (String) vec_Species.get(selected);
-			SequenceList list = taxonDNA.lockSequenceList();
+			SequenceList list = seqId.lockSequenceList();
 			SpeciesDetail det = null;
 			try {
 				det = list.getSpeciesDetails(null).getSpeciesDetailsByName(sp_name);
@@ -198,11 +198,11 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				// wtf
 				return;
 			}
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 
 			if(det == null) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"This species does not exist!",
 						"I cannot find any sequences with the species '" + sp_name + "'! Are you sure you have't already removed or renamed sequences?\n\nTry recalculating the Species Summary. If this species still appears, there might be a programming error in this program.");
 				mb.go();
@@ -212,12 +212,12 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			int count = det.getSequencesCount();
 
 			MessageBox mb = new MessageBox(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Are you sure?",
 				"Are you sure you want to delete all " + count + " sequences belonging to the species '" + sp_name + "'?\n\nThis cannot be undone!",
 				MessageBox.MB_YESNO);
 			if(mb.showMessageBox() == MessageBox.MB_YES) {
-				list = taxonDNA.lockSequenceList();
+				list = seqId.lockSequenceList();
 				Iterator i = list.conspecificIterator(sp_name);
 				int x = 0;
 				while(i.hasNext()) {
@@ -231,11 +231,11 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				list_species.remove(selected);
 
 				flag_weChangedTheData = true;
-				taxonDNA.sequencesChanged();
-				taxonDNA.unlockSequenceList();
+				seqId.sequencesChanged();
+				seqId.unlockSequenceList();
 
 				mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Sequences deleted!",
 						x + " sequences were successfully deleted."
 						);
@@ -278,15 +278,15 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	 * Data processing and calculations happen in here.
 	 */
 	public void run() {
-		SequenceList list = taxonDNA.lockSequenceList();
+		SequenceList list = seqId.lockSequenceList();
 		SpeciesDetails species = null;
 
 		try {
 			species = list.getSpeciesDetails(
-					new ProgressDialog(taxonDNA.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
+					new ProgressDialog(seqId.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
 				);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 
@@ -326,7 +326,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		}
 
 		text_main.setText(str.toString());
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	// OUR USUAL UIINTERFACE CRAP

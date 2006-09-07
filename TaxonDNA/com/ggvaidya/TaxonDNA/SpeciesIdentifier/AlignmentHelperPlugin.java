@@ -2,7 +2,7 @@
  * AlignmentHelperPlugin.java
  *	Since the AlignmentHelper stuff is likely to be a horrible hack, I think it makes sense
  *	to make it it's OWN horrible hack, and leave it at that. If you don't want it, just remove
- *	the corresponding gridBag.addUIExtension() line from TaxonDNA. 
+ *	the corresponding gridBag.addUIExtension() line from SequenceIdentifier. 
  *
  * How this works:
  * 1.	The exported AlignmentHelper input file is actually a complete FASTA file, with 
@@ -11,7 +11,7 @@
  * 	Here, the uniqueId is the GI, unless no GI exists, in which case
  * 	we use the Sequences' UUID (note that the UUID contains a '_').
  * 	Furthermore, the GI will NOT include the sequence information
- * 	(i.e., if the reported GI is '10241:&lt;1034-1234', TaxonDNA
+ * 	(i.e., if the reported GI is '10241:&lt;1034-1234', SpeciesIdentifier
  * 	will use only consider the '10241' as the GI number)
  * 	
  * 	Example names include:
@@ -49,7 +49,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.io.*;
 import java.util.*;
@@ -64,7 +64,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionListener {	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 
 	// instructions will be mostly handled in labels
 	// there are some fields we are interested in, however
@@ -80,10 +80,10 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		return false;
 	}
  
-	public AlignmentHelperPlugin(TaxonDNA view) {
+	public AlignmentHelperPlugin(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
+		seqId = view;
 
 		setLayout(new BorderLayout());
 		
@@ -137,7 +137,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 	 * This function is called when we need to merge species information from another file.
 	 
 	public void insertSpeciesInfo() {
-		FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Please select the file to obtain the species information from", FileDialog.LOAD);
+		FileDialog fd = new FileDialog(seqId.getFrame(), "Please select the file to obtain the species information from", FileDialog.LOAD);
 
 		fd.show();
 
@@ -147,11 +147,11 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				filename = fd.getDirectory();
 			}
 			filename += fd.getFile();
-			SequenceList other = taxonDNA.loadSequenceListFromFile(fd.getDirectory() + fd.getFile());
+			SequenceList other = seqId.loadSequenceListFromFile(fd.getDirectory() + fd.getFile());
 			if(other != null) {
-				ProgressDialog pd = new ProgressDialog(taxonDNA.getFrame(), "Please wait, inserting information ...", "I am inserting species information from '" + filename + "' into the currently loaded file. Please note that DATA IN THE CURRENT FILE WILL BE OVERWRITTEN if you save your file. Only the species information will be used; all sequence data in this file can be deleted without any problems.");
+				ProgressDialog pd = new ProgressDialog(seqId.getFrame(), "Please wait, inserting information ...", "I am inserting species information from '" + filename + "' into the currently loaded file. Please note that DATA IN THE CURRENT FILE WILL BE OVERWRITTEN if you save your file. Only the species information will be used; all sequence data in this file can be deleted without any problems.");
 				// TODO: magic binding code. dark, evil magic. be warned.
-				set = taxonDNA.lockSequenceSet();
+				set = seqId.lockSequenceSet();
 
 				pd.begin();	
 
@@ -163,7 +163,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 					try {
 						pd.delay(count, set.count());
 					} catch(DelayAbortedException e) {
-						taxonDNA.unlockSequenceSet();	
+						seqId.unlockSequenceSet();	
 						return;
 					}
 					count++;
@@ -185,7 +185,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 				// clear the buffer and unlock
 				Sequence.resetAllDistances();
-				taxonDNA.unlockSequenceSet(set);
+				seqId.unlockSequenceSet(set);
 				
 				pd.end();
 			}
@@ -200,7 +200,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 
 	/**
 	 * Imports all the data in inputFile (combined with the present file, which acts as
-	 * a mapfile) into a NEW sequenceSet, which is spawned off into it's own TaxonDNA.
+	 * a mapfile) into a NEW sequenceSet, which is spawned off into it's own SpeciesIdentifier.
 	 * (it's the only way i can think of of doing this without confusing the user, or
 	 * obliterating his dataset without any complaints). Missing sequences will have
 	 * the warning flag set, so they "fall" to the bottom of the list.
@@ -213,7 +213,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 								// (particularly not iMap.remove!)
 								// so cloning it for future use
 
-		// what if we have NO set_map? (i.e. no files loaded into TaxonDNA)
+		// what if we have NO set_map? (i.e. no files loaded into SpeciesIdentifier)
 		// go with nothing at all :) [or an empty list, to be fractionally less poetic]
 		if(set_map == null) 
 			set_map = new SequenceList();
@@ -226,13 +226,13 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		try {
 			set_final = new SequenceList(inputFile, ff,
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Loading '" + inputFile + "' ...",
 						"Loading the sequences from '" + inputFile + "', please wait."
 					)
 				);
 		} catch(SequenceListException e) {
-			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "There is an error in '" + error_occured_in + "'!", "The following error occured while trying to read '" + error_occured_in + "'. Please make sure that it has been formatted correctly."); 
+			MessageBox mb = new MessageBox(seqId.getFrame(), "There is an error in '" + error_occured_in + "'!", "The following error occured while trying to read '" + error_occured_in + "'. Please make sure that it has been formatted correctly."); 
 			mb.go();
 			return null;
 		} catch(DelayAbortedException e) {
@@ -318,13 +318,13 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		// 3.	let's just chuck the "mapped" sequences elsewhere?
 		if(set_map.count() > 0) {
 			String path = "";
-			SequenceList list = taxonDNA.lockSequenceList();
+			SequenceList list = seqId.lockSequenceList();
 			if(list.getFile() != null)
 				path = list.getFile().getParent() + File.separator;
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			
 			set_map.setFile(new File(path + "missing_sequences.txt"));
-			new TaxonDNA(set_map);
+			new SpeciesIdentifier(set_map);
 		}
 
 		return set_final;
@@ -366,13 +366,13 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			if(id.equals("")) {
 				// there is no GI
 				if(!warned) {
-					mb = new MessageBox(taxonDNA.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create Clustal input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
+					mb = new MessageBox(seqId.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create Clustal input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
 					if(mb.showMessageBox() == MessageBox.MB_YES) {
 						// yes! go ahead
 						warned = true;
 					} else {
 						// no ... so, don't process at all.
-						mb = new MessageBox(taxonDNA.getFrame(), "Clustal export failed.", "I can't export files for Clustal without assigning unique identifiers to each sequence. Please re-run if you would like to export files for Clustal.");
+						mb = new MessageBox(seqId.getFrame(), "Clustal export failed.", "I can't export files for Clustal without assigning unique identifiers to each sequence. Please re-run if you would like to export files for Clustal.");
 						mb.go();
 
 						throw new RuntimeException();
@@ -385,7 +385,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			} else if(unique.get(id) != null) {
 				// there is a GI, but it's non identical
 				// barf biggly and noisily
-				mb = new MessageBox(taxonDNA.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
+				mb = new MessageBox(seqId.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
 				mb.go();
 
 				throw new RuntimeException();
@@ -401,7 +401,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		list.unlock();
 		
 		if(warned)
-			taxonDNA.saveFile();
+			seqId.saveFile();
 	}
 
 	/**
@@ -455,7 +455,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				if(uniques.get(id) != null) {
 					// our ID is non unique? Die with extreme prejudice!
 
-					MessageBox mb = new MessageBox(taxonDNA.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
+					MessageBox mb = new MessageBox(seqId.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
 					mb.go();
 				
 					return;	
@@ -470,11 +470,11 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				no++;
 			}
 		
-			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Success!", no + " sequences were exported successfully. You may now run Clustal on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
+			MessageBox mb = new MessageBox(seqId.getFrame(), "Success!", no + " sequences were exported successfully. You may now run Clustal on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
 			mb.go();
 
 		} catch(IOException e) {
-			MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the Clustal input and the map file? The technical description of this error is: " + e);
+			MessageBox mb = new MessageBox(seqId.getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the Clustal input and the map file? The technical description of this error is: " + e);
 			mb.go();
 			return;
 		} finally {
@@ -492,10 +492,10 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		if(btn.equals(btn_Export)) {
 			File file_input = 	finp_Input.getFile();
 
-			SequenceList set = taxonDNA.lockSequenceList();
+			SequenceList set = seqId.lockSequenceList();
 			if(set != null)
 				exportSequenceSet(set, file_input);
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 
 			return;
 		}
@@ -504,7 +504,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		if(btn.equals(btn_Import_Here)) {
 			File file_output =	finp_Output.getFile();	
 
-			SequenceList set = taxonDNA.lockSequenceList();
+			SequenceList set = seqId.lockSequenceList();
 
 			SequenceList set_fixed = importSequenceSet(set, file_output);
 			if(set_fixed == null)
@@ -515,12 +515,12 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				path = set.getFile().getParent() + File.separator;
 				
 			set_fixed.setFile(new File(path + "valid_sequences.txt"));
-			TaxonDNA tdna = new TaxonDNA(set_fixed);
+			SpeciesIdentifier tdna = new SpeciesIdentifier(set_fixed);
 
 			tdna.unlockSequenceList();
 
-			taxonDNA.sequencesChanged();
-			taxonDNA.unlockSequenceList();
+			seqId.sequencesChanged();
+			seqId.unlockSequenceList();
 			
 			return;
 		}

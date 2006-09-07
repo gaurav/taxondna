@@ -23,7 +23,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.io.*;
@@ -36,14 +36,14 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BarcodeGenerator extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 	private SequenceList	set = null;
 
 	private Choice		choice_overlap = new Choice();
 	private Button		calc;
 
-	public BarcodeGenerator(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public BarcodeGenerator(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 	
 
 		// layouting
@@ -119,10 +119,10 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 	}
 
 	public void run() {
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 
 		if(set == null) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 			
@@ -141,7 +141,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 
 //		System.err.println("Number of sequences which should match: " + num_sequences_should_match);
 		
-		ProgressDialog delay = new ProgressDialog(taxonDNA.getFrame(), "Please wait, generating sequence barcodes ...", "Please wait, sequence barcodes are being generated. This may take a while.", 0);
+		ProgressDialog delay = new ProgressDialog(seqId.getFrame(), "Please wait, generating sequence barcodes ...", "Please wait, sequence barcodes are being generated. This may take a while.", 0);
 
 		delay.begin();
 
@@ -158,7 +158,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 				delay.delay(count, set.count() * 2);
 			} catch(DelayAbortedException e) {
 				delay.end();
-				taxonDNA.unlockSequenceList();
+				seqId.unlockSequenceList();
 				return;
 			}
 
@@ -287,11 +287,11 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 			}
 		}
 
-		// now, we either spawn a new instance of TaxonDNA, or
+		// now, we either spawn a new instance of SpeciesIdentifier, or
 		// export into Fasta file.
 		// 
 		// we export. SOOOOO much simpler 
-		FileDialog fd = new FileDialog(taxonDNA.getFrame(), "Save species barcodes as FASTA file ...", FileDialog.SAVE);
+		FileDialog fd = new FileDialog(seqId.getFrame(), "Save species barcodes as FASTA file ...", FileDialog.SAVE);
 		fd.setVisible(true);
 
 		if(fd.getDirectory() != null && fd.getFile() != null) {
@@ -305,15 +305,15 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		results = null;
 		
 		} catch(SequenceException e) {
-			MessageBox.messageBox(taxonDNA.getFrame(), "Error: sequence incorrect", "An incorrect sequence was generated. This is an error in the program. Please inform the programmer.\n\nTechnical description: " + e);
+			MessageBox.messageBox(seqId.getFrame(), "Error: sequence incorrect", "An incorrect sequence was generated. This is an error in the program. Please inform the programmer.\n\nTechnical description: " + e);
 			e.printStackTrace();
 		} catch(IOException e) {
-			MessageBox.messageBox(taxonDNA.getFrame(), "Error: could not write file", "The following error was reported while trying to write the Fasta file: " + e);
+			MessageBox.messageBox(seqId.getFrame(), "Error: could not write file", "The following error was reported while trying to write the Fasta file: " + e);
 		} catch(DelayAbortedException e) {
-			MessageBox.messageBox(taxonDNA.getFrame(), "Calculation aborted", "This calculation has been aborted as requested.");
+			MessageBox.messageBox(seqId.getFrame(), "Calculation aborted", "This calculation has been aborted as requested.");
 		} finally {
 			delay.end();
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 		}
 	}
 	

@@ -1,8 +1,8 @@
 /**
  * 
  * A UIExtension which allows for sequence viewing and editing. This
- * is tricky, because this will actually need to talk to TaxonDNA 
- * to figure out a lot of the stuff (since TaxonDNA controls the
+ * is tricky, because this will actually need to talk to SpeciesIdentifier 
+ * to figure out a lot of the stuff (since SpeciesIdentifier controls the
  * All Sequences list)
  *
  */
@@ -26,7 +26,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -38,7 +38,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class SequenceEdit extends Panel implements UIExtension, ActionListener, ItemListener, FocusListener {	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 	
 	private Sequence	currentSequence = new Sequence();
@@ -61,11 +61,11 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	/**
 	 * Constructor: creates the interface on a panel
 	 */
-	public SequenceEdit(TaxonDNA view) {
+	public SequenceEdit(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
-		sequencePanel = taxonDNA.getSequencePanel();
+		seqId = view;
+		sequencePanel = seqId.getSequencePanel();
 
 		// create the panel
 		setLayout(new GridBagLayout());
@@ -161,15 +161,15 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 		sequencePanel.addItemListener(this);
 	}
 
-	/* Our ItemListener. This will listen ONLY to the taxonDNA Sequences list, and let us know when things change. */
+	/* Our ItemListener. This will listen ONLY to the seqId Sequences list, and let us know when things change. */
 	public void itemStateChanged(ItemEvent e) {
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 		if(set != null) {
 			Sequence seq = (Sequence) e.getItem();
 			displaySequence(seq);			
-			taxonDNA.goToExtension(getShortName());
+			seqId.goToExtension(getShortName());
 		}
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	/** Data changed: in our case, SequenceSet changed */
@@ -191,7 +191,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 
 	/**
 	 * Returns the Sequence() indicated. Note that you are entirely responsible for
-	 * ensuring that the taxonDNA list stays in sync. Maybe a method in taxonDNA?
+	 * ensuring that the seqId list stays in sync. Maybe a method in seqId?
 	 */
 	public void displaySequence(Sequence seq) {
 		if(seq != null) {
@@ -253,7 +253,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				return;
 			try {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Sequence seq = taxonDNA.getSequencePanel().getSelectedSequence();
+				Sequence seq = seqId.getSequencePanel().getSelectedSequence();
 				String copy = "> " + seq.getFullName() + "\n" + seq.getSequence();
 				StringSelection selection = new StringSelection(copy);
 				
@@ -264,10 +264,10 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 			btn_Copy.setLabel("Copy to Clipboard");
 		} else if(evt.getSource().equals(button_query)) {
 			// Query against others
-			QuerySequence qs = (QuerySequence) taxonDNA.getExtension("Query against sequences");
+			QuerySequence qs = (QuerySequence) seqId.getExtension("Query against sequences");
 			if(set != null && qs != null) {
-				qs.setSequence(taxonDNA.getSequencePanel().getSelectedSequence().getSequence());
-				taxonDNA.goToExtension("Query against sequences");
+				qs.setSequence(seqId.getSequencePanel().getSelectedSequence().getSequence());
+				seqId.goToExtension("Query against sequences");
 			}
 			
 		} else if(evt.getSource().equals(button_gi)) {
@@ -278,7 +278,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				try {
 					BrowserLauncher.openURL(url);
 				} catch(java.io.IOException e) {
-					MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Could not open NCBI website!", "This program couldn't open your web browser to access NCBI. You can access this entry at " + url);
+					MessageBox mb = new MessageBox(seqId.getFrame(), "Could not open NCBI website!", "This program couldn't open your web browser to access NCBI. You can access this entry at " + url);
 					mb.go();
 				}
 			}
@@ -310,7 +310,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				return;
 			}
 
-			set = taxonDNA.lockSequenceList();
+			set = seqId.lockSequenceList();
 			
 			// sequence name changed
 			String newName = text_name.getText().trim();
@@ -319,9 +319,9 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 
 			set.modified();
 			weEditedTheSet = true;
-			taxonDNA.sequencesChanged();
+			seqId.sequencesChanged();
 			
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 
 		} else if(e.getSource().equals(text_sequence)) {
 			if(text_sequence.getText().trim().equals(focusGained_sequence)) {
@@ -330,7 +330,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				return;
 			}
 
-			set = taxonDNA.lockSequenceList();
+			set = seqId.lockSequenceList();
 			
 			// sequence changed
 			String newSequence = text_sequence.getText().replaceAll("\\d", "").replaceAll("\\s", "");
@@ -344,16 +344,16 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 		
 				set.modified();	
 				weEditedTheSet = true;
-				taxonDNA.sequencesChanged();
+				seqId.sequencesChanged();
 			} catch(SequenceException ex) {
-				MessageBox mb = new MessageBox(taxonDNA.getFrame(), "Error in sequence!", "There is an error in this sequence: " + ex);
+				MessageBox mb = new MessageBox(seqId.getFrame(), "Error in sequence!", "There is an error in this sequence: " + ex);
 				mb.go();
 
 				// change the text back to the old one
 				text_sequence.setText(focusGained_sequence);
 			}
 
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 		}
 
 		

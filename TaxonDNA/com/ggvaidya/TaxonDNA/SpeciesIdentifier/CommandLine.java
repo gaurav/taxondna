@@ -1,15 +1,15 @@
 /**
- * TaxonDNA's command line interface. Handles *every* straight off the
- * command line. The ultimate dream is to allow TaxonDNA to be used off
+ * SpeciesIdentifier's command line interface. Handles *every* straight off the
+ * command line. The ultimate dream is to allow SpeciesIdentifier to be used off
  * the command line for certain quick operations (conversion). It would
  * also be a very fast way of implementing a testing harness around the
  * currently existing code.
  *
- * How it works: if TaxonDNA detects a 'command line' (of any sort), it
+ * How it works: if SpeciesIdentifier detects a 'command line' (of any sort), it
  * hands control over to CommandLine.processCommandLine(String[] args).
- * CommandLine can then call TaxonDNA to set up a normal TaxonDNA object,
- * create multiple TaxonDNA objects, or directly interface with the 
- * TaxonDNA.* objects to carry out the analyses.
+ * CommandLine can then call SpeciesIdentifier to set up a normal SpeciesIdentifier object,
+ * create multiple SpeciesIdentifier objects, or directly interface with the 
+ * SpeciesIdentifier.* objects to carry out the analyses.
  *
  * When eventually I get to finishing up this module, it
  * might help to look up Java's guidelines on POSIX-compliant
@@ -39,7 +39,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.io.*;
@@ -83,12 +83,12 @@ public class CommandLine {
 			
 			// are there any files specified?
 			if(files.size() == 0)
-				new TaxonDNA();
+				new SpeciesIdentifier();
 			else {
 				Iterator i = files.iterator();
 
 				while(i.hasNext()) {
-					TaxonDNA td = new TaxonDNA();
+					SpeciesIdentifier td = new SpeciesIdentifier();
 					td.loadFile((File)i.next(), null);
 				}
 			}

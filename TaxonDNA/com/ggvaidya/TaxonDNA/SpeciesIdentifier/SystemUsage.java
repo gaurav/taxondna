@@ -23,7 +23,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -34,7 +34,7 @@ public class SystemUsage extends Panel implements UIExtension, ActionListener, C
 	private TextArea	text_main = new TextArea();
 	private Button		button_Refresh = new Button("Optimize and refresh");
 
-	public SystemUsage(TaxonDNA taxonDNA) {
+	public SystemUsage(SpeciesIdentifier seqId) {
 		// layouting
 		setLayout(new BorderLayout());	
 		

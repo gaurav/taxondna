@@ -417,7 +417,7 @@ public class GenBankFile implements FormatHandler, Testable {
 			Class class_cdsexaminer = null;
 			boolean keep_sequences_without_CDS = false;
 			try {
-				class_cdsexaminer = com.ggvaidya.TaxonDNA.Modules.CDSExaminer.class;
+				class_cdsexaminer = com.ggvaidya.TaxonDNA.SpeciesIdentifier.CDSExaminer.class;
 				Class[] signature = new Class[2];
 				signature[0] = String.class;
 				signature[1] = Hashtable.class;

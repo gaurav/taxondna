@@ -25,7 +25,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BestMatch extends Panel implements UIExtension, ActionListener, Runnable {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 
 	private TextArea	text_main = new TextArea();			// displays the results
 	private TextField	text_threshold = new TextField();		// tiny textfield, to display the
@@ -51,8 +51,8 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 	private boolean		processingDone = false;
 	private double		threshold = 0;
 
-	public BestMatch(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public BestMatch(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 		
 		setLayout(new BorderLayout());
 
@@ -108,8 +108,8 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		// Calculate the threshold (by invoking PairwiseDistribution)
 		if(e.getSource().equals(btn_threshold)) {
-			if(taxonDNA.getExtension("Pairwise Summary") != null) {
-				PairwiseSummary ps = (PairwiseSummary) taxonDNA.getExtension("Pairwise Summary");
+			if(seqId.getExtension("Pairwise Summary") != null) {
+				PairwiseSummary ps = (PairwiseSummary) seqId.getExtension("Pairwise Summary");
 				double cutoff = ps.getFivePercentCutoff();
 	
 				if(cutoff > 0)
@@ -130,7 +130,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			btn_recalculate.setLabel("Recalculate!"); 
 			if(text_threshold.getText().trim().equals("")) {	// no threshold specified
 				MessageBox mb = new MessageBox(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"No threshold specified!",
 					"You did not specify a threshold for the \"best close match\" algorithm!\n\nWould you like to continue anyway, using a default threshold of 3%?",
 					MessageBox.MB_YESNO);
@@ -148,7 +148,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 	}
 	
 	public void dataChanged() {
-		SequenceList set = taxonDNA.lockSequenceList();
+		SequenceList set = seqId.lockSequenceList();
 
 		if(set == null) {
 			text_main.setText("");
@@ -160,7 +160,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			}
 		}
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	public void run() {
@@ -194,7 +194,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		threshold /= 100;
 
 		// get the sequence set, and figure out its stats
-		SequenceList set = taxonDNA.lockSequenceList();
+		SequenceList set = seqId.lockSequenceList();
 		SortedSequenceList sset = new SortedSequenceList(set);
 
 		total_count_sequences = set.count();
@@ -205,20 +205,20 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		try {
 			sd = set.getSpeciesDetails(
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
 						)
 					);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 		*/
 
 		// set up us the ProgressDialog
 		ProgressDialog pd = new ProgressDialog(
-				taxonDNA.getFrame(), 
+				seqId.getFrame(), 
 				"Please wait, doing best match analysis ...", 
 				"The best match analysis is being performed. Sorry for the wait!", 
 				0
@@ -238,7 +238,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 					pd.delay(x, count_sequences);
 				} catch(DelayAbortedException e) {
 					dataChanged();
-					taxonDNA.unlockSequenceList();
+					seqId.unlockSequenceList();
 					return;
 				}
 			
@@ -413,7 +413,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		pd.end();
 		
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 		processingDone = true;
 	}
 

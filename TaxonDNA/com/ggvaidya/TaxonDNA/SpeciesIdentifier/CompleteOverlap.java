@@ -24,7 +24,7 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.io.*;
 
@@ -38,7 +38,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class CompleteOverlap extends Panel implements UIExtension, Runnable, ActionListener, ItemListener {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 	private SequenceList	set = null;
 
 	private java.awt.List	list_results = new java.awt.List();
@@ -58,8 +58,8 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	private int 		step_width = 300;
 	private double		ambiguous_percent = 1;
 
-	public CompleteOverlap(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public CompleteOverlap(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 	
 		// layouting
 		setLayout(new BorderLayout());
@@ -130,7 +130,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			ambiguous_percent = Double.parseDouble(tf_ambiguousLimit.getText()) / 100;
 		} catch(NumberFormatException e) {
 //			MessageBox mb = new MessageBox(
-//					taxonDNA.getFrame(),
+//					seqId.getFrame(),
 			tf_minimumBlockLength.setText("300");
 			step_width = 300;
 			ambiguous_percent = 0.01;
@@ -169,7 +169,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				subseq = seq.getSubsequence(from + 1, to);
 			} catch(SequenceException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Unable to extract subsequence",
 						e.toString());
 				mb.go();
@@ -229,14 +229,14 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			int index = ((Integer) e.getItem()).intValue();
 
 			// so the segment is [index] to [(index + minimum_overlap - 1)] inclusive
-			SequenceList sl = taxonDNA.lockSequenceList();
+			SequenceList sl = seqId.lockSequenceList();
 			ProgressDialog pd = new ProgressDialog(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"Please wait, writing out overlapping regions ...",
 					"Please insert apology here."
 					);
 			String output = getOverlapDisplay(sl, index, index + step_width, pd);
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 
 			ta_matches.setText(output);
 
@@ -281,7 +281,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			File f = null;
 
 			FileDialog fd = new FileDialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Where would you like me to save the results to?",
 				FileDialog.SAVE
 			);
@@ -323,16 +323,16 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				pw.close();
 
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Done!",
 						"I exported " + all_entries.length + " entries into " + f + "."
 				);
 				
 			} catch(IOException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Error while writing to '" + f + "'",
-						taxonDNA.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
+						seqId.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
 				);
 			}
 		}
@@ -354,7 +354,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			File f = null;
 
 			FileDialog fd = new FileDialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Where would you like me to save the results for " + from + " to " + to + " to?",
 				FileDialog.SAVE
 			);
@@ -377,16 +377,16 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				pw.close();
 
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Done!",
 						"I exported all the entries in this set into " + f + "."
 				);
 				
 			} catch(IOException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Error while writing to '" + f + "'",
-						taxonDNA.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
+						seqId.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
 				);
 			}
 			
@@ -523,13 +523,13 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	}
 
 	public void run() {
-		SequenceList sl = taxonDNA.lockSequenceList();
+		SequenceList sl = seqId.lockSequenceList();
 
 		if(sl == null)
 			return;
 		
 		if(sl.count() == 0) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 
@@ -561,14 +561,14 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			ambiguous_percent = Double.parseDouble(tf_ambiguousLimit.getText()) / 100;
 		} catch(NumberFormatException e) {
 //			MessageBox mb = new MessageBox(
-//					taxonDNA.getFrame(),
+//					seqId.getFrame(),
 			tf_minimumBlockLength.setText("300");
 			step_width = 300;
 			ambiguous_percent = 0.01;
 		}
 
 		ProgressDialog pd = new ProgressDialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Please wait, determining largest complete block ...",
 				"I am attempting to determine the largest complete block right now. Sorry for the inconvenience!");
 		pd.begin();
@@ -611,14 +611,14 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				try {
 					pd.delay(x, sl.getMaxLength() - step_width);
 				} catch(DelayAbortedException e) {
-					taxonDNA.unlockSequenceList();
+					seqId.unlockSequenceList();
 					return;
 				}
 		}
 
 		pd.end();
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	public String getShortName() {		return "Complete Overlap"; 	}

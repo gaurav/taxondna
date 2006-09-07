@@ -22,7 +22,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 public class PairwiseSummary extends Panel implements UIExtension, ActionListener, Runnable {	
 	private static final long serialVersionUID = 4986465198540567487L;
 	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 
 	private PairwiseDistribution intra = null;		
@@ -71,10 +71,10 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		return false;
 	}
 
-	public PairwiseSummary(TaxonDNA view) {
+	public PairwiseSummary(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
+		seqId = view;
 		
 		// create the panel
 		setLayout(new BorderLayout());
@@ -113,19 +113,19 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 	}
 
 	public void run() {
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 
 		// is there a 'set'?
 		if(set == null) {
 		       text_main.setText("No sequences loaded.");
-		       taxonDNA.unlockSequenceList();
+		       seqId.unlockSequenceList();
 		       return;
 		}
 
 		// PDs don't make sense for [0, 1] sequences
 		if(set.count() < 2) {
 			text_main.setText("Pairwise distributions cannot be determined for less than two sequences");
-		      	taxonDNA.unlockSequenceList();
+		      	seqId.unlockSequenceList();
 			return;
 		}
 		
@@ -138,7 +138,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 					set, 
 					PairwiseDistribution.PD_INTRA, 
 					new ProgressDialog(
-						taxonDNA.getFrame(), 
+						seqId.getFrame(), 
 						"Calculating pairwise distances", 
 						"All intraspecific pairwise distances are being calculated. Sorry for the delay!", 0
 					)
@@ -147,13 +147,13 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 					set, 
 					PairwiseDistribution.PD_INTER, 
 					new ProgressDialog(
-						taxonDNA.getFrame(), 
+						seqId.getFrame(), 
 						"Calculating pairwise distances", 
 						"All interspecific, congeneric pairwise distances are being calculated. Sorry for the delay!", 0
 					)
 				);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			this.set = null;
 			text_main.setText("Pairwise summary cancelled.");
 			return;
@@ -282,7 +282,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		*/
 		text_main.setText(str.toString());
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	private double percentage(double x, double y) {
@@ -392,7 +392,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 			// Now, if only we had a File to write to ...
 			File file = null;
 			FileDialog dialog = new FileDialog(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"Please specify a filename to save " + these + " distances to.",
 					FileDialog.SAVE
 				);
@@ -414,7 +414,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 					pr,
 					pd, 
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Please wait, preparing list ...",
 						"I'm preparing the list of " + these + " pairwise distances. Sorry for the delay!",
 						0
@@ -424,9 +424,9 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 				pr.close();
 			} catch(IOException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"There was an error writing to " + file,
-						TaxonDNA.getMessage(Messages.IOEXCEPTION_WRITING, file, e)
+						SpeciesIdentifier.getMessage(Messages.IOEXCEPTION_WRITING, file, e)
 						);
 				mb.go();
 				return;

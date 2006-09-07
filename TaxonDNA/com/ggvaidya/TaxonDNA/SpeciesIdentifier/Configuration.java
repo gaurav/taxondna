@@ -24,7 +24,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -34,10 +34,10 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Configuration extends Panel implements UIExtension, ActionListener, FocusListener {
-	TaxonDNA 		taxonDNA;
+	SpeciesIdentifier 		seqId;
 	Panel 			settings = 	new Panel();	// Settings panel
 
-	Label			warningLabel = new Label("Please wait, loading TaxonDNA ...");	// warning: please set up BEFORE loading files
+	Label			warningLabel = new Label("Please wait, loading SpeciesIdentifier ...");	// warning: please set up BEFORE loading files
 	
 	TextField		tfMinOverlap = new TextField("", 5);
 	Choice			choice_ambiguity = new Choice();
@@ -45,8 +45,8 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	Button			lock_button = new Button("Lock Settings");
 	boolean			locked = false;
 	
-	public Configuration(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public Configuration(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 
 		// Set the initial values. We DON'T need to change them
 		// every time something happens - nobody changes these
@@ -173,7 +173,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	 * in which case we should be UNLOCKED.
 	 */
 	public void dataChanged() {
-		SequenceList list = taxonDNA.lockSequenceList();
+		SequenceList list = seqId.lockSequenceList();
 		
 		if(list == null) {
 			unlock();
@@ -186,7 +186,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 			lock_button.setLabel("Unlock Settings");
 		}
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 
 		return;
 	}
@@ -207,7 +207,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	public void actionPerformed(ActionEvent e) {
 		if(e.getActionCommand().equals("Change Settings")) {
 			// our menu option has been activated!
-			taxonDNA.goToExtension(getShortName());
+			seqId.goToExtension(getShortName());
 		}
 
 		if(e.getSource().equals(lock_button)) {

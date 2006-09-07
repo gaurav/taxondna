@@ -25,7 +25,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.io.*;
@@ -39,10 +39,10 @@ public class CDSExaminer implements UIExtension, ActionListener {
 	// hackahackahackahack!
 	//
 	// It's not *too* bad: the "modal" Dialog (atleast on Windows)
-	// blocks the entire application, so both TaxonDNA windows
+	// blocks the entire application, so both SpeciesIdentifier windows
 	// are unusable when the dialog is activated.
 	//
-	private static TaxonDNA	taxonDNA = null;
+	private static SpeciesIdentifier	seqId = null;
 
 	private Dialog		dialog;
 	private Label		label_explanation = new Label();
@@ -50,14 +50,14 @@ public class CDSExaminer implements UIExtension, ActionListener {
 	private Choice 		choice_deleteOrKeep = new Choice();
 	private Button		button_OK = new Button("OK");
 
-	public CDSExaminer(TaxonDNA view) {
+	public CDSExaminer(SpeciesIdentifier view) {
 		if(view != null)
-			taxonDNA = view;
+			seqId = view;
 	}
 
 	private Dialog createDialogBox(String name) {
 		dialog = new Dialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Please select the " + name + " you'd like",		// we set title later
 				true
 				);

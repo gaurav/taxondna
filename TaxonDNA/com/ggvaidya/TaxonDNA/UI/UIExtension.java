@@ -1,5 +1,5 @@
 /**
- * An interface to allow extension of the TaxonDNA UI. It lists out the basic structure
+ * An interface to allow extension of the SpeciesIdentifier UI. It lists out the basic structure
  * required of any object which wants to extend the UI. The getShortName() and 
  * getPanel() are the only ones which actually need to *do* anything, although of course
  * the others must be implemented, atleast as stubs. They are intended for
@@ -57,7 +57,7 @@ public interface UIExtension {
 	 * Don't end with a separator, we'll handle that. If you have
 	 * a lot of commands, you're welcome to add a PopupMenu instead.
 	 *
-	 * @return true, if a separator needs to be added after whatever you've done. TaxonDNA won't add a separator if you're the last item in the menu.
+	 * @return true, if a separator needs to be added after whatever you've done. SpeciesIdentifier won't add a separator if you're the last item in the menu.
 	 */
 	public boolean addCommandsToMenu(Menu commandMenu);
 	

@@ -6,7 +6,7 @@
  * @author Gaurav Vaidya, gaurav@ggvaidya.com
  */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -16,7 +16,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequencePanel extends Panel implements UIExtension, ActionListener, ItemListener, ItemSelectable {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 	
 	private SequenceList	list = null;
 
@@ -55,8 +55,8 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	/**
 	 * A SequencePanel is born!
 	 */
-	public SequencePanel(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public SequencePanel(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 		
 		setLayout(new BorderLayout());
 
@@ -194,7 +194,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			return;
 		}
 
-		list = taxonDNA.lockSequenceList();
+		list = seqId.lockSequenceList();
 		
 		if(list == null) {
 			// it's the null set: reset everything!
@@ -217,7 +217,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		// okay, all done: back to our last saved state!
 		restoreState();
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	private int getSelectedIndex() {
@@ -239,7 +239,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		list.set(getSelectedIndex(), seq);
 		backbuffer.replaceItem(getListName(seq), getSelectedIndex());
 		flipLists();
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	private void prepareSequences() {
@@ -330,7 +330,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 				return;
 
 			// seq will now have to be .. eliminated
-			list = taxonDNA.lockSequenceList();
+			list = seqId.lockSequenceList();
 			list.remove(seq);
 
 			// since this needs to be responsive, let's just delete
@@ -351,8 +351,8 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			
 			// and ... we've changed!
 			flag_weDeletedIt = true;
-			taxonDNA.sequencesChanged();
-			taxonDNA.unlockSequenceList();
+			seqId.sequencesChanged();
+			seqId.unlockSequenceList();
 		}
 		
 		// button_Sort

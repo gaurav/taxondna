@@ -23,7 +23,7 @@
 
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -36,7 +36,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Cluster extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 
 	private Button		btn_MakeClusters = new Button(" Make clusters now! ");
@@ -55,10 +55,10 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
 	}
 
-	public Cluster(TaxonDNA view) {
+	public Cluster(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
+		seqId = view;
 		
 		// create the panel
 		setLayout(new BorderLayout());
@@ -133,13 +133,13 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		try {
 			sd = set.getSpeciesDetails(
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
 						)
 					);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}	
 
@@ -413,17 +413,17 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	}
 	
 	public void run() {
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 		
 		if(set == null) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			
 			text_main.setText("No sequences loaded!");
 
 			return;
 		}
 				
-		ProgressDialog pb = new ProgressDialog(taxonDNA.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
+		ProgressDialog pb = new ProgressDialog(seqId.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
 				
 		pb.begin();
 
@@ -443,7 +443,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					try {
 						pb.delay(c, set.count());
 					} catch(DelayAbortedException e) {
-						taxonDNA.unlockSequenceList();
+						seqId.unlockSequenceList();
 						return;
 					}
 
@@ -505,7 +505,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					try {
 						pb.delay(x, clusters.size());
 					} catch(DelayAbortedException e) {
-						taxonDNA.unlockSequenceList();
+						seqId.unlockSequenceList();
 						return;
 					}
 					
@@ -532,7 +532,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		pb.end();
 
 		pb = new ProgressDialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Writing up information ...",
 				"Formatting and writing the results, please wait.",
 				0);
@@ -540,13 +540,13 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		try {
 			writeupItemStrings(pb);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 
 		selectItem(0);
 		
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 	
 	// UIExtension stuff

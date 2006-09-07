@@ -6,7 +6,7 @@
  *
  * NOTES: SortedSequenceList 
  *	We maintain our very own SortedSequenceList in our own class. This will
- *	pretty obviously (and pretty quickly) fall out of sync with TaxonDNA's
+ *	pretty obviously (and pretty quickly) fall out of sync with SpeciesIdentifier's
  *	list. THIS MEANS THAT IF YOU MODIFY A FILE IN TAXONDNA, THE RESULTS OF
  *	THE SEARCH WILL USE THE LAST SET. Click on "Query", and everything will 
  *	make sense again.
@@ -34,7 +34,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -50,7 +50,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 public class QuerySequence extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
 	private static final long serialVersionUID = 8522777324004811805L;
 
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 
 	private SortedSequenceList	sset;
 
@@ -64,10 +64,10 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 	private Button		btn_Query = new Button("Query");
 	private Button		btn_Copy = new Button("Copy to Clipboard");
 
-	public QuerySequence(TaxonDNA view) {
+	public QuerySequence(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
+		seqId = view;
 		
 		// create the panel
 		setLayout(new BorderLayout());
@@ -130,9 +130,9 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 			Sequence query = null;
 			map_index = new Hashtable();
 			
-		SequenceList set = taxonDNA.lockSequenceList();
+		SequenceList set = seqId.lockSequenceList();
 		if(set == null) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;		// we have nothing
 		}
 
@@ -148,12 +148,12 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 				}
 				
 				query = new Sequence("Query", buff.toString());
-				taxonDNA.lockSequenceList();
+				seqId.lockSequenceList();
 				try {
-					sset.sortAgainst(query, new ProgressDialog(taxonDNA.getFrame(), "Please wait, calculating distances ...", "All the pairwise distances are being calculated. Please wait.", 0));
-					taxonDNA.unlockSequenceList();
+					sset.sortAgainst(query, new ProgressDialog(seqId.getFrame(), "Please wait, calculating distances ...", "All the pairwise distances are being calculated. Please wait.", 0));
+					seqId.unlockSequenceList();
 				} catch(DelayAbortedException e) {
-					taxonDNA.unlockSequenceList();
+					seqId.unlockSequenceList();
 					sset = null;
 					return;
 				}				
@@ -183,7 +183,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 
 			displaySummary();
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 		
 	/* Creates the actual Panel */
@@ -232,8 +232,8 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 			str.append("This sequence has a pairwise distance of " + str_pairwise + "% from the query sequence.\n\n");
 			
 
-			if(taxonDNA.getExtension("Pairwise Summary") != null) {
-				PairwiseSummary ps = (PairwiseSummary)taxonDNA.getExtension("Pairwise Summary");
+			if(seqId.getExtension("Pairwise Summary") != null) {
+				PairwiseSummary ps = (PairwiseSummary)seqId.getExtension("Pairwise Summary");
 
 				PairwiseDistribution pd_intra = ps.getPD_intra();
 				PairwiseDistribution pd_inter = ps.getPD_inter();

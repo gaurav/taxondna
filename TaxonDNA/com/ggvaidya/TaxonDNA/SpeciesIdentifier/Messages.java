@@ -29,7 +29,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.io.*;
 
@@ -55,7 +55,7 @@ public class Messages {
 		// SAVE_FILE_FORMAT
 		"Saving file '$1$' in the $2$ format. To save export this file to another format, you may use the 'Export' menu.",
 		// READING_FILE:
-		"Reading sequences from '$1$' into TaxonDNA. This might take some time.",
+		"Reading sequences from '$1$' into SpeciesIdentifier. This might take some time.",
 		// IOEXCEPTION_READING:		file, exception
 		"There was an error while reading from '$1$'. Please ensure that the file exists, that you have permission to read it, and that there are no problems with the drive on which the file is being read from.\n\nThe technical description of this error is: $2$",
 		// IOEXCEPTION_WRITING:		file, exception
@@ -65,7 +65,7 @@ public class Messages {
 		// COPY_TO_CLIPBOARD_FAILED:	exception	
 		"There was an error copying to the clipboard. The text was probably not copied. Please try again; if this doesn't work, please report it as a bug.\n\nTechnical explanation: $1$",
 		// NEED_SPECIES_SUMMARY
-		"To carry out this operation, I need the Species Summary module, which was not built into your TaxonDNA. You can try downloading the most recent one, or download the \"definitive\" copy from http://taxondna.sf.net/"
+		"To carry out this operation, I need the Species Summary module, which was not built into your SpeciesIdentifier. You can try downloading the most recent one, or download the \"definitive\" copy from http://taxondna.sf.net/"
 	};
 
 	public static String getMessage(int code) {

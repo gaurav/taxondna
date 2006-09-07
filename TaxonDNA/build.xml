@@ -1,7 +1,8 @@
-<project default="TaxonDNA">
+<project default="compile">
 	<property name="build.dir" location="build"/>
 	<property resource="version.txt" />
 	
+	<!-- compile:			Compile will recompile all our Java code in one shot -->
 	<target name="compile">
 		<javac 
 			srcdir="." 
@@ -16,23 +17,36 @@
 		</javac>
 	</target>
 
-	<target name="TaxonDNA" depends="compile">
-		<jar  destfile="Release/TaxonDNA.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**" includes="**/*.class" >
+	<!-- SpeciesIdentifier:		Builds the Jar file for SpeciesIdentifier -->
+	<target name="SpeciesIdentifier" depends="compile">
+		<jar  
+			destfile="Release/SpeciesIdentifier.jar" 
+			basedir="${build.dir}/classes" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**" 
+			includes="**/*.class" 
+		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
 			</manifest>
 		</jar>
+		<signjar jar="Release/SpeciesIdentifier.jar" alias="mykey" storepass="567Gandhi^(" />		
+	</target>
 
+	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
+	<target name="SequenceMatrix" depends="compile">
 		<jar  destfile="Release/SequenceMatrix.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**" includes="**/*.class" >
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/TaxonDNA.jar" alias="mykey" storepass="567Gandhi^(" />
 		<signjar jar="Release/SequenceMatrix.jar" alias="mykey" storepass="567Gandhi^(" />
 	</target>
 
-	<target name="release" depends="TaxonDNA">
+	<!-- release:			Prepares ChangeLog and Readme files. 
+					This is also the most convenient way to
+					ensure that all Jars are built
+	-->
+	<target name="release" depends="SpeciesIdentifier,SequenceMatrix">
 		<copy file="CHANGELOG.txt" todir="Release" />
 		<copy file="README.txt" todir="Release" overwrite="yes" />
 
@@ -44,6 +58,9 @@
 		/>
 	</target>
 
+	<!-- src:			Zips up the ENTIRE directory into one
+					file for backup.
+	-->
 	<target name="src">
 		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
 		<zip 
@@ -55,7 +72,8 @@
 		/>
 	</target>
 
-	<target name="javadocs" depends="TaxonDNA">
+	<!-- javadocs:			Recompiles the JavaDocs (in Documentation/Javadocs) -->
+	<target name="javadocs" depends="compile">
 		<javadoc 
 			packagenames="com.ggvaidya.TaxonDNA.*"
 			sourcepath="."
@@ -64,6 +82,7 @@
 		/>
 	</target>
 
+	<!-- clean:			Cleans up the build path -->
 	<target name="clean">
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />

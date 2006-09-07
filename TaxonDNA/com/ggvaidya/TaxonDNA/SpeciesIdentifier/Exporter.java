@@ -1,7 +1,7 @@
 /**
  * Exporter.java
  * 
- * Allows you to export sequences from TaxonDNA,
+ * Allows you to export sequences from SpeciesIdentifier,
  * with a set of options to export them to as
  * many different systems as possible.
  *
@@ -26,7 +26,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.io.*;
 import java.util.*;
@@ -40,7 +40,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class Exporter extends Panel implements Runnable, UIExtension, ActionListener, ItemListener {	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	seqId;
 
 	// Choices: what to do, what to say, etc.  
 	private Choice		choice_whatToOutput = 		new Choice();
@@ -74,7 +74,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 	private Button		btn_Export	=	new Button("Export to file");	
 
 	/**
-	 * Add commands to the TaxonDNA menu. We only add one option:
+	 * Add commands to the SpeciesIdentifier menu. We only add one option:
 	 * called rather oddly "Custom export"
 	 */
 	public boolean addCommandsToMenu(Menu menu) {
@@ -89,7 +89,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		String format = choice_insertHeaders.getSelectedItem();
 
 		if(format.equals("MEGA"))
-			return "#mega\nTITLE TaxonDNA Exporter: " + count_sequences + " exported, of maximum length " + max_length + " bp\n";
+			return "#mega\nTITLE SpeciesIdentifier Exporter: " + count_sequences + " exported, of maximum length " + max_length + " bp\n";
 		
 		if(format.equals("NEXUS"))
 			return "#NEXUS\nBEGIN DATA;\n\tDIMENSIONS  NTAX="+count_sequences+" NCHAR="+max_length+";\n\tFORMAT DATATYPE=DNA  MISSING=? GAP=- ;\nMATRIX\n";
@@ -112,10 +112,10 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		return "";
 	}
  
-	public Exporter(TaxonDNA view) {
+	public Exporter(SpeciesIdentifier view) {
 		super();
 
-		taxonDNA = view;
+		seqId = view;
 		
 		// create the panel
 		setLayout(new BorderLayout());
@@ -312,7 +312,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			// in each family etc.
 			if(multipleMode != 0) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Mea culpa!",
 						"Sorry, but at present you can't export into multiple files *and* use the 'add species matrix' options. Please unselect one of them.\n\nThis is entirely my fault: it's doable, but very complicated, and I haven't gotten around to doing it yet. Sorry!");
 				mb.go();
@@ -320,7 +320,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			}
 		}
 
-		SequenceList sl = taxonDNA.lockSequenceList();
+		SequenceList sl = seqId.lockSequenceList();
 		if(sl == null)
 			return;
 
@@ -328,22 +328,22 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			try {
 				sd = sl.getSpeciesDetails(
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
 						)
 					);
 			} catch(DelayAbortedException e) {
-				taxonDNA.unlockSequenceList();
+				seqId.unlockSequenceList();
 				return;
 			}
 			
 		}
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 
 		ProgressDialog pd = new ProgressDialog(
-				taxonDNA.getFrame(),
+				seqId.getFrame(),
 				"Please wait, writing sequences ...",
 				"Please wait, I am writing out the sequences as per your instructions. This shouldn't take too long, but what ARE reusable components for if you can't pop them at the user any time something might take too long to run?"
 				);
@@ -473,7 +473,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 		pd.end();
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	/**
@@ -604,7 +604,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 	// action listener
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getActionCommand().equals("Custom export")) {
-			taxonDNA.goToExtension(getShortName());	
+			seqId.goToExtension(getShortName());	
 		} else if(evt.getSource().equals(btn_Go))
 			new Thread(this).start();
 		else if(evt.getSource().equals(btn_Copy)) {
@@ -615,9 +615,9 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 				clip.setContents(selection, selection);
 			} catch(IllegalStateException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Couldn't copy the sequences!",
-						taxonDNA.getMessage(Messages.COPY_TO_CLIPBOARD_FAILED, e)
+						seqId.getMessage(Messages.COPY_TO_CLIPBOARD_FAILED, e)
 						);
 
 				mb.go();
@@ -628,7 +628,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 			if(check_exportIntoMultiple.getState()) {
 				MessageBox mb = new MessageBox(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"Multiple Mode File Export",
 					"You have selected multiple mode. Please select a single file in which to save summary information. Other files will be created in the same directory. ANY FILE WITH THE SAME NAME IN THIS DIRECTORY WILL BE OVERWRITTEN."
 				);
@@ -637,7 +637,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			}
 
 			FileDialog fd = new FileDialog(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"Where would you like to export these sequences?",
 					FileDialog.SAVE
 				);
@@ -652,7 +652,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 				f = new File(fd.getDirectory() + fd.getFile());
 
 			ProgressDialog pd = new ProgressDialog(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"Please wait, exporting sequences ...",
 					"Sequences are being exported into the file(s) you requested.",
 					ProgressDialog.FLAG_NOCANCEL
@@ -660,7 +660,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 			pd.begin();
 
-			SequenceList sl = taxonDNA.lockSequenceList();
+			SequenceList sl = seqId.lockSequenceList();
 
 			try {
 
@@ -711,15 +711,15 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 			} catch(IOException e) {
 				MessageBox mb = new MessageBox(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Error while exporting file " + f,	
-						taxonDNA.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
+						seqId.getMessage(Messages.IOEXCEPTION_WRITING, f, e)
 						);
 
 				mb.go();
 				return;
 			} finally {
-				taxonDNA.unlockSequenceList();
+				seqId.unlockSequenceList();
 				pd.end();
 			}
 		}

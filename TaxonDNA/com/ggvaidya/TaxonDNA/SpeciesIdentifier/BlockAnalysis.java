@@ -25,7 +25,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.awt.*;
@@ -38,7 +38,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class BlockAnalysis extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
-	private TaxonDNA	taxonDNA = null;
+	private SpeciesIdentifier	seqId = null;
 	private SequenceList	set = null;
 
 	private TextArea	text_main = new TextArea();
@@ -53,8 +53,8 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 	private String		display_strings[];
 
-	public BlockAnalysis(TaxonDNA taxonDNA) {
-		this.taxonDNA = taxonDNA;
+	public BlockAnalysis(SpeciesIdentifier seqId) {
+		this.seqId = seqId;
 		
 		setLayout(new BorderLayout());
 
@@ -124,8 +124,8 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		}
 
 		if(e.getSource().equals(btn_threshold)) {
-			if(taxonDNA.getExtension("Pairwise Summary") != null) {
-				PairwiseSummary ps = (PairwiseSummary) taxonDNA.getExtension("Pairwise Summary");
+			if(seqId.getExtension("Pairwise Summary") != null) {
+				PairwiseSummary ps = (PairwiseSummary) seqId.getExtension("Pairwise Summary");
 				double cutoff = ps.getFivePercentCutoff();
 	
 				if(cutoff > 0)
@@ -145,7 +145,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			btn_recalculate.setLabel("Recalculate"); 
 			if(text_threshold.getText().equals("")) {	// no threshold specified
 				MessageBox mb = new MessageBox(
-					taxonDNA.getFrame(),
+					seqId.getFrame(),
 					"No threshold specified!",
 					"You did not specify a threshold for the all species barcodes!\n\nWould you like to continue anyway, using a default threshold of 3%?",
 					MessageBox.MB_YESNO);
@@ -164,7 +164,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 	}
 	
 	public void dataChanged() {
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 
 		if(set == null) {
 			text_main.setText("");
@@ -174,7 +174,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			text_main.setText("Please press the 'Calculate' button to conduct an all species barcodes analysis.");
 		}
 
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 	}
 
 	public void run() {
@@ -204,7 +204,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		threshold /= 100;
 
 		// get the sequence set, and figure out its stats
-		set = taxonDNA.lockSequenceList();
+		set = seqId.lockSequenceList();
 		count_sequences = set.count();
 		SortedSequenceList sset = new SortedSequenceList(set); 
 
@@ -213,18 +213,18 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		try {
 			sd = set.getSpeciesDetails(
 					new ProgressDialog(
-						taxonDNA.getFrame(),
+						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
 						)
 					);
 		} catch(DelayAbortedException e) {
-			taxonDNA.unlockSequenceList();
+			seqId.unlockSequenceList();
 			return;
 		}
 
 		// set up us the ProgressDialog
-		ProgressDialog pd = new ProgressDialog(taxonDNA.getFrame(), "Please wait, doing all species barcodes analysis ...", "The all species barcodes analysis is being performed. Sorry for the wait!", 0);
+		ProgressDialog pd = new ProgressDialog(seqId.getFrame(), "Please wait, doing all species barcodes analysis ...", "The all species barcodes analysis is being performed. Sorry for the wait!", 0);
 
 		pd.begin();
 
@@ -245,7 +245,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 					pd.delay(x, count_sequences);
 				} catch(DelayAbortedException e) {
 					dataChanged();
-					taxonDNA.unlockSequenceList();
+					seqId.unlockSequenceList();
 					return;
 				}
 			
@@ -345,7 +345,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		pd.end();
 		
-		taxonDNA.unlockSequenceList();
+		seqId.unlockSequenceList();
 		processingDone = true;
 	}
 

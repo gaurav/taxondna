@@ -1,5 +1,5 @@
 /**
- * TaxonDNA is a program for interacting with DNA sequences 
+ * SpeciesIdentifier is a program for interacting with DNA sequences 
  * in a taxonomy-intelligent way. Once finished (sometime before 
  * the heat death of the universe, we hope), this program
  * will deal with DNA sequences, use them to help construct 
@@ -32,7 +32,7 @@
  *  
  */
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -44,14 +44,14 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
-	// the current TaxonDNA version number 
+public class SpeciesIdentifier implements WindowListener, ActionListener, ItemListener {
+	// the current SpeciesIdentifier version number 
 	private static String 	version 		= "0.9.5";
 
 	// the following information is shared amongst all TaxonDNAs.
 	private static int	countTaxonDNAs		= 0;
 
-	// the following is information specific to this particular TaxonDNA.
+	// the following is information specific to this particular SpeciesIdentifier.
 	private SequenceList 	sequences		= null;
 	
 	// the following variables create and track our AWT interface
@@ -73,14 +73,14 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 
 	// all TaxonDNAs have a list of uiExtensions which they display, and
 	// this is where they're saved. There's a chance that eventually,
-	// we'll have customization of some sort on this (i.e. TaxonDNA's with
+	// we'll have customization of some sort on this (i.e. SpeciesIdentifier's with
 	// their own set of uiExtensions, depending on what task they have
-	// to perform for the TaxonDNA which spawned them). Until then,
+	// to perform for the SpeciesIdentifier which spawned them). Until then,
 	// this code just can just sit around here. 
 	private Vector		uiExtensions 		= new Vector();
 
 //
-//	0.	STATIC FUNCTIONS. Handles the TaxonDNA.Messages stuff.
+//	0.	STATIC FUNCTIONS. Handles the SpeciesIdentifier.Messages stuff.
 //	
 	public static String getMessage(int code) {
 		return Messages.getMessage(code);
@@ -95,19 +95,19 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	}
 	
 //
-//	1.	ENTRYPOINT. The entrypoint is where the entire TaxonDNA system starts up.
+//	1.	ENTRYPOINT. The entrypoint is where the entire SpeciesIdentifier system starts up.
 //		Right now, it only loads sequence files; depending on need, we might have some kind
 //		of command line arguments eventually. Note that only the *application*
-//		should enter from here; a new TaxonDNA window will be spawned entirely
-//		by using 'new TaxonDNA(file)'. 
+//		should enter from here; a new SpeciesIdentifier window will be spawned entirely
+//		by using 'new SpeciesIdentifier(file)'. 
 //
 	/**
-	 * TaxonDNA's main entrypoint. We check for command line arguments (in this case, all
-	 * of which must be files) and we start them using a call to 'new TaxonDNA(file)'. 
+	 * SpeciesIdentifier's main entrypoint. We check for command line arguments (in this case, all
+	 * of which must be files) and we start them using a call to 'new SpeciesIdentifier(file)'. 
 	 */
 	public static void main(String[] args) {
 		if(args.length == 0)
-			new TaxonDNA();
+			new SpeciesIdentifier();
 		else
 			CommandLine.processCommandLine(args);
 	}
@@ -116,12 +116,12 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 // 	2.	CONSTRUCTORS.
 //
 	/**
-	 * Create a new TaxonDNA object. Each TaxonDNA is essentially
+	 * Create a new SpeciesIdentifier object. Each SpeciesIdentifier is essentially
 	 * a window to deal with a particular SequenceList. We will
 	 * start off by having an empty, unset SequenceList.
 	 *
 	 */
-	public TaxonDNA() {
+	public SpeciesIdentifier() {
 		lockSequenceList();
 		registerUIExtensions();		// register the required UIExtensions
 		createUI();			// create our user interface
@@ -130,14 +130,14 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	}
 
 	/**
-	 * Create a new TaxonDNA object. Each TaxonDNA is essentially
+	 * Create a new SpeciesIdentifier object. Each SpeciesIdentifier is essentially
 	 * a class to deal with a particular SequenceList. We will
 	 * figure out the name of the class, etc. from the SequenceList.
 	 * The SequenceList can be 'null'.
 	 *
-	 * @param list The SequenceList to display in this TaxonDNA
+	 * @param list The SequenceList to display in this SpeciesIdentifier
 	 */
-	public TaxonDNA(SequenceList list) {
+	public SpeciesIdentifier(SequenceList list) {
 		this();
 
 		if(list != null) {
@@ -305,13 +305,13 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		}
 		
 		//
-		// Help -> Citing TaxonDNA. Gives information
-		// for citing TaxonDNA
+		// Help -> Citing SpeciesIdentifier. Gives information
+		// for citing SpeciesIdentifier
 		//
-		if(cmd.equals("Citing TaxonDNA")) {
+		if(cmd.equals("Citing SpeciesIdentifier")) {
 			MessageBox mb = new MessageBox(mainFrame,
-					"Citing TaxonDNA",
-					"You should cite TaxonDNA as follows:\n\t" + getCitation()
+					"Citing SpeciesIdentifier",
+					"You should cite SpeciesIdentifier as follows:\n\t" + getCitation()
 			);
 
 			mb.go();
@@ -322,8 +322,8 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
 		//
-		if(cmd.equals("About TaxonDNA")) {
-			String copyrightNotice = new String("TaxonDNA " + version + ", Copyright (C) 2005 Gaurav Vaidya. \nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+		if(cmd.equals("About SpeciesIdentifier")) {
+			String copyrightNotice = new String("SpeciesIdentifier " + version + ", Copyright (C) 2005 Gaurav Vaidya. \nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -548,7 +548,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		}	
 
 		// A simple, if elegant solution to the entire
-		// 'TaxonDNA won't close because a thread is
+		// 'SpeciesIdentifier won't close because a thread is
 		// still running somewhere'. Note that this
 		// will NOT solve all the other thread related
 		// issues will have, although it will save
@@ -592,7 +592,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	 * having the ENTIRE SequenceList changed from under his feet. Technically,
 	 * saveFile() should be the only who does this.
 	 *
-	 * To reiterate: TaxonDNA will respond to this, badly. Everything will flip
+	 * To reiterate: SpeciesIdentifier will respond to this, badly. Everything will flip
 	 * around. Things will change. It could be MINUTES, even HOURS before this
 	 * function returns. Don't do this unless you KNOW what you're doing.
 	 *
@@ -638,7 +638,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 
 //
 //	6.	COMMANDS. This is things that other classes might call
-//		to make things happen within/to TaxonDNA. 
+//		to make things happen within/to SpeciesIdentifier. 
 //
 	/**
 	 * Switch to the extension mentioned by name. The extension will be selected in the main view.
@@ -665,7 +665,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	}
 	
 //
-//	5.	GETTERS. Used to retrive values/objects from TaxonDNA.
+//	5.	GETTERS. Used to retrive values/objects from SpeciesIdentifier.
 //	
 	/**
 	 * Returns the current Frame object.
@@ -752,16 +752,16 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	}
 
 //
-//	4. 	PRIVATE FUNCTIONS, used by TaxonDNA to do stuff.
-//		Unless you're meddling with TaxonDNA itself, you
+//	4. 	PRIVATE FUNCTIONS, used by SpeciesIdentifier to do stuff.
+//		Unless you're meddling with SpeciesIdentifier itself, you
 //		should never need to look below this line.
 //
 	/**
-	 * Creates the user interface of TaxonDNA.
+	 * Creates the user interface of SpeciesIdentifier.
 	 */
 	private void createUI() {
 		// main frame
-		mainFrame = new Frame("TaxonDNA");
+		mainFrame = new Frame("SpeciesIdentifier");
 		mainFrame.addWindowListener(this);
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setMenuBar(createMenuBar());
@@ -835,7 +835,7 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 	 * unlockSequenceList(sequences) and this will be handled.
 	 */
 	private void resetFrameTitle() {
-		StringBuffer title = new StringBuffer("TaxonDNA " + version);
+		StringBuffer title = new StringBuffer("SpeciesIdentifier " + version);
 
 		if(sequences != null) {
 			File file = sequences.getFile();
@@ -951,8 +951,8 @@ public class TaxonDNA implements WindowListener, ActionListener, ItemListener {
 		
 		// Help menu
 		Menu	help		=	new Menu("Help");
-		help.add("Citing TaxonDNA");
-		help.add("About TaxonDNA");
+		help.add("Citing SpeciesIdentifier");
+		help.add("About SpeciesIdentifier");
 		help.addActionListener(this);
 		menubar.add(help);
 		menubar.setHelpMenu(help);
