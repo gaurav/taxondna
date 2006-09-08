@@ -172,18 +172,21 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		// counts
 		int total_count_sequences = 0;	// the count of *all* the sequences 
-		int valid_sequences = 0;
 		
+		// all of the following should add up to (total_count_sequences - number_no_matches)
 		int best_match_correct = 0;
 		int best_match_ambiguous = 0;
 		int best_match_incorrect = 0;
-		int best_match_noallo = 0;
 
-		int best_close_match_noallo = 0;
 		int best_close_match_correct = 0;
 		int best_close_match_ambiguous = 0;
 		int best_close_match_incorrect = 0;
 		int best_close_match_nomatch = 0;
+
+		int count_allo_at_zero = 0;
+
+		// the no-matches-found count
+		int count_no_matches = 0;
 
 		// sequence listing
 		StringBuffer str_listings = new StringBuffer("Query\tClosest conspecific match\tDistance\tOverlap\tClosest allospecific match\tDistance\tOverlap\t\tBest match\t\tBest close match\n");
@@ -230,17 +233,17 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		while(i.hasNext()) {
 			Sequence query = (Sequence) i.next();
 
-			String name_query = query.getSpeciesName();
-
 			// notify user
-			int count_sequences = set.count();
-				try {
-					pd.delay(x, count_sequences);
-				} catch(DelayAbortedException e) {
-					dataChanged();
-					seqId.unlockSequenceList();
-					return;
-				}
+			try {
+				pd.delay(x, total_count_sequences);
+			} catch(DelayAbortedException e) {
+				dataChanged();
+				seqId.unlockSequenceList();
+				return;
+			}
+
+			// increment counter
+			x++;
 			
 			// for each query, we run a SortedSequenceSet.
 			try { 
@@ -250,165 +253,156 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			}
 
 			// begin processing
-			count_sequences = 		sset.count();
-			Sequence first_con = 		null;
-			Sequence first_allo = 		null;
-			boolean conspecific_no_overlap = false;		// true -> there is no conspecific within overlap
-			boolean allospecific_no_overlap = false;	// true -> there is no allospecific within overlap
+			int count_sequences = 		sset.count();
+			Sequence bestMatch =		sset.get(1);
 
-			for(int y = 1; y < count_sequences; y++) {
-				Sequence match = sset.get(y);	
-				String name_species = match.getSpeciesName();
-				double distance = match.getPairwise(query);
+			// add ourselves to the listings
+			str_listings.append(query.getDisplayName());
 
-				// if we don't have a conspecific, and this is a conspecific -> we have a first_con!
-				if(conspecific_no_overlap == false && first_con == null && name_species.equals(name_query))
-				{
-					if(distance < 0)
-						conspecific_no_overlap = true;	
-					else
-						first_con = match;
+			// is 'bestMatch' valid? If not, we have no_match at all!
+			if(bestMatch == null || bestMatch.getPairwise(query) == -1) {
+				str_listings.append("\t\tNo match.\n");
+				count_no_matches++;
+
+				continue;
+			}
+
+			double bestMatchDistance = bestMatch.getPairwise(query);
+
+			// look for a block after the 'best match'
+			boolean clean_block = false;
+			boolean mixed_block = false;
+			int count_bestMatches = 0;
+			for(int y = 2; y < count_sequences; y++) {
+				Sequence match = sset.get(y);
+
+				if(match == null) {
+					// wtf? shouldn't happen, but say it does.
+					throw new RuntimeException("I ran out of Sequences when looking up " + query + "! This is a programming error.");
 				}
 
-				// if we don't have an allospecific, and this is an allospecific -> we have a first_allo!
-				if(allospecific_no_overlap == false && first_allo == null && !name_species.equals(name_query)) 
-				{
-					if(distance < 0)
-						allospecific_no_overlap = true;
-					else
-						first_allo = match;
-				}
-
-				// if we've got everything, GET ON WITH LIFE!
-				if(
-					// conspecifics done?
-					(
-						(conspecific_no_overlap == true) || (first_con != null)
-				        ) && (
-						(allospecific_no_overlap == true) || (first_allo != null)
-					)
-				)
+				if(!identical(match.getPairwise(query), bestMatchDistance)) {
+					// NOT identical
+					// we're now out of the block!
 					break;
-			}
-
-			double dist_con = -1;
-			if(first_con != null) {
-				dist_con = first_con.getPairwise(query);
-				valid_sequences++;
-			}
-
-			double dist_allo = -1;
-			if(first_allo != null)
-				dist_allo = first_allo.getPairwise(query);			
-
-			// explain to the user what's happening with distances 
-			// conspecifics 
-			str_listings.append(query.getName() + "\t");
-			if(first_con == null) {
-				if(conspecific_no_overlap)
-					str_listings.append("Inadequate overlap\t-1.0\t0\t");
-				else
-					str_listings.append("No conspecifics in database\t-1.0\t0\t");
-			} else {
-				double distance = query.getPairwise(first_con);
-				int overlap = query.getSharedLength(first_con);
-				str_listings.append(first_con.getName() + "\t" + percentage(distance, 1) + "\t" + overlap + "\t");
-			}
-
-			// allospecifics
-			if(first_allo == null) {
-				if(allospecific_no_overlap)
-					str_listings.append("Inadequate overlap\t-1.0\t0\t");
-				else
-					str_listings.append("No allospecifics in database\t-1.0\t0\t");
-			} else {
-				double distance = query.getPairwise(first_allo);
-				int overlap = query.getSharedLength(first_allo);
-				str_listings.append(first_allo.getName() + "\t" + percentage(distance, 1) + "\t" + overlap + "\t");
-			}
-			
-			// best match and best close match
-			if(dist_allo == -1) {
-				best_match_noallo++;
-				str_listings.append("\tno_allospecific_match\t");
-				
-				best_close_match_noallo++;
-				str_listings.append("\tno_allospecific_match\t");
-
-			} else if(dist_con == -1) {
-				best_match_incorrect++;
-				str_listings.append("\tincorrect_no_con\t");	
-
-				if(dist_allo <= threshold) {
-					best_close_match_incorrect++;
-					str_listings.append("\tincorrect_no_con\t");
-				} else {
-					best_close_match_nomatch++;
-					str_listings.append("\tno_match\t");
 				}
 
-			} else if(com.ggvaidya.TaxonDNA.DNA.Settings.identical(dist_con, dist_allo)) {
+				count_bestMatches++;
+
+				// now, in the block, check whether we're still clean ... or mixed
+				// please note that here (and ONLY here), conspecific and allospecific
+				// refer to whether the sequences in the block are con and allospecific
+				// to the bestMatch, NOT to the query!
+				if(match.getSpeciesName().equals(bestMatch.getSpeciesName())) {
+					// conspecific
+					clean_block = true;
+				} else {
+					// allospecific	
+					mixed_block = true;
+				}
+			}
+
+			// is it conspecific or allospecific?
+			boolean conspecific = bestMatch.getSpeciesName().equals(query.getSpeciesName());
+
+			// so: what's the block situation?
+			if(!clean_block && !mixed_block) {
+				// there is NO block. the sequence is decided on its own merit.
+				str_listings.append("\t" + bestMatch.getDisplayName());
+				if(conspecific) {
+					str_listings.append("\tSuccessful match at " + percentage(bestMatchDistance, 1) + "%");
+					best_match_correct++;
+
+					if(bestMatchDistance <= threshold) {
+						best_close_match_correct++;
+						str_listings.append(" (within threshold)\n");
+					} else {
+						best_close_match_nomatch++;
+						str_listings.append(" (outside threshold)\n");
+					}
+				} else {
+					str_listings.append("\tIncorrect match at " + percentage(bestMatchDistance, 1) + "%");
+					best_match_incorrect++;
+
+					if(bestMatchDistance <= threshold) {
+						best_close_match_incorrect++;
+						str_listings.append(" (within threshold)\n");
+					} else {
+						best_close_match_nomatch++;
+						str_listings.append(" (outside threshold)\n");
+					}
+				}
+			} else if(clean_block && !mixed_block) {
+				// now, bear in mind that you can't actually have BOTH
+				// clean_block and mixed_block. If mixed_block is ON, it's
+				// a mixed_block, and there ain't much you can do about it.
+				//
+				// this is the only other alternative: clean_block WITHOUT mixed_block
+
+				str_listings.append("\t" + bestMatch.getDisplayName() + " and " + count_bestMatches + " others");
+				if(conspecific) {
+					str_listings.append("\tSuccessful match at " + percentage(bestMatchDistance, 1) + "%");
+					best_match_correct++;
+
+					if(bestMatchDistance <= threshold) {
+						best_close_match_correct++;
+
+						str_listings.append(" (within threshold)\n");
+					} else {
+						best_close_match_nomatch++;
+
+						str_listings.append(" (outside threshold)\n");
+					}
+				} else {
+					str_listings.append("\tIncorrect match at " + percentage(bestMatchDistance, 1) + "%");
+					best_match_incorrect++;
+
+					if(bestMatchDistance <= threshold) {
+						best_close_match_incorrect++;
+
+						str_listings.append(" (within threshold)\n");
+					} else {
+						best_close_match_nomatch++;
+
+						str_listings.append(" (outside threshold)\n");
+					}
+				}
+			} else if(mixed_block) {
+				// mixed blocks
+				// by definition, this is ambiguous all over :).
+				str_listings.append("\t" + bestMatch.getDisplayName() + " and " + count_bestMatches + " others from different species\tMultiple species found at " + percentage(bestMatchDistance, 1) + ", identification with certainty is impossible" );
 				best_match_ambiguous++;
-				str_listings.append("\tambiguous\t");
 
-				if(dist_con <= threshold && dist_allo <= threshold) {
+				if(bestMatchDistance <= threshold) {
 					best_close_match_ambiguous++;
-					str_listings.append("\tambiguous\t");
+
+					str_listings.append(" (within threshold)\n");
 				} else {
 					best_close_match_nomatch++;
-					str_listings.append("\tno_match\t");
+
+					str_listings.append(" (outside threshold)\n");
 				}
-
-			} else if(dist_con < dist_allo) {
-				best_match_correct++;
-				str_listings.append("\tcorrect\t");
-
-				if(dist_con > threshold) {
-					best_close_match_nomatch++;	
-					str_listings.append("\tno_match\t");
-				} else {
-					best_close_match_correct++;
-					str_listings.append("\tcorrect\t");
-				}
-					
-			} else if(dist_allo < dist_con) {
-				best_match_incorrect++;
-				str_listings.append("\tincorrect\t");
-
-				if(dist_allo > threshold) {
-					best_close_match_nomatch++;
-					str_listings.append("\tno_match\t");
-				} else {
-					best_close_match_incorrect++;
-					str_listings.append("\tincorrect\t");
-				}
-
 			} else {
-				throw new RuntimeException("Hit an unexpected program situation! Contact the programmer!");
-			} 
-
-			str_listings.append("\n");
-		       	
-			// increment counter
-			x++;
+				throw new RuntimeException("Programming error: the program is now somewhere where it really shouldn't be. Please contact the programmer!");
+			}
 		}
 
 		// Now, since we are NOT counting sequences which matched against NOTHING
-		// (i.e. best_match_noallo), we calculate percentages based on count_sequences_with_match;
-		int count_sequences_with_match = total_count_sequences - best_match_noallo;
+		// (i.e. best_match_noallo), we calculate percentages based on count_sequences_with_valid_matches;
+		int count_sequences_with_valid_matches = total_count_sequences - count_no_matches;
 
 		text_main.setText(
 				"Sequences:\t" + total_count_sequences + 
-				"\nSequences with atleast one matching conspecific sequence in the data set:\t" + valid_sequences +
-				"\nSequences with atleast one matching sequence in the data set:\t" + count_sequences_with_match +
-				"\n\nCorrect identifications according to \"Best Match\":\t" + best_match_correct + " (" + percentage(best_match_correct, count_sequences_with_match) + "%)" +
-				"\nAmbiguous according to \"Best Match\":\t" + best_match_ambiguous + " (" + percentage(best_match_ambiguous, count_sequences_with_match) + "%)" +
-				"\nIncorrect identifications according to \"Best Match\":\t" + best_match_incorrect + " (" + percentage(best_match_incorrect, count_sequences_with_match) + "%)" +
+				"\nSequences with atleast one matching sequence in the data set:\t" + count_sequences_with_valid_matches +
+				"\nSequences with atleast one matching conspecific sequence in the data set:\tNOT AVAILABLE AT PRESENT" +
+				"\n\nCorrect identifications according to \"Best Match\":\t" + best_match_correct + " (" + percentage(best_match_correct, count_sequences_with_valid_matches) + "%)" +
+				"\nAmbiguous according to \"Best Match\":\t" + best_match_ambiguous + " (" + percentage(best_match_ambiguous, count_sequences_with_valid_matches) + "%)" +
+				"\nIncorrect identifications according to \"Best Match\":\t" + best_match_incorrect + " (" + percentage(best_match_incorrect, count_sequences_with_valid_matches) + "%)" +
 //				"\nSequences without any match with adequate overlap:\t" + best_match_noallo + " (" + percentage(best_match_noallo, total_count_sequences) + "%)" +
-				"\n\nCorrect identifications according to \"Best Close Match\":\t" + best_close_match_correct + " (" + percentage(best_close_match_correct, count_sequences_with_match) + "%)" + 
-				"\nAmbiguous according to \"Best Close Match\":\t" + best_close_match_ambiguous + " (" + percentage(best_close_match_ambiguous, count_sequences_with_match) + "%)" +
-				"\nIncorrect identifications according to \"Best Close Match\":\t" + best_close_match_incorrect + " (" + percentage(best_close_match_incorrect, count_sequences_with_match) + "%)" +
-				"\nSequences without any match closer than " + percentage(threshold, 1) + "%:\t" + best_close_match_nomatch + " (" + percentage(best_close_match_nomatch, count_sequences_with_match) + "%)" +
+				"\n\nCorrect identifications according to \"Best Close Match\":\t" + best_close_match_correct + " (" + percentage(best_close_match_correct, count_sequences_with_valid_matches) + "%)" + 
+				"\nAmbiguous according to \"Best Close Match\":\t" + best_close_match_ambiguous + " (" + percentage(best_close_match_ambiguous, count_sequences_with_valid_matches) + "%)" +
+				"\nIncorrect identifications according to \"Best Close Match\":\t" + best_close_match_incorrect + " (" + percentage(best_close_match_incorrect, count_sequences_with_valid_matches) + "%)" +
+				"\nSequences without any match closer than " + percentage(threshold, 1) + "%:\t" + best_close_match_nomatch + " (" + percentage(best_close_match_nomatch, count_sequences_with_valid_matches) + "%)" +
 				"\n\n" + str_listings.toString());
 
 		pd.end();
@@ -419,6 +413,10 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 	private double percentage(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+	}
+
+	private boolean identical(double x, double y) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
 	}
 	
 	public String getShortName() {		return "Best Match/Best Close Match"; 	}
