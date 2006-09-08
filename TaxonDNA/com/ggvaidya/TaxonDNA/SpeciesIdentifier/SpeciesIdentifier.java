@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SpeciesIdentifier implements WindowListener, ActionListener, ItemListener {
 	// the current SpeciesIdentifier version number 
-	private static String 	version 		= "0.9.5";
+	private static String 	version 		= "0.9.5.1";
 
 	// the following information is shared amongst all TaxonDNAs.
 	private static int	countTaxonDNAs		= 0;
