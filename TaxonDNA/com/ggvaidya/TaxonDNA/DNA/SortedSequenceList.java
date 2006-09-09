@@ -76,6 +76,14 @@ public class SortedSequenceList {
 	 * Sorts this SortedSequenceSet against this query sequence.
 	 * Allows you to resort the set without "filling in" the
 	 * data again, or creating another SortedSequenceSet object.
+	 *
+	 * Note that this will REMOVE all Sequences which are not
+	 * valid matches against 'query' to save time. The upshot
+	 * of this is that you could actually end up with single
+	 * matches (one sequence only) or even NO matches 
+	 * (i.e. the SortedSequenceList will have ZERO 
+	 * sequences), if the query is not long enough to
+	 * match against the query.
 	 */
 	public void sortAgainst(Sequence query, DelayCallback delay) throws DelayAbortedException {
 		int count = 0;
@@ -153,6 +161,8 @@ public class SortedSequenceList {
 	 * You can get the query sequence using getQuery(). 
 	 */
 	public Sequence get(int x) {
+		if(x >= sorted.count())
+			return null;
 		return (Sequence) sorted.get(x);
 	}
 
