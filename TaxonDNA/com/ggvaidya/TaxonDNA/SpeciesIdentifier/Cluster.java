@@ -334,7 +334,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 				first_line.append(seq1.getFullName() + "\t");
 
-				pairwise_table.append(seq1.getFullName() + "\t");
+				pairwise_table.append(seq1.getFullName());
 				
 				Iterator i2 = bin.iterator();
 				while(i2.hasNext()) {

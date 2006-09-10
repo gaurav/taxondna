@@ -184,12 +184,14 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		int best_close_match_nomatch = 0;
 
 		int count_allo_at_zero = 0;
+		int count_zero_percent_matches = 0;
+		int count_seqs_with_valid_conspecific_matches = 0;
 
 		// the no-matches-found count
 		int count_no_matches = 0;
 
 		// sequence listing
-		StringBuffer str_listings = new StringBuffer("Query\tClosest conspecific match\tDistance\tOverlap\tClosest allospecific match\tDistance\tOverlap\t\tBest match\t\tBest close match\n");
+		StringBuffer str_listings = new StringBuffer("Query\tMatch\tIdentification\n");
 		
 		// get the new threshold
 		double threshold = Double.parseDouble(text_threshold.getText());
@@ -230,8 +232,11 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		pd.begin();
 
 		Iterator i = set.iterator();
+
 		while(i.hasNext()) {
 			Sequence query = (Sequence) i.next();
+			Sequence first_con = null;
+			Sequence first_allo = null;
 
 			// notify user
 			try {
@@ -269,6 +274,10 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 			double bestMatchDistance = bestMatch.getPairwise(query);
 
+			if(identical(bestMatchDistance, 0)) {
+				count_zero_percent_matches++;
+			}
+
 			// look for a block after the 'best match'
 			boolean clean_block = false;
 			boolean mixed_block = false;
@@ -302,6 +311,43 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 				}
 			}
 
+			// completely independently: check for allo and conspecific matches
+			for(int y = 1; y < count_sequences; y++) {
+				Sequence match = sset.get(y);
+
+				if(match == null) {
+					// shouldn't happen; say it does.
+					throw new RuntimeException("I ran out of Sequences when looking up " + query + "! This is a programming error.");
+				}
+
+				if(match.getPairwise(query) >= 0) {
+					if(first_con == null && match.getSpeciesName().equals(query.getSpeciesName())) {
+						// conspecific
+						first_con = match;
+						count_seqs_with_valid_conspecific_matches++;
+					} else if(first_allo == null && !match.getSpeciesName().equals(query.getSpeciesName())) {
+						// allospecific
+						first_allo = match;
+					}
+
+					if(first_con != null && first_allo != null)
+						break;
+				}
+			}
+
+			// write down first_con and first_allo into the listings.
+			if(first_con == null) {
+				str_listings.append("\tNo conspecific in database\t---\t0");
+			} else {
+				str_listings.append("\t" + first_con.getDisplayName() + "\t" + percentage(query.getPairwise(first_con), 1) + "\t" + query.getSharedLength(first_con));
+			}
+
+			if(first_allo == null) {
+				str_listings.append("\tNo allospecific in database\t---\t0");
+			} else {
+				str_listings.append("\t" + first_allo.getDisplayName() + "\t" + percentage(query.getPairwise(first_allo), 1) + "\t" + query.getSharedLength(first_allo));
+			}	
+
 			// is it conspecific or allospecific?
 			boolean conspecific = bestMatch.getSpeciesName().equals(query.getSpeciesName());
 
@@ -321,6 +367,10 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 						str_listings.append(" (outside threshold)\n");
 					}
 				} else {
+					if(identical(bestMatchDistance, 0)) {
+						count_allo_at_zero++;
+					}
+
 					str_listings.append("\tIncorrect match at " + percentage(bestMatchDistance, 1) + "%");
 					best_match_incorrect++;
 
@@ -354,6 +404,10 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 						str_listings.append(" (outside threshold)\n");
 					}
 				} else {
+					if(identical(bestMatchDistance, 0)) {
+						count_allo_at_zero++;
+					}
+
 					str_listings.append("\tIncorrect match at " + percentage(bestMatchDistance, 1) + "%");
 					best_match_incorrect++;
 
@@ -370,7 +424,11 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			} else if(mixed_block) {
 				// mixed blocks
 				// by definition, this is ambiguous all over :).
-				str_listings.append("\t" + bestMatch.getDisplayName() + " and " + count_bestMatches + " others from different species\tMultiple species found at " + percentage(bestMatchDistance, 1) + ", identification with certainty is impossible" );
+				if(identical(bestMatchDistance, 0)) {
+					count_allo_at_zero++;
+				}
+
+				str_listings.append("\t" + bestMatch.getDisplayName() + " and " + count_bestMatches + " others from different species\tMultiple species found at " + percentage(bestMatchDistance, 1) + "%, identification with certainty is impossible" );
 				best_match_ambiguous++;
 
 				if(bestMatchDistance <= threshold) {
@@ -394,7 +452,9 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		text_main.setText(
 				"Sequences:\t" + total_count_sequences + 
 				"\nSequences with atleast one matching sequence in the data set:\t" + count_sequences_with_valid_matches +
-				"\nSequences with atleast one matching conspecific sequence in the data set:\tNOT AVAILABLE AT PRESENT" +
+				"\nSequences with atleast one matching conspecific sequence in the data set:\t" + count_seqs_with_valid_conspecific_matches + 
+				"\nSequences with a closest match at 0%:\t" + count_zero_percent_matches +
+				"\nAllospecific matches at 0%:\t" + count_allo_at_zero + "\t(" + percentage(count_allo_at_zero, count_zero_percent_matches) + "% of all matches at 0%)" +
 				"\n\nCorrect identifications according to \"Best Match\":\t" + best_match_correct + " (" + percentage(best_match_correct, count_sequences_with_valid_matches) + "%)" +
 				"\nAmbiguous according to \"Best Match\":\t" + best_match_ambiguous + " (" + percentage(best_match_ambiguous, count_sequences_with_valid_matches) + "%)" +
 				"\nIncorrect identifications according to \"Best Match\":\t" + best_match_incorrect + " (" + percentage(best_match_incorrect, count_sequences_with_valid_matches) + "%)" +
