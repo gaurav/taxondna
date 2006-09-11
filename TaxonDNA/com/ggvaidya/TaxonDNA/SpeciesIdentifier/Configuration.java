@@ -74,6 +74,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		*/
 
 		rl.add(warningLabel, RightLayout.NONE);		
+		lock_button.addActionListener(this);
 		rl.add(lock_button, RightLayout.BESIDE | RightLayout.FLUSHRIGHT | RightLayout.FILL_2);
 		
 		// add the minimum overlap setting
