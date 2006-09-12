@@ -1501,9 +1501,9 @@ public class Sequence  implements Comparable, Testable {
 		if(getSpeciesName().equals("")) {
 			// we don't have a species name!
 			String name = "";
-			if(getGI() != null) { 
+			if(!getGI().equals("")) { 
 				// but we do have a GI number
-				name = "gi" + getGI() + " " + getFullName();
+				name = "gi:" + getGI() + " " + getFullName();
 			} else {
 				name = getFullName();
 			}
