@@ -20,7 +20,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005 Gaurav Vaidya
+    Copyright (C) 2005, 2006 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -97,5 +97,15 @@ public interface FormatHandler {
 	 * exist, it's not very likely to be of this format, is it? 
 	 */
 	public boolean mightBe(File file);
-}
 
+	/**
+	 * Add a new FormatListener to this FormatHandler. We'll keep the Listener notified during
+	 * a parse, so that he can chug up any other information which we can't stuff into the file.
+	 */
+	public void addFormatListener(FormatListener listener);
+
+	/**
+	 * Removes a FormatListener from this FormatHandler. 
+	 */
+	public void removeFormatListener(FormatListener listener);
+}

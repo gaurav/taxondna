@@ -620,4 +620,20 @@ public class GenBankFile implements FormatHandler, Testable {
 		testMaster.done();
 	*/
 	}
+
+	Vector formatListeners = new Vector();
+	public void addFormatListener(FormatListener listener) {
+		formatListeners.add(listener);	
+	}
+	public void removeFormatListener(FormatListener listener) {
+		formatListeners.remove(listener);
+	}
+	public void fireEvent(FormatHandlerEvent evt) throws FormatException {
+		Iterator i = formatListeners.iterator();
+		while(i.hasNext()) {
+			FormatListener fl = (FormatListener) i.next();
+
+			fl.eventOccured(evt);
+		}
+	}	
 }
