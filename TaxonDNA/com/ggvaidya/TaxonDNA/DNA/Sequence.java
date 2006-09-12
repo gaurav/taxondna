@@ -1498,6 +1498,21 @@ public class Sequence  implements Comparable, Testable {
 	 * 	(... to "Tr" to "T")
 	 */
 	public String getSpeciesName(int max_size) {
+		if(getSpeciesName().equals("")) {
+			// we don't have a species name!
+			String name = "";
+			if(getGI() != null) { 
+				// but we do have a GI number
+				name = "gi" + getGI() + " " + getFullName();
+			} else {
+				name = getFullName();
+			}
+
+			if(name.length() > max_size)
+				return name.substring(0, max_size);
+			return name;
+		}
+
 		/* Get some obvious edge cases */
 		if(max_size == -1)
 			return getSpeciesName();
