@@ -45,7 +45,7 @@ import java.util.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
-public class NexusFile implements FormatHandler {
+public class NexusFile extends BaseFormatHandler {
 		// what is the maximum lengh of taxon names allowed?
 	private int MAX_TAXON_LENGTH = 	32;
 		// when sequences get bigger than INTERLEAVE_AT, we'll
@@ -682,22 +682,5 @@ public class NexusFile implements FormatHandler {
 			return false;
 		}
 	}
-
-
-	Vector formatListeners = new Vector();
-	public void addFormatListener(FormatListener listener) {
-		formatListeners.add(listener);	
-	}
-	public void removeFormatListener(FormatListener listener) {
-		formatListeners.remove(listener);
-	}
-	public void fireEvent(FormatHandlerEvent evt) throws FormatException {
-		Iterator i = formatListeners.iterator();
-		while(i.hasNext()) {
-			FormatListener fl = (FormatListener) i.next();
-
-			fl.eventOccured(evt);
-		}
-	}	
 }
 

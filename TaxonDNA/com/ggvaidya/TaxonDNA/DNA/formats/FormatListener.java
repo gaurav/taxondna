@@ -46,8 +46,9 @@ public interface FormatListener {
 	 * with SET_INFORMATION or whatever.
 	 *
 	 * @throws FormatException if we see something we disapprove of; the FormatException will be communicated back to the user.
+	 * @return true, if the event was 'consumed' (we shouldn't let anybody else know about this)
 	 */
-	public void eventOccured(FormatHandlerEvent evt)
+	public boolean eventOccured(FormatHandlerEvent evt)
 		throws FormatException;
 }
 

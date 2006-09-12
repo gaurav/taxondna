@@ -52,7 +52,7 @@ import java.util.regex.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
-public class MegaFile implements FormatHandler, Testable {
+public class MegaFile extends BaseFormatHandler implements Testable {
 	public static final int MAX_NAME_SIZE = 40;		// Mega3 will truncate anything bigger
 	
 	/** Creates a MegaFile format handler */
@@ -440,21 +440,4 @@ public class MegaFile implements FormatHandler, Testable {
 		testMaster.done();
 	*/
 	}
-
-
-	Vector formatListeners = new Vector();
-	public void addFormatListener(FormatListener listener) {
-		formatListeners.add(listener);	
-	}
-	public void removeFormatListener(FormatListener listener) {
-		formatListeners.remove(listener);
-	}
-	public void fireEvent(FormatHandlerEvent evt) throws FormatException {
-		Iterator i = formatListeners.iterator();
-		while(i.hasNext()) {
-			FormatListener fl = (FormatListener) i.next();
-
-			fl.eventOccured(evt);
-		}
-	}	
 }
