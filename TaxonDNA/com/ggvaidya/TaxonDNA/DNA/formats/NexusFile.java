@@ -125,6 +125,8 @@ public class NexusFile extends BaseFormatHandler {
 	 * @throws DelayAbortedException if the DelayCallback was aborted by the user.
 	 */
 	public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException {
+		FormatHandlerEvent evt = new FormatHandlerEvent(fileFrom, this, appendTo);
+
 		// set up the delay
 		if(delay != null)
 			delay.begin();
@@ -141,8 +143,18 @@ public class NexusFile extends BaseFormatHandler {
 				count_lines++;
 			}
 
+			// let's go!
 			reader = new BufferedReader(new FileReader(fileFrom));
 			StreamTokenizer tok = new StreamTokenizer(reader);
+			// let's pre-read the #NEXUS line
+			if(tok.nextToken() != '#')
+				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#')! Are you sure it's a Nexus file?");
+
+			tok.nextToken();
+
+			if(tok.sval == null || !tok.sval.equalsIgnoreCase("nexus")) {
+				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#nexus')! Are you sure it's a Nexus file?");
+			}
 
 			tok.ordinaryChar('/');	// this is the default StringTokenizer comment char, so we need to set it back to nothingness
 
@@ -160,29 +172,16 @@ public class NexusFile extends BaseFormatHandler {
 
 			tok.ordinaryChar('[');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
 			tok.ordinaryChar(']');	// We need this to be a 'word' so that we can use it to discriminate comments
-			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to discriminate comments
+			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to distinguish commands 
 		
 			// states
 			int 		commentLevel = 		0;
-			boolean		newCommand =		true;
-			boolean		inDataBlock =		false;
-			boolean		inDataBlockFormatCmd = 	false;
 			boolean		inStrangeBlock =	false;		// strange -> i.e. unknown to us, foreign.
-			char		missingChar =		'?';
-			char		gapChar =		'-';		// this is against the standard, but oh well
-
-		        tok.wordChars(gapChar,gapChar);
-		        tok.wordChars(missingChar,missingChar);
-
-			// flags
-			boolean isDatasetInterleaved = false;
+			boolean		newCommand =		true;
 
 			// WARNING:	newCommand is reset at the BOTTOM of the while loop
 			// 		Only use 'continue' if you've slurped up an ENTIRE
 			// 		command (including the ';')
-			int interval = count_lines / 100;
-			if(interval == 0)
-				interval = 1;
 			while(true) {
 				/* Before anything else, do the delay */
 				if(delay != null) 
@@ -192,9 +191,8 @@ public class NexusFile extends BaseFormatHandler {
 				int type = tok.nextToken();
 				
 				// break at end of file
-				if(type == StreamTokenizer.TT_EOF) {
+				if(type == StreamTokenizer.TT_EOF)
 					break;
-				}
 				
 				// is it a comment?
 				if(type == '[')
@@ -206,59 +204,6 @@ public class NexusFile extends BaseFormatHandler {
 				if(commentLevel > 0)
 					continue;
 
-				if(inDataBlockFormatCmd) {
-					if(type == ';') {
-						inDataBlockFormatCmd = false;
-						continue;
-					}
-
-					if(type == StreamTokenizer.TT_WORD) {
-						String str = tok.sval;
-
-						if(str.equalsIgnoreCase("INTERLEAVE")) {
-							// turn interleaving on
-							isDatasetInterleaved = true;
-						}
-
-						if(str.equalsIgnoreCase("DATATYPE")) {
-							str = getValueOfKey(tok);
-							if(str == null)
-								throw new FormatException("Error in line " + tok.lineno() + ": 'DATATYPE' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-							if(!str.equalsIgnoreCase("DNA"))
-								throw new FormatException("Error in line " + tok.lineno() + ": I can't understand DATATYPE '" + str + "'. I can only understand DATATYPE=DNA.");
-						}
-
-						if(str.equalsIgnoreCase("GAP")) {
-							str = getValueOfKey(tok);
-							if(str == null)
-								throw new FormatException("Error in line " + tok.lineno() + ": 'GAP' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-							if(str.length() > 1)
-								throw new FormatException("Error in line " + tok.lineno() + ": I can't use more than one character as the GAP character. The file specifies: '" + str + "'");
-
-							tok.ordinaryChar(gapChar);
-							gapChar = str.charAt(0); 
-							tok.wordChars(gapChar, gapChar);
-						}
-						
-						if(str.equalsIgnoreCase("MISSING")) {
-							str = getValueOfKey(tok);
-							if(str == null)
-								throw new FormatException("Error in line " + tok.lineno() + ": 'MISSING' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-							if(str.length() > 1)
-								throw new FormatException("Error in line " + tok.lineno() + ": I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
-
-							tok.ordinaryChar(missingChar);
-							missingChar = str.charAt(0); 
-							tok.wordChars(missingChar, missingChar);
-						}
-					}
-
-					continue;
-				}
-
 				// semi-colons indicate end of line.
 				// some commands use this to determine the end of command 
 				if(type == ';') {
@@ -266,144 +211,51 @@ public class NexusFile extends BaseFormatHandler {
 					continue;
 				}
 
-				// is it a word?
-				else if(type == StreamTokenizer.TT_WORD) {
+				// Look out for END
+				if(type == StreamTokenizer.TT_WORD) {
 					String str = tok.sval;
 
-					// if we are in a foreign block, we ONLY watch out for the 'END;'.
-					// This way, foreign blocks can safely contain 'BEGIN foo' without
-					// tripping us over.
-					if(inStrangeBlock) {
-						if(str.equalsIgnoreCase("END")) {
-							//System.err.println("Leaving strange block");
-							if(newCommand && tok.nextToken() == ';') {
-								// okay, it's an 'END;'
-								// and a new command ... so ';END;'
-								inStrangeBlock = false;
-								continue;
-							}
-						}
-					}
+					if(str.equalsIgnoreCase("END")) {
+						//System.err.println("Leaving strange block");
+						if(newCommand && tok.nextToken() == ';') {
+							// okay, it's an 'END;'
+							// and a new command ... so ';END;'
+							inStrangeBlock = false;
 
-					if(inDataBlock) {
-						if(str.equalsIgnoreCase("FORMAT")) {
-							inDataBlockFormatCmd = true;
-						}
-
-						if(str.equalsIgnoreCase("MATRIX")) {
-							//System.err.println("Entering the matrix");
-							// okay, at this point, we import in the entire friggin'
-							// data matrix. It might be interleaved (see boolean 'interleave') 
-							Hashtable hash_names = new Hashtable();		// String name -> Sequence
-							while(true) {
-								/* Before anything else, do the delay */
-								delay.delay(tok.lineno(), count_lines);
-
-								/* To business, etc. */
-								type = tok.nextToken();
-
-								/*
-								if(tok.sval != null)
-									//System.err.println("Word in Matrix: " + tok.sval);
-
-								if(tok.nval != 0)
-									System.err.println("Numb in Matrix: " + tok.nval);
-									*/
-
-								if(type == ';')
-									break;
-
-								// is it an ordinary char?
-								else if(type == '[')
-									commentLevel++;
-
-								else if(type == ']')
-									commentLevel--;
-
-								else if(commentLevel > 0)
-									continue;
-
-								else if(type == StreamTokenizer.TT_WORD) {
-									String name = tok.sval;
-
-									//System.err.println("Processing: " + name);
-
-									// put spaces back
-									name = name.replace('_', ' ');		// we do NOT support '. Pfft.
-
-									// get the sequence
-									type = tok.nextToken();
-
-									if(type == StreamTokenizer.TT_WORD) {
-										// fix up gaps and missings to TaxonDNA specs
-										tok.sval = tok.sval.replace(gapChar, '-');
-										tok.sval = tok.sval.replace(missingChar, '?');
-
-										try {
-											Sequence seq = null;
-											if(!isDatasetInterleaved || hash_names.get(name) == null) {
-												// doesn't exist, just add it
-												seq = new Sequence(name, tok.sval);
-												appendTo.add(seq);
-												hash_names.put(name, seq);
-											} else {
-												// it DOES exist, append it
-												seq = (Sequence) hash_names.get(name);
-												seq.changeSequence(seq.getSequence() + tok.sval);
-											}
-										} catch(SequenceException e) {
-											throw new FormatException("There is an error in line " + tok.lineno() + ": the sequence for taxon '" + name + "' is invalid: " + e);
-										}
-									} else if(type == ';') {
-										throw new FormatException("There is an error in line " + tok.lineno() + ": The sequence named '" + name + "' has no DNA sequence associated with it.");
-									} else {
-										throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected '" + (char) type + "'.");
-									}
-
-								} else {
-									throw new FormatException("There is an error in line " + tok.lineno() + ": Unexpected '" + (char) type + "'.");
-								}
-							}
 							continue;
-						}	
-						if(str.equalsIgnoreCase("END")) {
-							//System.err.println("Leaving data block");
-							if(newCommand && tok.nextToken() == ';') {
-								// okay, it's an 'END;'
-								// and a new command ... so ';END;'
-								inDataBlock = false;
-								continue;
-							}
 						}
 					}
-					
+
 					// the BEGIN command
-					if(str.equalsIgnoreCase("BEGIN")) {
+					else if(str.equalsIgnoreCase("BEGIN")) {
 						// begin what?
 						if(tok.nextToken() == StreamTokenizer.TT_WORD) {
 							String beginWhat = tok.sval;	
 
-							//System.err.println("Begin block: " + beginWhat + ".");
-							
-							if(beginWhat.equalsIgnoreCase("DATA"))
-								inDataBlock = true;
-							else if(beginWhat.equalsIgnoreCase("CHARACTERS"))
-								inDataBlock = true;
+							if(beginWhat.equalsIgnoreCase("DATA") || beginWhat.equalsIgnoreCase("CHARACTERS"))
+								blockData(appendTo, tok, evt, delay, count_lines);
 								// the reference says they *are* identical
 								// (except that NEWTAXA is implicit in DATA)
 								// TODO: we might want to care about this.
 								// you know. to be anal, and all that.
 							else
 								inStrangeBlock = true;
-							
+						
 						} else {
 							// something is wrong!
-							throw new FormatException("There is an error in line " + tok.lineno() + ": BEGIN is specified without a valid block name.");
+							throw formatException(tok, "BEGIN is specified without a valid block name.");
 						}
 					}
 
-					newCommand = false;		// this will be reset at the end of the line -- i.e, by ';'
+					else {
+						if(!inStrangeBlock) 
+							throw formatException(tok, "Strange word '" + str + "' found! Is it one of yours?");
+					}
+				} else {
+					// strange symbol (or ';') found
 				}
+
+				newCommand = false;		// this will be reset at the end of the line -- i.e, by ';'
 			}
 		} finally {
 			if(delay != null)
@@ -413,6 +265,191 @@ public class NexusFile extends BaseFormatHandler {
 		
 		appendTo.setFile(fileFrom);
 		appendTo.setFormatHandler(this);
+	}
+
+	public FormatException formatException(StreamTokenizer tok, String message) {
+		return new FormatException("Error on line " + tok.lineno() + ": " + message);
+	}
+
+	public void blockData(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+		throws FormatException, DelayAbortedException, IOException
+	{
+		boolean isDatasetInterleaved = false;
+		boolean inFormatCommand = false;
+		boolean inMatrix = false;
+		char missingChar =	'?';
+		char gapChar =		'-';		// this is against the standard, but the GAPS
+							// command should fix it, and it's a pretty nice
+							// default for us. NEXUS says there is NO default,
+							// but we're going to have one anyway, because
+							// we're Radical and all.
+
+		tok.wordChars(gapChar,gapChar);
+	        tok.wordChars(missingChar,missingChar);
+
+		Hashtable hash_names = new Hashtable();			// String name -> Sequence
+		String name = null;
+
+		int commentLevel = 0;
+		boolean newCommand = true;
+
+		while(true) {
+			int type = tok.nextToken();
+			String str = tok.sval;
+
+			if(delay != null)
+				delay.delay(tok.lineno(), count_lines);
+
+			if(type == StreamTokenizer.TT_EOF) {
+				// wtf?!
+				throw formatException(tok, "I've reached the end of the file, and the DATA/CHARACTERS block has *still* not been closed! Please make sure the block is closed.");
+			}
+
+			if(type == ';')
+				newCommand = true;
+
+			if(type == '[' || type == ']') {
+				if(type == '[')
+					commentLevel++;
+
+				if(type == ']')
+					commentLevel--;
+
+				continue;
+			}
+				
+			if(commentLevel > 0)
+				continue;
+
+			if(inFormatCommand) {
+				if(newCommand) {
+					inFormatCommand = false;
+					continue;
+				}
+
+				if(type == StreamTokenizer.TT_WORD) {
+					str = tok.sval;
+
+					if(str.equalsIgnoreCase("INTERLEAVE")) {
+						// turn interleaving on
+						isDatasetInterleaved = true;
+					}
+		
+					else if(str.equalsIgnoreCase("DATATYPE")) {
+						str = getValueOfKey(tok);
+						if(str == null)
+							throw formatException(tok, "'DATATYPE' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
+
+						if(!str.equalsIgnoreCase("DNA"))
+							throw formatException(tok, "I can't understand DATATYPE '" + str + "'. I can only understand DATATYPE=DNA.");
+					}
+
+					else if(str.equalsIgnoreCase("GAP")) {
+						str = getValueOfKey(tok);
+						if(str == null)
+							throw formatException(tok, "'GAP' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
+
+						if(str.length() > 1)
+							throw formatException(tok, "I can't use more than one character as the GAP character. The file specifies: '" + str + "'");
+
+						tok.ordinaryChar(gapChar);
+						gapChar = str.charAt(0); 
+						tok.wordChars(gapChar, gapChar);
+					}
+						
+					else if(str.equalsIgnoreCase("MISSING")) {
+						str = getValueOfKey(tok);
+						if(str == null)
+							throw formatException(tok, "'MISSING' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
+
+						if(str.length() > 1)
+							throw formatException(tok, "I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
+
+						tok.ordinaryChar(missingChar);
+						missingChar = str.charAt(0); 
+						tok.wordChars(missingChar, missingChar);
+					} else {
+						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
+					}
+				} else {
+					throw formatException(tok, "Unexpected '" + (char)type + "' in FORMAT!");
+				}
+
+			} else if(inMatrix) {
+				// are we done yet?
+				if(type == ';') {
+					if(name != null) {
+						// but ... the sequence is incomplete!
+						throw formatException(tok, "The sequence named '" + name + "' has no DNA sequence associated with it.");
+					}
+					inMatrix = false;
+					continue;
+				}
+
+				else if(type == StreamTokenizer.TT_WORD) {
+					if(name == null) {
+						// put spaces back
+						name = str.replace('_', ' ');		// we do NOT support '. Pfft.
+					} else {
+						String strseq = str;
+						// fix up gaps and missings to TaxonDNA specs
+						strseq = str.replace(gapChar, '-');
+						strseq = strseq.replace(missingChar, '?');
+
+						try {
+							Sequence seq = null;
+							if(!isDatasetInterleaved || hash_names.get(name) == null) {
+								// doesn't exist, just add it
+								seq = new Sequence(name, strseq);
+								appendTo.add(seq);
+								hash_names.put(name, seq);
+							} else {
+								// it DOES exist, append it
+								seq = (Sequence) hash_names.get(name);
+								seq.changeSequence(seq.getSequence() + strseq);
+							}
+						} catch(SequenceException e) {
+							throw formatException(tok, "The sequence for taxon '" + name + "' is invalid: " + e);
+						}
+
+						name = null;
+					}
+				} else {
+					throw formatException(tok, "Unexpected '" + (char) type + "' in matrix.");
+				}
+			} else {
+				if(type == StreamTokenizer.TT_WORD) {
+
+					if(str.equalsIgnoreCase("FORMAT")) {
+						inFormatCommand = true;	
+					}
+
+					if(str.equalsIgnoreCase("MATRIX")) {
+						inMatrix = true;
+					}
+
+					if(str.equalsIgnoreCase("END")) {
+						//System.err.println("Leaving strange block");
+						if(newCommand && tok.nextToken() == ';') {
+							// okay, it's an 'END;'
+							// and a new command ... so ';END;'
+							break;
+						} else {
+							throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
+						}
+					}
+
+				} else {
+					// unknown symbol found
+				}
+			}
+			
+			newCommand = false;
+		}
+
+		// only important in the DATA block
+	        tok.ordinaryChar(gapChar);
+	        tok.ordinaryChar(missingChar);
 	}
 
 	/**

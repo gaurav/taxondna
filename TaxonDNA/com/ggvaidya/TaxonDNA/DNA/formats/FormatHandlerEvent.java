@@ -34,5 +34,46 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class FormatHandlerEvent {
+	/** There was no event */
+	public static final int		NO_EVENT =		0;
+
+	/** A file-wide character set was detected; the FormatHandler would like to inform you of the same. */
+	public static final int		CHARACTER_SET_FOUND =	1;
+
+	// environment info
+	private File			f = null;	
+	public File getFile() 		{	return f; }
+	private FormatHandler		fh = null;
+	public FormatHandler getFormatHandler() 
+					{	return fh; }
+	private SequenceList		sl = null;
+	public SequenceList getSequenceList() 
+					{	return sl; }
+	private int			id = NO_EVENT;
+	public int getId()		{ 	return id; }
+
+	// event specific info
+	public String	name = null;
+	public Sequence	sequence = null;
+	public int	from = 	0;
+	public int 	to =	0;
+
+	/**
+	 * Standard constructor. You can specify 'null' to any of these.
+	 */
+	public FormatHandlerEvent(File f, FormatHandler fh, SequenceList sl) {
+		this.f = f;
+		this.fh = fh;
+		this.sl = sl;
+	}
+
+	/**
+	 * Specify a CHARACTER_SET_FOUND event.
+	 */
+	public void setCharacterSetFoundEvent(String called, int from, int to) {
+		name = called;
+		this.from = from;
+		this.to = to;	
+	}
 }
 
