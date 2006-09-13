@@ -498,7 +498,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the name of this program, i.e. "SequenceMatrix" with appropriate versioning information.
 	 */
 	public String getName() {
-		return "SequenceMatrix " + Versions.getSequenceMatrix() + "/TaxonDNA " + Versions.getTaxonDNA();
+		return "TaxonDNA/SequenceMatrix " + Versions.getTaxonDNA();
 	}
 
 	/**

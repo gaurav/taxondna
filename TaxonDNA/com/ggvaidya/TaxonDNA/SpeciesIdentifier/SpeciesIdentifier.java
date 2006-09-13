@@ -320,7 +320,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		// working in the Help -> * menu.
 		//
 		if(cmd.equals("About SpeciesIdentifier")) {
-			String copyrightNotice = new String("Species Identifier " + Versions.getSpeciesIdentifier() + ", Copyright (C) 2005 Gaurav Vaidya.\nA component of TaxonDNA " + Versions.getTaxonDNA() + ", Copyright (C) 2005-06 Gaurav Vaidya.\n\nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+			String copyrightNotice = new String("TaxonDNA/SpeciesIdentifier " + Versions.getTaxonDNA() + ", Copyright (C) 2005-06 Gaurav Vaidya.\n\nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -832,7 +832,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 	 * unlockSequenceList(sequences) and this will be handled.
 	 */
 	private void resetFrameTitle() {
-		StringBuffer title = new StringBuffer("SpeciesIdentifier " + Versions.getSpeciesIdentifier() + "/TaxonDNA " + Versions.getTaxonDNA());
+		StringBuffer title = new StringBuffer("TaxonDNA/SpeciesIdentifier " + Versions.getTaxonDNA());
 
 		if(sequences != null) {
 			File file = sequences.getFile();

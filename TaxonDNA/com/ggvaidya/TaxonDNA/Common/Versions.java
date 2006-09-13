@@ -34,18 +34,4 @@ public class Versions {
 	public static String getTaxonDNA() {
 		return "0.9.5.2";
 	}
-
-	/**
-	 * Returns the common version string for SpeciesIdentifier
-	 */
-	public static String getSpeciesIdentifier() {
-		return "0.9.5.2";
-	}
-
-	/**
-	 * Returns the common version string for SequenceMatrix
-	 */
-	public static String getSequenceMatrix() {
-		return "0.2.4";
-	}
 }
