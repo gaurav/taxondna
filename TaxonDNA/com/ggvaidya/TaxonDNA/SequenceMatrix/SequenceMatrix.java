@@ -52,9 +52,6 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
-	// SequenceMatrix version number 
-	private static String 	version 		= "0.2.4";
-	
 	// The following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
 	private JTable		mainTable		= null;	
@@ -501,7 +498,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the name of this program, i.e. "SequenceMatrix" with appropriate versioning information.
 	 */
 	public String getName() {
-		return "SequenceMatrix " + version;
+		return "SequenceMatrix " + Versions.getSequenceMatrix() + "/TaxonDNA " + Versions.getTaxonDNA();
 	}
 
 	/**
