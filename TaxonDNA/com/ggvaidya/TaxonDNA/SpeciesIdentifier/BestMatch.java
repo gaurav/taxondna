@@ -172,6 +172,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		// counts
 		int total_count_sequences = 0;	// the count of *all* the sequences 
+		int count_sequences_without_species_names = 0;
 		
 		// all of the following should add up to (total_count_sequences - number_no_matches)
 		int best_match_correct = 0;
@@ -249,6 +250,13 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 			// increment counter
 			x++;
+
+			// but does it have a species name? an analysis is
+			// pretty pointless without a species name!
+			if(query.getSpeciesName() == null) {
+				count_sequences_without_species_names++;
+				continue;
+			}
 			
 			// for each query, we run a SortedSequenceSet.
 			try { 
@@ -318,6 +326,13 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 				if(match == null) {
 					// shouldn't happen; say it does.
 					throw new RuntimeException("I ran out of Sequences when looking up " + query + "! This is a programming error.");
+				}
+
+				// if the match has no species name, we should report this to the Authorities.
+				if(match.getSpeciesName() == null) {
+					// if the match has no species name, no worries - we'll catch it in the query check above
+					// we ignore it and move on.
+					continue;
 				}
 
 				if(match.getPairwise(query) >= 0) {
@@ -447,10 +462,11 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		// Now, since we are NOT counting sequences which matched against NOTHING
 		// (i.e. best_match_noallo), we calculate percentages based on count_sequences_with_valid_matches;
-		int count_sequences_with_valid_matches = total_count_sequences - count_no_matches;
+		int count_sequences_with_valid_matches = total_count_sequences - count_no_matches - count_sequences_without_species_names;
 
 		text_main.setText(
 				"Sequences:\t" + total_count_sequences + 
+				"\nSequences without recognizable species names (ignored in all subsequent counts):\t" + count_sequences_without_species_names +
 				"\nSequences with atleast one matching sequence in the data set:\t" + count_sequences_with_valid_matches +
 				"\nSequences with atleast one matching conspecific sequence in the data set:\t" + count_seqs_with_valid_conspecific_matches + 
 				"\nSequences with a closest match at 0%:\t" + count_zero_percent_matches +
