@@ -172,17 +172,22 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					return;
 				}
 
-				if(hash_species_this.get(seq.getSpeciesName()) == null) {
-					hash_species_this.put(seq.getSpeciesName(), new Integer(1));
+				// What if this sequence doesn't HAVE a species name?
+				String spName = seq.getSpeciesName();
+				if(spName == null)
+					spName = "{" + seq.getFullName() + "}";
 
-					if(hash_species.get(seq.getSpeciesName()) == null) {
-						hash_species.put(seq.getSpeciesName(), new Integer(1));
+				if(hash_species_this.get(spName) == null) {
+					hash_species_this.put(spName, new Integer(1));
+
+					if(hash_species.get(spName) == null) {
+						hash_species.put(spName, new Integer(1));
 					} else {
-						hash_species.put(seq.getSpeciesName(), new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));	
+						hash_species.put(spName, new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));	
 					}
 
 				} else {
-					hash_species_this.put(seq.getSpeciesName(), new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));	
+					hash_species_this.put(spName, new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));	
 				}
 
 
@@ -230,7 +235,11 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				// in the database.
 
 				String speciesName = ( (String) (hash_species_this.keySet().toArray())[0]);
-				if(sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidMatchesCount() == bin.size())
+				// obviously, we can't do this for unknown species
+				if(
+					sd.getSpeciesDetailsByName(speciesName) != null &&
+					sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidMatchesCount() == bin.size()
+				)
 					no_of_clusters_with_all_sequences_for_a_species++;
 			}
 
@@ -252,7 +261,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			while(i.hasNext()) {
 				Sequence seq = (Sequence) i.next();
 
-				if(seq.getSpeciesName().equals(name))
+				if(seq.getSpeciesName() != null && seq.getSpeciesName().equals(name))
 					count_sequences++;
 			}
 
@@ -267,6 +276,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				while(iter2.hasNext()) {
 					Sequence seq = (Sequence) iter2.next();
 					String speciesName = seq.getSpeciesName();
+
+					if(speciesName == null)
+						continue;
 					
 					if(speciesName.equals(name)) {
 						containsThisOne = true;
@@ -327,7 +339,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					return;
 				}
 
-				if(species.get(seq1.getSpeciesName()) == null) {
+				if(seq1.getSpeciesName() != null && species.get(seq1.getSpeciesName()) == null) {
 					species.put(seq1.getSpeciesName(), new Integer(1));
 					nSpecies++;
 				}
