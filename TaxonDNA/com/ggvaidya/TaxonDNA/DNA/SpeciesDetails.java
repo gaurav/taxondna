@@ -126,7 +126,7 @@ public class SpeciesDetails {
 				// it's not really a species, so we
 				// count it off and go on to the next one.
 				//
-				if(speciesName.equals("")) {
+				if(speciesName == null) {
 					count_sequences_without_a_name++;
 					continue;
 				}
