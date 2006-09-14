@@ -234,7 +234,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			String name_query = query.getSpeciesName();
 
 			// skip it if it doesn't have a species name
-			if(name_query.equals("")) {
+			if(name_query == null) {
 				count_seq_without_species_name++;
 				str_noSpeciesName.append(query.getFullName() + "\n");
 				continue;
@@ -248,7 +248,6 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 					seqId.unlockSequenceList();
 					return;
 				}
-			
 			
 			// for each query, we run a SortedSequence...thingie
 			try { 
@@ -274,6 +273,13 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 			} else {
 				for(int y = 2; y < sset.count(); y++) {
 					Sequence match = sset.get(y);
+
+					// if match doesn't have a species name, we can ignore
+					// it at this point: we've already tested 'query' about,
+					// and will know if there are nameless species in this
+					// dataset.
+					if(match.getSpeciesName() == null)
+						continue;
 
 					if(!match.getSpeciesName().equals(name_first_match))
 						break;
