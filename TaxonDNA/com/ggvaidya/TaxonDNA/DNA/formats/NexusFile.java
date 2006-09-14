@@ -217,13 +217,13 @@ public class NexusFile extends BaseFormatHandler {
 
 					if(str.equalsIgnoreCase("END")) {
 						//System.err.println("Leaving strange block");
-						if(newCommand && tok.nextToken() == ';') {
+						//if(newCommand && tok.nextToken() == ';') {
 							// okay, it's an 'END;'
 							// and a new command ... so ';END;'
 							inStrangeBlock = false;
 
 							continue;
-						}
+//						} 
 					}
 
 					// the BEGIN command
@@ -231,6 +231,10 @@ public class NexusFile extends BaseFormatHandler {
 						// begin what?
 						if(tok.nextToken() == StreamTokenizer.TT_WORD) {
 							String beginWhat = tok.sval;	
+							int nextChar = tok.nextToken();
+
+							if(nextChar != ';')
+								throw formatException(tok, "There is a strange character ('" + nextChar + "') after the BEGIN " + beginWhat + " command! How odd.");
 
 							if(beginWhat.equalsIgnoreCase("DATA") || beginWhat.equalsIgnoreCase("CHARACTERS"))
 								blockData(appendTo, tok, evt, delay, count_lines);
@@ -238,6 +242,8 @@ public class NexusFile extends BaseFormatHandler {
 								// (except that NEWTAXA is implicit in DATA)
 								// TODO: we might want to care about this.
 								// you know. to be anal, and all that.
+							else if(beginWhat.equalsIgnoreCase("SETS"))
+								blockSets(appendTo, tok, evt, delay, count_lines);
 							else
 								inStrangeBlock = true;
 						
@@ -276,6 +282,7 @@ public class NexusFile extends BaseFormatHandler {
 	{
 		boolean isDatasetInterleaved = false;
 		boolean inFormatCommand = false;
+		boolean inIgnoredCommand = false;
 		boolean inMatrix = false;
 		char missingChar =	'?';
 		char gapChar =		'-';		// this is against the standard, but the GAPS
@@ -321,7 +328,13 @@ public class NexusFile extends BaseFormatHandler {
 			if(commentLevel > 0)
 				continue;
 
-			if(inFormatCommand) {
+			if(inIgnoredCommand) {
+				// we, err, ignore everything in such a command.
+				if(newCommand) {
+					inIgnoredCommand = false;
+					continue;
+				}
+			} else if(inFormatCommand) {
 				if(newCommand) {
 					inFormatCommand = false;
 					continue;
@@ -428,19 +441,34 @@ public class NexusFile extends BaseFormatHandler {
 						inMatrix = true;
 					}
 
+					// Commands we ignore
+					if(
+							str.equalsIgnoreCase("DIMENSIONS") ||
+							str.equalsIgnoreCase("ELIMINATE") ||
+							str.equalsIgnoreCase("TAXLABELS") ||
+							str.equalsIgnoreCase("CHARSTATELABELS") ||
+							str.equalsIgnoreCase("CHARLABELS") ||
+							str.equalsIgnoreCase("STATELABLES")
+					) {
+						inIgnoredCommand = true;
+					}
+
 					if(str.equalsIgnoreCase("END")) {
 						//System.err.println("Leaving strange block");
-						if(newCommand && tok.nextToken() == ';') {
+						// Note: PAUP will spit out blocks with END without a terminating ';'.
+//						if(newCommand && tok.nextToken() == ';') {
 							// okay, it's an 'END;'
 							// and a new command ... so ';END;'
 							break;
-						} else {
-							throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
-						}
+//						} else {
+//							throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
+//						}
 					}
 
 				} else {
 					// unknown symbol found
+					//System.err.println("Last string (ish!): " + str);
+					throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the DATA/CHARACTERS block! Are you sure it's supposed to be here?");
 				}
 			}
 			
@@ -450,6 +478,168 @@ public class NexusFile extends BaseFormatHandler {
 		// only important in the DATA block
 	        tok.ordinaryChar(gapChar);
 	        tok.ordinaryChar(missingChar);
+	}
+
+	/**
+	 * Processes the 'SETS' block.
+	 */
+	public void blockSets(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+		throws FormatException, DelayAbortedException, IOException
+	{
+		int commentLevel = 0;
+		boolean newCommand = true;
+
+		boolean inIgnoredCommand = false;
+
+		while(true) {
+			int type = tok.nextToken();
+			String str = tok.sval;
+
+			if(delay != null)
+				delay.delay(tok.lineno(), count_lines);
+
+			if(type == StreamTokenizer.TT_EOF) {
+				// wtf?!
+				throw formatException(tok, "I've reached the end of the file, and the SETS block has *still* not been closed! Please make sure the block is closed.");
+			}
+
+			if(type == ';')
+				newCommand = true;
+
+			if(type == '[' || type == ']') {
+				if(type == '[')
+					commentLevel++;
+
+				if(type == ']')
+					commentLevel--;
+
+				continue;
+			}
+			
+			if(commentLevel > 0)
+				continue;
+
+			// "serious" processing begins here
+			if(inIgnoredCommand) {
+				if(newCommand) {
+					inIgnoredCommand = false;
+					continue;
+				}
+			} else if(type == StreamTokenizer.TT_WORD) {
+				//System.err.println("New command: " + str);
+
+				// is it over?
+				if(str.equalsIgnoreCase("END")) {
+					//System.err.println("Leaving strange block");
+//					if(newCommand && tok.nextToken() == ';') {
+						// okay, it's an 'END;'
+						// and a new command ... so ';END;'
+						break;
+//					} else {
+//						throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
+//					}
+				} else if(str.equalsIgnoreCase("CHARSET")) {
+					if((type = tok.nextToken()) != StreamTokenizer.TT_WORD) 
+						throw formatException(tok, "Unexpected symbol '" + (char)type + "' found after 'CHARSET'. This doesn't look like the name of a CHARSET to me!");
+
+					String name = tok.sval;
+
+					//System.err.println("Charset " + name + "!");
+
+					type = tok.nextToken();
+					if((char)type != '=') {
+						// it might be STANDARD or VECTOR
+						// god bless my anal soul
+
+						if(type != StreamTokenizer.TT_WORD)
+							throw formatException(tok, "Unexpected '" + (char) type + "' after the '=' in CHARSET " + name + ".");
+
+						str = tok.sval;
+						if(str.equalsIgnoreCase("STANDARD")) {
+							// okay, we support it
+						} else if(str.equalsIgnoreCase("VECTOR")) {
+							throw formatException(tok, "Sorry, we don't support VECTOR CHARSETs at the moment! (" + name + " is defined as being a vector charset)");
+						} else {
+							throw formatException(tok, "Unexpected '" + str + "' after the '=' in CHARSET " + name + ".");
+						}
+					}
+					
+					// now we have to start 'picking up' the ranges in the CHARSET
+					// and there might be more than one!
+					//
+					// basic format: 
+					// 	1.	(\d+)\s :		$1 belongs to charset X
+					// 	2.	(\d+)\s*\-\s*(\d+)\s :	$1,$1+1,..$2 belongs to charset X
+					// 	3.	;			It's all over!
+					//
+					// 	ANYTHING else 'REMAINDER', 'ALL', (\d+)\/, are ALL invalid
+					// 	and WILL ignore ALL of them. hmpf.
+					int from = -1;
+//					int to = -1;
+					boolean expectingATo = false;
+					while(true) {
+						type = tok.nextToken();
+
+						if((char)type == ';') {
+							// yay! it's over!
+							break;
+						} else if((char) type == '-') {
+							expectingATo = true;
+							continue;
+						} else if(type == StreamTokenizer.TT_WORD) {
+							str = tok.sval;
+							int num = 0;
+					
+							// are we a number? non-numbers are teh ENEMYIES
+							try {
+								num = Integer.parseInt(str);	
+							} catch(NumberFormatException e) {
+								throw formatException(tok, "I found a non-number in CHARSET " + name + " (the non-number is '" + str + "'). I can't currently understand 'ALL' or 'REMAINDER' commands. Can you please remove them from the source file if that's at all possible?");
+							}
+
+							// are we expecting a 'to'? if we are, fire the event
+							if(expectingATo) {
+								// well, we've got a 'to' now!
+								fireEvent(evt.makeCharacterSetFoundEvent(name, from, num));
+
+								from = -1;
+								expectingATo = false;
+							} else {
+								// we are NOT expecting a to
+								// i.e. from is a single character event, UNLESS it's just -1!
+								if(from != -1)
+									fireEvent(evt.makeCharacterSetFoundEvent(name, from, from));	
+								
+								// now, we don't know if 'num' is a character or a section
+								// so ...
+								from = num;
+							}
+						} else {
+							throw formatException(tok, "Unexpected '" + (char)type + "' in CHARSET " + name + ".");
+						}
+					}
+				// commands we ignore in SETS
+				} else if(
+						str.equalsIgnoreCase("STATESET") ||
+						str.equalsIgnoreCase("CHANGESET") ||
+						str.equalsIgnoreCase("TAXSET") ||
+						str.equalsIgnoreCase("TREESET") ||
+						str.equalsIgnoreCase("CHARPARTITION") ||
+						str.equalsIgnoreCase("TAXPARTITION") ||
+						str.equalsIgnoreCase("TREEPARTITION")
+				) {
+					inIgnoredCommand = true;
+				} else {
+ 					throw formatException(tok, "Unknown word/command '" + str + "' found in the SETS block.");
+				}
+ 			} else {
+				throw formatException(tok, "Unexpected symbol '" + (char)type + "' found in the SETS block.");
+			}
+			
+			newCommand = false;
+		}
+
+		// final cleanup, if any
 	}
 
 	/**
@@ -539,7 +729,7 @@ public class NexusFile extends BaseFormatHandler {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			String name = seq.getSpeciesName(MAX_TAXON_LENGTH);
+			String name = seq.getFullName(MAX_TAXON_LENGTH);
 			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 			name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 
@@ -551,7 +741,7 @@ public class NexusFile extends BaseFormatHandler {
 				if(no >= 100 && no < 1000)	digits = 3;
 				if(no >= 1000 && no < 10000)	digits = 4;
 
-				name = seq.getSpeciesName(MAX_TAXON_LENGTH - digits);
+				name = seq.getFullName(MAX_TAXON_LENGTH - digits);
 				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
@@ -560,7 +750,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				if(no == 10000) {
 					// this has gone on long enough!
-					throw new IOException("There are 9999 sequences named '" + seq.getSpeciesName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
+					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
 			
@@ -595,7 +785,7 @@ public class NexusFile extends BaseFormatHandler {
 							//
 							// TODO tomorrow.
 							//
-		writer.println("\tDIMENSION NTAX=" + set.count() + " NCHAR=" + set.getMaxLength() + ";");
+		writer.println("\tDIMENSIONS NTAX=" + set.count() + " NCHAR=" + set.getMaxLength() + ";");
 
 							// The following is standard 'TaxonDNA' speak.
 							// It's just how we do things around here.
