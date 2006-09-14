@@ -293,7 +293,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		// add extra stuff
 		if(sort == BY_NAME || sort == BY_GI) {
 			String giNumber = "";
-			if(seq.getGI() != "") {
+			if(seq.getGI() != null) {
 				giNumber = " (gi:" + seq.getGI() + ")";
 			}
 			return name + giNumber; 
