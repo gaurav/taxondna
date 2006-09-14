@@ -252,6 +252,16 @@ public class SequenceGrid {
 			x++;
 		}
 
+		addSequenceList(colName, sl);
+		sl.unlock();
+	}
+
+	/**
+	 * Add a new sequence list to this dataset. It's sorted into place, unfortunately.
+	 */
+	public void addSequenceList(String colName, SequenceList sl) { 	
+		sl.lock();
+
 		// And add a hashtable to it.
 		hash_cols.put(colName, new Hashtable());
 
