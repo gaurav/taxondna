@@ -216,13 +216,21 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	private void updateInfo(Sequence seq) {
 		if(seq != null) {
 			text_family.setText(seq.getFamilyName().trim());
-			String subspecies = seq.getSubspeciesName().trim();
-			if(subspecies.equals("")) {
-				text_species.setText(seq.getSpeciesName().trim());
+			String speciesName = seq.getSpeciesName();
+			if(speciesName != null) {
+				String subspecies = seq.getSubspeciesName().trim();
+				if(subspecies.equals("")) {
+					text_species.setText(speciesName.trim());
+				} else {
+					text_species.setText(speciesName.trim() + " (" + subspecies + ")");
+				}
 			} else {
-				text_species.setText(seq.getSpeciesName().trim() + " (" + subspecies + ")");				
+				text_species.setText("");
 			}
-			text_gi.setText(seq.getGI().trim());
+			if(seq.getGI() != null)
+				text_gi.setText(seq.getGI().trim());
+			else
+				text_gi.setText("");
 			text_len.setText(seq.getActualLength() + " bp, entire sequence (including gaps): " + seq.getLength() + " bp");
 		} else {
 			text_family.setText("");
