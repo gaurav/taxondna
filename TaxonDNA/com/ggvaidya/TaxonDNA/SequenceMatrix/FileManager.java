@@ -48,9 +48,10 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class FileManager implements Runnable {
-	private SequenceMatrix	matrix;
-	private Vector 		filesToLoad = new Vector();
+public class FileManager implements Runnable, FormatListener {
+	private SequenceMatrix		matrix;
+	private Vector 			filesToLoad = new Vector();
+	private Hashtable 		hash_sets = new Hashtable();
 
 //
 // 	1.	CONSTRUCTORS.
@@ -161,6 +162,7 @@ public class FileManager implements Runnable {
 	 *
 	 */
 	public void run() {
+		boolean nothing_was_added = true;
 		Thread.yield();		// wait until we've got nothing better to do ... i think =/
 		
 		synchronized(filesToLoad) {
@@ -177,7 +179,9 @@ public class FileManager implements Runnable {
 			SequenceList sequences = null;
 		
 			try {
-				if(handler != null)
+				if(handler != null) {
+					handler.addFormatListener(this);
+
 					sequences = new SequenceList(
 						file,	
 						handler,
@@ -188,7 +192,7 @@ public class FileManager implements Runnable {
 							ProgressDialog.FLAG_NOCANCEL
 							)
 					);
-				else 
+				} else 
 					sequences = SequenceList.readFile(
 						file, 
 						new ProgressDialog(
@@ -196,10 +200,13 @@ public class FileManager implements Runnable {
 							"Loading file ...", 
 							"Loading '" + file + "' into memory. Sorry for the delay!",
 							ProgressDialog.FLAG_NOCANCEL
-							)
+							),
+						this
 						);
 
-				matrix.getSequenceGrid().addSequenceList(sequences);
+				nothing_was_added = false;
+
+
 
 			} catch(SequenceListException e) {
 				MessageBox mb = new MessageBox(matrix.getFrame(), "Could not read file!", "I could not understand a sequence in this file. Please fix any errors in the file.\n\nThe technical description of the error is: " + e);
@@ -211,8 +218,105 @@ public class FileManager implements Runnable {
 				return;
 			}
 
-			matrix.updateDisplay();
+			// now, we're almost done with this file ... bbbut ... before we do
+			// do we have sets?
+			synchronized(hash_sets) {
+				if(hash_sets.size() > 0) {
+					// we do!
+					MessageBox mb = new MessageBox(
+							matrix.getFrame(),
+							"I see sets!",
+							"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
+							MessageBox.MB_YESNO);
+					if(mb.showMessageBox() == MessageBox.MB_YES) {
+						/////////////////////////////////////////////////////////////////////////////////
+						// TODO: This code is busted. Since we're not sure what ORDER the messages come
+						// in (or that they get entered into the vectors), we need to make sure we SORT
+						// the vectors before we start anything funky. Of course, we can't sort them as
+						// is, which means another layer of hacks.
+						// TODO.
+						/////////////////////////////////////////////////////////////////////////////////
+
+						// do stuff
+						//
+						// this is how it works:
+						// 1.	we will NEVER let anybody else see 'sequences' (our main SequenceList)
+						// 2.	we split sequences into subsequencelists. These, we will let people see.
+						// 3.	any characters remaining 'unmatched' are thrown into 'no sets'
+						// 4.	we split everything :(. this is the best solution, but, err, that
+						// 	means we have to figure out a delete column. Sigh.
+						//
+						sequences.lock();
+						boolean cancelled = false;
+
+						Iterator i_sets = hash_sets.keySet().iterator();
+						while(!cancelled && i_sets.hasNext()) {
+							String name = (String) i_sets.next();
+							Vector v = (Vector) hash_sets.get(name);
+
+							SequenceList sl = new SequenceList();
+
+							Iterator i_seq = sequences.iterator();
+							while(!cancelled && i_seq.hasNext()) {
+								Sequence seq = (Sequence) i_seq.next();
+								Sequence seq_out = new Sequence();
+								seq_out.changeName(seq.getFullName());
+
+								Iterator i_coords = v.iterator();
+								while(!cancelled && i_coords.hasNext()) {
+									int from = ((Integer)i_coords.next()).intValue();
+									int to = ((Integer)i_coords.next()).intValue();
+
+									try {
+										seq_out.appendSequence(seq.getSubsequence(from, to));
+									} catch(SequenceException e) {
+										MessageBox mb_2 = new MessageBox(
+												matrix.getFrame(),
+												"Uh-oh: Error forming a set",
+												"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e + "\nI'm skipping this file.");
+										mb_2.go();
+										sequences.unlock();
+										hash_sets.clear();
+										nothing_was_added = true;
+
+										// now: an adventure!
+										// we need to skip out of three
+										// loops and head back to the
+										// outermost while loop
+										//
+										// but how?
+										cancelled = true;
+										// sigh
+									}
+								}
+
+								// WARNING: note that this will eliminate any deliberately gapped regions!
+								// (which is, I guess, okay)
+								if(seq_out.getActualLength() > 0)
+									sl.add(seq_out);
+							}
+
+							if(!cancelled)
+								matrix.getSequenceGrid().addSequenceList(name, sl);
+						}
+
+						sequences.unlock();
+
+						hash_sets.clear();
+						matrix.updateDisplay();
+						nothing_was_added = true;
+					}
+				}
+			}
+
+			// if we're here, we've only got one 'sequences'.
+			// so add it!
+			if(!nothing_was_added) {
+				matrix.getSequenceGrid().addSequenceList(sequences);
+				matrix.updateDisplay();
+			}
 		}
+
 		}
 	}
 
@@ -365,6 +469,54 @@ public class FileManager implements Runnable {
 		} catch(IOException e) {
 			reportIOException(e, file, IOE_WRITING);
 		}
+	}
+
+	/**
+	 * A format Listener for listening in to CHARACTER_SETS ... sigh.
+	 */
+	public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {
+		switch(evt.getId()) {
+			case FormatHandlerEvent.CHARACTER_SET_FOUND:
+				String name = evt.name;
+				int from = evt.from;
+				int to = evt.to;
+
+				// so now we know ... and knowing is half the battle!
+				// G-I-Joe! [tm]
+
+				// celebration over, things are about to get somewhat hairy:
+				// 1.	we are in a synchronized, so it's okay to expect
+				// 	simplicity - nobody else should/would be doing
+				// 	*anything* at this point. so, we know which
+				// 	file/set we're talking about
+				//
+				// 2.	we need to let the loader know, so it can split
+				// 	up the sequence set.
+				//
+				// 3.	we need code to actually split up the sequence set
+				//
+				//
+				// All this will come.
+				//
+				synchronized(hash_sets) {
+					if(hash_sets.get(name) != null) {
+						Vector v = (Vector) hash_sets.get(name);
+						v.add(new Integer(from));
+						v.add(new Integer(to));
+					} else {
+						Vector v = new Vector();
+						v.add(new Integer(from));
+						v.add(new Integer(to));	
+						hash_sets.put(name, v);
+					}
+				}
+
+				// consumed, but we don't mind if anybody else knows
+				return false;
+		}
+
+		// not consumed
+		return false;
 	}
 
 }
