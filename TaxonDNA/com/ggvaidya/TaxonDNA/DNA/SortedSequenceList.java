@@ -261,7 +261,12 @@ class SortedSequenceComparator implements Comparator {
 			// prefer conspecific
 			String query_name = 	query.getSpeciesName();
 			String name1 = 		seq1.getSpeciesName();
-			String name2 = 		seq2.getSpeciesName();			
+			String name2 = 		seq2.getSpeciesName();
+
+			// what if there's NO name?
+			// well, then we can't use the name as a comparision tool, can we?
+			if(name1 == null || name2 == null)
+				return OBJ1_EQ_OBJ2;
 
 			if(name1.equals(query_name) && name2.equals(query_name)) {
 				// they have identical names, and are BOTH
