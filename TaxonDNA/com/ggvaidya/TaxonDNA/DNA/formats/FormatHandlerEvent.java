@@ -69,11 +69,28 @@ public class FormatHandlerEvent {
 
 	/**
 	 * Specify a CHARACTER_SET_FOUND event.
+	 * Note the following about CHARACTER_SET_FOUND events:
+	 * 1.	There may be multiple character sets.
+	 * 2.	Each character set might cover multiple areas.
+	 * 	Each area will be called in ONCE and SEPARATELY!
+	 * 	Hence, YOU (and you alone) are responsible for
+	 * 	figuring out:
+	 * 	1.	which areas are redundant (used in two
+	 * 		or more features already)
+	 * 	2.	which areas are called out multiple times.
+	 * 	3.	any other issue you might have with this
+	 * 		system.
+	 *
+	 * It's quite new and quite rocky yet. Apologies.
 	 */
-	public void setCharacterSetFoundEvent(String called, int from, int to) {
-		name = called;
-		this.from = from;
-		this.to = to;	
+	public FormatHandlerEvent makeCharacterSetFoundEvent(String called, int from, int to) {
+		FormatHandlerEvent evt = new FormatHandlerEvent(f, fh, sl);
+		evt.id = CHARACTER_SET_FOUND;
+		evt.name = called;
+		evt.from = from;
+		evt.to = to;
+
+		return evt;
 	}
 }
 
