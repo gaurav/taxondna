@@ -162,21 +162,26 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 				return;
 			}
 
-			
-			Iterator group_i = groups.iterator();
-			while(group_i.hasNext()) {
-				Vector	v	= (Vector) group_i.next();
-				Sequence seq2	= (Sequence) v.get(0);
-	
-				if(seq.getSpeciesName().equals(seq2.getSpeciesName())) {
-					v.add(seq);
-					found = true;
-					break;
-				}
-			}
+			// if there's no spName, we'll put it by itself
+			if(seq.getSpeciesName() != null) {
+				Iterator group_i = groups.iterator();
+				while(group_i.hasNext()) {
+					Vector	v	= (Vector) group_i.next();
+					Sequence seq2	= (Sequence) v.get(0);
 
-			if(found)
-				continue;
+					if(seq2.getSpeciesName() == null)
+						continue;
+	
+					if(seq.getSpeciesName().equals(seq2.getSpeciesName())) {
+						v.add(seq);
+						found = true;
+						break;
+					}
+				}
+
+				if(found)
+					continue;
+			}
 
 			Vector vec = new Vector();
 			vec.add(seq);
