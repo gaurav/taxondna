@@ -48,8 +48,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class QuerySequence extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
-	private static final long serialVersionUID = 8522777324004811805L;
-
 	private SpeciesIdentifier	seqId;
 
 	private SortedSequenceList	sset;
@@ -174,7 +172,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 				}
 				Object[] args = new Object[2];
 				args[0] = (Object) new Double(sset.getDistance(x) * 100);
-				args[1] = (Object) sset.get(x).getName();
+				args[1] = (Object) sset.get(x).getDisplayName();
 
 				map_index.put(new Integer(index), new Integer(x));
 				index++;
