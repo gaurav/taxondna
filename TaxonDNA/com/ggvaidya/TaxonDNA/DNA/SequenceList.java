@@ -481,6 +481,19 @@ public class SequenceList implements List, Testable {
 	 *
 	 */
 	public static SequenceList readFile(File file, DelayCallback delay) throws SequenceListException, DelayAbortedException {
+		return readFile(file, delay, null);
+	}
+
+	/**
+	 * Loads up a SequenceList from the specified file. We will "intelligently" (ha!) try to determine the type of
+	 * file, by running through the various FormatHandler.mightBe() functions. There are many holes to this, but
+	 * on the whole it works, and even if it doesn't, we'll have prominent Export/Import systems.
+	 *
+	 * Oh, and it makes a nice list of the format handlers it *does* support, so you have a better idea about
+	 * what's going on, and so on. 
+	 *
+	 */
+	public static SequenceList readFile(File file, DelayCallback delay, FormatListener listener) throws SequenceListException, DelayAbortedException {
 		initFormatHandlers();
 		
 		// First we figure out which formatHandler to use.
@@ -491,8 +504,11 @@ public class SequenceList implements List, Testable {
 		while(i.hasNext()) {
 			FormatHandler handler = (FormatHandler) i.next();
 
-			if(handler.mightBe(file))
+			if(handler.mightBe(file)) {
+				if(listener != null)
+					handler.addFormatListener(listener);
 				return new SequenceList(file, handler, delay);
+			}
 			
 			if(i.hasNext())
 				validFormats.append(handler.getShortName() + ", ");
@@ -502,7 +518,7 @@ public class SequenceList implements List, Testable {
 
 		// if we're here, we couldn't find a working handler
 		throw new SequenceListException("I could not understand the input file '" + fullPath + "'. It does not appear to be a " + validFormats.toString() + " file, which are the only types of file I can read. Please check the format of the file, or convert it into one of the formats I can read."); 
-	}
+	}	
 	
 //
 //	7.		RETRIEVALS. Gets values from this SequenceList.
@@ -994,6 +1010,8 @@ class ConspecificIterator implements Iterator {
 		if(x < 0 || x >= list.count())
 			return false;
 		Sequence seq = (Sequence) list.get(x);
+		if(seq.getSpeciesName() == null) // DEFINITELY not the same
+			return false;
 		if(seq.getSpeciesName().equals(target.getSpeciesName()))
 			return true;
 		return false;
