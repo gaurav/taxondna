@@ -54,6 +54,25 @@ public class FileManager implements Runnable, FormatListener {
 	private Hashtable 		hash_sets = new Hashtable();
 
 //
+//	0.	OUR CLASSES, WHO ART IN CORE
+//
+	private class FromToPair implements Comparable {
+		public int from;
+		public int to;
+
+		public FromToPair(int from, int to) {
+			this.from = from;
+			this.to = to;
+		}
+
+		public int compareTo(Object o) {
+			FromToPair ftp = (FromToPair) o;
+
+			return (this.from - ftp.from);
+		}
+	}
+
+//
 // 	1.	CONSTRUCTORS.
 //
 	/**
@@ -254,6 +273,8 @@ public class FileManager implements Runnable, FormatListener {
 							String name = (String) i_sets.next();
 							Vector v = (Vector) hash_sets.get(name);
 
+							Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
+
 							SequenceList sl = new SequenceList();
 
 							Iterator i_seq = sequences.iterator();
@@ -264,10 +285,12 @@ public class FileManager implements Runnable, FormatListener {
 
 								Iterator i_coords = v.iterator();
 								while(!cancelled && i_coords.hasNext()) {
-									int from = ((Integer)i_coords.next()).intValue();
-									int to = ((Integer)i_coords.next()).intValue();
+									FromToPair ftp = (FromToPair)(i_coords.next());
+									int from = ftp.from; 
+									int to = ftp.to;
 
 									try {
+										System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 										seq_out.appendSequence(seq.getSubsequence(from, to));
 									} catch(SequenceException e) {
 										MessageBox mb_2 = new MessageBox(
@@ -292,6 +315,7 @@ public class FileManager implements Runnable, FormatListener {
 
 								// WARNING: note that this will eliminate any deliberately gapped regions!
 								// (which is, I guess, okay)
+								System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
 								if(seq_out.getActualLength() > 0)
 									sl.add(seq_out);
 							}
@@ -501,12 +525,10 @@ public class FileManager implements Runnable, FormatListener {
 				synchronized(hash_sets) {
 					if(hash_sets.get(name) != null) {
 						Vector v = (Vector) hash_sets.get(name);
-						v.add(new Integer(from));
-						v.add(new Integer(to));
+						v.add(new FromToPair(from, to));
 					} else {
 						Vector v = new Vector();
-						v.add(new Integer(from));
-						v.add(new Integer(to));	
+						v.add(new FromToPair(from, to));
 						hash_sets.put(name, v);
 					}
 				}
@@ -518,5 +540,4 @@ public class FileManager implements Runnable, FormatListener {
 		// not consumed
 		return false;
 	}
-
 }
