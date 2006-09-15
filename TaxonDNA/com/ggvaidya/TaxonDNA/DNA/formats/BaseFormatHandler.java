@@ -51,7 +51,8 @@ public class BaseFormatHandler implements FormatHandler {
 	}
 
 	public void addFormatListener(FormatListener listener) {
-		formatListeners.add(listener);	
+		if(!formatListeners.contains(listener))
+			formatListeners.add(listener);	
 	}
 	public void removeFormatListener(FormatListener listener) {
 		formatListeners.remove(listener);
