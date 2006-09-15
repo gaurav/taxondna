@@ -63,6 +63,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private Preferences	prefs			= new Preferences(this);
 	private TableModel	tableModel		= new TableModel(this);
 	private FileManager	fileMan			= new FileManager(this);
+	private Taxonsets	taxonSets		= new Taxonsets(this);
 
 	// Our variables
 	private Vector		filesToLoad		= new Vector();
@@ -176,6 +177,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		if(cmd.equals("Preferences"))
 			prefs.setVisible(true);	// modal!
+
+		//
+		// Settings -> Taxonsets. Activate the Taxonsets system!
+		if(cmd.equals("Taxonsets"))
+			taxonSets.setVisible(true);
 
 		//
 		// Help -> Citing SequenceMatrix. 
@@ -460,6 +466,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Settings menu
 		Menu 	settings	=	new Menu("Settings");
 		settings.add(new MenuItem("Preferences"));
+		settings.add(new MenuItem("Taxonsets"));
 		settings.addActionListener(this);
 		menubar.add(settings);
 
