@@ -694,11 +694,14 @@ public class NexusFile extends BaseFormatHandler {
 	 * A species NexusFile-only method to have a bit more control over how
 	 * the Nexus file gets written.
 	 *
-	 * @param interleaveAt Specifies where you want to interleave. Note that NexusFile.INTERLEAVE_AT will be entirely ignored here, and that if the sequence is less than interleaveAt, it will not be interleaved at all.
+	 * @param interleaveAt Specifies where you want to interleave. Note that NexusFile.INTERLEAVE_AT will be entirely ignored here, and that if the sequence is less than interleaveAt, it will not be interleaved at all. '-1' turns off all interleaving (flatline), although you can obviously use a huge value (999999) to get basically the same thing.
 	 * @param otherBlocks We put this into the file at the very bottom. It should be one or more proper 'BLOCK's, unless you really know what you're doing.
 	 */
 	public void writeNexusFile(File file, SequenceList set, int interleaveAt, String otherBlocks, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean interleaved = false;
+		
+		if(interleaveAt > 0)
+			interleaved = true;
 
 		set.lock();
 		
@@ -709,7 +712,9 @@ public class NexusFile extends BaseFormatHandler {
 		// write out a 'preamble'
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
-		writer.println("#NEXUS\n");
+		writer.println("#NEXUS");
+		writer.println("[Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "]");
+		writer.println("");
 		writer.println("BEGIN TAXA;");
 		writer.println("\tDIMENSIONS NTAX=" + set.count() + ";");
 		// TAXLABELS - otherwise, no point of having a TAXA block
@@ -800,12 +805,36 @@ public class NexusFile extends BaseFormatHandler {
 
 		writer.println("\tMATRIX");
 
-		// if we're not interleaved, we're done at this point.
-		// if we ARE interleaved, we actually need to write out the sequences
-		if(interleaved) {
+		if(!interleaved) {
+			Iterator i_names = vec_names.iterator();
+
+			int x = 0;
+			while(i_names.hasNext()) {
+				// report the delay
+				if(delay != null)
+					try {
+						delay.delay(x, vec_names.size());
+					} catch(DelayAbortedException e) {
+						writer.close();
+						set.unlock();
+						throw e;
+					}
+
+
+
+				String name = (String) i_names.next();
+				Sequence seq = (Sequence) names.get(name);
+
+				writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + seq.getLength() + "]");
+
+				x++;
+			}
+		} else {
 			// go over all the 'segments'
 			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
 				Iterator i_names = vec_names.iterator();
+
+				System.err.println("Writing segment " + x);
 
 				// report the delay
 				if(delay != null)
@@ -822,6 +851,8 @@ public class NexusFile extends BaseFormatHandler {
 					String name = (String) i_names.next();
 					Sequence seq = (Sequence) names.get(name);
 					Sequence subseq = null;
+
+					System.err.println("Writing sequence " + name + ": " + seq);
 
 					int until = 0;
 
