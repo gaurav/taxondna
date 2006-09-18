@@ -53,6 +53,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
 	// The following variables create and track our AWT interface
+	private Canvas		spacerHack		= new Canvas();	// creates a space at the top of the screen
 	private Frame		mainFrame 		= new Frame();
 	private JTable		mainTable		= null;	
 	private DropTarget	dropTarget		= null;
@@ -193,7 +194,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			);
 			mb.showMessageBox();
 		}		
-		
 
 		//
 		// Help -> About. We should put something
@@ -381,6 +381,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		// p.s. Commented out, this causes a funky MacOS X GUI bug.
 //		mainTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
+		spacerHack.setSize(new Dimension(1, 20));
+		mainFrame.add(spacerHack, BorderLayout.NORTH);
 		mainFrame.add(scrollPane);
 
 		// HACK: MacOS X (or BorderLayout?) places the ScrollPane at (0, 0)
