@@ -465,8 +465,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// Settings menu
 		Menu 	settings	=	new Menu("Settings");
-		settings.add(new MenuItem("Preferences"));
 		settings.add(new MenuItem("Taxonsets"));
+		settings.add(new MenuItem("Preferences"));
 		settings.addActionListener(this);
 		menubar.add(settings);
 
