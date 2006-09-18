@@ -290,7 +290,7 @@ public class FileManager implements Runnable, FormatListener {
 									int to = ftp.to;
 
 									try {
-										System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+										//System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 										seq_out.appendSequence(seq.getSubsequence(from, to));
 									} catch(SequenceException e) {
 										MessageBox mb_2 = new MessageBox(
@@ -315,7 +315,7 @@ public class FileManager implements Runnable, FormatListener {
 
 								// WARNING: note that this will eliminate any deliberately gapped regions!
 								// (which is, I guess, okay)
-								System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+								//System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
 								if(seq_out.getActualLength() > 0)
 									sl.add(seq_out);
 							}
