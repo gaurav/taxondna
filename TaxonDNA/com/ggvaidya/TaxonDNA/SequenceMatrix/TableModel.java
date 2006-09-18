@@ -49,6 +49,8 @@ public class TableModel implements javax.swing.table.TableModel {
 	Vector 		seq_names = new Vector();
 	Vector		col_names = new Vector();
 
+	private static final int additionalColumns = 2;
+
 	/** We are required to keep track of classes which would like to be notified of changes */
 	Vector listeners = new Vector();
 
@@ -105,7 +107,7 @@ public class TableModel implements javax.swing.table.TableModel {
 	 * Gets the number of columns.
 	 */
 	public int getColumnCount() {
-		return col_names.size() + 1; 
+		return col_names.size() + 1 + additionalColumns; 
 	}
 	
 	/**
@@ -122,7 +124,13 @@ public class TableModel implements javax.swing.table.TableModel {
 		if(columnIndex == 0)
 			return "";		// upper left hand box
 
-		return (String) col_names.get(columnIndex - 1);
+		if(columnIndex == 1)
+			return "Total length";
+
+		if(columnIndex == 2)
+			return "Number of sets";
+
+		return (String) col_names.get(columnIndex - 1 - additionalColumns);
 	}
 
 	/**
@@ -144,12 +152,23 @@ public class TableModel implements javax.swing.table.TableModel {
 			return "No sequences loaded";
 
 		if(columnIndex == 0) {
-			// can't be the empty box: we've already got that.
+			// columnZero == names
 			return seq_names.get(rowIndex);
 		}
 
 		String seqName 	= (String) seq_names.get(rowIndex);
-		String colName  = (String) col_names.get(columnIndex - 1);
+
+		if(columnIndex == 1) {
+			// total length	
+			return seqGrid.getTotalActualLength(seqName) + " bp";
+		}
+
+		if(columnIndex == 2) {
+			// no of charsets
+			return seqGrid.getCharsetsCount(seqName) + "";
+		}
+
+		String colName  = (String) col_names.get(columnIndex - 1 - additionalColumns);
 		if(seqGrid.isCancelled(colName, seqName))
 			return "(CANCELLED)";
 		Sequence seq 	= seqGrid.getSequence(colName, seqName);
