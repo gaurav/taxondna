@@ -48,7 +48,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	// Constants for the export
 	//
 	private static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
-	private static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
+	private static final String	prefix_CharSets		=	"CHARSETS_EXACTLY_";	// I hope this is understandable =/
 
 	// Our variables
 	// keeping track of values, etc.
@@ -104,7 +104,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		rl.add(btn_totalLength_Delete, RightLayout.NEXTLINE | RightLayout.FLUSHRIGHT);
 
 		// set up the totalCharSets part
-		rl.add(new Label("Create a taxonset consisting of only those taxons which have atleast "), RightLayout.NEXTLINE | RightLayout.FILL_3);
+		rl.add(new Label("Create a taxonset consisting of only those taxons which have exactly "), RightLayout.NEXTLINE | RightLayout.FILL_3);
 		rl.add(tf_CharSets, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 		rl.add(new Label(" character sets"), RightLayout.BESIDE);
 
@@ -128,6 +128,53 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 		// register us as a 'listener'
 		dialog.addWindowListener(this);
+
+		// Set up the defaults
+		setupDefaults();
+	}
+
+	public void setupDefaults() {
+		// set up us the length
+		list_totalLength.removeAll();
+		vec_Length.clear();
+		Vector v = new Vector();
+		v.add(new Integer(400));
+		v.add(new Integer(600));
+		v.add(new Integer(800));
+		v.add(new Integer(1000));		
+		v.add(new Integer(1200));		
+		v.add(new Integer(1400));		
+		v.add(new Integer(1600));
+		v.add(new Integer(2000));		
+		v.add(new Integer(3000));
+		v.add(new Integer(4000));
+
+		Iterator i = v.iterator();
+		while(i.hasNext()) {
+			int x = ((Integer)i.next()).intValue();
+
+			list_totalLength.add(prefix_Length + x + ": Containing atleast " + x + " bp combined length");
+			vec_Length.add(new Integer(x));
+		}
+
+		// set up us the charsets 
+		list_totalCharSets.removeAll();
+		vec_CharSets.clear();
+		v = new Vector();
+		int c = 8;
+		while(c > 0) {
+			v.add(new Integer(c));
+			c--;
+		}
+
+		i = v.iterator();
+		while(i.hasNext()) {
+			int x = ((Integer)i.next()).intValue();
+
+			list_totalCharSets.add(prefix_CharSets + x + ": Containing exactly " + x + " character sets");
+			vec_CharSets.add(new Integer(x));
+		}
+
 	}
 
 	/**
@@ -162,17 +209,20 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		if(src.equals(btn_Length) || src.equals(btn_CharSets)) {
 			String newValue = null;
 			String prefix = null;
+			String atleast = null;
 			Vector addTo = null;
 			java.awt.List list = null;
 			String name = null;
 			
 			if(src.equals(btn_Length)) {
+				atleast = "atleast";
 				name = "bp combined length";
 				prefix = prefix_Length;
 				newValue = tf_Length.getText();
 				list = list_totalLength;
 				addTo = vec_Length;
 			} else {
+				atleast = "exactly";
 				name = "character sets";
 				prefix = prefix_CharSets;
 				newValue = tf_CharSets.getText();
@@ -197,7 +247,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 			// if we already have an entry, silently ignore
 			if(!addTo.contains(new Integer(x))) {
-				list.add(prefix + x + ": Containing atleast " + x + " " + name);
+				list.add(prefix + x + ": Containing " + atleast + " " + x + " " + name);
 				addTo.add(new Integer(x));
 			}
 		}
@@ -218,6 +268,9 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 			vec.remove(selected);
 			list.remove(selected);
+
+			if(list.getItemCount() == 0)
+				((Button)src).setEnabled(false);
 		}
 	}
 
@@ -248,6 +301,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	 * @return true, if it's okay to exit.
 	 */
 	private boolean verify() {
+		/*
 		if(false) {
 			MessageBox mb = new MessageBox(
 					matrix.getFrame(),
@@ -261,8 +315,124 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 				// MB_NO
 				return false;
 		}
-
+*/
 		return true;
+	}
+
+	//
+	// Processing functions
+	//
+	/**
+	 * Returns a Vector of all the taxonSets we have (as String).
+	 * You can then query this list against getTaxonset(String) to
+	 * get the Taxonset in question (as a single line, etc.)
+	 */
+	public Vector getTaxonsetList() {
+		Vector result = new Vector();
+
+		// give him the length taxonsets
+		Iterator i = vec_Length.iterator();
+		while(i.hasNext()) {
+			Integer it = (Integer) i.next();
+
+			result.add(prefix_Length + it);
+		}
+
+		// give him Charset taxonsets
+		i = vec_CharSets.iterator();
+		while(i.hasNext()) {
+			Integer it = (Integer) i.next();
+			
+			result.add(prefix_CharSets + it);
+		}
+
+		return result;
+	}
+
+	/**
+	 * Returns a String with the taxonset named 'name'.
+	 * This is a string describing the taxonset as numbers
+	 * from (zero + offset) to (N + offset), where 'offset'
+	 * is the second argument.
+	 *
+	 * @param name The name of the Taxonset
+	 * @param offset The offset of the taxon indexes. If this is zero, the first taxon will be zero, and if this is one, the first taxon will be one.
+	 */
+	public String getTaxonset(String name, int offset) {
+		StringBuffer buff = new StringBuffer();
+		SequenceGrid grid = matrix.getSequenceGrid();
+		Vector columns = grid.getColumns();
+		Vector sequences = grid.getSequences();
+
+		// 1. Figure out what is being talked about here
+		if(name.startsWith(prefix_Length)) {
+			// it's a length!
+			int length = -1;	
+			name = name.replaceAll(prefix_Length, "");
+
+			try {
+				length = Integer.parseInt(name);
+			} catch(NumberFormatException e) {
+				throw new RuntimeException("Can't figure out length for " + name + " in Taxonsets.getTaxonset()");
+			}
+
+			// now figure out a list of all taxa with atleast 'length' total length
+			for(int x = 0; x < sequences.size(); x++) {
+				String seqName = (String) sequences.get(x);
+				int myLength = 0;
+				Iterator i = columns.iterator();
+
+				while(i.hasNext()) {
+					String column = (String)i.next();
+					Sequence seq = grid.getSequence(column, seqName);
+
+					if(seq != null)
+						myLength += seq.getActualLength();
+				}
+
+				if(myLength >= length)
+					buff.append((x + offset) + " ");
+			}
+
+			if(buff.length() == 0)
+				return null;
+
+		} else if(name.startsWith(prefix_CharSets)) {
+			// it's a charset!
+			int charsets = -1;	
+			name = name.replaceAll(prefix_CharSets, "");
+
+			try {
+				charsets = Integer.parseInt(name);
+			} catch(NumberFormatException e) {
+				throw new RuntimeException("Can't figure out charset count for " + name + " in Taxonsets.getTaxonset()");
+			}
+
+			// now figure out a list of all taxa with atleast 'length' total length
+			for(int x = 0; x < sequences.size(); x++) {
+				String seqName = (String) sequences.get(x);
+				int myCharsetCount = 0;
+				Iterator i = columns.iterator();
+
+				while(i.hasNext()) {
+					String column = (String)i.next();
+					Sequence seq = grid.getSequence(column, seqName);
+
+					if(seq != null)
+						myCharsetCount++;
+				}
+
+				if(myCharsetCount == charsets)
+					buff.append((x + offset) + " ");
+			}
+
+			if(buff.length() == 0)
+				return null;
+		} else {
+			throw new RuntimeException("Unknown taxonset " + name + " in Taxonsets.getTaxonset()");
+		}
+
+		return buff.toString();
 	}
 
 	// 
