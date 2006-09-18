@@ -530,6 +530,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 
 	/**
+	 * Returns the Taxonsets component.
+	 */
+	public Taxonsets getTaxonsets() {
+		return taxonSets;
+	}
+
+	/**
 	 * Returns the FileManager, should anybody want to use etc.
 	 */
 	public FileManager getFileManager() {
