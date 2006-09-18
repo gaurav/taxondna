@@ -534,17 +534,30 @@ public class SequenceGrid {
 			delay.begin();
 
 		// let's get this party started, etc.
+		// we begin by obtaining the Taxonsets (if any).
+		Taxonsets tx = matrix.getTaxonsets(); 
+		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
+		buff_sets.append("BEGIN SETS;\n");
+		if(tx.getTaxonsetList() != null) {
+			Vector v = tx.getTaxonsetList();
+			Iterator i = v.iterator();
+			while(i.hasNext()) {
+				String taxonsetName = (String) i.next();
+				// Nexus has offsets from '1'
+				String str = tx.getTaxonset(taxonsetName, 1);
+				if(str != null)
+					buff_sets.append("\tTAXSET " + taxonsetName + " = " + str + ";\n");
+			}
+		}
+
 		// we begin by calculating the SETS block,
 		// since:
 		// 1.	we need to coordinate the names right from the get-go
 		// 2.	INTERLEAVED does not have to write the Nexus file
 		// 	at all, but DOES need the SETS block.
 		//
-		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
 
 		// Calculate the SETS blocks, with suitable widths etc.	
-		buff_sets.append("BEGIN SETS;\n");
-
 		int widthThusFar = 0;
 		Iterator i = getColumns().iterator();
 		while(i.hasNext()) {
@@ -704,11 +717,51 @@ public class SequenceGrid {
 	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean writeAnyway = true;
 
+		// we begin by obtaining the Taxonsets (if any).
+		Taxonsets tx = matrix.getTaxonsets(); 
+		StringBuffer buff_taxonsets = new StringBuffer();
+		if(tx.getTaxonsetList() != null) {
+			if(tx.getTaxonsetList().size() > 32) {
+				MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Too many taxonsets!",
+					"According to the manual, TNT can only handle 32 taxonsets. You have " + tx.getTaxonsetList().size() + " taxonsets. Would you like me to write out all the taxonsets anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any taxonsets.",
+					MessageBox.MB_YESNO);
+
+				writeAnyway = false;
+				if(mb.showMessageBox() == MessageBox.MB_YES)
+					writeAnyway = true;
+			}
+
+			if(writeAnyway) {
+				buff_taxonsets.append("agroup\n");
+
+				Vector v = tx.getTaxonsetList();
+				Iterator i = v.iterator();
+				int x = 0;
+				while(i.hasNext()) {
+					String taxonsetName = (String) i.next();
+					// TNT has offsets from '0'
+					String str = tx.getTaxonset(taxonsetName, 0);
+					if(str != null) 
+					{
+						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
+						x++;
+					}
+				}
+
+				buff_taxonsets.append(";\n\n\n");
+			}
+		}
+
+		writeAnyway = true;
+		
+		// set up the 'sets' buffer
 		if(getColumns().size() > 32) {
 			MessageBox mb = new MessageBox(
 					matrix.getFrame(),
 					"Too many files!",
-					"According to the manual, TNT can only handle 32 groups. You have " + getColumns().size() + " groups. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to write out only the first 32 groups, and ignore the rest.",
+					"According to the manual, TNT can only handle 32 groups. You have " + getColumns().size() + " groups. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any sets.",
 					MessageBox.MB_YESNO);
 
 			writeAnyway = false;
@@ -716,7 +769,6 @@ public class SequenceGrid {
 				writeAnyway = true;
 		}
 		
-		// set up the 'sets' buffer
 		StringBuffer buff_sets = new StringBuffer();
 		if(writeAnyway) {
 			buff_sets.append("xgroup\n");
@@ -784,6 +836,7 @@ public class SequenceGrid {
 		writer.println(";\n");
 		
 		writer.println(buff_sets);
+		writer.println(buff_taxonsets);
 
 		writer.flush();
 		writer.close();
