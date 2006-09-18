@@ -715,8 +715,6 @@ public class NexusFile extends BaseFormatHandler {
 		writer.println("#NEXUS");
 		writer.println("[Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "]");
 		writer.println("");
-		writer.println("BEGIN TAXA;");
-		writer.println("\tDIMENSIONS NTAX=" + set.count() + ";");
 		// TAXLABELS - otherwise, no point of having a TAXA block
 		/*
 		 * The following piece of code has to:
@@ -763,18 +761,6 @@ public class NexusFile extends BaseFormatHandler {
 			vec_names.add(name);
 		}
 
-		writer.print("\tTaxLabels ");
-		i = vec_names.iterator();
-		while(i.hasNext()) {
-			String name = (String) i.next();
-
-			writer.print(name + " ");
-		}
-
-		writer.println(";\n");
-
-		writer.println("END;\n");
-		
 		writer.println("BEGIN DATA;");		// DATA because I *think* CHARACTERS is not allowed
 							// to define its own Taxa, and I really can't be arsed.
 							// Maybe later ... ? 
@@ -834,7 +820,7 @@ public class NexusFile extends BaseFormatHandler {
 			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
 				Iterator i_names = vec_names.iterator();
 
-				System.err.println("Writing segment " + x);
+				//System.err.println("Writing segment " + x);
 
 				// report the delay
 				if(delay != null)
@@ -852,7 +838,7 @@ public class NexusFile extends BaseFormatHandler {
 					Sequence seq = (Sequence) names.get(name);
 					Sequence subseq = null;
 
-					System.err.println("Writing sequence " + name + ": " + seq);
+					//System.err.println("Writing sequence " + name + ": " + seq);
 
 					int until = 0;
 
