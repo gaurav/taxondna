@@ -169,12 +169,38 @@ public class SequenceGrid {
 		return seq_names.keySet().size();
 	}
 
-	/**	Returns the numbers of Sequences in this 'row' */
-	public int getSequenceCountByRow(String seqName) {
-		Integer i = (Integer) seq_names.get(seqName);  
-		if(i == null) return -1;
-		return i.intValue();
+	/**	How many columns have a non-N/A value for sequence seqName? */
+	public int getCharsetsCount(String seqName) {
+		int count = 0;
+
+		Iterator i = col_lengths.keySet().iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+		
+			Sequence seq = getSequence(colName, seqName);
+			if(seq != null)
+				count++;
+		}
+
+		return count;
 	}
+
+	/**	How many columns have a non-N/A value for sequence seqName? */
+	public int getTotalActualLength(String seqName) {
+		int count = 0;
+
+		Iterator i = col_lengths.keySet().iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+		
+			Sequence seq = getSequence(colName, seqName);
+			if(seq != null)
+				count+= seq.getActualLength();
+		}
+
+		return count;
+	}
+	
 
 	/**
 	 * 	Returns the 'length' of a particular column. These lengths
