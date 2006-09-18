@@ -53,7 +53,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
 	// The following variables create and track our AWT interface
-	private Canvas		spacerHack		= new Canvas();	// creates a space at the top of the screen
 	private Frame		mainFrame 		= new Frame();
 	private JTable		mainTable		= null;	
 	private DropTarget	dropTarget		= null;
@@ -291,6 +290,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		if(label.equals("By second name"))
 			seqgrid.resort(SequenceGrid.SORT_BYSECONDNAME);
+		
+		if(label.equals("By number of character sets"))
+			seqgrid.resort(SequenceGrid.SORT_BYCHARSETS);
+
+		if(label.equals("By total length"))
+			seqgrid.resort(SequenceGrid.SORT_BYTOTALLENGTH);
 
 		chmi.setState(true);
 		last_chmi = chmi;
@@ -381,8 +386,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		// p.s. Commented out, this causes a funky MacOS X GUI bug.
 //		mainTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
-		spacerHack.setSize(new Dimension(1, 20));
-		mainFrame.add(spacerHack, BorderLayout.NORTH);
+		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		mainFrame.add(scrollPane);
 
 		// HACK: MacOS X (or BorderLayout?) places the ScrollPane at (0, 0)
@@ -448,6 +452,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		sort.add(chmi);
 		last_chmi = chmi;		// primes the clear-the-last-box option
 		chmi = new CheckboxMenuItem("By second name", false);
+		chmi.addItemListener(this);
+		sort.add(chmi);
+		chmi = new CheckboxMenuItem("By number of character sets", false);
+		chmi.addItemListener(this);
+		sort.add(chmi);
+		chmi = new CheckboxMenuItem("By total length", false);
 		chmi.addItemListener(this);
 		sort.add(chmi);
 
