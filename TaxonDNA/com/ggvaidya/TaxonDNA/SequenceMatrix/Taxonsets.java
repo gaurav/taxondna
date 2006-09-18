@@ -379,16 +379,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			// now figure out a list of all taxa with atleast 'length' total length
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
-				int myLength = 0;
-				Iterator i = columns.iterator();
-
-				while(i.hasNext()) {
-					String column = (String)i.next();
-					Sequence seq = grid.getSequence(column, seqName);
-
-					if(seq != null)
-						myLength += seq.getActualLength();
-				}
+				int myLength = matrix.getSequenceGrid().getTotalActualLength(seqName);
 
 				if(myLength >= length)
 					buff.append((x + offset) + " ");
@@ -411,16 +402,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			// now figure out a list of all taxa with atleast 'length' total length
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
-				int myCharsetCount = 0;
-				Iterator i = columns.iterator();
-
-				while(i.hasNext()) {
-					String column = (String)i.next();
-					Sequence seq = grid.getSequence(column, seqName);
-
-					if(seq != null)
-						myCharsetCount++;
-				}
+				int myCharsetCount = matrix.getSequenceGrid().getCharsetsCount(seqName);
 
 				if(myCharsetCount == charsets)
 					buff.append((x + offset) + " ");
