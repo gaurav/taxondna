@@ -48,7 +48,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	// Constants for the export
 	//
 	private static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
-	private static final String	prefix_CharSets		=	"CHARSETS_EXACTLY_";	// I hope this is understandable =/
+	private static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
 
 	// Our variables
 	// keeping track of values, etc.
@@ -104,7 +104,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		rl.add(btn_totalLength_Delete, RightLayout.NEXTLINE | RightLayout.FLUSHRIGHT);
 
 		// set up the totalCharSets part
-		rl.add(new Label("Create a taxonset consisting of only those taxons which have exactly "), RightLayout.NEXTLINE | RightLayout.FILL_3);
+		rl.add(new Label("Create a taxonset consisting of only those taxons which have atleast "), RightLayout.NEXTLINE | RightLayout.FILL_3);
 		rl.add(tf_CharSets, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 		rl.add(new Label(" character sets"), RightLayout.BESIDE);
 
@@ -171,7 +171,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		while(i.hasNext()) {
 			int x = ((Integer)i.next()).intValue();
 
-			list_totalCharSets.add(prefix_CharSets + x + ": Containing exactly " + x + " character sets");
+			list_totalCharSets.add(prefix_CharSets + x + ": Containing atleast " + x + " character sets");
 			vec_CharSets.add(new Integer(x));
 		}
 
@@ -222,7 +222,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 				list = list_totalLength;
 				addTo = vec_Length;
 			} else {
-				atleast = "exactly";
+				atleast = "atleast";
 				name = "character sets";
 				prefix = prefix_CharSets;
 				newValue = tf_CharSets.getText();
@@ -404,7 +404,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 				String seqName = (String) sequences.get(x);
 				int myCharsetCount = matrix.getSequenceGrid().getCharsetsCount(seqName);
 
-				if(myCharsetCount == charsets)
+				if(myCharsetCount >= charsets)
 					buff.append((x + offset) + " ");
 			}
 
