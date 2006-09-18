@@ -89,6 +89,8 @@ public class SequenceGrid {
 	// these sort modes apply to the sequences
 	public static final int		SORT_BYNAME =		0;		// sort names alphabetically
 	public static final int		SORT_BYSECONDNAME =	1;		// sort names alphabetically
+	public static final int		SORT_BYCHARSETS =	2;		// sort names alphabetically
+	public static final int		SORT_BYTOTALLENGTH =	3;		// sort names alphabetically
 
 	SequenceMatrix	matrix 		= null;
 	
@@ -415,6 +417,49 @@ public class SequenceGrid {
 	}
 
 	/**
+	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the number of charsets it has.
+	 */
+	private class SortByCharsets implements Comparator {
+		private SequenceGrid grid = null;
+
+		public SortByCharsets(SequenceGrid grid) {
+			this.grid = grid;
+		}
+
+		public int 	compare(Object o1, Object o2) {
+			String str1 = (String) o1;
+			String str2 = (String) o2;
+
+			int countCharsets1 = grid.getCharsetsCount(str1);
+			int countCharsets2 = grid.getCharsetsCount(str2);
+
+			return (countCharsets2 - countCharsets1);
+		}
+	}
+
+	/**
+	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the total actual count of bases.
+	 */
+	private class SortByTotalActualLength implements Comparator {
+		private SequenceGrid grid = null;
+
+		public SortByTotalActualLength(SequenceGrid grid) {
+			this.grid = grid;
+		}
+
+		public int 	compare(Object o1, Object o2) {
+			String str1 = (String) o1;
+			String str2 = (String) o2;
+
+			int count1 = grid.getTotalActualLength(str1);
+			int count2 = grid.getTotalActualLength(str2);
+
+			return (count2 - count1);
+		}
+	}
+
+
+	/**
 	 * Our private let-everybody-know-we've-changed function.
 	 * Since only one object cares (TableModel), this is
 	 * ridiculously easy.
@@ -427,6 +472,12 @@ public class SequenceGrid {
 		// figure out rows
 		vec_rows = new Vector(seq_names.keySet());
 		switch(rowSortMethod) {
+			case SORT_BYTOTALLENGTH:
+				Collections.sort(vec_rows, new SortByTotalActualLength(this));
+				break;
+			case SORT_BYCHARSETS:
+				Collections.sort(vec_rows, new SortByCharsets(this));
+				break;
 			case SORT_BYSECONDNAME:
 				Collections.sort(vec_rows, new SortByName());
 				break;
