@@ -517,6 +517,8 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		int species_length = species.length();
 
 		String gi = seq.getGI();
+		if(gi == null)
+			gi = "";
 		int gi_length = gi.length();
 		
 			String potential = name;	// potential name
