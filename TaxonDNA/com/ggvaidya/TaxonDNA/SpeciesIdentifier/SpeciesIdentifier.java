@@ -743,9 +743,6 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 //		uiExtensions.add((UIExtension)new CombineDatasets(this));
 //		uiExtensions.add((UIExtension)new GenerateSubSet(this));
 //		uiExtensions.add((UIExtension)new EditDataSet(this));
-
-		// Hidden extensions
-		new CDSExaminer(this); 
 	}
 
 //
