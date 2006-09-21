@@ -187,7 +187,7 @@ public class SpeciesDetails {
 			if(seq_1.getActualLength() > largest_length)
 				largest_length = seq_1.getActualLength();
 	
-			if(!seq_1.getGI().equals("")) {
+			if(seq_1.getGI() != null) {
 				detail.pushSequenceIdentifier("gi|" + seq_1.getGI() + "|");
 			} else {
 				detail.pushSequenceIdentifier("(Sequence with unknown GI)");
