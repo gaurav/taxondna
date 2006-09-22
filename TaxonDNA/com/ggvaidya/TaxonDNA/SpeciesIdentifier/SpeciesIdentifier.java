@@ -730,6 +730,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		uiExtensions.add((UIExtension)new CompleteOverlap(this));
 		uiExtensions.add((UIExtension)new SpeciesSummary(this));
 		uiExtensions.add((UIExtension)new PairwiseSummary(this));
+		uiExtensions.add((UIExtension)new PairwiseExplorer(this));
 //		uiExtensions.add((UIExtension)new AllPairwiseDistances(this));
 		uiExtensions.add((UIExtension)new BestMatch(this));
 		uiExtensions.add((UIExtension)new BlockAnalysis(this));
@@ -738,7 +739,6 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		uiExtensions.add((UIExtension)new AlignmentHelperPlugin(this));
 		uiExtensions.add((UIExtension)new Exporter(this));
 //		uiExtensions.add((UIExtension)new Randomizer(this));
-		uiExtensions.add((UIExtension)new PairwiseExplorer(this));
 		uiExtensions.add((UIExtension)new Tester(this));
 		uiExtensions.add((UIExtension)new SystemUsage(this));
 //		uiExtensions.add((UIExtension)new CombineDatasets(this));
