@@ -874,7 +874,8 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 				// new MenuShortcut(KeyEvent.VK_V))); --> Gets in the way of Ctrl-C Ctrl-V
 				// new MenuShortcut(KeyEvent.VK_A)) --> deleting the shortcut since it gets in the way of Ctrl-A on Windows
 		file.addSeparator();
-		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
+		file.add("Exit");
+				// new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
 		menubar.add(file);
 		
