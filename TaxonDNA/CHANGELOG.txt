@@ -1,5 +1,68 @@
 CHANGELOG for TaxonDNA
 
+From 0.9.5 to 0.9.6
+===================
+TaxonDNA
+	*	TaxonDNA has now been renamed SpeciesIdentifier. The name
+		TaxonDNA is still in use for the entire suite of applications.
+	*	We can now read the SETS block in Nexus, sort of.
+	*	The GenBank reader has been removed, as it was somewhat beta.
+		The code will be renamed in the GenBankReader, which is coming
+		Real Soon Now.
+	*	
+
+SpeciesIdentifier
+	*	We were using the wrong value entirely for the 5% cutoff.
+		We are now using a somewhat more logical value =).
+	*	The algorithm for Best Match was completely rewritten,
+		as it was handling ambiguous sequences incorrectly - ONLY
+		the first two sequences would be checked for 
+	*	We should have finally fixed issues with modifications; 
+		i.e. SpeciesIdentifier should now have a pretty good idea
+		about when the file or its sequences have been modified.
+		This means that modifications will (or should) clear ALL
+		calculated results.
+	*	AllPairwiseDistances has been redacted. You can get all
+		distances from PairwiseSummary, and you can poke around
+		with the distances with PairwiseExplorer. Let us know if
+		you want more.
+	*	Fixed some unfiled bugs where CompleteOverlap would generate
+		a subset which was slightly different from the calculated one
+		because the code for determining the counts is different from
+		the code which actually outputs the file. This is bad design,
+		but it's one of the few checks for accuracy we've got in here,
+		so I don't know what to do with it.
+
+SequenceMatrix
+	*	We can now read blocks in Nexus files, and open them up
+		as separate columns.
+
+Bugtesting
+	*	Some more work has been done on ensuring that Sequences
+		without species names work okay.
+
+Google Code issue numbers
+	*	Fixed #47, #53, #67, #68, #70
+
+Performance improvements
+	*	FastaFile's mightBe() has been optimized (or more accurately,
+		rewritten as /normally/ efficient, and not the horrible time
+		hog it used to be)
+	*	Delay.delay() is now called *incessantly*. This radically
+		improves the interactivity of these buttons. DelayCallbacks
+		(such as ProgressDialog) are now responsible for only
+		updating at regular intervals.
+
+Developer improvements
+	*	FormatHandlers can now have FormatListener, which track
+		general and format-specific messages. Really, this is
+		pretty intentionally a hack, so use it carefully.
+	*	SequenceList's ConspecificIterator now allows removes.
+	*	getSpeciesName() now returns 'null', as does getGI().
+	* 	This directory contains some classes which have been
+		redacted from TaxonDNA itself. They are ignored by
+		the compiler.
+
 From 0.9.4 to 0.9.5
 ===================
 Major bug

@@ -1,4 +1,4 @@
-Readme for TaxonDNA 0.9.5
+Readme for TaxonDNA 0.9.6
 =========================
 
 CONTENTS
