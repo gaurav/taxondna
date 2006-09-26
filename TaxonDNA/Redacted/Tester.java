@@ -1,11 +1,11 @@
 /**
- * A UIExtension which Tests TaxonDNA functionality. A built-in
+ * A UIExtension which Tests SpeciesIdentifier functionality. A built-in
  * Test harness, in short. It acts at the TestController for
  * all the Testable objects, stores a list of testable objects,
  * and let's you test any particular or ALL objects.
  */
 /*
-    TaxonDNA
+    SpeciesIdentifier
     Copyright (C) Gaurav Vaidya, 2005
 
     This program is free software; you can redistribute it and/or modify
@@ -24,7 +24,7 @@
 */
 
 
-package com.ggvaidya.TaxonDNA.Modules;
+package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.util.*;
 import java.io.*;
@@ -36,7 +36,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class Tester extends Panel implements UIExtension, ActionListener, Runnable, TestController {	
-	private TaxonDNA	taxonDNA;
+	private SpeciesIdentifier	taxonDNA;
 
 	// Sequence View
 	private Choice		choice_Test = new Choice(); 
@@ -60,7 +60,6 @@ public class Tester extends Panel implements UIExtension, ActionListener, Runnab
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.SequenceList());
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
 		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
-		testables.add(new com.ggvaidya.TaxonDNA.DNA.formats.GenBankFile());
 	}
 	
 	/**
@@ -68,7 +67,7 @@ public class Tester extends Panel implements UIExtension, ActionListener, Runnab
 	 * Get the UI ready and started, check off the list of testable objects,
 	 * and go with the flow!
 	 */
-	public Tester(TaxonDNA view) {
+	public Tester(SpeciesIdentifier view) {
 		super();
 
 		taxonDNA = view;
@@ -245,13 +244,13 @@ public class Tester extends Panel implements UIExtension, ActionListener, Runnab
 	}
 
 	public File file(String name) {
-		// I'm hard-coding this to a 'Test' directory, which will have to be included from TaxonDNA 0.9.2
+		// I'm hard-coding this to a 'Test' directory, which will have to be included from SpeciesIdentifier 0.9.2
 		return new File("../Tests/", name.toLowerCase());
 	}
 	public File tempfile() {
 		File temp;
 		try {
-			temp = File.createTempFile("TaxonDNA_test_", ".tmp");
+			temp = File.createTempFile("SpeciesIdentifier_test_", ".tmp");
 		} catch(IOException e) {
 			return null;	
 		}
@@ -287,15 +286,15 @@ public class Tester extends Panel implements UIExtension, ActionListener, Runnab
 			return false;
 		}
 		catch(IOException e) {
-			failed("Error in TaxonDNA.Tester: Tester failed (IOException: " + e + " while comparing files " + x + " and " + y + ".");
+			failed("Error in SpeciesIdentifier.Tester: Tester failed (IOException: " + e + " while comparing files " + x + " and " + y + ".");
 			return false;
 		}
 	}
 	
 	// UIExtension stuff
-	public String getShortName() { return "Test TaxonDNA components"; }
+	public String getShortName() { return "Test SpeciesIdentifier components"; }
 	
-	public String getDescription() { return "Tests all testable components to ensure that TaxonDNA is working correctly"; }
+	public String getDescription() { return "Tests all testable components to ensure that SpeciesIdentifier is working correctly"; }
 
 	public boolean addCommandsToMenu(Menu menu) {
 		MenuItem mi = new MenuItem("Run test suite", new MenuShortcut(KeyEvent.VK_T));
