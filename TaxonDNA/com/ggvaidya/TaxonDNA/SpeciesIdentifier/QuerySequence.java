@@ -1,7 +1,7 @@
 /**
  *
  * A UIExtension which compares a given sequence against the whole set of sequences.
- * We have a public function - querySequence(Sequence) - which we can use to query 
+ * We have a public function - query(Sequence) - which we can use to query 
  * a sequence.
  *
  * NOTES: SortedSequenceList 
@@ -47,7 +47,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
-public class QuerySequence extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
+public class QuerySequence extends Panel implements UIExtension, ActionListener, ItemListener {	
 	private SpeciesIdentifier	seqId;
 
 	private SortedSequenceList	sset;
@@ -112,17 +112,13 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 		text_compare.setText("");
 	}
 
-	public void run() {
-	}
-
-
 	public boolean addCommandsToMenu(Menu menu) {
 		// should add some
 		// but for now
 		return false;
 	}
 	
-	public void setSequence(String string_sequence) {
+	private void query(String string_sequence) {
 		text_sequence.setText(string_sequence);
 
 			Sequence query = null;
@@ -189,6 +185,15 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 		return this;
 	}
 
+	/**
+	 * Selects the QuerySequence panel, and performs a query of Sequence 'seq'.
+	 */
+	public void query(Sequence seq) {
+		text_sequence.setText(seq.getSequence());
+		seqId.goToExtension(getShortName());
+		query(seq.getSequence());
+	}
+
 	// action listener
 	public void actionPerformed(ActionEvent evt) {
 		String cmd = evt.getActionCommand();
@@ -206,18 +211,18 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 		}
 
 		if(cmd.equals("Query")) {
-			setSequence(text_sequence.getText());
+			query(text_sequence.getText());
 		}
 	}		
 
 	// what to display in the text_main
-	public void displaySummary() {
+	private void displaySummary() {
 		String str = "Please select one of the matched sequences for more details.";
 
 		text_score.setText(str);
 	}
 
-	public void displayDetails(Sequence seq) {
+	private void displayDetails(Sequence seq) {
 		StringBuffer str = new StringBuffer();
 		
 		if(seq != null && sset != null) {
