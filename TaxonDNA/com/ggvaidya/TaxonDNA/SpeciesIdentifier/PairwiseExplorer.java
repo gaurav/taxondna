@@ -159,19 +159,24 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 
 		hash_distances = new Hashtable();
 		
-		for(double x = -1; x < 2; x+= 0.005) {
-			Vector distances = current.getDistancesBetween(x + 0.000001, x + 0.005);
+		for(int x = -5; x < 1000; x+= 5) {
+			double from = (double)x / 1000 + 0.000001;
+			double to = (double)(x + 5) / 1000;
+
+			Vector distances = current.getDistancesBetween(from, to);
 			
 			if(distances.size() > 0) {
-				String key = percentage(x + 0.000001, 1) + " to " + percentage(x + 0.005, 1) + " (" + distances.size() + " matches)";
+				String key = ((float)x / 10) + "% to " + ((float)x + 5)/10 + "% (" + distances.size() + " matches)";
 
-				if(identical(x + 0.005, 0))
+				if(x + 5 == 0)
 					key = "Before 0% (" + distances.size() + " matches)";
 
 				list_distances.add(key);
 				hash_distances.put(key, distances);
 			}				
 		}
+
+		text_matches.setText("Please select a distance category to examine.");
 
 		// percentages - probably the most important part of this whole thing
 		/*
@@ -377,8 +382,21 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 				Iterator i = vec.iterator();
 				while(i.hasNext()) {
 					PairwiseDistance pd = (PairwiseDistance) i.next();
+
+					double distance = pd.getDistance();
+					// now, we are accurate to six decimal places
+					// so lets round down EXACTLY to six decimal places
+					// note that that means:
+					// 	0.000001 is the smallest significant distance
+					// but, since we have to convert it to 'percentages',
+					// when we print our numbers out,
+					// 	0.0001% is the smallest significant distance
+					distance *= 100;
+					distance *= 10000;
+					distance = (double)Math.round(distance); // round it off to 4 digits
+					distance /= 10000;			// back into %ages
 					
-					buff.append("\t" + pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + (pd.getDistance() * 100) + "%\n");
+					buff.append("\t" + pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + distance + "%\n");
 				}
 
 				text_matches.setText(buff.toString());
