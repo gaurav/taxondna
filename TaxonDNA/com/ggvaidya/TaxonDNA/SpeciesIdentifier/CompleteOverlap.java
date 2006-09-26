@@ -123,7 +123,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		// gap-free and - depending on the state of check_wellDefinedOnly -
 		// ambiguity-okay sequences
 		//
-		double ambiguity_percent = 0.01;
+		double ambiguous_percent = 0.01;
 
 		try {
 			step_width = Integer.parseInt(tf_minimumBlockLength.getText(), 10);
@@ -136,7 +136,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			ambiguous_percent = 0.01;
 		}
 
-		int ambiguous_allowed = (int)(ambiguity_percent * (double)(step_width));	// how MANY are allowed?
+		int ambiguous_allowed = (int)(ambiguous_percent * (double)(step_width));	// how MANY are allowed?
 
 		sl.lock();
 		
@@ -180,7 +180,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			}
 
 			// don't write it if there is a gap in this subsequence
-			if(subseq.getSequence().indexOf('-') != -1)
+			if(subseq.getSequenceWithExternalGaps().indexOf('_') != -1)
 				continue;
 
 			// if check_wellDefinedOnly is on, don't let ambiguous sequences through
@@ -299,7 +299,11 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			try {
 				PrintWriter pw = new PrintWriter(new FileWriter(f));
 
-				pw.println("from,to,sequences,sequences_defined,species,non_singleton_species");
+				if(check_wellDefinedOnly.getState())
+					// well defined only, so ignore the 'sequences' count
+					pw.println("from,to,sequences_defined,species,non_singleton_species");
+				else
+					pw.println("from,to,sequences,sequences_defined,species,non_singleton_species");
 
 				String all_entries[] = list_results.getItems();
 				for(int x = 0; x < all_entries.length; x++) {
