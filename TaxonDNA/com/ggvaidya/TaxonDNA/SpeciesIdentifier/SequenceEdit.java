@@ -274,8 +274,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 			// Query against others
 			QuerySequence qs = (QuerySequence) seqId.getExtension("Query against sequences");
 			if(set != null && qs != null) {
-				qs.setSequence(seqId.getSequencePanel().getSelectedSequence().getSequence());
-				seqId.goToExtension("Query against sequences");
+				qs.query(seqId.getSequencePanel().getSelectedSequence());
 			}
 			
 		} else if(evt.getSource().equals(button_gi)) {
