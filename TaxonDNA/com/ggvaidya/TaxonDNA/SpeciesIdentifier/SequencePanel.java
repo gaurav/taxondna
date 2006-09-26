@@ -32,12 +32,11 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	private Vector		itemListeners = new Vector();
 
 	private Button		button_Sort = new Button("Sort");
-	private Button		button_Select = new Button("Select");
+	private Button		button_Query = new Button("Query");
 	private Button		button_Export = new Button("Export selected");
 	private Button		button_Remove = new Button("Remove selected");
 
 	private PopupMenu	popup_Sort = new PopupMenu("Sort");
-	private PopupMenu	popup_Select = new PopupMenu("Select");
 
 	public static final int	BY_NAME = 1;
 	public static final int	BY_SIZE = 2;
@@ -67,8 +66,8 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		buttonPanel.add(button_Sort);
 		button_Sort.addActionListener(this);
 		
-		buttonPanel.add(button_Select);
-		button_Select.addActionListener(this);
+		buttonPanel.add(button_Query);
+		button_Query.addActionListener(this);
 		
 		add(buttonPanel, BorderLayout.NORTH);
 
@@ -110,12 +109,6 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		popup_Sort.add("Sort by ambiguous (%)");
 		popup_Sort.addActionListener(this);
 
-		// #2: popup_Select
-		button_Select.add(popup_Select);
-		popup_Select.add("Select all");
-		popup_Select.add("Select by genus");
-		popup_Select.add("Select by species");
-		popup_Select.addActionListener(this);
 	}
 
 
@@ -359,6 +352,25 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		if(e.getSource().equals(button_Sort)) {
 			// activate the popup
 			popup_Sort.show(button_Sort, 0, 0);
+		}
+
+		// button_Query
+		if(e.getSource().equals(button_Query)) {
+			// query the current sequence, if there is one
+
+			if(list == null)
+				return;
+
+			// is there a Selected Sequence?
+			Sequence seq = getSelectedSequence();
+
+			if(seq == null)
+				return;
+			
+			QuerySequence qs = (QuerySequence) seqId.getExtension("Query against sequences");
+			if(qs != null)
+				qs.query(seq);
+			
 		}
 
 		// popup_Sort
