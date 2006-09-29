@@ -626,7 +626,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	}
 
 	public String getShortName() {		return "Complete Overlap"; 	}
-	public String getDescription() {	return "Find continuous sections (\"blocks\") without missing or gap bases"; }
+	public String getDescription() {	return "Find continuous sections (\"blocks\") without missing bases or external gaps"; }
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;
