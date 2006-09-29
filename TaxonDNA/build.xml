@@ -34,7 +34,12 @@
 
 	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
 	<target name="SequenceMatrix" depends="compile">
-		<jar  destfile="Release/SequenceMatrix.jar" basedir="${build.dir}/classes" excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**" includes="**/*.class" >
+		<jar  
+			destfile="Release/SequenceMatrix.jar" 
+			basedir="${build.dir}/classes" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SequenceIdentifier/**" 
+			includes="**/*.class" 
+		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
