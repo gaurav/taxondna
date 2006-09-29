@@ -328,6 +328,21 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		/*
 		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
 		*/
+		int col = mainTable.columnAtPoint(e.getPoint());
+
+		if(col == 0)
+			return;
+
+		String colName = tableModel.getColumnName(col);
+
+		MessageBox mb = new MessageBox(
+				mainFrame,
+				"Are you sure?",
+				"Are you sure you want to remove column '" + colName + "'? This can't be undone!",
+				MessageBox.MB_YESNO);
+		if(mb.showMessageBox() == MessageBox.MB_YES) {
+			seqgrid.deleteColumn(colName);
+		}
 	}
 
 	public void doubleClick(MouseEvent e) {

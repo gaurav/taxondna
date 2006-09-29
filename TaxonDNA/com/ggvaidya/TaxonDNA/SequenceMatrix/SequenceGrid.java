@@ -96,7 +96,7 @@ public class SequenceGrid {
 	
 	Hashtable	hash_cols	= new Hashtable();		// the master hash:
 									// Hashtable[colName => String] = Hashtable[seqName => String] = Sequence
-	Hashtable 	seq_names	= new Hashtable();		// Hashtable[seqName => String]	= Integer(count_cols)
+	Hashtable 	seq_names	= new Hashtable();		// Hashtable[seqName => String]	= Object()
 	Hashtable	col_lengths	= new Hashtable();		// Hashtable[colName => String] = Integer(length)
 	int		total_length 	= 0;
 
@@ -187,7 +187,7 @@ public class SequenceGrid {
 		return count;
 	}
 
-	/**	How many columns have a non-N/A value for sequence seqName? */
+	/**	The sum actual length of columns having a non-N/A value for sequence seqName */
 	public int getTotalActualLength(String seqName) {
 		int count = 0;
 
@@ -219,6 +219,41 @@ public class SequenceGrid {
 	 */
 	public void resort(int sort) {
 		rowSortMethod = sort;
+		updateDisplay();
+	}
+
+	/**
+	 * Delete the column named 'columnName'.
+	 */
+	public void deleteColumn(String colName) {
+		// Step 1: Delete all the sequences in this column from hash_cols.
+		if(hash_cols.get(colName) == null) {
+			// this column doesn't exist.
+			throw new RuntimeException("Attempt to delete non-existant column '" + colName + "'. Are the threads okay?");
+		}
+
+		Hashtable hash_col = (Hashtable) hash_cols.get(colName);
+		// before we delete this thing, check to see if any of the sequence WILL be orphaned by this move
+		Iterator i = hash_col.keySet().iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+
+			if(getCharsetsCount(seqName) == 1) {	// only found once? so only found in the column we're deleting?
+								// exxxxxxxxxxxxxcellent
+				seq_names.remove(seqName);
+			}
+		}
+		
+		// done! now get rid of 'em
+		hash_col.clear();
+		hash_cols.remove(colName);
+
+		// Step 2: Delete our entry from col_lengths.
+		col_lengths.remove(colName);
+
+		// Step 3: Check to see if we 'orphaned' any species names by doing this.
+
+		// aaaaaaaaaaaand ... done!
 		updateDisplay();
 	}
 //
