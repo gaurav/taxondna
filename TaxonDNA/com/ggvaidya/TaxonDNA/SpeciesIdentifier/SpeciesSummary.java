@@ -44,7 +44,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	private Button		btn_Calculate = new Button("Calculate now!");
 	private Button		btn_Delete = new Button("Remove selected species");
 	private Button		btn_export_multiple = new Button("Export species with multiple sequences");
-	private Button		btn_Copy = new Button("Copy list to clipboard");
+	private Button		btn_Copy = new Button("Copy species summary");
 	
 	private Vector		vec_Species =		null;
 
@@ -175,7 +175,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				
 				clip.setContents(selection, selection);
 			
-				btn_Copy.setLabel("Copy species list");
+				btn_Copy.setLabel("Copy species summary");
 			} catch(IllegalStateException ex) {
 				btn_Copy.setLabel("Oops, try again?");
 			}
