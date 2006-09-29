@@ -8,7 +8,7 @@
 	href="webstart/SpeciesIdentifier.jnlp"> 
 <!--  codebase="http://my_company.com/jaws/apps" -->
   <information> 
-    <title>TaxonDNA</title> 
+    <title>SpeciesIdentifier</title> 
     <vendor>Evolution Lab, National University of Singapore</vendor> 
     <homepage href="http://taxondna.sf.net/"/> 
     <description kind="tooltip">DNA dataset reader/writer/analyser</description>
@@ -22,7 +22,7 @@
   </security> 
   <resources> 
     <j2se version="1.4+" max-heap-size="1000M" /> 
-    <jar href="jars/TaxonDNA.jar" /> 
+    <jar href="jars/SpeciesIdentifier.jar" /> 
   </resources> 
   <application-desc main-class="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" /> 
 </jnlp>
