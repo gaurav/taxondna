@@ -303,7 +303,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 		str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
 
-		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all sequences)\n");										 
+		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all species)\n");										 
 		// set up list_species
 		//
 		list_species.removeAll();
