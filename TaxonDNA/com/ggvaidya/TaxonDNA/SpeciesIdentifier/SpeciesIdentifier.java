@@ -712,7 +712,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 	 *	Returns the citation for the program this code is found in.
 	 */
 	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G. Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, in press.";
+		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, in press.";
 	}
 
 //
