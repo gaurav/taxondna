@@ -29,7 +29,7 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/SpeciesIdentifier.jar" alias="mykey" storepass="567Gandhi^(" />		
+		<signjar jar="Release/SpeciesIdentifier.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne"  />		
 	</target>
 
 	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
@@ -39,7 +39,7 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/SequenceMatrix.jar" alias="mykey" storepass="567Gandhi^(" />
+		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
 	<!-- release:			Prepares ChangeLog and Readme files. 
