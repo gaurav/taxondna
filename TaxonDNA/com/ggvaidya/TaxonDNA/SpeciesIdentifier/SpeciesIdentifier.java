@@ -731,6 +731,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		uiExtensions.add((UIExtension)new SpeciesSummary(this));
 		uiExtensions.add((UIExtension)new PairwiseSummary(this));
 		uiExtensions.add((UIExtension)new PairwiseExplorer(this));
+		uiExtensions.add((UIExtension)new ExtremePairwise(this));
 //		uiExtensions.add((UIExtension)new AllPairwiseDistances(this));
 		uiExtensions.add((UIExtension)new BestMatch(this));
 		uiExtensions.add((UIExtension)new BlockAnalysis(this));
