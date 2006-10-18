@@ -226,6 +226,11 @@ public class Sequence  implements Comparable, Testable {
 		}
 		
 		String name = "";
+
+		// if the GI is not specified, we *can't* fall back
+		// to Species Name, as this is Not Enough Information.
+		if(getGI() == null)
+			return getFullName();
 		
 		if(getSpeciesName() != null) {
 			name = getSpeciesName(); 

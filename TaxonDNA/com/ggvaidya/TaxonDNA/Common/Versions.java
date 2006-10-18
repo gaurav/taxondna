@@ -32,6 +32,6 @@ public class Versions {
 	 * Returns the common version string for the entire TaxonDNA package. 
 	 */
 	public static String getTaxonDNA() {
-		return "0.9.6-pre1";
+		return "0.9.6-pre3";
 	}
 }
