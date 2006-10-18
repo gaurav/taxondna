@@ -170,7 +170,8 @@ public class SortedSequenceList {
 	 * Gets the distance to sequence number x.
 	 * This is zero-based (i.e., get(0) will return the FIRST sequence).
 	 * You can get the query sequence using getQuery().
-	 *
+	 * 
+	 * @deprecated We don't have any funky internal hashtable here or anything, so don't use this. Just do a seq.getPairwise(query) - it's what we do anyway.
 	 */
 	public double getDistance(int x) {
 		if(query == null)

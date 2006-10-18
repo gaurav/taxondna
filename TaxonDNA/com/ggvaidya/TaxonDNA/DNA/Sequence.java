@@ -1238,6 +1238,15 @@ public class Sequence  implements Comparable, Testable {
 	}
 
 	/**
+	 * Returns the "overlap" - the length shared between this and another Sequence.
+	 * Basically, the length of the sequence, without counting
+	 * gaps and missing data.
+	 */
+	public int getOverlap(Sequence seq2) {
+		return getSharedLength(seq2);
+	}
+
+	/**
 	 * Returns the length shared between this and another Sequence.
 	 * Basically, the length of the sequence, without counting
 	 * gaps and missing data.
