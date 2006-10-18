@@ -85,6 +85,7 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 		list_distances.add(	 "88888888888888888888888888");
 		list_distances.addItemListener(this);
 		main.add(list_distances, BorderLayout.WEST);
+		text_matches.setEditable(false);
 		main.add(text_matches);
 
 		add(main);
