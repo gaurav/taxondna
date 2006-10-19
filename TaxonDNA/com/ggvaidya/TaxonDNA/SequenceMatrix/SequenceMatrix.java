@@ -184,23 +184,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			taxonSets.setVisible(true);
 
 		//
-		// Help -> Citing SequenceMatrix. 
-		//
-		if(cmd.equals("Citing SequenceMatrix")) {
-			MessageBox mb = new MessageBox(mainFrame, 
-					"Citing SequenceMatrix", 
-					"You may cite this program as follows:\n\t" + getCitation()
-			);
-			mb.showMessageBox();
-		}		
-
-		//
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
 		//
 		if(cmd.equals("About SequenceMatrix")) {
-			String copyrightNotice = new String(getName() + ", Copyright (C) 2006 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+			String copyrightNotice = new String(
+					"You may cite this program as follows:\n\t" + getCitation() + "\n---\n" +
+					getName() + ", Copyright (C) 2006 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -499,7 +490,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// Help menu
 		Menu	help		=	new Menu("Help");
-		help.add("Citing SequenceMatrix");
 		help.add("About SequenceMatrix");
 		help.addActionListener(this);
 		menubar.add(help);
@@ -582,6 +572,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the citation used by SequenceMatrix.
 	 */
 	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, in press.";
+		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
 	}
 }
