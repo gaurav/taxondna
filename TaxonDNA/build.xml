@@ -37,7 +37,7 @@
 		<jar  
 			destfile="Release/SequenceMatrix.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SequenceIdentifier/**" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**" 
 			includes="**/*.class" 
 		>
 			<manifest>
@@ -52,14 +52,15 @@
 					ensure that all Jars are built
 	-->
 	<target name="release" depends="SpeciesIdentifier,SequenceMatrix">
-		<copy file="CHANGELOG.txt" todir="Release" />
+		<!--		<copy file="CHANGELOG.txt" todir="Release" />
 		<copy file="README.txt" todir="Release" overwrite="yes" />
+		-->
 
 		<zip 
 			destfile="../TaxonDNA-${version}.zip"
 			basedir="Release/"
 			comment="(c) Gaurav Vaidya, 2006"
-			update="true"
+			update="false"
 		/>
 	</target>
 
