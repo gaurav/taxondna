@@ -37,14 +37,13 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class CompleteOverlap extends Panel implements UIExtension, Runnable, ActionListener, ItemListener {
+public class CompleteOverlap extends Panel implements UIExtension, Runnable, ActionListener {
 	private SpeciesIdentifier	seqId = null;
 	private SequenceList	set = null;
 
 	private java.awt.List	list_results = new java.awt.List();
 
 	private TextField	tf_minimumBlockLength = new TextField("300");
-	private TextArea	ta_matches = new TextArea();
 
 	private Checkbox	check_wellDefinedOnly = new Checkbox("Drop all sequences which have more than ");
 	private TextField	tf_ambiguousLimit = new TextField("1"); 
@@ -94,12 +93,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		Panel center = new Panel();
 		center.setLayout(new BorderLayout());
 
-		list_results.addItemListener(this);
 		center.add(list_results);
-
-		ta_matches.setEditable(false);
-		ta_matches.setFont(new Font("Monospaced", Font.PLAIN, 12));
-		center.add(ta_matches, BorderLayout.EAST);
 
 		add(center);
 
@@ -111,7 +105,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		buttons.add(btn_Export_Results);
 
 		btn_Export_Fasta.addActionListener(this);
-		btn_Export_Fasta.setEnabled(false);
 		buttons.add(btn_Export_Fasta);
 
 		add(buttons, BorderLayout.SOUTH);
@@ -220,30 +213,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			return (x.substring(0, size - 3) + "...");
 	}
 
-
-	public void itemStateChanged(ItemEvent e) {
-		btn_Export_Fasta.setEnabled(false);
-
-		// ONLY respond to items which get selected, not the deselected ones
-		if(ItemEvent.SELECTED == e.getStateChange()) {
-			int index = ((Integer) e.getItem()).intValue();
-
-			// so the segment is [index] to [(index + minimum_overlap - 1)] inclusive
-			SequenceList sl = seqId.lockSequenceList();
-			ProgressDialog pd = new ProgressDialog(
-					seqId.getFrame(),
-					"Please wait, writing out overlapping regions ...",
-					"Please insert apology here."
-					);
-			String output = getOverlapDisplay(sl, index, index + step_width, pd);
-			seqId.unlockSequenceList();
-
-			ta_matches.setText(output);
-
-			btn_Export_Fasta.setEnabled(true);
-		}
-	}
-
 	public void actionPerformed(ActionEvent evt) {
 		String str_to_copy = "";
 		Button btn = null;
@@ -259,7 +228,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 
 				// clear results
 				list_results.removeAll();
-				ta_matches.setText("");
 
 				// restore button
 				btn.setLabel("Calculate!");
@@ -342,6 +310,19 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		}
 
 		if(evt.getSource().equals(btn_Export_Fasta)) {
+			// do the maths!
+			int index = list_results.getSelectedIndex();
+
+			// so the segment is [index] to [(index + minimum_overlap - 1)] inclusive
+			SequenceList sl = seqId.lockSequenceList();
+			ProgressDialog pd = new ProgressDialog(
+					seqId.getFrame(),
+					"Please wait, writing out overlapping regions ...",
+					"Writing out all overlaping regions between " + index + " and " + (index+step_width) + " now. Please be patient!"
+					);
+			String output = getOverlapDisplay(sl, index, index + step_width, pd);
+			seqId.unlockSequenceList();
+
 			// we need to export the _current_ text.
 			// this is kinda easy, since we basically dump ta_matches into a file, converting
 			// around a bit so that the results is a kinda-sorta-FASTA file.
@@ -376,7 +357,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			try {
 				PrintWriter pw = new PrintWriter(new FileWriter(f));
 
-				pw.println(ta_matches.getText());
+				pw.println(output);
 				
 				pw.close();
 
@@ -411,7 +392,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 	
 	public void dataChanged()	{
 		list_results.removeAll();
-		ta_matches.setText("");
 	}
 
 	/**
