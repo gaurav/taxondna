@@ -137,7 +137,8 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 					}
 				}
 
-				for(int x = sorted.count() - 1; x >= 0; x--) {
+				// we can't go until (x >= 0), since get(0) will get the query!
+				for(int x = sorted.count() - 1; x >= 1; x--) {
 					Sequence seq2 = sorted.get(x);
 
 					// ignore the nameless ones
