@@ -302,25 +302,14 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		}
 		
 		//
-		// Help -> Citing SpeciesIdentifier. Gives information
-		// for citing SpeciesIdentifier
-		//
-		if(cmd.equals("Citing SpeciesIdentifier")) {
-			MessageBox mb = new MessageBox(mainFrame,
-					"Citing SpeciesIdentifier",
-					"You should cite SpeciesIdentifier as follows:\n\t" + getCitation()
-			);
-
-			mb.go();
-		}
-
-		//
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
 		//
 		if(cmd.equals("About SpeciesIdentifier")) {
-			String copyrightNotice = new String("TaxonDNA/SpeciesIdentifier " + Versions.getTaxonDNA() + ", Copyright (C) 2005-06 Gaurav Vaidya.\n\nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+			String copyrightNotice = new String(
+					"You should cite SpeciesIdentifier as follows:\n\t" + getCitation() + "\n---\n" +
+					"TaxonDNA/SpeciesIdentifier " + Versions.getTaxonDNA() + ", Copyright (C) 2005-06 Gaurav Vaidya.\n\nTaxonDNA comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -712,7 +701,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 	 *	Returns the citation for the program this code is found in.
 	 */
 	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, in press.";
+		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
 	}
 
 //
@@ -948,7 +937,6 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		
 		// Help menu
 		Menu	help		=	new Menu("Help");
-		help.add("Citing SpeciesIdentifier");
 		help.add("About SpeciesIdentifier");
 		help.addActionListener(this);
 		menubar.add(help);
