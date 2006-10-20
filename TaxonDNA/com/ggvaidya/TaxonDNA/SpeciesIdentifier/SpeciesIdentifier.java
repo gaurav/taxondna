@@ -36,6 +36,8 @@ package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.dnd.*;
+import java.awt.datatransfer.*;
 import java.io.*;
 import java.util.*;
 
@@ -44,7 +46,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class SpeciesIdentifier implements WindowListener, ActionListener, ItemListener {
+public class SpeciesIdentifier implements WindowListener, ActionListener, ItemListener, DropTargetListener {
 	// the following information is shared amongst all TaxonDNAs.
 	private static int	countTaxonDNAs		= 0;
 
@@ -354,6 +356,62 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}	
 
+	public void dragEnter(DropTargetDragEvent dtde) {
+		if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+			dtde.acceptDrag(DnDConstants.ACTION_COPY);
+	}
+	public void dragExit(DropTargetEvent dte) {}
+	public void dragOver(DropTargetDragEvent dtde) {}
+	public void drop(DropTargetDropEvent dtde) {
+		if(dtde.getTransferable().isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+			dtde.acceptDrop(DnDConstants.ACTION_COPY);
+
+			Transferable t = dtde.getTransferable();
+			java.util.List l = null;
+
+			try {
+				l = (java.util.List) t.getTransferData(DataFlavor.javaFileListFlavor);
+			} catch(Exception e) {
+				// oh boo
+				return;
+			}
+
+			Iterator i = l.iterator();
+			while(i.hasNext()) {
+				File file = (File) i.next();
+				
+				try {
+					SequenceList sequences = SequenceList.readFile(
+						file, 
+						new ProgressDialog(
+							getFrame(), 
+							"Loading file ...", 
+							"Loading '" + file + "' into a new window. Sorry for the delay!",
+							ProgressDialog.FLAG_NOCANCEL
+							// for future reference: this flag is here because we *can't* cancel
+							// a readFile, since it's not actually threaded ... yet.
+							)
+						);
+
+					new SpeciesIdentifier(sequences);
+
+				} catch(SequenceListException e) {
+					MessageBox mb = new MessageBox(getFrame(), "Could not read file " + file + "!", e.getMessage());
+					mb.go();
+
+					// go on with importing the rest
+
+				} catch(DelayAbortedException e) {
+					// cancel the ENTIRE drop.
+					return;
+				}
+			}
+		} else
+ 			dtde.rejectDrop();
+	
+	}
+	public void dropActionChanged(DropTargetDragEvent dtde) {}
+
 //
 //	4.	FUNCTIONAL CODE. Let the functional programmers cry over that one. I mean that
 //		it *does* stuff - saveFile, closeFile, etc. Other classes can call these if
@@ -458,7 +516,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 						);
 
 		} catch(SequenceListException e) {
-			MessageBox mb = new MessageBox(getFrame(), "Could not read file " + file + "!", e.toString());
+			MessageBox mb = new MessageBox(getFrame(), "Could not read file " + file + "!", e.getMessage());
 			mb.go();
 
 			unlockSequenceList();
@@ -808,6 +866,9 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		rightLayout.add(mainView);
 		
 		mainFrame.add(rightLayout);
+
+		DropTarget dt = new DropTarget(mainFrame, this);
+		dt.setActive(true);
 
 		// Start the mainFrame!
 		goToExtension(((UIExtension)uiExtensions.get(0)).getShortName());
