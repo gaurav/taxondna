@@ -225,4 +225,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}
 
+	public void go() {
+		setVisible(true);
+	}
 }
