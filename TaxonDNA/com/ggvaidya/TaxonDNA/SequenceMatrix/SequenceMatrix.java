@@ -55,19 +55,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// The following variables create and track our AWT interface
 	private Frame		mainFrame 		= new Frame();
 	private JTable		mainTable		= null;	
-	private DropTarget	dropTarget		= null;
-	private DropTarget	dropTargetTable		= null;
 
 	// Other components of SequenceMatrix
-	private SequenceGrid	seqgrid			= new SequenceGrid(this);
+	private DataStore	dataStore		= new DataStore(this);
 	private Preferences	prefs			= new Preferences(this);
-	private TableModel	tableModel		= new TableModel(this);
-	private FileManager	fileMan			= new FileManager(this);
 	private Taxonsets	taxonSets		= new Taxonsets(this);
-
-	// Our variables
-	private Vector		filesToLoad		= new Vector();
-	private boolean		isInterfaceLocked	= false;
+	private FileManager	fileMan			= new FileManager(this);
+	private Exporter	exporter		= new Exporter(this);
 
 //
 //	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
@@ -110,7 +104,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		while(i.hasNext()) {
 			File f = (File) i.next();
 
-			fileMan.add(f);
+			fileMan.addFile(f);
 		}
 
 		resetFrameTitle();
@@ -118,6 +112,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 //
 // 	3.	EVENT PROCESSING. Handles stuff which happens to the main frame, mostly.
+// 		This involves menu, window and drop listening.
 //
 	/**
 	 * Handles ActionEvents for the file menu and help menu.
@@ -125,14 +120,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void actionPerformed(ActionEvent evt) {
 		String cmd = evt.getActionCommand();
 
-		if(isInterfaceLocked)
-			return;
-
 		//
 		// File -> New. Just close the present file. 
 		// 
 		if(cmd.equals("Clear all"))
-			fileMan.clear();
+			dataStore.clear();
 
 		//
 		// File -> Open. Tries to load the file specified.
@@ -140,7 +132,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// further is done.
 		//
 		if(cmd.equals("Add sequences"))
-			fileMan.add();
+			fileMan.addFile();
 
 		//
 		// File -> Exit. Calls our exit() way out.
@@ -161,14 +153,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// We basically just 'export' this on to the MatrixModel,
 		// who knows all about such things.
 		//
-		if(cmd.equals("Export as NEXUS"))
+		if(cmd.equals("Export sequences as NEXUS"))
 			fileMan.exportAsNexus();
 
 		//
 		// Export -> Export as TNT
 		// Exports the current dataset in TNT.
 		//
-		if(cmd.equals("Export as TNT"))
+		if(cmd.equals("Export sequences as TNT"))
 			fileMan.exportAsTNT();
 
 		//
@@ -176,12 +168,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// works.
 		//
 		if(cmd.equals("Preferences"))
-			prefs.setVisible(true);	// modal!
+			prefs.go();
 
 		//
 		// Settings -> Taxonsets. Activate the Taxonsets system!
 		if(cmd.equals("Taxonsets"))
-			taxonSets.setVisible(true);
+			taxonSets.go();
 
 		//
 		// Help -> About. We should put something
@@ -255,7 +247,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			while(i.hasNext()) {
 				File file = 	(File) i.next();
 
-				fileMan.add(file);
+				fileMan.addFile(file);
 			}
 
 			dtde.dropComplete(true);
@@ -277,22 +269,27 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		String label = chmi.getLabel();
 		if(label.equals("By name"))
-			seqgrid.resort(SequenceGrid.SORT_BYNAME);
+			dataStore.updateSort(DataStore.SORT_BYNAME);
 
-		if(label.equals("By second name"))
-			seqgrid.resort(SequenceGrid.SORT_BYSECONDNAME);
+		if(label.equals("By species epithet"))
+			dataStore.updateSort(DataStore.SORT_BYSECONDNAME);
 		
 		if(label.equals("By number of character sets"))
-			seqgrid.resort(SequenceGrid.SORT_BYCHARSETS);
+			dataStore.updateSort(DataStore.SORT_BYCHARSETS);
 
 		if(label.equals("By total length"))
-			seqgrid.resort(SequenceGrid.SORT_BYTOTALLENGTH);
+			dataStore.updateSort(DataStore.SORT_BYTOTALLENGTH);
 
 		chmi.setState(true);
 		last_chmi = chmi;
 	}
 
 	// MouseListener: for listening in on the Table model
+	//
+	// Don't play around with this: there's are handy 
+	// rightClick(MouseEvent) and doubleClick(MouseEvent)
+	// events around for your enjoyment.
+	//
 	private PopupMenu popupMenu = null;
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource().equals(mainTable)) {
@@ -312,9 +309,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(e.getSource().equals(mainTable)) {
 			if(e.isPopupTrigger())
 				rightClick(e);
-		}	
+		}
 	}
 
+	/**
+	 * Event: somebody right clicked in the mainTable somewhere
+	 */
 	public void rightClick(MouseEvent e) {
 		/*
 		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
@@ -324,7 +324,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(col == 0)
 			return;
 
-		String colName = tableModel.getColumnName(col);
+		String colName = dataStore.getColumnName(col);
 
 		MessageBox mb = new MessageBox(
 				mainFrame,
@@ -332,19 +332,22 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 				"Are you sure you want to remove column '" + colName + "'? This can't be undone!",
 				MessageBox.MB_YESNO);
 		if(mb.showMessageBox() == MessageBox.MB_YES) {
-			seqgrid.deleteColumn(colName);
+			dataStore.deleteColumn(colName);
 		}
 	}
 
+	/**
+	 * Event: somebody double clicked in the mainTable somewhere
+	 */
 	public void doubleClick(MouseEvent e) {
 		int row = mainTable.rowAtPoint(e.getPoint());
 		int col = mainTable.columnAtPoint(e.getPoint());
 
 		if(row != -1 && col != -1 && col != 0) {
 			// it's, like, valid, dude.
-			seqgrid.toggleCancelled(
-					tableModel.getColumnName(col),
-					tableModel.getRowName(row)
+			dataStore.toggleCancelled(
+					dataStore.getColumnName(col),
+					dataStore.getRowName(row)
 			);
 		}
 
@@ -362,14 +365,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * and tell it about this.
 	 */
 	public void updateDisplay() {
-		tableModel.updateDisplay();
+		dataStore.updateDisplay();
 	}
 
 	/**
 	 * Clears all the sequences away.
 	 */
 	public void clear() {
-		fileMan.clear();
+		dataStore.clear();
 	}
 
 	/**
@@ -383,9 +386,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
 
-		tableModel = new TableModel(this);
-		mainTable = new JTable(tableModel);
+		mainTable = new JTable(dataStore);
 		mainTable.addMouseListener(this);
+		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
+		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
 		// don't blame me and change them if you like, etc.
@@ -408,10 +412,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// set up the DropTarget
 		// Warning: this will need to be changed if table is ever not
 		// completely covering our client area
-		dropTarget = new DropTarget(mainFrame, this);
+		DropTarget dropTarget = new DropTarget(mainFrame, this);
 		dropTarget.setActive(true);
 		
-		dropTargetTable = new DropTarget(mainTable, this);
+		DropTarget dropTargetTable = new DropTarget(mainTable, this);
 		dropTargetTable.setActive(true);
 	}
 	
@@ -420,9 +424,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * unlockSequenceList(sequences) and this will be handled.
 	 */
 	private void resetFrameTitle() {
-		StringBuffer title = new StringBuffer(getName());
-
-		mainFrame.setTitle(title.toString());
+		mainFrame.setTitle(getName());
 	}
 
 	/**
@@ -457,7 +459,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		chmi.addItemListener(this);
 		sort.add(chmi);
 		last_chmi = chmi;		// primes the clear-the-last-box option
-		chmi = new CheckboxMenuItem("By second name", false);
+		chmi = new CheckboxMenuItem("By species epithet", false);
 		chmi.addItemListener(this);
 		sort.add(chmi);
 		chmi = new CheckboxMenuItem("By number of character sets", false);
@@ -476,8 +478,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export table as tab-delimited"));
-		export.add(new MenuItem("Export as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
-		export.add(new MenuItem("Export as TNT"));
+		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export sequences as TNT"));
 		export.addActionListener(this);
 		menubar.add(export);
 
@@ -540,10 +542,17 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 
 	/**
+	 * Returns the Exporter.
+	 */
+	public Exporter getExporter() {
+		return exporter;
+	}
+
+	/**
 	 * Returns the SequenceGrid object, if anyone wants it.
 	 */
-	public SequenceGrid getSequenceGrid() {
-		return seqgrid;
+	public DataStore getDataStore() {
+		return dataStore;
 	}
 
 	/**
@@ -552,22 +561,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public Taxonsets getTaxonsets() {
 		return taxonSets;
 	}
-
-	/**
-	 * Returns the FileManager, should anybody want to use etc.
-	 */
-	public FileManager getFileManager() {
-		return fileMan;
-	}
-
-	/**
-	 * Returns the table model for the main display. You should
-	 * really think many, many times before using this.
-	 */
-	public TableModel getTableModel() {
-		return tableModel;
-	}
-
+	
 	/**
 	 * Returns the citation used by SequenceMatrix.
 	 */
