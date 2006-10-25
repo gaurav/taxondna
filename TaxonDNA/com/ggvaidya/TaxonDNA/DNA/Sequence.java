@@ -52,7 +52,13 @@ public class Sequence  implements Comparable, Testable {
 	private	int		ambiguous = 0;		// number of ambiguous bases in this sequence
 	private boolean		warningFlag = false;	// If set, indicates that something is (probably) wrong with the
 							// species name.
+	
 
+	public static final int	PDM_UNCORRECTED = 0;	// uncorrected pairwise distances
+	public static final int	PDM_K2P = 1;		// Kimura 2-parameter distances
+	private static int	pairwiseDistanceMethod 	// Determines how we calculate the pairwise distances
+					= PDM_UNCORRECTED;		
+							
 	private static int	minOverlap = 300;	// the minimum overlap necessary for comparison
 							// overlaps less than this will cause the pairwise()
 							// function to return a distance of -1d
@@ -1060,6 +1066,36 @@ public class Sequence  implements Comparable, Testable {
 	}
 
 	/**
+	 * Is this character a pyrimidine (cytosine, thymine)
+	 *
+	 * Note that characters which are both purine or pyrimidine (say, [ACT]),
+	 * will return true here.
+	 */
+	public static boolean isPyrimidine(char ch) {
+		int code = getint(ch);
+		int pyramidine = getint('Y');	// Y = C+T
+
+		if((code & pyramidine) != 0)
+			return true;
+		return false;
+	}
+
+	/**
+	 * Is this character a purine (adenine, guanine).
+	 *
+	 * Note that characters which are both purine or pyrimidine (say, [ACT]),
+	 * will return true here.
+	 */
+	public static boolean isPurine(char ch) {
+		int code = getint(ch);
+		int purine = getint('R');	// R = A+G
+
+		if((code & purine) != 0)
+			return true;
+		return false;
+	}	
+
+	/**
 	 * Returns true if this is the 'missing' character.
 	 * By current specification, this is '?'.
 	 */
@@ -1289,17 +1325,114 @@ public class Sequence  implements Comparable, Testable {
 					//
 				} else if(isInternalGap(ch1) || isInternalGap(ch2)) {
 					// internal gaps are counted, as they are "informative"
-					count++;
+					// *unless* we're K2P mode, in which case we ignore them
+					if(pairwiseDistanceMethod != PDM_K2P)
+						count++;
 				} else {
 					// all other gaps are ignored
 				}
 			} else {
 				// everything except missing data and gaps are counted
+				if(pairwiseDistanceMethod == PDM_K2P) {
+					// in K2P mode, something which is ambiguous
+					// (either a purine OR a pyrimidine) is really
+					// the same as '?', and should be ignored.
+					// However, as long as BOTH of them are 
+					// UNAMBIGUOUSLY one or the other, we're
+					// good to go.
+					// 
+					if(isPurine(ch1) && isPyrimidine(ch1)) {
+						// ch1 is BOTH. ignore!
+					} else if(isPurine(ch2) && isPyrimidine(ch2)) {
+						// ch2 is BOTH. ignore!
+					} else {
+						count++;
+					}
+				}
 				count++;
 			}
 		}
 		
 		return count;
+	}
+
+	/**
+	 * Calculates the Kimura 2-parameter pairwise distance between us and another Sequence.
+	 *
+	 * The formula is as follows:
+	 * 	d = -(1/2) * ln(w1) - (1/4) * ln(w2)
+	 * 	w1 = 1 - 2P - Q
+	 * 	w2 = 1 - 2Q
+	 *
+	 * 	where:
+	 * 		P = freq(transitions)
+	 * 		Q = freq(transversions)
+	 *
+	 * so: we walk along the string, counting nP and nQ as we go,
+	 * as well as nChars (which is everything except '?' and '_').
+	 */
+	public double getK2PDistance(Sequence seq2) {
+		int nTransversions = 0;
+		int nTransitions = 0;
+		int n = 0;
+		char compare[] 	= seq2.getSequenceRaw().toCharArray();
+
+		// find the shorter length
+		int min = len;
+		if(compare.length < min)
+			min = compare.length;
+
+		for(int x = 0; x < min; x++) {
+			char ch1, ch2;
+
+			ch1 = seq[x];
+			ch2 = compare[x];
+		      
+			if(ch1 == '?' || ch2 == '?') {
+				// ignore missing data
+			} else if(isGap(ch1) || isGap(ch2)) {
+				// ignore gaps, too.
+			} else {
+				// but: is it a transition or transversions?
+				if(isPurine(ch1) && isPyrimidine(ch1)) {
+					// ch1 is ambiguous
+					continue;
+				} else if(isPurine(ch2) && isPyrimidine(ch2)) {
+					// ch2 is ambiguous
+					continue;
+				} else {
+					// everything except missing data, gaps, and ambiguous are counted
+					n++;
+		
+					if(ch1 == ch2) {
+						// identical!
+						continue;
+					}
+
+					if(
+						(isPurine(ch1) && isPurine(ch2)) || 
+						(isPyrimidine(ch1) && isPyrimidine(ch2))
+					) {
+						// they're both purines/pyrimidines
+						nTransitions++;
+					} else if(
+						(isPurine(ch1) && isPyrimidine(ch2)) ||
+						(isPyrimidine(ch1) && isPurine(ch2))
+					) {
+						nTransversions++;
+					} else {
+						throw new RuntimeException("In getK2PDistance, comparing this=" + this + " with=" + seq2 + ": Unexpected branch of code encountered. Something is very, very wrong.");
+					}
+				}
+			}
+		}
+
+		double w1 = 1 - (2 * nTransitions/n) - (nTransversions/n);
+		double w2 = 1 - (2 * nTransversions/n);
+
+		// note that Math.log(double) is really Math.ln(double), i.e. it will return
+		// the natural logarithm, not the common logarithm.
+		return (-0.5 * Math.log(w1)) - (0.25 * Math.log(w2));
 	}
 
 //
@@ -1411,7 +1544,7 @@ public class Sequence  implements Comparable, Testable {
 
 		checkPairwiseCache();
 
-		Double buffer = getCachedDistance(this, seq2); 
+		Double buffer = getCachedDistance(this, seq2);
 		if(buffer != null)
 			return buffer.doubleValue();
 
@@ -1435,14 +1568,17 @@ public class Sequence  implements Comparable, Testable {
 		double distance = 0;
 		
 		if(shared >= minOverlap) {
-			distance = 1.0 - ((double)countIdentical(seq2)/shared);
+			switch(pairwiseDistanceMethod) {
+				case PDM_K2P:
+					return getK2PDistance(seq2);
+				default:
+				case PDM_UNCORRECTED:
+					return 1.0 - ((double)countIdentical(seq2)/shared);
+			}
 		} else {
 			// special value to indicate inadequate overlap
-			distance = -1.0;
+			return -1.0;
 		}
-
-
-		return distance;
 	}
 
 //
