@@ -47,8 +47,8 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 	// Constants for the export
 	//
-	private static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
-	private static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
+	public static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
+	public static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
 
 	// Our variables
 	// keeping track of values, etc.
@@ -319,9 +319,6 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		return true;
 	}
 
-	//
-	// Processing functions
-	//
 	/**
 	 * Returns a Vector of all the taxonSets we have (as String).
 	 * You can then query this list against getTaxonset(String) to
@@ -335,7 +332,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		while(i.hasNext()) {
 			Integer it = (Integer) i.next();
 
-			result.add(prefix_Length + it);
+			result.add(Taxonsets.prefix_Length + it);
 		}
 
 		// give him Charset taxonsets
@@ -343,79 +340,11 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		while(i.hasNext()) {
 			Integer it = (Integer) i.next();
 			
-			result.add(prefix_CharSets + it);
+			result.add(Taxonsets.prefix_CharSets + it);
 		}
 
 		return result;
-	}
-
-	/**
-	 * Returns a String with the taxonset named 'name'.
-	 * This is a string describing the taxonset as numbers
-	 * from (zero + offset) to (N + offset), where 'offset'
-	 * is the second argument.
-	 *
-	 * @param name The name of the Taxonset
-	 * @param offset The offset of the taxon indexes. If this is zero, the first taxon will be zero, and if this is one, the first taxon will be one.
-	 */
-	public String getTaxonset(String name, int offset) {
-		StringBuffer buff = new StringBuffer();
-		SequenceGrid grid = matrix.getSequenceGrid();
-		Vector columns = grid.getColumns();
-		Vector sequences = grid.getSequences();
-
-		// 1. Figure out what is being talked about here
-		if(name.startsWith(prefix_Length)) {
-			// it's a length!
-			int length = -1;	
-			name = name.replaceAll(prefix_Length, "");
-
-			try {
-				length = Integer.parseInt(name);
-			} catch(NumberFormatException e) {
-				throw new RuntimeException("Can't figure out length for " + name + " in Taxonsets.getTaxonset()");
-			}
-
-			// now figure out a list of all taxa with atleast 'length' total length
-			for(int x = 0; x < sequences.size(); x++) {
-				String seqName = (String) sequences.get(x);
-				int myLength = matrix.getSequenceGrid().getTotalActualLength(seqName);
-
-				if(myLength >= length)
-					buff.append((x + offset) + " ");
-			}
-
-			if(buff.length() == 0)
-				return null;
-
-		} else if(name.startsWith(prefix_CharSets)) {
-			// it's a charset!
-			int charsets = -1;	
-			name = name.replaceAll(prefix_CharSets, "");
-
-			try {
-				charsets = Integer.parseInt(name);
-			} catch(NumberFormatException e) {
-				throw new RuntimeException("Can't figure out charset count for " + name + " in Taxonsets.getTaxonset()");
-			}
-
-			// now figure out a list of all taxa with atleast 'length' total length
-			for(int x = 0; x < sequences.size(); x++) {
-				String seqName = (String) sequences.get(x);
-				int myCharsetCount = matrix.getSequenceGrid().getCharsetsCount(seqName);
-
-				if(myCharsetCount >= charsets)
-					buff.append((x + offset) + " ");
-			}
-
-			if(buff.length() == 0)
-				return null;
-		} else {
-			throw new RuntimeException("Unknown taxonset " + name + " in Taxonsets.getTaxonset()");
-		}
-
-		return buff.toString();
-	}
+	}	
 
 	// 
 	// WindowListener methods
@@ -430,4 +359,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}
 
+	public void go() {
+		setVisible(true);
+	}
 }
