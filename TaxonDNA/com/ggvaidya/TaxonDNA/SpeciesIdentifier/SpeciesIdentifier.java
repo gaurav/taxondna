@@ -406,6 +406,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 					return;
 				}
 			}
+			dtde.dropComplete(true);
 		} else
  			dtde.rejectDrop();
 	
