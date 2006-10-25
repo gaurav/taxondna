@@ -158,7 +158,9 @@ public class SpeciesDetails {
 
 		// the final "lastSpeciesName" does not get processed
 		// so now, we process it.
-		species.put(lastSpeciesName, process_species(lastSpeciesName, conspecifics));
+		SpeciesDetail sd = process_species(lastSpeciesName, conspecifics);
+		if(sd != null)
+			species.put(lastSpeciesName, sd);
 
 		// All done!
 		list.unlock();
