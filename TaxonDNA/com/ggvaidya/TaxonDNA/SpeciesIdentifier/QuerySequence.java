@@ -163,11 +163,12 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 			int index = 0;
 			MessageFormat format = new MessageFormat("({0,number,##0.0000}%) {1}");
 			for(int x = 0; x < sset.count(); x++) {
-				if(sset.getDistance(x) < 0) { // invalid?!
+				double distance = query.getPairwise(sset.get(x));
+				if(distance < 0) { // invalid?!
 					continue;
 				}
 				Object[] args = new Object[2];
-				args[0] = (Object) new Double(sset.getDistance(x) * 100);
+				args[0] = (Object) new Double(distance * 100);
 				args[1] = (Object) sset.get(x).getDisplayName();
 
 				map_index.put(new Integer(index), new Integer(x));
