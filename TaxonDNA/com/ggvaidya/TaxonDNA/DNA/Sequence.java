@@ -127,6 +127,14 @@ public class Sequence  implements Comparable, Testable {
 		ambiguousBasesAllowed =	now;
 	}
 
+	/**
+	 * Sets which method is used to calculate pairwise distances. This
+	 * really ought to be one of PDM_K2P or PDM_UNCORRECTED.
+	 */
+	public synchronized static void setPairwiseDistanceMethod(int pdwRequested) {
+		pairwiseDistanceMethod = pdwRequested;
+	}
+
 //
 //	2. CONSTRUCTORS.
 //	
@@ -1427,12 +1435,16 @@ public class Sequence  implements Comparable, Testable {
 			}
 		}
 
-		double w1 = 1 - (2 * nTransitions/n) - (nTransversions/n);
-		double w2 = 1 - (2 * nTransversions/n);
+		double w1 = 1.0 - (2.0 * ((double)nTransitions)/n) - (((double)nTransversions)/n);
+		double w2 = 1.0 - (2.0 * ((double)nTransversions)/n);
 
 		// note that Math.log(double) is really Math.ln(double), i.e. it will return
 		// the natural logarithm, not the common logarithm.
-		return (-0.5 * Math.log(w1)) - (0.25 * Math.log(w2));
+		double distance = (-0.5 * Math.log(w1)) - (0.25 * Math.log(w2));
+
+//		System.err.println("Distance = " + distance + ", nTransitions = " + nTransitions + ", nTransversions = " + nTransversions + ", n = " + n);
+
+		return distance;
 	}
 
 //
