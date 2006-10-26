@@ -41,6 +41,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	
 	TextField		tfMinOverlap = new TextField("", 5);
 	Choice			choice_ambiguity = new Choice();
+	Choice			choice_pairwiseMethod = new Choice();
 	
 	Button			lock_button = new Button("Lock Settings");
 	boolean			locked = false;
@@ -55,7 +56,9 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		
 		// prime the overlaps
 		//
+		choice_pairwiseMethod.addFocusListener(this);
 		tfMinOverlap.addFocusListener(this);
+		choice_ambiguity.addFocusListener(this);
 		
 		// Layouting the UI for the settings 
 		//
@@ -76,6 +79,12 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		rl.add(warningLabel, RightLayout.NONE);		
 		lock_button.addActionListener(this);
 		rl.add(lock_button, RightLayout.BESIDE | RightLayout.FLUSHRIGHT | RightLayout.FILL_2);
+
+		// add the pairwiseMethod prompt
+		rl.add(new Label("Calculate pairwise distances as"), RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		choice_pairwiseMethod.add("Uncorrected pairwise distances");
+		choice_pairwiseMethod.add("Kimura 2-parameter corrected distances");
+		rl.add(choice_pairwiseMethod, RightLayout.BESIDE | RightLayout.FILL_2);
 		
 		// add the minimum overlap setting
 		//
@@ -106,12 +115,13 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		// add settings into the main panel
 		//
 		setLayout(new BorderLayout());
-		add(settings, BorderLayout.NORTH);		
+		add(settings, BorderLayout.NORTH);
 	}
 
 	public void lock() {
 		tfMinOverlap.setEditable(false);
 		choice_ambiguity.setEnabled(false);
+		choice_pairwiseMethod.setEnabled(false);
 
 		locked = true;
 	}
@@ -119,6 +129,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	public void unlock() {
 		tfMinOverlap.setEditable(true);
 		choice_ambiguity.setEnabled(true);
+		choice_pairwiseMethod.setEnabled(true);
 
 		warningLabel.setText("Please change your settings BEFORE loading a file into this program.");		
 		lock_button.setLabel(" Lock Settings ");
@@ -149,6 +160,15 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 				Sequence.ambiguousBasesAllowed(false);
 			} else {
 				Sequence.ambiguousBasesAllowed(true);
+			}
+		}
+		
+		if(e.getSource().equals(choice_pairwiseMethod)) {
+			if(choice_pairwiseMethod.getSelectedIndex() == 0) {
+				// index == 0: uncorrected
+				Sequence.setPairwiseDistanceMethod(Sequence.PDM_UNCORRECTED);
+			} else {
+				Sequence.setPairwiseDistanceMethod(Sequence.PDM_K2P);
 			}
 		}
 	}
