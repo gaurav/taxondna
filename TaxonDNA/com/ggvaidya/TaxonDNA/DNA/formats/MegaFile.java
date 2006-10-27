@@ -125,7 +125,7 @@ public class MegaFile extends BaseFormatHandler implements Testable {
 		Iterator i = list.iterator();
 		while(i.hasNext()) {
 			Sequence seq = (Sequence)i.next();
-			String name = getMegaOTU(seq.getFullName(), MAX_NAME_SIZE);
+			String name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE);
 
 			// determine the first <name>_<next_index> which
 			// hasn't already been used (and put into our hash of names)
@@ -139,10 +139,15 @@ public class MegaFile extends BaseFormatHandler implements Testable {
 			while(names.contains(name)) {
 				// note that we now truncate it down further, so that MAX_NAME_SIZE
 				// will fit the name, '_', and upto 4 digits of an index number.
-				name = getMegaOTU(seq.getFullName(), MAX_NAME_SIZE - 1 - 4) + "_" + next_index;
+				System.err.print("Name '" + name + "' didn't work, ");
+				name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE - 1 - 4) + "_" + next_index;
 				next_index++;
+
+				System.err.println("trying '" + name + "' ...");
+				
+				if(next_index > 9999)
+					throw new IOException("Sorry, I can only handle upto 9,999 duplicate names while exporting a Mega file! Please let us (the developers) know if this limit is too small for your needs.");
 			}
-			name = name.replace(' ', '_');
 			
 			names.put((Object)name, new Integer(1));
 			writer.println("#" + name + "\t" + seq.getSequence());
