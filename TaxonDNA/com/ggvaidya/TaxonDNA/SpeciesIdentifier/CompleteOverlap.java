@@ -159,7 +159,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			
 			Sequence subseq = null;
 			try {
-				subseq = seq.getSubsequence(from + 1, to);
+				subseq = seq.getSubsequence(from, to);
 			} catch(SequenceException e) {
 				MessageBox mb = new MessageBox(
 						seqId.getFrame(),
@@ -310,19 +310,6 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		}
 
 		if(evt.getSource().equals(btn_Export_Fasta)) {
-			// do the maths!
-			int index = list_results.getSelectedIndex();
-
-			// so the segment is [index] to [(index + minimum_overlap - 1)] inclusive
-			SequenceList sl = seqId.lockSequenceList();
-			ProgressDialog pd = new ProgressDialog(
-					seqId.getFrame(),
-					"Please wait, writing out overlapping regions ...",
-					"Writing out all overlaping regions between " + index + " and " + (index+step_width) + " now. Please be patient!"
-					);
-			String output = getOverlapDisplay(sl, index, index + step_width, pd);
-			seqId.unlockSequenceList();
-
 			// we need to export the _current_ text.
 			// this is kinda easy, since we basically dump ta_matches into a file, converting
 			// around a bit so that the results is a kinda-sorta-FASTA file.
@@ -331,9 +318,18 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			int from = list_results.getSelectedIndex() + 1; 				
 			int to = from + step_width - 1;
 
-			if(from == 0) { 	// means: there's nothing there! (getSelectedIndex() returned -1)
+			if(from == 0)		// means: there's nothing there! (getSelectedIndex() returned -1)
 				return;
-			}
+
+			// so the segment is [from] to [to] inclusive
+			SequenceList sl = seqId.lockSequenceList();
+			ProgressDialog pd = new ProgressDialog(
+					seqId.getFrame(),
+					"Please wait, writing out overlapping regions ...",
+					"Writing out all overlaping regions between " + from + " and " + to + " now. Please be patient!"
+					);
+			String output = getOverlapDisplay(sl, from, to, pd);
+			seqId.unlockSequenceList();
 
 			// but where?
 			File f = null;
