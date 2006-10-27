@@ -1443,6 +1443,9 @@ public class Sequence  implements Comparable, Testable {
 		double distance = (-0.5 * Math.log(w1)) - (0.25 * Math.log(w2));
 
 //		System.err.println("Distance = " + distance + ", nTransitions = " + nTransitions + ", nTransversions = " + nTransversions + ", n = " + n);
+//
+		if(distance <= 0)	// if we're here, we can't be -1
+			return 0;	// at the same time, this will stop the '-0' distances from appearing.
 
 		return distance;
 	}
