@@ -50,6 +50,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	
 	private Button		btn_Copy = new Button("Copy to Clipboard");
 
+	private static final int	CHAR_LIMIT_ON_CLUSTER_NAMES = 30;	// err ... hard to explain. go look it up :p
+
 	// helper function
 	private double percentage(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
@@ -526,9 +528,22 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					StringBuffer name = new StringBuffer("Cluster " + (++x) + " (");
 					Iterator i2 = v.iterator();
 
+					int countChars = 0;
+					int numSequences = v.size();
 					while(i2.hasNext()) {
 						Sequence seq = (Sequence)i2.next();
 						
+						countChars += seq.getSpeciesName().length();
+
+						if(countChars > CHAR_LIMIT_ON_CLUSTER_NAMES) { // if the count of the names is more than 40 chars, stop it and say "and more")
+							if(seq.getSpeciesName().length() > CHAR_LIMIT_ON_CLUSTER_NAMES)
+								name.append(numSequences + " sequences");
+							else
+								name.append("and " + numSequences + " more");
+							break;
+						}
+						numSequences--;
+
 						name.append(seq.getSpeciesName());
 						if(i2.hasNext())
 							name.append(", ");
