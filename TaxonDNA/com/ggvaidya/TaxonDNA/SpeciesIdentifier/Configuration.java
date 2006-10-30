@@ -29,12 +29,14 @@ package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.util.prefs.*;		// for Preferences
+
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Configuration extends Panel implements UIExtension, ActionListener, FocusListener {
-	SpeciesIdentifier 		seqId;
+	SpeciesIdentifier 	seqId;
 	Panel 			settings = 	new Panel();	// Settings panel
 
 	Label			warningLabel = new Label("Please wait, loading SpeciesIdentifier ...");	// warning: please set up BEFORE loading files
@@ -49,12 +51,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	public Configuration(SpeciesIdentifier seqId) {
 		this.seqId = seqId;
 
-		// Set the initial values. We DON'T need to change them
-		// every time something happens - nobody changes these
-		// values but us.
-		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
-		
-		// prime the overlaps
+		// activate the focus listeners
 		//
 		choice_pairwiseMethod.addFocusListener(this);
 		tfMinOverlap.addFocusListener(this);
@@ -100,18 +97,14 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		rl.add(new Label("How should this program treat ambiguous codons?"), RightLayout.NEXTLINE);
 		choice_ambiguity.add("Ambiguous codons are used ('H' is treated as a combination of 'W' and 'C')"); 
 		choice_ambiguity.add("Ambiguous codons NOT used (they are all converted into 'N')"); 
-
-		if(Sequence.areAmbiguousBasesAllowed()) {
-			choice_ambiguity.select(0);
-		} else {
-			choice_ambiguity.select(1);
-		}
-
 		rl.add(choice_ambiguity, RightLayout.BESIDE | RightLayout.FILL_2);
 
 		// note about how we treat leading and lagging sequences
 		rl.add(new Label("Note that differences in leading and trailing gaps are ignored, while differences in internal gaps will be counted."), RightLayout.NEXTLINE | RightLayout.FILL_3);
 		
+		// set up the default values to the values set in Prefs
+		loadFromPrefs();
+
 		// add settings into the main panel
 		//
 		setLayout(new BorderLayout());
@@ -171,6 +164,9 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 				Sequence.setPairwiseDistanceMethod(Sequence.PDM_K2P);
 			}
 		}
+
+		// save these values for future reference
+		saveToPrefs();
 	}
 
 	/**
@@ -240,6 +236,44 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 				lock_button.setLabel("Unlock Settings");
 			}
 		}
+	}
+
+	/**
+	 * Loads all configuration options from the Preferences store. This
+	 * will update Configuration items as well, so please only call after
+	 * initialisation.
+	 */
+	public void loadFromPrefs() {
+		Preferences prefs = Preferences.userNodeForPackage(com.ggvaidya.TaxonDNA.SpeciesIdentifier.Configuration.class);
+
+		// minimum overlap
+		Sequence.setMinOverlap(prefs.getInt("minimumOverlap", 300));
+		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
+
+		// ambiguous bases allowed
+		Sequence.ambiguousBasesAllowed(prefs.getBoolean("ambiguousBasesAllowed", true));
+		if(Sequence.areAmbiguousBasesAllowed()) {
+			choice_ambiguity.select(0);
+		} else {
+			choice_ambiguity.select(1);
+		}
+
+		// pairwise distance method
+		Sequence.setPairwiseDistanceMethod(prefs.getInt("pairwiseDistanceMethod", Sequence.PDM_UNCORRECTED));
+		if(Sequence.getPairwiseDistanceMethod() == Sequence.PDM_UNCORRECTED)
+			choice_pairwiseMethod.select(0);
+		else if(Sequence.getPairwiseDistanceMethod() == Sequence.PDM_K2P)
+			choice_pairwiseMethod.select(1);
+	}
+
+	/**
+	 * 
+	 */
+	public void saveToPrefs() {	
+		Preferences prefs = Preferences.userNodeForPackage(com.ggvaidya.TaxonDNA.SpeciesIdentifier.Configuration.class);
+		prefs.putInt("minimumOverlap", Sequence.getMinOverlap());
+		prefs.putBoolean("ambiguousBasesAllowed", Sequence.areAmbiguousBasesAllowed());
+		prefs.putInt("pairwiseDistanceMethod", Sequence.getPairwiseDistanceMethod());
 	}
 }
 
