@@ -128,6 +128,13 @@ public class Sequence  implements Comparable, Testable {
 	}
 
 	/**
+	 * Returns the value of the current 'pairwise distance calculating method'.
+	 */
+	public synchronized static int getPairwiseDistanceMethod() {
+		return pairwiseDistanceMethod;
+	}
+
+	/**
 	 * Sets which method is used to calculate pairwise distances. This
 	 * really ought to be one of PDM_K2P or PDM_UNCORRECTED.
 	 */
