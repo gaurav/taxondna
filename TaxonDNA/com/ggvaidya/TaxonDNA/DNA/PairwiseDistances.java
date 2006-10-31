@@ -1,5 +1,14 @@
 /**
- * A pairwise distribution. And this is how it works:
+ *
+ * PairwiseDistances is just like PairwiseDistribution, with one crucial
+ * difference: it stores references to the actual Sequences, which means
+ * you can figure out WHO caused any particular pairwise distance.
+ *
+ * Eventually, PairwiseDistribution will be redacted in toto and replaced
+ * by this guy. Until then, use the one you need.
+ *
+ * The following documentation is pretty much direct from PairwiseDistribution.
+ * And this is how it works:
  * 1.	You call it in a "mode". Yes, this means two loops per sequence list, 
  * 	but this makes our code _much_ easier to deal with and prevents
  * 	the irritating copy-around we had going on in the last loop.
@@ -22,7 +31,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005	Gaurav Vaidya
+    Copyright (C) 2005-06	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
