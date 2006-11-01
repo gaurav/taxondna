@@ -50,6 +50,37 @@ public class Exporter {
 	//
 	// Processing functions
 	//
+	/**
+	 * Exports the table as a tab delimited file. This is a pretty
+	 * brainless, dump-everything-on-the-table-to-file function.
+	 */
+	public void exportTableAsTabDelimited(File file) throws IOException {
+		TableModel tableModel = matrix.getTableModel();
+		
+		PrintWriter writer = new PrintWriter(new FileWriter(file));
+
+		// intro
+		writer.println("Exported by " + matrix.getName() + " at " + new Date());
+
+		// print columns
+		int cols = tableModel.getColumnCount();
+		for(int x = 0; x < cols; x++) {
+			writer.print(tableModel.getColumnName(x) + "\t");
+		}
+		writer.println();
+
+		// print table 
+		int rows = tableModel.getRowCount();	
+		for(int y = 0; y < rows; y++) {
+			for(int x = 0; x < cols; x++) {
+				writer.print(tableModel.getValueAt(y, x) + "\t");
+			}
+			writer.println();
+		}
+
+		writer.flush();
+		writer.close();
+	}
 
 	/**
 	 * Returns a String with the taxonset named 'name'.
@@ -63,8 +94,8 @@ public class Exporter {
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
 		DataStore dataStore = matrix.getDataStore();
-		List columns = dataStore.getSortedColumns();
-		List sequences = dataStore.getSortedSequences();
+		List columns = new Vector(dataStore.getColumns());
+		List sequences = new Vector(dataStore.getSequences());
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
@@ -102,7 +133,7 @@ public class Exporter {
 				throw new RuntimeException("Can't figure out charset count for " + name + " in Exporter.getTaxonset()");
 			}
 
-			// now figure out a list of all taxa with atleast 'length' total length
+			// now figure out a list of all taxa with atleast 'charsets' number of charsets
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
 				int myCharsetCount = matrix.getDataStore().getCharsetsCount(seqName);
