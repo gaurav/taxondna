@@ -462,33 +462,8 @@ public class FileManager implements FormatListener {
 		if(file == null)
 			return;
 
-		TableModel tableModel = (TableModel) matrix.getDataStore();
-		
 		try {
-			PrintWriter writer = new PrintWriter(new FileWriter(file));
-
-			// intro
-			writer.println("Exported by " + matrix.getName() + " at " + new Date());
-
-			// print columns
-			int cols = tableModel.getColumnCount();
-			for(int x = 0; x < cols; x++) {
-				writer.print(tableModel.getColumnName(x) + "\t");
-			}
-			writer.println();
-
-			// print table 
-			int rows = tableModel.getRowCount();	
-			for(int y = 0; y < rows; y++) {
-				for(int x = 0; x < cols; x++) {
-					writer.print(tableModel.getValueAt(y, x) + "\t");
-				}
-				writer.println();
-			}
-
-			writer.flush();
-			writer.close();
-
+			matrix.getExporter().exportTableAsTabDelimited(file);
 		} catch(IOException e) {
 			reportIOException(e, file, IOE_WRITING);
 		}
