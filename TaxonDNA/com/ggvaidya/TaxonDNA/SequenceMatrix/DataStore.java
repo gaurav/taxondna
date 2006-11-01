@@ -140,7 +140,6 @@ public class DataStore implements TableModel {
 	public Set getSequences() {
 		Hashtable ht = (Hashtable) hash_master.get("");
 
-
 		if(ht == null)
 			return new HashSet();	// just an empty Set
 
@@ -153,6 +152,27 @@ public class DataStore implements TableModel {
 
 	public List getSortedColumns() {
 		return (List) sortedColumnNames;
+	}
+
+	public SequenceList getSequenceListByColumn(String colName) {
+		SequenceList list = new SequenceList();
+
+		validateColName(colName);
+
+		Iterator i = getSequenceNamesByColumn(colName).iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+			Sequence seq = getSequence(colName, seqName);
+
+			System.err.println("seqName = " + seqName);
+
+			if(seq == null)
+				throw new RuntimeException("In DataStore.getSequenceListByColumn: sequence (" + colName + ", " + seqName + ") does not exist, although getSequenceNamesByColumn returns it.");
+
+			list.add(seq);
+		}
+
+		return list;
 	}
 
 	/**
@@ -307,7 +327,7 @@ public class DataStore implements TableModel {
 		if(col == null)
 			return null;
 		
-		Set set = col.keySet();
+		Set set = new HashSet(col.keySet());
 		set.remove("");
 		return set;
 	}
@@ -549,6 +569,10 @@ public class DataStore implements TableModel {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 			String seqName = null;
+
+			// ignore sequences whose actualLength is zero
+			if(seq.getActualLength() == 0)
+				continue;
 			
 			// Figure out the 'seqName'
 			switch(matrix.getPrefs().getUseWhichName()) {
@@ -600,7 +624,7 @@ public class DataStore implements TableModel {
 			MessageBox mb = new MessageBox(
 					matrix.getFrame(),
 					"Warning: Sequences were dropped!",
-					"Some sequences were not added to the dataset. These are:\n" + droppedSequences.toString()
+					"Some sequences in the column '" + colName + "' were not added to the dataset. These are:\n" + droppedSequences.toString()
 				);
 
 			mb.go();
