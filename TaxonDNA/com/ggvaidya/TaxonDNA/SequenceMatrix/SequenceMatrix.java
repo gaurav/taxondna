@@ -45,6 +45,7 @@ import java.io.*;
 import java.util.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
+import javax.swing.table.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -57,11 +58,19 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private JTable		mainTable		= null;	
 
 	// Other components of SequenceMatrix
+	// information
 	private DataStore	dataStore		= new DataStore(this);
-	private Preferences	prefs			= new Preferences(this);
-	private Taxonsets	taxonSets		= new Taxonsets(this);
+
+	// files
 	private FileManager	fileMan			= new FileManager(this);
 	private Exporter	exporter		= new Exporter(this);
+
+	// dialogs
+	private Preferences	prefs			= new Preferences(this);
+	private Taxonsets	taxonSets		= new Taxonsets(this);
+
+	// analyses
+	private FindDistances	findDistances		= new FindDistances(this);
 
 //
 //	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
@@ -139,6 +148,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		if(cmd.equals("Exit"))
 			exit();	
+
+		// Analyses -> Zero Percent Distances
+		if(cmd.equals("Find all zero percent distances")) {
+			findDistances.go();
+		}
+
+		// Analyses -> Calculate the rank table
+		if(cmd.equals("Calculate the rank table")) {
+			// do something;
+		}
 
 		// Export -> Export table as tab delimited. Should be fairly
 		// easy: we could just query the table and spit it out!
@@ -390,6 +409,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainTable.addMouseListener(this);
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
 		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
+		mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	// ha-ha!
 		JScrollPane scrollPane = new JScrollPane(mainTable);
 		// i get these dimensions straight from the java docs, so
 		// don't blame me and change them if you like, etc.
@@ -475,6 +495,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		view.addActionListener(this);
 		menubar.add(view);
 
+		// Analysis menu
+		Menu	analyses	= 	new Menu("Analyses");
+		analyses.add(new MenuItem("Find all zero percent distances"));
+		analyses.add(new MenuItem("Calculate the rank table"));
+		analyses.addActionListener(this);
+		menubar.add(analyses);
+
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export table as tab-delimited"));
@@ -549,11 +576,23 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 
 	/**
-	 * Returns the SequenceGrid object, if anyone wants it.
+	 * Returns the DataStore object, should you want it.
 	 */
 	public DataStore getDataStore() {
 		return dataStore;
 	}
+
+	/**
+	 * Returns the DataModel. Now, in Reality, this is
+	 * just the dataStore object, suitable casted. But
+	 * since it's an abstraction, I figured, hey, why
+	 * not.
+	 */
+	public TableModel getTableModel() {
+		return (TableModel) dataStore;
+	}
+
+	
 
 	/**
 	 * Returns the Taxonsets component.
