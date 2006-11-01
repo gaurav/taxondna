@@ -633,12 +633,16 @@ public class Sequence  implements Comparable, Testable {
 	 * not be used any more.
 	 */
 	public void changeSequence(String seq) throws SequenceException {
+		// we're case insensitive here, so make the string uppercase first
+		seq = seq.toUpperCase();
+
 		// we change the gaps before and after the sequence itself to '_',
 		// which represent external GAPs. Using '_' in the sequence itself
 		// will cause a SequenceException
 		char[] sequence = seq.toCharArray();
 		int length = sequence.length;
 		int forwardStrokeStoppedAt = 0;
+
 		       	
 		// forward stroke
 		for(int x = 0; x < sequence.length; x++) {
