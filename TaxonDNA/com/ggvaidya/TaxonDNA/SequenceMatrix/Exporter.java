@@ -430,7 +430,7 @@ public class Exporter {
 			MessageBox mb = new MessageBox(
 					matrix.getFrame(),
 					"Too many files!",
-					"According to the manual, TNT can only handle 32 groups. You have " + dataStore.getColumns().size() + " groups. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any sets.",
+					"According to the manual, TNT can only handle 32 character sets. You have " + dataStore.getColumns().size() + " character sets. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any sets.",
 					MessageBox.MB_YESNO);
 
 			writeAnyway = false;
