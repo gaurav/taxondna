@@ -53,4 +53,8 @@ public class PairwiseDistance implements Comparable {
 
 		return (int)Settings.makeLongFromDouble(getDistance() - pd.getDistance());
 	}
+
+	public String toString() {
+		return super.toString() + ": " + getDistance() + " between " + getSequenceA() + " and " + getSequenceB();
+	}
 }
