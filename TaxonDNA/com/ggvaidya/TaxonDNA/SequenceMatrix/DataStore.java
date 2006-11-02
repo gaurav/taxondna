@@ -164,8 +164,6 @@ public class DataStore implements TableModel {
 			String seqName = (String) i.next();
 			Sequence seq = getSequence(colName, seqName);
 
-			System.err.println("seqName = " + seqName);
-
 			if(seq == null)
 				throw new RuntimeException("In DataStore.getSequenceListByColumn: sequence (" + colName + ", " + seqName + ") does not exist, although getSequenceNamesByColumn returns it.");
 
@@ -287,8 +285,10 @@ public class DataStore implements TableModel {
 
 		col.remove(seqName);
 
-		if(col.size() == 0) {
-			// if there are no keys left is the '""' key, we can get rid of the column entirely	
+		if(col.size() == 1) {
+			// if there are no keys left 
+			// (the only key left is the '""' key), 
+			// we can get rid of the column entirely
 			hash_master.remove(colName);
 		}
 
