@@ -84,6 +84,12 @@ public class PairwiseDistances {
 		if(delay != null)
 			delay.begin();
 
+		// Since _addIntra actually uses the conspecific iterator to speed things up, we need to resort
+		// at this point. Don't worry - we'll sort it back before we unlock it.
+		int oldSort = -1;
+		if(type == PD_INTRA)
+			oldSort = list.resort(SequenceList.SORT_BYNAME);
+
 		// go thru the list, calculating all the distances in this category.
 		// we use private "helper" functions to help (and make the code less painful)
 		Iterator i = list.iterator();
@@ -101,6 +107,8 @@ public class PairwiseDistances {
 				try {
 					delay.delay(count_sequences, list.count());
 				} catch(DelayAbortedException e) {
+					if(type == PD_INTRA)
+						list.resort(oldSort);
 					list.unlock();
 					throw e;	// get outta here
 				}
@@ -112,6 +120,9 @@ public class PairwiseDistances {
 		// Sort it up, before we ship it out
 		if(distances.size() > 0) 
 			Collections.sort(distances);
+
+		if(type == PD_INTRA)
+			list.resort(oldSort);
 
 		if(delay != null)
 			delay.end();
