@@ -154,14 +154,13 @@ public class FindDistances implements WindowListener, ActionListener, TableModel
 			while(i.hasNext()) {
 				String colName = (String)i.next();
 				SequenceList sl = ds.getSequenceListByColumn(colName);
-
+			
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
 							new ProgressDialog(
 								matrix.getFrame(),
 								"Please wait, calculating pairwise distances ...",
 								"Calculating intraspecific pairwise distances for " + colName)
-							)
-						);
+							));
 
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTER, 
 							new ProgressDialog(
@@ -211,7 +210,7 @@ public class FindDistances implements WindowListener, ActionListener, TableModel
 			buff.append(pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + percentage(pd.getDistance(), 1) + "\n");
 
 		}
-		text_main.setText(count + " sequence pairs found with distances between " + from + "% and " + to + "%.\n" + buff);
+		text_main.setText(count + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
 		delay.end();
 	}
 
