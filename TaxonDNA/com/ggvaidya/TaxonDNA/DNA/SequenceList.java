@@ -334,6 +334,8 @@ public class SequenceList implements List, Testable {
 	 * 	(oh dear, what a pain! - but what rewards! Eh. No time. Really.)
 	 * 2.	Once UNsorted, we need to make sure that sortMethod HAS been reset.	
 	 *
+	 * @return The last sorting strategy used (before your resort call)
+	 *
 	 */
 	public int resort(int sortMethod) {
 		int toReturn = sortedBy;
