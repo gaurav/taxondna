@@ -138,8 +138,15 @@ public class NexusFile extends BaseFormatHandler {
 
 			// count lines
 			int count_lines = 0;
+			int count_data = 0;
+			long file_length = fileFrom.length();
 			while(reader.ready()) {
-				reader.readLine();
+				if(delay != null)
+					delay.delay((int)((float)count_data/file_length * 10), 100);
+					// note that we're really going from 0% to 10%. This will
+					// make the user less confused when we jump from 10% to 0% and
+					// start over.
+				count_data += reader.readLine().length();
 				count_lines++;
 			}
 
@@ -729,7 +736,12 @@ public class NexusFile extends BaseFormatHandler {
 		Hashtable names = new Hashtable();		// Hashtable(Strings) -> Sequence	of all the names currently in use
 		Vector vec_names = new Vector();		// Vector(String)
 		Iterator i = set.iterator();
+		int count_names = 0;
 		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(count_names, set.count());
+			count_names++;
+
 			Sequence seq = (Sequence) i.next();
 
 			String name = seq.getFullName(MAX_TAXON_LENGTH);
@@ -816,6 +828,8 @@ public class NexusFile extends BaseFormatHandler {
 				x++;
 			}
 		} else {
+			// interleaved!
+			//
 			// go over all the 'segments'
 			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
 				Iterator i_names = vec_names.iterator();
