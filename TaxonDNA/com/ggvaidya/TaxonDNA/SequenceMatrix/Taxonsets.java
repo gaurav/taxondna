@@ -162,7 +162,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		vec_CharSets.clear();
 		v = new Vector();
 		int c = 8;
-		while(c > 0) {
+		while(c > 1) {
 			v.add(new Integer(c));
 			c--;
 		}
