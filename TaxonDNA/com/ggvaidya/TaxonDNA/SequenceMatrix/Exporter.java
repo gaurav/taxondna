@@ -80,6 +80,12 @@ public class Exporter {
 
 		writer.flush();
 		writer.close();
+
+		MessageBox mb = new MessageBox(
+				matrix.getFrame(),
+				"Export successful!",
+				"This table has been successfully exported to '" + file + "' as a tab-delimited file.");
+		mb.go();
 	}
 
 	/**
@@ -197,12 +203,13 @@ public class Exporter {
 	 */
 	public void exportAsNexus(File f, DelayCallback delay) throws IOException, DelayAbortedException {
 		DataStore dataStore = matrix.getDataStore();
+		int countThisLoop = 0;
 
 		// how do we have to do this?
 		int how = matrix.getPrefs().getNexusOutput();
 
 		// set up delay 
-		if(how != Preferences.PREF_NEXUS_INTERLEAVED && delay != null)
+		if(delay != null)
 			delay.begin();
 
 		// let's get this party started, etc.
@@ -213,7 +220,13 @@ public class Exporter {
 		if(tx.getTaxonsetList() != null) {
 			Vector v = tx.getTaxonsetList();
 			Iterator i = v.iterator();
+
+			countThisLoop = 0;
 			while(i.hasNext()) {
+				countThisLoop++;
+				if(delay != null)
+					delay.delay(countThisLoop, v.size());
+
 				String taxonsetName = (String) i.next();
 				// Nexus has offsets from '1'
 				String str = getTaxonset(taxonsetName, 1);
@@ -232,7 +245,13 @@ public class Exporter {
 		// Calculate the SETS blocks, with suitable widths etc.	
 		int widthThusFar = 0;
 		Iterator i = dataStore.getColumns().iterator();
+
+		countThisLoop = 0;
 		while(i.hasNext()) {
+			countThisLoop++;
+			if(delay != null)
+				delay.delay(countThisLoop, dataStore.getColumns().size());
+
 			String columnName = (String)i.next();
 
 			// write out a CharSet for this column, and adjust the widths
@@ -279,7 +298,12 @@ public class Exporter {
 			// loop over column names
 			Iterator i_cols = dataStore.getColumns().iterator();
 
+			countThisLoop = 0;
 			while(i_cols.hasNext()) {
+				if(delay != null)
+					delay.delay(countThisLoop, dataStore.getColumns().size());
+				countThisLoop++;
+
 				String colName = (String) i_cols.next();
 				int colLength = dataStore.getColumnLength(colName);
 				
@@ -306,7 +330,12 @@ public class Exporter {
 			// loop over sequence names
 
 			Iterator i_rows = dataStore.getSequences().iterator();
+			countThisLoop = 0;
 			while(i_rows.hasNext()) {
+				if(delay != null)
+					delay.delay(countThisLoop, dataStore.getSequences().size());
+				countThisLoop++;
+
 				String seqName = (String) i_rows.next();
 				Sequence seq_interleaved = null;
 				int length = 0;
@@ -354,16 +383,21 @@ public class Exporter {
 
 			writer.close();
 		}
+		
+		// shut down delay 
+		if(delay != null)
+			delay.end();
 
 		// otherwise, err ... actually write the darn file out to begin with :p
 		if(how == Preferences.PREF_NEXUS_INTERLEAVED) {
 			NexusFile nf = new NexusFile();
-			nf.writeNexusFile(f, list, matrix.getPrefs().getNexusInterleaveAt(), buff_sets.toString(), delay);
+			nf.writeNexusFile(f, list, matrix.getPrefs().getNexusInterleaveAt(), buff_sets.toString(), 
+					new ProgressDialog(
+						matrix.getFrame(),
+						"Please wait, writing file ...",
+						"Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
 		}
 		
-		// shut down delay 
-		if(how != Preferences.PREF_NEXUS_INTERLEAVED && delay != null)
-			delay.end();
 	}
 
 	private String getNexusName(String x) {
