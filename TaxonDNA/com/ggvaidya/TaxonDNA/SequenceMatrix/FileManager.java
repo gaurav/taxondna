@@ -238,6 +238,12 @@ public class FileManager implements FormatListener {
 						"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
 						MessageBox.MB_YESNO);
 				if(mb.showMessageBox() == MessageBox.MB_YES) {
+					ProgressDialog pd = new ProgressDialog(
+							matrix.getFrame(),
+							"Please wait, splitting sets ...",
+							"Please wait while I split this file up into its constituent datasets. Sorry for the wait!");
+					pd.begin();
+
 					/////////////////////////////////////////////////////////////////////////////////
 					// TODO: This code is busted. Since we're not sure what ORDER the messages come
 					// in (or that they get entered into the vectors), we need to make sure we SORT
@@ -256,10 +262,13 @@ public class FileManager implements FormatListener {
 					// 	means we have to figure out a delete column. Sigh.
 					//
 					sequences.lock();
-					boolean cancelled = false;
 
 					Iterator i_sets = hash_sets.keySet().iterator();
-					while(!cancelled && i_sets.hasNext()) {
+					int set_count = 0;
+					while(i_sets.hasNext()) {
+						pd.delay(set_count, hash_sets.size());
+						set_count++;
+
 						String name = (String) i_sets.next();
 						Vector v = (Vector) hash_sets.get(name);
 
@@ -268,13 +277,13 @@ public class FileManager implements FormatListener {
 						SequenceList sl = new SequenceList();
 
 						Iterator i_seq = sequences.iterator();
-						while(!cancelled && i_seq.hasNext()) {
+						while(i_seq.hasNext()) {
 							Sequence seq = (Sequence) i_seq.next();
 							Sequence seq_out = new Sequence();
 							seq_out.changeName(seq.getFullName());
 
 							Iterator i_coords = v.iterator();
-							while(!cancelled && i_coords.hasNext()) {
+							while(i_coords.hasNext()) {
 								FromToPair ftp = (FromToPair)(i_coords.next());
 								int from = ftp.from; 
 								int to = ftp.to;
@@ -283,6 +292,8 @@ public class FileManager implements FormatListener {
 									//System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 									seq_out.appendSequence(seq.getSubsequence(from, to));
 								} catch(SequenceException e) {
+									pd.end();
+
 									MessageBox mb_2 = new MessageBox(
 											matrix.getFrame(),
 											"Uh-oh: Error forming a set",
@@ -305,9 +316,9 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
-						if(!cancelled)
-							matrix.getDataStore().addSequenceList(name, sl);
+						matrix.getDataStore().addSequenceList(name, sl);
 					}
+					pd.end();
 
 					sequences.unlock();
 
