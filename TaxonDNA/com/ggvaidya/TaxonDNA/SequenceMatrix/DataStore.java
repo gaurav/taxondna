@@ -267,7 +267,7 @@ public class DataStore implements TableModel {
 		else {
 			int oldCount = ((Integer)ht.get(seqName)).intValue();
 
-			ht.put(seqName, new Integer(oldCount++));
+			ht.put(seqName, new Integer(oldCount+1));
 		}
 	}
 
@@ -305,6 +305,7 @@ public class DataStore implements TableModel {
 			if(ht.get(seqName) != null) {
 				int oldCount = ((Integer)ht.get(seqName)).intValue();
 
+				//System.err.println("For " + seqName + ": oldCount was " + oldCount + ", it's now " + (oldCount - 1));
 				oldCount--;
 
 				if(oldCount == 0) {
@@ -793,7 +794,7 @@ public class DataStore implements TableModel {
 
 		sortedSequenceNames = new Vector(getSequences());
 
-		switch(sortBy) {
+		switch(sort) {
 			case SORT_BYTOTALLENGTH:
 				Collections.sort(sortedSequenceNames, new SortByTotalActualLength(this));
 				break;
@@ -866,7 +867,7 @@ public class DataStore implements TableModel {
 	}
 
 	public void updateNoSort() {
-		fireTableModelEvent(new TableModelEvent(this));
+//		fireTableModelEvent(new TableModelEvent(this));
 		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
 	}
 
