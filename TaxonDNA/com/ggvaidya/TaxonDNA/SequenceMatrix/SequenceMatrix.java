@@ -210,6 +210,59 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			);
 			mb.showMessageBox();
 		}		
+
+		//
+		// END OF MAIN MENU
+		//
+
+		// 
+		// ACTION COMMANDS FOR THE MAIN TABLE POPUP MENU 
+		//
+
+		if(cmd.length() > 14 && cmd.substring(0, 14).equals("COLUMN_DELETE:")) {
+			String colName = cmd.substring(14);
+
+			if(!dataStore.isColumn(colName)) {
+				MessageBox mb = new MessageBox(mainFrame,
+					"Invalid column specified!",
+					"You tried to delete column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
+				mb.go();
+			} else {
+				dataStore.deleteColumn(colName);
+				MessageBox mb = new MessageBox(mainFrame,
+						"Column '" + colName + "' deleted!",
+						"Column '" + colName + "' was deleted as per your instructions.");
+				mb.go();
+			}
+		}
+
+		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
+			String seqName = cmd.substring(11);
+
+			Iterator i = dataStore.getColumns().iterator();
+			int count = 0;
+			while(i.hasNext()) {
+				String colName = (String) i.next();
+
+				if(dataStore.getSequence(colName, seqName) != null) {
+					dataStore.deleteSequence(colName, seqName);
+					count++;
+				}
+			}
+
+			if(count == 0) {
+				MessageBox mb = new MessageBox(mainFrame,
+					"Invalid sequence specified!",
+					"You tried to delete sequence '" + seqName + "', but there are no sequences with that name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
+				mb.go();
+			} else {
+				updateDisplay();
+				MessageBox mb = new MessageBox(mainFrame,
+						"Sequences deleted!",
+						count + " sequence(s) named '" + seqName + "' were deleted as per your instructions.");
+				mb.go();
+			}
+		}
 	}
 
 	//
@@ -339,12 +392,43 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
 		*/
 		int col = mainTable.columnAtPoint(e.getPoint());
-
-		if(col == 0)
-			return;
+		int row = mainTable.rowAtPoint(e.getPoint());
 
 		String colName = dataStore.getColumnName(col);
+		String rowName = dataStore.getRowName(row);
 
+		PopupMenu pm = new PopupMenu();
+
+		if(col == 0) {
+			// colName == ""
+			// we'll replace this with 'Sequence names'
+			colName = "Sequence names";
+		}
+
+		if(col <= 2) {
+			// it's a 'special' column
+			// we can't do things to it
+			pm.add("Column: " + colName);
+		} else {
+			Menu colMenu = new Menu("Column: " + colName);
+			MenuItem delThisCol = new MenuItem("Delete this column");
+			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
+			colMenu.add(delThisCol);
+			colMenu.addActionListener(this);
+			pm.add(colMenu);
+		}
+
+		Menu rowMenu = new Menu("Row: " + rowName);
+		MenuItem delThisRow = new MenuItem("Delete this row");
+		delThisRow.setActionCommand("ROW_DELETE:" + rowName);
+		rowMenu.add(delThisRow);
+		rowMenu.addActionListener(this);
+		pm.add(rowMenu);
+
+		mainTable.add(pm);
+		pm.show(mainTable, e.getX(), e.getY());
+
+		/*
 		MessageBox mb = new MessageBox(
 				mainFrame,
 				"Are you sure?",
@@ -353,6 +437,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(mb.showMessageBox() == MessageBox.MB_YES) {
 			dataStore.deleteColumn(colName);
 		}
+		*/
 	}
 
 	/**
