@@ -349,6 +349,20 @@ public class Sequence  implements Comparable, Testable {
 	}	
 
 	/**
+	 * Returns the number of INTERNAL gaps in this sequence. 
+	 */
+	public int getInternalGapCount() {
+		int count = 0;
+
+		for(int x = 0; x < len; x++) {
+			if(isInternalGap(seq[x]))
+				count++;
+		}
+
+		return count;
+	}	
+
+	/**
 	 * Returns the number of ambiguous bases in this sequence.
 	 */
 	public int getAmbiguous() {
