@@ -142,7 +142,7 @@ public class NexusFile extends BaseFormatHandler {
 			long file_length = fileFrom.length();
 			while(reader.ready()) {
 				if(delay != null)
-					delay.delay((int)((float)count_data/file_length * 10), 100);
+					delay.delay((int)((float)count_data/file_length * 100), 1000);
 					// note that we're really going from 0% to 10%. This will
 					// make the user less confused when we jump from 10% to 0% and
 					// start over.
