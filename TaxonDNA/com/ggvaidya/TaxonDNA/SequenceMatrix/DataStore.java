@@ -989,11 +989,58 @@ public class DataStore implements TableModel {
 //
 
 	/**
+	 * Fake renaming sequence seqOld to seqNew. We don't actually
+	 * DO anything - just figure out which changes need to be 
+	 * made, and report this back to the callee.
+	 */
+	public String fakeRenameSequence(String seqOld, String seqNew) {
+		StringBuffer buff_replaced = new StringBuffer();
+
+		// actually rename things in the Master Hash
+		Iterator i_cols = getColumns().iterator();
+		while(i_cols.hasNext()) {
+			String colName = (String) i_cols.next();	
+			Sequence seq = getSequence(colName, seqOld);
+
+			if(getSequence(colName, seqOld) != null) {
+				Sequence replacing = getSequence(colName, seqNew);
+				
+				if(replacing != null) {
+					// the new name already exists!
+					
+					if(seq.getActualLength() > replacing.getActualLength()) {
+						buff_replaced.append("\tIn column '" + colName + ": " + seqNew + " will be replaced by the sequence formerly known as " + seqOld + ", since it is longer.\n");
+					} else {
+						buff_replaced.append("\tIn column '" + colName + ": " + seqOld + " will be removed, since " + seqNew + " is longer than it is.\n");
+					}
+				}
+			}
+		}
+
+		if(buff_replaced.length() > 0)
+			return buff_replaced.toString();
+		else
+			return null;
+	}
+
+	/**
 	 * Rename sequence seqOld to seqNew,
 	 * and update everything.
 	 */
 	public void renameSequence(String seqOld, String seqNew) {
-		StringBuffer buff_replaced = new StringBuffer();
+		String strWarning = fakeRenameSequence(seqOld, seqNew);
+
+		if(strWarning != null) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Are you sure?",
+					"Renaming '" + seqOld + "' to '" + seqNew + "' will be tricky because there are already sequences named '" + seqNew + "' in the dataset. Are you sure you want to make these replacements?\n\nThe following replacements will be carried out:\n" + strWarning,
+					MessageBox.MB_YESNO
+					);
+
+			if(mb.showMessageBox() == MessageBox.MB_NO)
+				return;
+		}
 
 		// actually rename things in the Master Hash
 		Iterator i_cols = getColumns().iterator();
@@ -1011,10 +1058,8 @@ public class DataStore implements TableModel {
 					// the new name already exists!
 					
 					if(seq.getActualLength() > replacing.getActualLength()) {
-						buff_replaced.append("\tIn column '" + colName + ": " + seqNew + " was replaced by the sequence formerly known as " + seqOld + ", since it is longer.\n");
 						setSequence(colName, seqNew, seq);
 					} else {
-						buff_replaced.append("\tIn column '" + colName + ": " + seqOld + " was removed, since " + seqNew + " is longer than it is.\n");
 						// don't do anything - the sequence known as seqNew wins
 					}
 				} else {
@@ -1024,14 +1069,7 @@ public class DataStore implements TableModel {
 			}
 		}
 
-		if(buff_replaced.length() > 0) {
-			MessageBox mb = new MessageBox(
-					matrix.getFrame(),
-					"Some name collisions occured!",
-					"Renaming '" + seqOld + "' to '" + seqNew + "' was tricky because there is already a '" + seqNew + "' in the dataset. The following was carried out:\n" + buff_replaced.toString()
-					);
-			mb.go();
-		}
+		
 
 		updateDisplay();
 	}
