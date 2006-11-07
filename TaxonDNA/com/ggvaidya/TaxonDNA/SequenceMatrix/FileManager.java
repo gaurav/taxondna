@@ -189,6 +189,7 @@ public class FileManager implements FormatListener {
 	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
 		SequenceList sequences = null;
 		boolean sets_were_added = false;
+
 		
 		try {
 			if(handler != null) {
@@ -238,6 +239,14 @@ public class FileManager implements FormatListener {
 						"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
 						MessageBox.MB_YESNO);
 				if(mb.showMessageBox() == MessageBox.MB_YES) {
+					matrix.getPrefs().getUseWhichName();
+							// we don't actually need this; but it
+							// forces the dialog to come up now
+							// instead of after the ProgressDialog
+							// begins ... which would be a horrible
+							// time to do that.
+
+					
 					ProgressDialog pd = new ProgressDialog(
 							matrix.getFrame(),
 							"Please wait, splitting sets ...",
