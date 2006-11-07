@@ -1,6 +1,19 @@
 /**
- * A frame which allows the user to select his preferences. It also
- * stores these preferences, and can be queried for the same.
+ * Preferences is a common store for preferences. 'Preferences' preferences are stored
+ * into the java.util.prefs store, and are thus persistant across sessions (heh heh -
+ * ain't I the software engineer!). Everybody can check with us through a generic
+ * preferences system (getPreference/setPreference), as well as to check some of the
+ * variables we ourselves maintain.
+ *
+ * Some behaviour (and the underlying behaviour) we control ourselves; this includes:
+ * 1.	The *first* time a file is loaded, we pop up a dialog to check whether the
+ * 	user wants to use species names or sequence names. We then save this setting
+ * 	for the entire session, but do NOT save it to the prefs store; so it needs
+ * 	to be set once a session.
+ *
+ * 	I suppose ideally, we ought to reset it when the all columns are cleared, but
+ * 	that's kind of complicated. But we'll think about it in the future!
+ *
  */
 
 /*
@@ -58,8 +71,10 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 
 	// Should we use the full name or the species name?
 	//
+	public static final int		PREF_NOT_SET_YET	=	-1;	
 	public static final int		PREF_USE_FULL_NAME	=	0;	
-	public static final int		PREF_USE_SPECIES_NAME	=	1;	
+	public static final int		PREF_USE_SPECIES_NAME	=	1;
+	private static int		prefName =			PREF_NOT_SET_YET;
 
 	// 
 	// Our User Interface
@@ -96,6 +111,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 		rl.add(new Label("Interleave Nexus files at (in base pairs): "), RightLayout.NEXTLINE);
 		rl.add(tf_nexusOutputInterleaved, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
+		choice_useWhichName.addItemListener(this);
 		choice_useWhichName.add("Use the sequence's full name");
 		choice_useWhichName.add("Use the sequence's species name");
 		rl.add(new Label("Which name should I use?"), RightLayout.NEXTLINE);
@@ -158,7 +174,43 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 
 	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
 	public int getUseWhichName() {
-		return choice_useWhichName.getSelectedIndex();	
+		if(prefName == PREF_NOT_SET_YET) {
+			Dialog dg = new Dialog(
+					matrix.getFrame(),
+					"Species names or sequence names?",
+					true);	// modal!
+			dg.setLayout(new BorderLayout());
+
+			TextArea ta = new TextArea("", 4, 40, TextArea.SCROLLBARS_VERTICAL_ONLY);
+			ta.setEditable(false);
+			ta.setText("Would you like to use the full sequence name? I could also try to determine the species name from the sequence name, and use that instead.");
+			dg.add(ta);
+
+			Panel buttons = new Panel();
+			buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
+			Button btn = new Button("Use sequence names");
+			btn.addActionListener(this);
+			buttons.add(btn);
+
+			btn = new Button("Use species names");
+			btn.addActionListener(this);
+			buttons.add(btn);
+			dg.add(buttons, BorderLayout.SOUTH);
+
+			dg.pack();
+			dg.setVisible(true);
+
+			// you are not going to believe this:
+			// 1. 	The actionPerformed code will set prefName for us.
+			// 	It will then close the dialog, at which point code
+			// 	will continue executing. We will then return the
+			// 	prefName to the system.
+			// 	
+			// 	Sigh.
+			//
+			return prefName;
+		} else 
+			return prefName;
 	}
 
 	//
@@ -169,10 +221,31 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	 * Handles Action events (such as the 'OK' button).
 	 */
 	public void actionPerformed(ActionEvent e) {
+		boolean close_parent_dialog = false;
+
 		Object src = e.getSource();
 
 		if(src.equals(btn_Ok))
 			setVisible(false);
+
+		if(e.getActionCommand().equals("Use sequence names")) {
+			prefName = PREF_USE_FULL_NAME;
+			choice_useWhichName.select(PREF_USE_FULL_NAME);
+			close_parent_dialog = true;
+
+		} else if(e.getActionCommand().equals("Use species names")) {
+			prefName = PREF_USE_SPECIES_NAME;
+			choice_useWhichName.select(PREF_USE_SPECIES_NAME);
+			close_parent_dialog = true;
+		}
+
+		if(close_parent_dialog) {
+			Button btn = (Button) src;
+			Panel p = (Panel) btn.getParent();
+			Dialog dg = (Dialog) p.getParent();
+
+			dg.setVisible(false);
+		}
 	}
 
 	/**
@@ -187,6 +260,8 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 				tf_nexusOutputInterleaved.setEnabled(true);
 			else
 				tf_nexusOutputInterleaved.setEnabled(false);
+		} else if(src.equals(choice_useWhichName)) {
+			prefName = choice_useWhichName.getSelectedIndex();
 		}
 	}
 
