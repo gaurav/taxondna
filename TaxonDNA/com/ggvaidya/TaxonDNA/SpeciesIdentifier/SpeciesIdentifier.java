@@ -901,10 +901,10 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 
 		if(sequences == null) {
 			label_sequencecount.setText("No sequences loaded");
-			mainFrame.getMenuBar().getMenu(2).setEnabled(false);	// turn off 'export as' menu
+			mainFrame.getMenuBar().getMenu(3).setEnabled(false);	// turn off 'export as' menu
 		} else {
 			label_sequencecount.setText(sequences.count() + " sequences");
-			mainFrame.getMenuBar().getMenu(2).setEnabled(true);	// turn on 'export as' menu
+			mainFrame.getMenuBar().getMenu(3).setEnabled(true);	// turn on 'export as' menu
 		}
 	}
 
