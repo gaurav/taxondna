@@ -33,6 +33,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class Interleaver {
 	private Hashtable	seqs = new Hashtable();		// String(name) -> Sequence
+	private Vector		sequenceNames = new Vector();	// sequenceNames, in the order they were added
 
 	public Interleaver() {
 
@@ -50,6 +51,8 @@ public class Interleaver {
 	 * Set OR REPLACE the sequence with the specified name.
 	 */
 	public void setSequence(String name, Sequence seq) {
+		if(seqs.get(name) == null)
+			sequenceNames.add(name);
 		seqs.put(name, seq);
 	}
 
@@ -64,9 +67,10 @@ public class Interleaver {
 	}
 
 	public void appendSequence(String name, Sequence seq) {
-		if(seqs.get(name) == null)	
+		if(seqs.get(name) == null) {
+			sequenceNames.add(name);
 			seqs.put(name, seq);
-		else {
+		} else {
 			// append it onto the currently existing 'Sequence'
 			Sequence our_seq = (Sequence) seqs.get(name);
 			our_seq.appendSequence(seq);
@@ -76,7 +80,7 @@ public class Interleaver {
 	/**
 	 * Returns an iterator to a list of species names. You can call getSequence() to get the Sequences themselves.
 	 */
-	public Iterator getSpeciesNamesIterator() {
-		return seqs.keySet().iterator(); 
+	public Iterator getSequenceNamesIterator() {
+		return sequenceNames.iterator();
 	}
 }
