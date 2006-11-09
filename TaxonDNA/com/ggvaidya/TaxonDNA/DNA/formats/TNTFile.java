@@ -4,6 +4,12 @@
  * I'm also going to be using TNT's own (fairly limited) 
  * documentation.
  *
+ * This module really is pretty messed up, since I made the insanely
+ * great design decision of writing the square-bracket-handling code
+ * in here (thereby practically inverting an entire function) instead
+ * of just rewriting Sequence to handle it. Stupid, stupid, stupid,
+ * and a great example of why I shouldn't code when sleepy or
+ * writer's-blocked.
  */
 
 /*
@@ -34,7 +40,8 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class TNTFile extends BaseFormatHandler {
-	private static final int MAX_LENGTH =	32;		// TNT truncates at 32 characters
+	private static final int MAX_LENGTH =	31;		// TNT truncates at 32 characters, but it gives a warning at 32
+								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
 	/**
@@ -120,8 +127,15 @@ public class TNTFile extends BaseFormatHandler {
 
 			// count lines
 			int count_lines = 0;
+			int count_data = 0;
+			long file_length = fileFrom.length();
 			while(reader.ready()) {
-				reader.readLine();
+				if(delay != null)
+					delay.delay((int)((float)count_data/file_length * 100), 1000);
+					// note that we're really going from 0% to 10%. This will
+					// make the user less confused when we jump from 10% to 0% and
+					// start over.
+				count_data += reader.readLine().length();
 				count_lines++;
 			}
 
@@ -129,9 +143,19 @@ public class TNTFile extends BaseFormatHandler {
 			reader = new BufferedReader(new FileReader(fileFrom));
 			StreamTokenizer tok = new StreamTokenizer(reader);
 
-			if(tok.sval == null || !tok.sval.equalsIgnoreCase("nexus")) {
-				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#nexus')! Are you sure it's a Nexus file?");
-			}
+			// okay, here's how it's going to work:
+			// 1. 	we will ONLY handle xread for now. i.e. NO other commands will be
+			// 	processed at ALL. If we see any other command, we will just quietly
+			// 	wait for the terminating semicolon.
+			// 2.	well, okay - we will also handle nstates. But only to check for 
+			// 	'nstates dna'. Anything else, and we barf with extreme prejudice.
+			// 3.	we will also handled comments 'perfectly' ... err, assuming that 
+			// 	anything in single quotes is a comment.	Which we can't really
+			// 	assume. Ah well.
+			// 4.	A LOT of the naming rules are just being imported in en toto from
+			// 	NEXUS. This is probably a stupid idea, but I hate giving up on the
+			// 	rigid flexibility they allowed. If any of these rules do NOT work
+			// 	in TNT, lemme know.
 
 			tok.ordinaryChar('/');	// this is the default StringTokenizer comment char, so we need to set it back to nothingness
 
@@ -147,13 +171,11 @@ public class TNTFile extends BaseFormatHandler {
 			tok.wordChars('_', '_');
 					// we need to replace this manually. they form one 'word' in NEXUS.
 
-			tok.ordinaryChar('[');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
-			tok.ordinaryChar(']');	// We need this to be a 'word' so that we can use it to discriminate comments
+			tok.ordinaryChar('\'');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
 			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to distinguish commands 
 		
 			// states
 			int 		commentLevel = 		0;
-			boolean		inStrangeBlock =	false;		// strange -> i.e. unknown to us, foreign.
 			boolean		newCommand =		true;
 
 			// WARNING:	newCommand is reset at the BOTTOM of the while loop
@@ -172,11 +194,14 @@ public class TNTFile extends BaseFormatHandler {
 					break;
 				
 				// is it a comment?
-				if(type == '[')
-					commentLevel++;
+				if(type == '\'') {
+					if(commentLevel == 0)
+						commentLevel = 1;
+					else
+						commentLevel = 0;
 
-				if(type == ']')
-					commentLevel--;
+					continue;
+				}
 
 				if(commentLevel > 0)
 					continue;
@@ -188,54 +213,41 @@ public class TNTFile extends BaseFormatHandler {
 					continue;
 				}
 
-				// Look out for END
-				if(type == StreamTokenizer.TT_WORD) {
+				// Words in here are guaranteed to be a 'command'
+				if(newCommand && type == StreamTokenizer.TT_WORD) {
 					String str = tok.sval;
 
-					if(str.equalsIgnoreCase("END")) {
-						//System.err.println("Leaving strange block");
-						//if(newCommand && tok.nextToken() == ';') {
-							// okay, it's an 'END;'
-							// and a new command ... so ';END;'
-							inStrangeBlock = false;
+					// nstates {we only understand 'nstates tnt'}
+					if(str.equalsIgnoreCase("nstates")) {
+						int token = tok.nextToken();
 
-							continue;
-//						} 
-					}
-
-					// the BEGIN command
-					else if(str.equalsIgnoreCase("BEGIN")) {
-						// begin what?
-						if(tok.nextToken() == StreamTokenizer.TT_WORD) {
-							String beginWhat = tok.sval;	
-							int nextChar = tok.nextToken();
-
-							if(nextChar != ';')
-								throw formatException(tok, "There is a strange character ('" + nextChar + "') after the BEGIN " + beginWhat + " command! How odd.");
-
-							if(beginWhat.equalsIgnoreCase("DATA") || beginWhat.equalsIgnoreCase("CHARACTERS"))
-								blockData(appendTo, tok, evt, delay, count_lines);
-								// the reference says they *are* identical
-								// (except that NEWTAXA is implicit in DATA)
-								// TODO: we might want to care about this.
-								// you know. to be anal, and all that.
-							else if(beginWhat.equalsIgnoreCase("SETS"))
-								blockSets(appendTo, tok, evt, delay, count_lines);
-							else
-								inStrangeBlock = true;
-						
+						if(
+							(token == StreamTokenizer.TT_WORD) &&
+							(tok.sval.equalsIgnoreCase("dna"))
+						) {
+							// nstates dna! we can handle this ...
 						} else {
-							// something is wrong!
-							throw formatException(tok, "BEGIN is specified without a valid block name.");
+							throw formatException(tok, "TaxonDNA can currently only load TNT files which contain DNA sequences. This file does not (it uses 'nstates " + tok.sval + "').");
 						}
 					}
 
+					// xread {okay, we need to actually read the matrix itself}
+					else if(str.equalsIgnoreCase("xread")) {
+						xreadBlock(appendTo, tok, evt, delay, count_lines);
+					}
+
 					else {
-						if(!inStrangeBlock) 
-							throw formatException(tok, "Strange word '" + str + "' found! Is it one of yours?");
+						// okay, we're 'in' a command
+						// but thanks to newCommand, we can just ignore
+						// all the crap; the program will just loop
+						// around until it sees the ';', newCommand
+						// is activated, and we look for the next
+						// block.
 					}
 				} else {
 					// strange symbol (or ';') found
+					// since we're probably in a 'strange' block, we can just
+					// ignore this.
 				}
 
 				newCommand = false;		// this will be reset at the end of the line -- i.e, by ';'
@@ -254,44 +266,147 @@ public class TNTFile extends BaseFormatHandler {
 		return new FormatException("Error on line " + tok.lineno() + ": " + message);
 	}
 
-	public void blockData(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	/**
+	 * Parses an 'xread' command. This is going to be a pretty simple interpretation, all 
+	 * things considered: we'll ignore amperstands,
+	 * and we'll barf quickly and early if we think we're going in over our head. Pretty
+	 * much, we are just targeting trying to be able to open files we spit out. Can't be
+	 * _that_ hard, can it?
+	 *
+	 * Implementation note: the string '[]' in the sequence will be converted into a single '-' 
+	 */
+	public void xreadBlock(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
 		throws FormatException, DelayAbortedException, IOException
 	{
-		boolean isDatasetInterleaved = false;
-		boolean inFormatCommand = false;
-		boolean inIgnoredCommand = false;
-		boolean inMatrix = false;
+		Interleaver interleaver = new Interleaver();
+		String lastSequenceName = null;
+		int seq_names_count = 0;
+		int begin_at = tok.lineno();		// which line did this xreadBlock start at
+		int lineno = tok.lineno();
 		char missingChar =	'?';
-		char gapChar =		'-';		// this is against the standard, but the GAPS
-							// command should fix it, and it's a pretty nice
-							// default for us. NEXUS says there is NO default,
-							// but we're going to have one anyway, because
-							// we're Radical and all.
+		char gapChar =		'-';		// there is no standard definition of which characters
+	       						// TNT uses for these, nor can I figure out how to
+							// determine these values. So I'm just going with our
+							// own defaults, to be tweaked as required.	
 
 		tok.wordChars(gapChar,gapChar);
 	        tok.wordChars(missingChar,missingChar);
 
+		// To handle the []s correctly, we really need to process the newlines separately
+		// note the implicit assumption, that we only have ONE sequence per LINE.
+		tok.ordinaryChars('\r', '\r');
+		tok.ordinaryChars('\n', '\n');
+
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
 
-		int commentLevel = 0;
-		boolean newCommand = true;
+		// okay, 'xread' has started.
+		if(tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equalsIgnoreCase("xread"))
+			;	// we've already got xread on the stream, do nothing
+		else	
+			tok.nextToken();		// this token IS 'xread'
+		
+		// handle the possible newline in between, and all that, gah, etc.
+		do {
+			tok.nextToken();
+			lineno++;
+		} while(tok.ttype == '\r' || tok.ttype == '\n');
+		lineno--;
+
+		// first, we get the title
+		StringBuffer title = null;
+		if(tok.ttype == '\'') {
+			title = new StringBuffer();
+
+			while(true) {
+				int type = tok.nextToken();
+
+				if(delay != null)
+					delay.delay(lineno, count_lines);
+				
+				if(type == '\'')
+					break;
+
+				if(type == StreamTokenizer.TT_WORD)
+					title.append(tok.sval);
+				else
+					title.append(type);
+
+				if(type == '\r' || type == '\n')
+					lineno++;
+
+				if(type == StreamTokenizer.TT_EOF)
+					throw formatException(tok, "The title doesn't seem to have been closed properly. Are you sure the final quote character is present?");
+			}
+		}
+		
+		// handle the possible newline in between, and all that, gah, etc.
+		do {
+			lineno++;
+			tok.nextToken();
+		} while(tok.ttype == '\r' || tok.ttype == '\n');
+		lineno--;
+
+		// finished (or, err, not) the (optional) title
+		// but we NEED two numbers now
+		int nChars = 0;
+		if(tok.ttype != StreamTokenizer.TT_WORD)
+			throw formatException(tok, "Couldn't find the number of characters. I found '" + (char)tok.ttype + "' instead!");
+		try {
+			nChars = Integer.parseInt(tok.sval);
+		} catch(NumberFormatException e) {
+			throw formatException(tok, "Couldn't convert this file's character count (which is \"" + tok.sval + "\") into a number. Are you sure it's really a number?");
+		}
+
+		do {
+			tok.nextToken();
+			lineno++;
+		} while(tok.ttype == '\r' || tok.ttype == '\n');
+		lineno--;
+		
+		int nTax = 0;
+		if(tok.ttype != StreamTokenizer.TT_WORD)
+			throw formatException(tok, "Couldn't find the number of taxa. I found '" + (char)tok.ttype + "' instead!");
+		try {
+			nTax = Integer.parseInt(tok.sval);
+		} catch(NumberFormatException e) {
+			throw formatException(tok, "Couldn't convert this file's taxon count (which is \"" + tok.sval + "\") into a number. Are you sure it's really a number?");
+		}
+		
+		// okay, all done ... sigh.
+		// now we can fingally go into the big loop
 
 		while(true) {
 			int type = tok.nextToken();
-			String str = tok.sval;
 
 			if(delay != null)
-				delay.delay(tok.lineno(), count_lines);
+				delay.delay(lineno, count_lines);
 
 			if(type == StreamTokenizer.TT_EOF) {
 				// wtf?!
-				throw formatException(tok, "I've reached the end of the file, and the DATA/CHARACTERS block has *still* not been closed! Please make sure the block is closed.");
+				throw formatException(tok, "I've reached the end of the file, but the 'xread' beginning at line " + begin_at + " was never terminated.");
 			}
 
 			if(type == ';')
-				newCommand = true;
+				// it's over. Go back home, etc.
+				break;
 
+			if(type == '\n' || type == '\r') {
+				// okay, it's a new line
+				// clear the last sequence name
+				lastSequenceName = null;
+				lineno++;
+
+				if(type == 13)		// if we see carraige return, SKIP IT
+					lineno--;	// this isn't serious, but the lineno count will double
+							// (since on CR+LF systems, we match BOTH CR and LF)
+
+				continue;
+			}
+
+			// okay, i'm commenting out this comment handling
+			// code IN CASE it's ever needed again.
+			/*
 			if(type == '[' || type == ']') {
 				if(type == '[')
 					commentLevel++;
@@ -304,357 +419,118 @@ public class TNTFile extends BaseFormatHandler {
 				
 			if(commentLevel > 0)
 				continue;
-
-			if(inIgnoredCommand) {
-				// we, err, ignore everything in such a command.
-				if(newCommand) {
-					inIgnoredCommand = false;
-					continue;
-				}
-			} else if(inFormatCommand) {
-				if(newCommand) {
-					inFormatCommand = false;
-					continue;
+			*/
+			if(type == '[') {
+				// first of all: do we have a sequence name?
+				if(lastSequenceName == null) {
+					// oh no you didn't!
+					throw formatException(tok, "Unexpected '[' found outside a sequence.");
 				}
 
-				if(type == StreamTokenizer.TT_WORD) {
-					str = tok.sval;
+				// okay .. the next 'word' should be the set of characters which make up this
+				// one character. The next token should then be the closing ']'. Anything else
+				// is evil and scum and really very not nice.
+				if(tok.nextToken() == StreamTokenizer.TT_WORD) {
+					String word = tok.sval;
 
-					if(str.equalsIgnoreCase("INTERLEAVE")) {
-						// turn interleaving on
-						isDatasetInterleaved = true;
-					}
-		
-					else if(str.equalsIgnoreCase("DATATYPE")) {
-						str = getValueOfKey(tok);
-						if(str == null)
-							throw formatException(tok, "'DATATYPE' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-						if(!str.equalsIgnoreCase("DNA"))
-							throw formatException(tok, "I can't understand DATATYPE '" + str + "'. I can only understand DATATYPE=DNA.");
-					}
-
-					else if(str.equalsIgnoreCase("GAP")) {
-						str = getValueOfKey(tok);
-						if(str == null)
-							throw formatException(tok, "'GAP' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-						if(str.length() > 1)
-							throw formatException(tok, "I can't use more than one character as the GAP character. The file specifies: '" + str + "'");
-
-						tok.ordinaryChar(gapChar);
-						gapChar = str.charAt(0); 
-						tok.wordChars(gapChar, gapChar);
-					}
-						
-					else if(str.equalsIgnoreCase("MISSING")) {
-						str = getValueOfKey(tok);
-						if(str == null)
-							throw formatException(tok, "'MISSING' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
-
-						if(str.length() > 1)
-							throw formatException(tok, "I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
-
-						tok.ordinaryChar(missingChar);
-						missingChar = str.charAt(0); 
-						tok.wordChars(missingChar, missingChar);
-					} else {
-						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
-					}
-				} else {
-					throw formatException(tok, "Unexpected '" + (char)type + "' in FORMAT!");
-				}
-
-			} else if(inMatrix) {
-				// are we done yet?
-				if(type == ';') {
-					if(name != null) {
-						// but ... the sequence is incomplete!
-						throw formatException(tok, "The sequence named '" + name + "' has no DNA sequence associated with it.");
-					}
-					inMatrix = false;
-					continue;
-				}
-
-				else if(type == StreamTokenizer.TT_WORD) {
-					if(name == null) {
-						// put spaces back
-						name = str.replace('_', ' ');		// we do NOT support '. Pfft.
-					} else {
-						String strseq = str;
-						// fix up gaps and missings to TaxonDNA specs
-						strseq = str.replace(gapChar, '-');
-						strseq = strseq.replace(missingChar, '?');
+					if(tok.nextToken() == ']') {
+						// okay, so we need to make a character out of word ...
+						char dna_char = '-';
+						for(int x = 0; x < word.length(); x++) {
+							//System.err.println(dna_char + " and " + word.charAt(x) + " become " + Sequence.consensus(dna_char, word.charAt(x)));
+							dna_char = Sequence.consensus(dna_char, word.charAt(x));
+						}
 
 						try {
-							Sequence seq = null;
-							if(!isDatasetInterleaved || hash_names.get(name) == null) {
-								// doesn't exist, just add it
-								seq = new Sequence(name, strseq);
-								appendTo.add(seq);
-								hash_names.put(name, seq);
-							} else {
-								// it DOES exist, append it
-								seq = (Sequence) hash_names.get(name);
-								seq.changeSequence(seq.getSequence() + strseq);
-							}
+							interleaver.appendSequence(lastSequenceName, new Character(dna_char).toString());
+							//System.err.println("Adding " + new Character(dna_char).toString());
 						} catch(SequenceException e) {
-							throw formatException(tok, "The sequence for taxon '" + name + "' is invalid: " + e);
+							formatException(tok, "Internal error while processing square brackets: this should never happen. Please contact the programmer!");
 						}
-
-						name = null;
+					} else {
+						throw formatException(tok, "Unexpected '" + (char)tok.ttype + "' inside square brackets.");
 					}
 				} else {
-					throw formatException(tok, "Unexpected '" + (char) type + "' in matrix.");
+					throw formatException(tok, "Unexpected '" + (char)tok.ttype + "' within square brackets.");
 				}
-			} else {
-				if(type == StreamTokenizer.TT_WORD) {
 
-					if(str.equalsIgnoreCase("FORMAT")) {
-						inFormatCommand = true;	
-					}
-
-					if(str.equalsIgnoreCase("MATRIX")) {
-						inMatrix = true;
-					}
-
-					// Commands we ignore
-					if(
-							str.equalsIgnoreCase("DIMENSIONS") ||
-							str.equalsIgnoreCase("ELIMINATE") ||
-							str.equalsIgnoreCase("TAXLABELS") ||
-							str.equalsIgnoreCase("CHARSTATELABELS") ||
-							str.equalsIgnoreCase("CHARLABELS") ||
-							str.equalsIgnoreCase("STATELABLES")
-					) {
-						inIgnoredCommand = true;
-					}
-
-					if(str.equalsIgnoreCase("END")) {
-						//System.err.println("Leaving strange block");
-						// Note: PAUP will spit out blocks with END without a terminating ';'.
-//						if(newCommand && tok.nextToken() == ';') {
-							// okay, it's an 'END;'
-							// and a new command ... so ';END;'
-							break;
-//						} else {
-//							throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
-//						}
-					}
-
-				} else {
-					// unknown symbol found
-					//System.err.println("Last string (ish!): " + str);
-					throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the DATA/CHARACTERS block! Are you sure it's supposed to be here?");
-				}
+				continue;
 			}
-			
-			newCommand = false;
+
+			if(type == StreamTokenizer.TT_WORD) {
+				// word!
+				String word = tok.sval;
+
+				// okay, here's how it works: sequence names ought to be 'words' alternating
+				// with, err, other words. I really have no idea what state the Tokenizer is
+				// in right now, but I'm going to assume that the following 'just works'.
+				//
+				// Of course, if it doesn't, I'll be right back to fix it, won't I?
+				// Grr.
+				//
+				String seq_name = new String(word);	// otherwise, technically, both word and seq 
+									// would point to tok.sval.
+				seq_name = seq_name.replace('_', ' ');
+				String sequence = null;
+				
+				if(lastSequenceName == null) {
+					if(tok.nextToken() != StreamTokenizer.TT_WORD) {
+						throw formatException(tok, "I recognize sequence name '" + name + "', but instead of the sequence, I find '" + (char)tok.ttype + "'. What's going on?");
+					}
+					sequence = tok.sval;
+					
+					// save this one for future reference
+					lastSequenceName = seq_name;
+					seq_names_count++;
+				} else {
+					seq_name = lastSequenceName;
+					sequence = word;
+				}
+
+				try {
+					interleaver.appendSequence(seq_name, sequence);
+
+				} catch(SequenceException e) {
+					throw formatException(tok, "Sequence '" + name + "' contains invalid characters. The exact error encountered was: " + e);
+				}
+
+			} else {
+				throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the xread block! Are you sure it's supposed to be here?");
+			}
 		}
 
-		// only important in the DATA block
+		// now, let's 'unwind' the interleaver and 
+		// check that the numbers we get match up with
+		// the numbers specified in the file itself.
+		Iterator i = interleaver.getSequenceNamesIterator();
+		int count = 0;
+		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(count, seq_names_count);
+			count++;
+
+			String seqName = (String) i.next();
+			Sequence seq = interleaver.getSequence(seqName);
+	
+			if(seq.getLength() != nChars) {
+				throw new FormatException("The number of characters specified in the file (" + nChars + ") do not match with the number of characters is sequence '" + seqName + "' (" + seq.getLength() + ").");
+			}
+
+			appendTo.add(seq);
+		}
+
+		if(count != nTax)
+			throw new FormatException("The number of sequences specified in the file (" + nTax + ") does not match the number of sequences present in the file (" + count + ").");
+
+		// only important in the xread section
 	        tok.ordinaryChar(gapChar);
 	        tok.ordinaryChar(missingChar);
+
+		// and you ESPECIALLY don't need to deal with this, praise the Lord
+		tok.whitespaceChars('\r', '\r');
+		tok.whitespaceChars('\n', '\n');
 	}
 
-	/**
-	 * Processes the 'SETS' block.
-	 */
-	public void blockSets(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
-		throws FormatException, DelayAbortedException, IOException
-	{
-		int commentLevel = 0;
-		boolean newCommand = true;
-
-		boolean inIgnoredCommand = false;
-
-		while(true) {
-			int type = tok.nextToken();
-			String str = tok.sval;
-
-			if(delay != null)
-				delay.delay(tok.lineno(), count_lines);
-
-			if(type == StreamTokenizer.TT_EOF) {
-				// wtf?!
-				throw formatException(tok, "I've reached the end of the file, and the SETS block has *still* not been closed! Please make sure the block is closed.");
-			}
-
-			if(type == ';')
-				newCommand = true;
-
-			if(type == '[' || type == ']') {
-				if(type == '[')
-					commentLevel++;
-
-				if(type == ']')
-					commentLevel--;
-
-				continue;
-			}
-			
-			if(commentLevel > 0)
-				continue;
-
-			// "serious" processing begins here
-			if(inIgnoredCommand) {
-				if(newCommand) {
-					inIgnoredCommand = false;
-					continue;
-				}
-			} else if(type == StreamTokenizer.TT_WORD) {
-				//System.err.println("New command: " + str);
-
-				// is it over?
-				if(str.equalsIgnoreCase("END")) {
-					//System.err.println("Leaving strange block");
-//					if(newCommand && tok.nextToken() == ';') {
-						// okay, it's an 'END;'
-						// and a new command ... so ';END;'
-						break;
-//					} else {
-//						throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
-//					}
-				} else if(str.equalsIgnoreCase("CHARSET")) {
-					if((type = tok.nextToken()) != StreamTokenizer.TT_WORD) 
-						throw formatException(tok, "Unexpected symbol '" + (char)type + "' found after 'CHARSET'. This doesn't look like the name of a CHARSET to me!");
-
-					String name = tok.sval;
-
-					//System.err.println("Charset " + name + "!");
-
-					type = tok.nextToken();
-					if((char)type != '=') {
-						// it might be STANDARD or VECTOR
-						// god bless my anal soul
-
-						if(type != StreamTokenizer.TT_WORD)
-							throw formatException(tok, "Unexpected '" + (char) type + "' after the '=' in CHARSET " + name + ".");
-
-						str = tok.sval;
-						if(str.equalsIgnoreCase("STANDARD")) {
-							// okay, we support it
-						} else if(str.equalsIgnoreCase("VECTOR")) {
-							throw formatException(tok, "Sorry, we don't support VECTOR CHARSETs at the moment! (" + name + " is defined as being a vector charset)");
-						} else {
-							throw formatException(tok, "Unexpected '" + str + "' after the '=' in CHARSET " + name + ".");
-						}
-					}
-					
-					// now we have to start 'picking up' the ranges in the CHARSET
-					// and there might be more than one!
-					//
-					// basic format: 
-					// 	1.	(\d+)\s :		$1 belongs to charset X
-					// 	2.	(\d+)\s*\-\s*(\d+)\s :	$1,$1+1,..$2 belongs to charset X
-					// 	3.	;			It's all over!
-					//
-					// 	ANYTHING else 'REMAINDER', 'ALL', (\d+)\/, are ALL invalid
-					// 	and WILL ignore ALL of them. hmpf.
-					int from = -1;
-//					int to = -1;
-					boolean expectingATo = false;
-					while(true) {
-						type = tok.nextToken();
-
-						if((char)type == ';') {
-							// yay! it's over!
-							break;
-						} else if((char) type == '-') {
-							expectingATo = true;
-							continue;
-						} else if(type == StreamTokenizer.TT_WORD) {
-							str = tok.sval;
-							int num = 0;
-					
-							// are we a number? non-numbers are teh ENEMYIES
-							try {
-								num = Integer.parseInt(str);	
-							} catch(NumberFormatException e) {
-								throw formatException(tok, "I found a non-number in CHARSET " + name + " (the non-number is '" + str + "'). I can't currently understand 'ALL' or 'REMAINDER' commands. Can you please remove them from the source file if that's at all possible?");
-							}
-
-							// are we expecting a 'to'? if we are, fire the event
-							if(expectingATo) {
-								// well, we've got a 'to' now!
-								fireEvent(evt.makeCharacterSetFoundEvent(name, from, num));
-
-								from = -1;
-								expectingATo = false;
-							} else {
-								// we are NOT expecting a to
-								// i.e. from is a single character event, UNLESS it's just -1!
-								if(from != -1)
-									fireEvent(evt.makeCharacterSetFoundEvent(name, from, from));	
-								
-								// now, we don't know if 'num' is a character or a section
-								// so ...
-								from = num;
-							}
-						} else {
-							throw formatException(tok, "Unexpected '" + (char)type + "' in CHARSET " + name + ".");
-						}
-					}
-				// commands we ignore in SETS
-				} else if(
-						str.equalsIgnoreCase("STATESET") ||
-						str.equalsIgnoreCase("CHANGESET") ||
-						str.equalsIgnoreCase("TAXSET") ||
-						str.equalsIgnoreCase("TREESET") ||
-						str.equalsIgnoreCase("CHARPARTITION") ||
-						str.equalsIgnoreCase("TAXPARTITION") ||
-						str.equalsIgnoreCase("TREEPARTITION")
-				) {
-					inIgnoredCommand = true;
-				} else {
- 					throw formatException(tok, "Unknown word/command '" + str + "' found in the SETS block.");
-				}
- 			} else {
-				throw formatException(tok, "Unexpected symbol '" + (char)type + "' found in the SETS block.");
-			}
-			
-			newCommand = false;
-		}
-
-		// final cleanup, if any
-	}
-
-	/**
-	 * Gets the String 'value' of the key=value pair from the StreamTokenizer.
-	 * I assume you've already got the 'key', so I'll get the '=' token,
-	 * followed by a TT_WORD, and return the Integer.parseInt of that word.
-	 *
-	 * I'll return null if something went wrong.
-	 *
-	 * @throws IOException if the tokenizer gets IO issues.
-	 */
-	private String getValueOfKey(StreamTokenizer tok) throws IOException {
-		if(tok.nextToken() == '=') {
-			int type = tok.nextToken();
-			// all good so far
-			if(type == StreamTokenizer.TT_WORD) {
-				// yay! we got a word
-				return tok.sval;
-			}
-
-			// sometimes, we will have a weird symbol
-			// luckily, this only really happens for
-			// fields like 'GAP' and 'MISSING', which
-			// should really have only one character
-			// anyway.
-			if(
-					!Character.isWhitespace((char)type)	&&
-					!Character.isISOControl((char)type)
-			) {
-				char data[] = {(char)type};
-				return new String(data);
-			}
-		}
-
-		// something went wrong
-		return null;
-	}
-	
 	/**
 	 * Writes the content of this sequence list into a file. The file is
 	 * overwritten. The order of the sequences written into the file is
@@ -664,7 +540,7 @@ public class TNTFile extends BaseFormatHandler {
 	 * @throws DelayAbortedException if the DelayCallback was aborted by the user.
 	 */
 	public void writeFile(File file, SequenceList set, DelayCallback delay) throws IOException, DelayAbortedException {
-		writeTNTFile(file, set, INTERLEAVE_AT, "", delay);
+		writeTNTFile(file, set, 0, "", delay);
 	}
 	
 	/**
@@ -677,7 +553,7 @@ public class TNTFile extends BaseFormatHandler {
 	public void writeTNTFile(File file, SequenceList set, int interleaveAt, String otherBlocks, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean interleaved = false;
 		
-		if(interleaveAt > 0)
+		if(interleaveAt > 0 && interleaveAt < set.getMaxLength())
 			interleaved = true;
 
 		set.lock();
@@ -689,29 +565,34 @@ public class TNTFile extends BaseFormatHandler {
 		// write out a 'preamble'
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
-		writer.println("#NEXUS");
-		writer.println("[Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "]");
-		writer.println("");
-		// TAXLABELS - otherwise, no point of having a TAXA block
+		writer.println("nstates dna;");		// it's all DNA information
+		writer.println("xread");		// begin sequence output
+		writer.println("'Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "'");
+							// commented string
+		// write the maxlength/sequence count
+		writer.println(set.getMaxLength() + " " + set.count());
+
+		writer.println("");			// leave a blank line for the prettyness
+
 		/*
 		 * The following piece of code has to:
 		 * 1.	Figure out VALID, UNIQUE names to output.
 		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
 		 * 	assume 32 chars for now - see MAX_LENGTH - and work
 		 * 	around things when we need to).
-		 * 3.	Do interlacing, something no other part of the program does yet.
-		 * 	(Unless I wrote it for Mega and forgot. See INTERLEAVE_AT)
+		 *
+		 * Interleaving will be handled later.
 		 */
-
-		Hashtable names = new Hashtable();		// Hashtable(Strings) -> Sequence	of all the names currently in use
+		Hashtable names = new Hashtable();		// Hashtable(Strings) -> Sequence	
+								//	hash of all the names currently in use
 		Vector vec_names = new Vector();		// Vector(String)
 		Iterator i = set.iterator();
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			String name = seq.getFullName(MAX_LENGTH);
+			String name = getOTU(seq.getFullName(MAX_LENGTH), MAX_LENGTH);
 			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
-			name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
 			int no = 2;
 			while(names.get(name) != null) {
@@ -721,7 +602,7 @@ public class TNTFile extends BaseFormatHandler {
 				if(no >= 100 && no < 1000)	digits = 3;
 				if(no >= 1000 && no < 10000)	digits = 4;
 
-				name = seq.getFullName(MAX_LENGTH - digits);
+				name = getOTU(seq.getFullName(MAX_LENGTH - digits - 1), MAX_LENGTH - digits - 1);
 				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
@@ -738,43 +619,13 @@ public class TNTFile extends BaseFormatHandler {
 			vec_names.add(name);
 		}
 
-		writer.println("BEGIN DATA;");		// DATA because I *think* CHARACTERS is not allowed
-							// to define its own Taxa, and I really can't be arsed.
-							// Maybe later ... ? 
-							
-							// the following is actually somewhat controversial
-							// this *will* mess things up if all strings AREN'T
-							// 'maxLength()' long.
-							//
-							// What to do?
-							//
-							// Options:	silently increase size to maxLength
-							// 		alert the user, then increase size etc.
-							//
-							// TODO tomorrow.
-							//
-		writer.println("\tDIMENSIONS NTAX=" + set.count() + " NCHAR=" + set.getMaxLength() + ";");
-
-							// The following is standard 'TaxonDNA' speak.
-							// It's just how we do things around here.
-							// So we can hard code this.
-		
-		writer.print("\tFORMAT DATATYPE=DNA MISSING=? GAP=- ");
-		if(set.getMaxLength() > interleaveAt) {
-			interleaved = true;
-			writer.print("\tINTERLEAVE");
-		}
-		writer.println(";");
-
-		writer.println("\tMATRIX");
-
 		if(!interleaved) {
 			Iterator i_names = vec_names.iterator();
 
 			int x = 0;
 			while(i_names.hasNext()) {
 				// report the delay
-				if(delay != null)
+				if(delay != null) {
 					try {
 						delay.delay(x, vec_names.size());
 					} catch(DelayAbortedException e) {
@@ -782,13 +633,12 @@ public class TNTFile extends BaseFormatHandler {
 						set.unlock();
 						throw e;
 					}
-
-
+				}
 
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(pad_string(name, MAX_LENGTH) + " " + seq.getSequence() + " [" + seq.getLength() + "]");
+				writer.println(pad_string(name, MAX_LENGTH) + " " + seq.getSequence());
 
 				x++;
 			}
@@ -796,8 +646,6 @@ public class TNTFile extends BaseFormatHandler {
 			// go over all the 'segments'
 			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
 				Iterator i_names = vec_names.iterator();
-
-				//System.err.println("Writing segment " + x);
 
 				// report the delay
 				if(delay != null)
@@ -815,8 +663,6 @@ public class TNTFile extends BaseFormatHandler {
 					Sequence seq = (Sequence) names.get(name);
 					Sequence subseq = null;
 
-					//System.err.println("Writing sequence " + name + ": " + seq);
-
 					int until = 0;
 
 					try {
@@ -833,17 +679,14 @@ public class TNTFile extends BaseFormatHandler {
 						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error.");
 					}
 
-					writer.println(pad_string(name, MAX_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
+					writer.println(pad_string(name, MAX_LENGTH) + " " + subseq.getSequence());
 				}
 
-				writer.println("");	// print a blank line
+				writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
 			}
 		}
 
-		// wrap up.
-		writer.println(";");
-		
-		writer.println("END;\n");
+		writer.println(";");	// the semicolon ends the 'xread' command.
 
 		// put in any other blocks
 		if(otherBlocks != null)
@@ -890,11 +733,14 @@ public class TNTFile extends BaseFormatHandler {
 				if(str.equals(""))
 					continue;
 
-				if(str.equalsIgnoreCase("#nexus")) {
-					// we find signature!
+				if(str.toLowerCase().indexOf("xread") != -1) {
+					// we find xread!
+					// we don't know if its parseable, but ... well.
+					// *shrugs*
+					// </irresponsibility>
+					//
+					// TODO Make this actually work, etc.
 					return true;
-				} else {
-					return false;
 				}
 			}
 
