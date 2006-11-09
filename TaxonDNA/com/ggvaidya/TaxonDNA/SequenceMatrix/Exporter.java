@@ -89,6 +89,14 @@ public class Exporter {
 	}
 
 	/**
+	 * Exports the entire table as individual gene files (one per column) into a particular directory.
+	 * This really is kinda convoluted ... no, VERY convoluted. Hated.
+	 */
+	public void exportSequencesByColumn() {
+		
+	}
+
+	/**
 	 * Returns a String with the taxonset named 'name'.
 	 * This is a string describing the taxonset as numbers
 	 * from (zero + offset) to (N + offset), where 'offset'
@@ -501,7 +509,7 @@ public class Exporter {
 
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
-		writer.print("nstates dna;");
+		writer.println("nstates dna;");
 		writer.print("xread\n'Exported by " + matrix.getName() + " on " + new Date() + "'\n");
 		writer.println(dataStore.getCompleteSequenceLengthWithGaps() + " " + dataStore.getSequencesCount());
 
