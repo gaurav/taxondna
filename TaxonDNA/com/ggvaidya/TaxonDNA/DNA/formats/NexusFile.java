@@ -756,7 +756,7 @@ public class NexusFile extends BaseFormatHandler {
 				if(no >= 100 && no < 1000)	digits = 3;
 				if(no >= 1000 && no < 10000)	digits = 4;
 
-				name = seq.getFullName(MAX_TAXON_LENGTH - digits);
+				name = seq.getFullName(MAX_TAXON_LENGTH - digits - 1);
 				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
