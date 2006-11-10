@@ -2,12 +2,21 @@
  * DirectoryInputPanel
  *
  * As the name suggests, this is a Panel containing a TextField
- * for you to pick a directory with. Eventually, we might be
- * crazy enough to implement a whole in-AWT copy of a normal
- * DirectoryDialog - yeah, right - but until then, it'll be
- * guaranteed to return a *directory* - or null - when you
- * call getDirectory()
+ * and a "Browse ..." button; you pick a file, or specify one yourself.
  *
+ * Special features:
+ * 1.	The programmer decides whether you are 'saving' or 'loading',
+ * 	like with a FileDialog. We *are* smart enough to figure out
+ * 	what you mean, and why you mean it.
+ * 2.	Partial names will be resolved into full names.
+ * 3.	(the reason why this was written) If the user typed in a filename,
+ * 	we will VERIFY that it makes sense and DOES exist (if it's
+ * 	to be LOADED) or DOES NOT exist (if it's to be SAVED). In case
+ * 	a getFile() request is made of us, we will test this, etc.
+ * 
+ * Issues:
+ * 1.	Can't do directories. This is because the underlying FileDialog
+ * 	doesn't do directories.
  */
 
 /*
@@ -35,22 +44,28 @@ import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public class DirectoryInputPanel extends Panel implements TextListener {
-	Frame		frame 	= null;
-	String		label 	= null;
-	int		mode 	= 0;
-	TextField 	tf 	= new TextField();
+import javax.swing.*;
 
-	public static final int MODE_DIR_SELECT		=	0x01;	//	select a directory itself (to delete, rename, etc.)
-	public static final int MODE_DIR_MODIFY_FILES	=	0x02;	//	select a directory to do stuff inside the dir
-									//	e.g. write files into, move files out of, etc.
-	public static final int MODE_DIR_CREATE		=	0x03;	//	create a NEW directory	
+public class DirectoryInputPanel extends Panel implements ActionListener, TextListener {
+	Window		frame 	= null;
+	int		mode 	= 0;
+	String		label 	= null;
+	TextField 	tf 	= new TextField();
+	Button 		browse 	= new Button("Browse ...");
+
+	boolean		fileLoadedThroughDialog = false;
+
+	public static final int MODE_DIR_CREATE =		0x01;
+	public static final int MODE_DIR_SELECT =		0x02;
 
 	/**
 	 * Set us up a very simple file input panel. This is just a big 
 	 * TextField, with a "Browse ..." button on one side.
+	 *
+	 * If a 'label' is specified, we will add that as well. It will
+	 * be added to the left of the 'file input' part of the dialog.
 	 */
-	public DirectoryInputPanel(String label, int mode, Frame frame) {
+	public DirectoryInputPanel(String label, int mode, Window frame) {
 		this.frame = frame;
 		this.mode = mode;
 		this.label = label;
@@ -64,6 +79,9 @@ public class DirectoryInputPanel extends Panel implements TextListener {
 
 		tf.addTextListener(this);
 		add(tf);
+
+		browse.addActionListener(this);
+		add(browse, BorderLayout.EAST);
 	}
 
 	/**
@@ -76,9 +94,49 @@ public class DirectoryInputPanel extends Panel implements TextListener {
 	}
 
 	/**
-	 * Returns the current text content as a File (which is really a Directory, etc.) 
+	 * Somebody hit the "Browse" button!
 	 */
-	public File getDirectory() {
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(browse)) {
+			String message = "";
+			if(mode == MODE_DIR_CREATE)
+				message = "Please specify a new directory to create ...";
+			else if(mode == MODE_DIR_SELECT)
+				message = "Please select a directory to use ...";
+			else
+				message = "Please select a directory ...";
+
+			File f = getFileFromFileDialog(message);
+
+			if(f != null) {
+				tf.setText(f.getAbsolutePath());
+				fileLoadedThroughDialog = true;
+			}
+		}
+	}
+
+	public File getFileFromFileDialog(String message) {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle(message);
+		chooser.setDialogType((mode == MODE_DIR_SELECT ? JFileChooser.OPEN_DIALOG : JFileChooser.SAVE_DIALOG));
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if(chooser.showDialog(frame, "Use this directory") == JFileChooser.APPROVE_OPTION) {
+			File f = new File(chooser.getSelectedFile().getAbsolutePath());
+			chooser = null;
+			System.gc();
+			return f;
+		}
+
+		chooser = null;
+		System.gc();
+
+		return null;
+	}
+
+	/**
+	 * Returns the current text content as a File
+	 */
+	public File getFile() {
 
 		// if the file is empty, you get NOTHING!
 		if(tf.getText().trim().equals(""))
@@ -89,55 +147,65 @@ public class DirectoryInputPanel extends Panel implements TextListener {
 		tf.setText(f.getAbsolutePath());
 		f = new File(f.getAbsolutePath());	// ha-ha!
 
-		// 0.	First, we praise the Greater Powers (if any) that this is not half as
-		// 	complicated as FileInputPanel. At the user's expense, unfortunately,
-		//	but this is the best we can do at short notice without including in
-		//	Swing or SWT.
-		//
-		// 1.	If we are a SELECT_DIR:
-		// 	(a)	The directory must exist. MUST. No two ways about it. We'll
-		// 		return a 'null', but not a non-existant directory.		
-		//
-		if(mode == MODE_DIR_SELECT || mode == MODE_DIR_MODIFY_FILES) {
-			if(f.exists() && f.isDirectory()) {
-				// all good!
-				return f;
-			} else {
-				MessageBox mb = new MessageBox(
+		// 1.	If we are a SAVEFILE:
+		// 	(a)	Already existing files will require a prompt, unless
+		// 		they've already been prompted.
+		// 	(b)	
+		if(mode == MODE_DIR_CREATE) {
+			if(f.exists()) {
+				// oh no! the file exists!
+				if(fileLoadedThroughDialog) {
+					// the dialog should already have warned the user, don't do anything
+				} else {
+					// warn the user!
+					MessageBox mb = MessageBox.createFromWindow(
 							frame,
-							"Warning: the specified directory does NOT exist!",
-							"You need to provide a valid directory name in the '" + label + "' field!\n\nPlease enter one in now.",
-							0);
-				mb.go();
-				return null;
-			}
+							"Warning: the specified directory exists!",
+							"Are you sure you want to overwrite '" + f + "'?",
+							MessageBox.MB_YESNO);
+					if(mb.showMessageBox() != MessageBox.MB_YES) {
+						f = getFileFromFileDialog("Please choose another directory to use instead ...");
+						if(f == null)
+							return null;
 
-		// 2.	If we are a CREATE:
-		// 	(a)	The directory must NOT exist. Here, we'll allow them to
-		// 		override our dialog, saying to use that directory ANYWAY.
-		//
-		} else if(mode == MODE_DIR_CREATE) {
-			if(!f.exists()) {
+						tf.setText(f.getAbsolutePath());
+						return f;
+					}
+				}
+			}
+		} else if(mode == MODE_DIR_SELECT) {
+			if(f.exists()) {
 				// yay!
 				return f;
 			} else {
 				// err .. wops!
-				MessageBox mb = new MessageBox(
+				MessageBox mb = MessageBox.createFromWindow(
 						frame,
-						"Warning: the specified directory exists!",
-						"There is already a directory named '" + f + "'! Would you like to use it anyway?",
+						"Warning: the specified directory doesn't exist!",
+						"There is no directory named '" + f + "'!\n\nWould you like to specify a directory to select now?",
 						MessageBox.MB_YESNO);
+
 				if(mb.showMessageBox() == MessageBox.MB_YES) {
+					f = getFileFromFileDialog("Please choose a directory to use instead ...");
+
+					if(f == null)
+						return null;
+
+					tf.setText(f.getAbsolutePath());
 					return f;
-				} else {
-					return null;
 				}
 			}
-		} else {
-			// unknown mode!
-			// just let the user have 'f'?
-			return f;
 		}
+
+		// Okay, let the user have 'f'
+		return f;
+	}
+
+	public void setFile(File f) {
+		if(f == null)
+			tf.setText("");
+		else
+			tf.setText(f.getAbsolutePath());
 	}
 
 	/**
@@ -145,5 +213,6 @@ public class DirectoryInputPanel extends Panel implements TextListener {
 	 *	modified the field outside of the browse dialog.
 	 */
 	public void	textValueChanged(TextEvent e) {
+		fileLoadedThroughDialog = false;
 	}
 }
