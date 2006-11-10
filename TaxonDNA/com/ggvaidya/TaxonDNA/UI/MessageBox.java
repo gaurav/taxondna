@@ -33,12 +33,6 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class MessageBox extends Dialog implements ActionListener {
-	/**
-	 * Please remember to regenerate this number if MessageBox's structure
-	 * changes! We're not actually serializable, but one of our parents is
-	 * I think.
-	 */
-	private static final long serialVersionUID = -5572953576820003395L;
 	private String		title = "";
 	private String		message = "";
 	private int		flags = 0;
@@ -64,15 +58,36 @@ public class MessageBox extends Dialog implements ActionListener {
 	/** Create a yes/no messageBox, with a single "CANCEL" button. */
 	public static final int	MB_YESNOCANCEL= 0x4000;
 
+	/** The default flags (if you use the flagless constructors) */
+	private static final int DEFAULT_FLAGS = MB_OK | MB_ERROR;
+
+	/*
+	 * <rant>
+	 * 	The following code is kinda screwed up, thanks to the fact
+	 * 	that in the AWT, a Dialog is not a Frame, and a Frame is
+	 * 	not a Dialog. However, EITHER can be used to create a
+	 * 	Dialog, through duplicated constructors.
+	 *	
+	 *	So, we duplicate our constructor. One set will use Frame,
+	 *	the other will use Dialog. A static function called
+	 *	'createFromWindow(...)' will accept Window, cast it 
+	 *	appropriately, then create the MessageBox and return
+	 *	*that*.
+	 *
+	 *	Since most of the old code uses Frame, frames will continue
+	 *	working fine. If any of the newer code needs to use Window,
+	 *	they'll have to use the static and go from there.
+	 * </rant>
+	 *
+	 */
+
+	// Frame constructors
 	/**
 	 * Creates a messagebox, with the given parent frame, title and message.
 	 * The messagebox is an "Error" box, by default. 
 	 */
 	public MessageBox(Frame parent, String title, String message) {
-		super(parent, title, true);	// we are ALWAYS modal
-		this.title = title;
-		this.message = message;
-		flags = MB_OK | MB_ERROR;
+		this(parent, title, message, DEFAULT_FLAGS);	// call the One True Constructor
 	}
 
 	/**
@@ -81,9 +96,59 @@ public class MessageBox extends Dialog implements ActionListener {
 	 * box, and/or the buttons displayed.
 	 */
 	public MessageBox(Frame parent, String title, String message, int flags) {
-		this(parent, title, message);
+		super(parent, title, true);	// true -> we need to be modal
+		this.title = title;
+		this.message = message;
 		this.flags = flags;
 	}
+
+	// Dialog constructors
+	/**
+	 * Creates a messagebox, with the given parent frame, title and message.
+	 * The messagebox is an "Error" box, by default. 
+	 */
+	public MessageBox(Dialog parent, String title, String message) {
+		this(parent, title, message, DEFAULT_FLAGS);	// call the One True Constructor
+	}
+
+	/**
+	 * Creates a messagebox, with the given parent frame, title, message
+	 * and flags. The flags can be used to change the type of the message
+	 * box, and/or the buttons displayed.
+	 */
+	public MessageBox(Dialog parent, String title, String message, int flags) {
+		super(parent, title, true);	// true -> we need to be modal
+		this.title = title;
+		this.message = message;
+		this.flags = flags;
+	}
+
+	/**
+	 * A static 'constructor', if all you've got is a Window. We'll figure out
+	 * whether it's a Dialog or a Frame, and fire the appropriate constructor.
+	 */
+	public static MessageBox createFromWindow(Window parent, String title, String message, int flags) {
+		MessageBox mb = null;
+
+		if(parent.getClass().equals(Frame.class))
+			mb = new MessageBox((Frame)parent, title, message, flags);
+		else if(parent.getClass().equals(Dialog.class))
+			mb = new MessageBox((Dialog)parent, title, message, flags);
+		else
+			throw new IllegalArgumentException("The parent window (" + parent + ") is neither a Frame nor a Dialog!");
+
+		return mb;
+	}
+
+	/**
+	 * A static 'constructor', if all you've got is a Window, without
+	 * a flags field. We'll figure out
+	 * whether it's a Dialog or a Frame, and fire the appropriate constructor.
+	 */
+	public static MessageBox createFromWindow(Window parent, String title, String message) {
+		return createFromWindow(parent, title, message, DEFAULT_FLAGS);
+	}
+	
 	
 	/**
 	 * I don't see why anybody would be interested, but okay ...
@@ -202,7 +267,7 @@ public class MessageBox extends Dialog implements ActionListener {
 	public static void main(String args[]) {
 		String message =
 			"I've got a word or two,\nTo say about the things that you do\nYou telling all those lies\nAbout the good things that we can have if we close our eyes\nDo what you want to do, go where you're going to, think for yourself for I'm not going to be there with you";
-		Frame 	frame = new Frame("Test");
+		Window 	frame = new Window("Test");
 		frame.setSize(200, 200);
 		frame.show();
 		MessageBox mb	=	new MessageBox(frame, "Test", message);
