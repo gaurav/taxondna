@@ -4,6 +4,7 @@
  * can interact with that code using five methods:
  * 
  * 	String getShortName():	returns the short name of the format
+ * 	String getExtension():	the default extension for this format. Should be three letters (just in case).
  * 	String getLongName():	returns the long name of the format
  * 	void readFile():	reads a file, and appends it onto a SequenceList
  *	void writeFile():	writes a SequenceList into the specific file
@@ -50,6 +51,11 @@ public interface FormatHandler {
 	 * Think about whether you could put it into a sentence as "This is the ___ file format."
 	 */
 	public  String getShortName();
+
+	/**
+	 * Returns the extension (ideally lowercase, no fullstops) for this kind of file.
+	 */
+	public String getExtension();
 
 	/**
 	 * Returns the full name of this file format handler. E.g. "Nexus file format v2 and below".

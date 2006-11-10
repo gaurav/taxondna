@@ -34,6 +34,7 @@ public class BaseFormatHandler implements FormatHandler {
 	protected Vector formatListeners = new Vector();
 
 	public  String getShortName() 	{ return "Base Format Handler"; }
+	public 	String getExtension()	{ return "txt"; }
 	public  String getFullName() 	{ return "Base for all Format Handlers in TaxonDNA"; }
 	
 	public SequenceList readFile(File file, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException {
