@@ -164,6 +164,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.equals("Export table as tab-delimited"))
 			fileMan.exportTableAsTabDelimited();
 
+		
+		if(cmd.equals("Export table as sequences (one file per column)"))
+			fileMan.exportSequencesByColumn();
+
 		//
 		// Export -> Export as NEXUS. Since TaxonDNA doesn't understand
 		// complex sequences, we do all of these manually. Thankfully,
@@ -590,6 +594,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export table as tab-delimited"));
+		export.add(new MenuItem("Export table as sequences (one file per column)"));
 		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as TNT"));
 		export.addActionListener(this);
