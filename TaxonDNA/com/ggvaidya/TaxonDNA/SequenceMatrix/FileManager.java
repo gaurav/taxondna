@@ -490,6 +490,83 @@ public class FileManager implements FormatListener {
 	}
 
 	/**
+	 * Export all the sequences by column: one file per column.
+	 */
+	public void exportSequencesByColumn() {
+		// first, we need to figure out which format the person'd like to use:
+		Dialog dg = (Dialog) CloseableWindow.wrap(new Dialog(matrix.getFrame(), "Please choose your output options ...", true));
+		RightLayout rl = new RightLayout(dg);
+		dg.setLayout(rl);
+
+		rl.add(new Label("Write all the files into:"), RightLayout.NONE);
+		DirectoryInputPanel dinp = new DirectoryInputPanel(
+					null, 
+					DirectoryInputPanel.MODE_DIR_SELECT,
+					dg
+				);
+		rl.add(dinp, RightLayout.BESIDE | RightLayout.STRETCH_X);
+		rl.add(new Label("Write files with format:"), RightLayout.NEXTLINE);
+
+		Choice choice_formats = new Choice();
+		Vector fhs = SequenceList.getFormatHandlers();
+		Iterator i = fhs.iterator();
+		while(i.hasNext()) {
+			FormatHandler fh = (FormatHandler) i.next();
+			choice_formats.add(fh.getFullName());
+		}
+		rl.add(choice_formats, RightLayout.BESIDE | RightLayout.STRETCH_X);
+
+		Checkbox check_writeNASequences = new Checkbox("Write 'N/A' sequences into the files as well");
+		rl.add(check_writeNASequences, RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		DefaultButton btn = new DefaultButton(dg, "Write files");
+		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumn_choice", 0));
+		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
+		if(matrix.getPrefs().getPreference("exportSequencesByColumn_writeNASequences", 0) == 0)
+			check_writeNASequences.setState(false);
+		else 
+			check_writeNASequences.setState(true);
+
+		dg.pack();
+		dg.setVisible(true);
+
+		if(btn.wasClicked()) {
+			matrix.getPrefs().setPreference("exportSequencesByColumn_choice", choice_formats.getSelectedIndex());
+			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getAbsolutePath());
+			matrix.getPrefs().setPreference("exportSequencesByColumn_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
+
+			// phew ... go!
+			try {
+				matrix.getExporter().exportSequencesByColumn(
+					dinp.getFile(), 
+					(FormatHandler) fhs.get(choice_formats.getSelectedIndex()), 
+					check_writeNASequences.getState(),
+					new ProgressDialog(
+						matrix.getFrame(),
+						"Please wait, exporting sequences ...",
+						"All your sequences are being exported as individual files into '" + dinp.getFile() + "'. Please wait!")
+				);
+			} catch(IOException e) {
+				MessageBox mb = new MessageBox(
+						matrix.getFrame(),
+						"Error writing sequences to file!",
+						"The following error occured while writing sequences to file: " + e
+						);
+				mb.go();
+
+				return;
+			} catch(DelayAbortedException e) {
+				return;
+			}
+
+			new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into individual files in '" + dinp.getFile() + "'.").go();
+			// TODO: Would be nice if we have an option to open this Window using Explorer/Finder
+		}
+	}
+
+	/**
 	 * A format Listener for listening in to CHARACTER_SETS ... sigh.
 	 */
 	public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {

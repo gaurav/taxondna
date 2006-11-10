@@ -90,10 +90,77 @@ public class Exporter {
 
 	/**
 	 * Exports the entire table as individual gene files (one per column) into a particular directory.
-	 * This really is kinda convoluted ... no, VERY convoluted. Hated.
+	 * This really is kinda convoluted ... no, VERY convoluted. Hatred.
 	 */
-	public void exportSequencesByColumn() {
-		
+	public void exportSequencesByColumn(File dir, FormatHandler fh, boolean writeNASequences, DelayCallback delay) throws IOException, DelayAbortedException {
+		if(delay != null)
+			delay.begin();
+
+		DataStore store = matrix.getDataStore();
+
+		Vector vec_sequences = new Vector(store.getSortedSequences());
+		int count_columns = store.getColumns().size();
+		Iterator i = store.getColumns().iterator();
+
+		int count = 0;
+		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(count, count_columns);
+			count++;
+
+			String colName = (String) i.next();
+
+			int colLength = store.getColumnLength(colName);
+			SequenceList sl = new SequenceList();
+
+			Iterator i2 = vec_sequences.iterator();	
+			while(i2.hasNext()) {
+				String seqName = (String) i2.next();
+				Sequence seq = store.getSequence(colName, seqName);
+	
+				if(seq == null) {
+					if(writeNASequences) {
+						sl.add(Sequence.makeEmptySequence(seqName, colLength));
+					} else {
+						// seq == null ... ignore it
+					}
+				} else {
+					// seq != null
+					// write it!
+					sl.add(seq);
+				}
+			}
+
+			File writeTo = new File(dir, makeFileName(colName) + "." + fh.getExtension());
+			if(writeTo.exists()) {
+				// TODO: We need to do something sensible here!
+				if(delay != null)
+					delay.end();
+
+				throw new IOException("Can't create file '" + writeTo + "' - it already exists!");
+			}
+
+			if(writeTo.exists() && !writeTo.canWrite()) {
+				if(delay != null)
+					delay.end();
+				throw new IOException("Couldn't open '" + writeTo + "' for writing. Are you sure you have permissions to write into this directory?");
+			}
+
+			try {
+				fh.writeFile(writeTo, sl, null);
+			} catch(IOException e) {
+				if(delay != null)
+					delay.end();
+				throw e;
+			}
+		}
+
+		if(delay != null)
+			delay.end();
+	}
+
+	private String makeFileName(String name) {
+		return name.replace(' ', '_').replace('.', '_');
 	}
 
 	/**
