@@ -43,6 +43,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import java.util.prefs.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
@@ -148,9 +149,42 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 			}
 		}
 	}
-	
+
+	// 
+	// the general Preference functions
 	//
-	// get the Preferences themselves
+	/**
+	 * Sets the preference specified 
+	 */
+	public void setPreference(String key, String value) {
+		java.util.prefs.Preferences.userNodeForPackage(getClass()).put(key, value);
+	}
+
+	/**
+	 * Returns the preference specified
+	 * @param def default value for this key
+	 */
+	public String getPreference(String key, String def) {
+		return java.util.prefs.Preferences.userNodeForPackage(getClass()).get(key, def);
+	}
+
+	/**
+	 * Sets the preference specified (as int)
+	 */
+	public void setPreference(String key, int value) {
+		java.util.prefs.Preferences.userNodeForPackage(getClass()).putInt(key, value);
+	}
+
+	/**
+	 * Returns the preference specified (as int)
+	 * @param def default value for this key
+	 */
+	public int getPreference(String key, int def) {
+		return java.util.prefs.Preferences.userNodeForPackage(getClass()).getInt(key, def);
+	}
+
+	//
+	// get the specific Preferences themselves
 	//
 	/** Returns either PREF_NEXUS_INTERLEAVED, PREF_NEXUS_SINGLE_LINE or PREF_NEXUS_BLOCKS */
 	public int getNexusOutput() {
