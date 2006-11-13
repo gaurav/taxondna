@@ -31,10 +31,10 @@
 
 package com.ggvaidya.TaxonDNA.UI;
 
+import com.ggvaidya.TaxonDNA.Common.*;
 import java.awt.*;
 
-public class ProgressBar extends Canvas {	
-	private static final long serialVersionUID = -333811396277041626L;
+public class ProgressBar extends Canvas implements DelayCallback {	
 	private int	done = 0;
 	private int	total = 100;
 	private String	text = "";
@@ -99,4 +99,20 @@ public class ProgressBar extends Canvas {
 			g.drawString(display, stringX, stringY); 
 		}
 	}
+
+	// Delay callback methods
+	//
+	public void begin() {
+		setText("Please wait ...");
+	}
+
+	public void delay(int done, int total) {
+		changeIndicator(done, total);
+	}
+
+	public void end() {
+		setText("All done!");
+		changeIndicator(100, 100);
+	}
+	
 }
