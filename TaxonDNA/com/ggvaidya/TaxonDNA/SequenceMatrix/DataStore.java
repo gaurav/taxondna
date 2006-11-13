@@ -678,6 +678,9 @@ public class DataStore implements TableModel {
 		
 			deleteColumn(colName);
 		}
+
+		// reset the session preferences
+		matrix.getPrefs().beginNewSession();
 	}
 
 //
@@ -959,11 +962,19 @@ public class DataStore implements TableModel {
 		if(seq == null)
 			return "(N/A)";	
 
-		int internalGaps = seq.getInternalGapCount();
-		if(internalGaps == 0)
-			return seq.getActualLength() + "";
-		else
-			return seq.getActualLength() + " (" + seq.getInternalGapCount() + " gaps)";
+		int internalGaps = seq.countInternalGaps();
+		int n_chars = seq.countBases('N');
+		if(internalGaps == 0) {
+			if(n_chars == 0)
+				return seq.getActualLength() + "";
+			else
+				return seq.getActualLength() + " (" + n_chars + " 'N' characters)";
+		} else {
+			if(n_chars == 0)
+				return seq.getActualLength() + " (" + internalGaps + " gaps)";
+			else
+				return seq.getActualLength() + " (" + internalGaps + " gaps, " + n_chars + " 'N' characters)";
+		}
 	}
 
 	/**
