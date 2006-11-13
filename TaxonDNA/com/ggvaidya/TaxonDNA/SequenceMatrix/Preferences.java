@@ -337,4 +337,11 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	public void go() {
 		setVisible(true);
 	}
+
+	public void beginNewSession() {
+		// clear all session-based variables
+		// right now, this is only PREF_NOT_SET_YET.
+		prefName = PREF_NOT_SET_YET;
+
+	}
 }
