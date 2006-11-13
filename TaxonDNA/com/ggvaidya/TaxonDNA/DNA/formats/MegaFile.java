@@ -63,6 +63,12 @@ public class MegaFile extends BaseFormatHandler implements Testable {
 		return "MEGA";
 	}
 
+	/** Returns the extension. We'll go with '.meg' as our semi-official DOS-compat extension */
+	public String getExtension() {
+		return "meg";
+	}
+	
+
 	/** Returns the full name of this handler, which among other things notes the level of compliance we have with Mega */
 	public String getFullName() {
 		return "MEGA file format, partial compliance";

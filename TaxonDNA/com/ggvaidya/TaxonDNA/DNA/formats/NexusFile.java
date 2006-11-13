@@ -52,6 +52,11 @@ public class NexusFile extends BaseFormatHandler {
 		// interlace to avoid confusion. Of course, we can't
 		// interlace unless we interlace EVERYTHING, so we
 	private int INTERLEAVE_AT = 	80;	
+
+	/** Returns the extension. We'll go with '.nex', our most common extension */
+	public String getExtension() {
+		return "nex";
+	}	
 	
 	/**
 	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name.

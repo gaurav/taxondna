@@ -21,7 +21,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005	Gaurav Vaidya
+    Copyright (C) 2005-06 Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -56,6 +56,11 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 	/** Returns the short name of this handler, namely: "FASTA" */
 	public String getShortName() {
 		return "FASTA";
+	}
+
+	/** Returns the extension. We'll go with '.fas' as our semi-official DOS-compat extension */
+	public String getExtension() {
+		return "fas";
 	}
 
 	/** Returns the full name of this handler */

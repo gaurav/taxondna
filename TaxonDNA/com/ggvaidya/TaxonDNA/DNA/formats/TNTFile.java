@@ -44,6 +44,11 @@ public class TNTFile extends BaseFormatHandler {
 								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
+	/** Returns the extension. We'll go with '.fas' as our semi-official DOS-compat extension */
+	public String getExtension() {
+		return "tnt";
+	}	
+
 	/**
 	 * Returns a valid OTU (Operation Taxonomic Unit); that is, a taxon name.
 	 */
