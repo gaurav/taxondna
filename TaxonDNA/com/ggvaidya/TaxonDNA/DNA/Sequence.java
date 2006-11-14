@@ -351,7 +351,7 @@ public class Sequence  implements Comparable, Testable {
 	/**
 	 * Returns the number of INTERNAL gaps in this sequence. 
 	 */
-	public int getInternalGapCount() {
+	public int countInternalGaps() {
 		int count = 0;
 
 		for(int x = 0; x < len; x++) {
@@ -361,6 +361,35 @@ public class Sequence  implements Comparable, Testable {
 
 		return count;
 	}	
+
+	/**
+	 * Returns the number of base x in this sequence.
+	 * We'll throw an exception if 'x' isn't actually a
+	 * character we understand.
+	 */
+	public int countBases(char ch) {
+		if(!isValid(ch))
+			throw new IllegalArgumentException("countBase was asked to return the number of occurances of the base '" + ch + "' - unfortunately, '" + ch + "' is not a valid base!");
+
+		// make 'ch' uppercase
+		if(ch > 'a' && ch < 'z')
+			ch = (char)(ch - ('a' - 'A'));
+
+		int count = 0;
+		for(int x = 0; x < len; x++) {
+			char ch_seq = seq[x];
+
+			// make 'ch_seq' uppercase
+			if(ch_seq > 'a' && ch_seq < 'z')
+				ch_seq = (char)(ch_seq - ('a' - 'A'));
+
+			// are they identical now?
+			if(ch_seq == ch)
+				count++;
+		}
+
+		return count;
+	}
 
 	/**
 	 * Returns the number of ambiguous bases in this sequence.
