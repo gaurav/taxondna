@@ -493,91 +493,111 @@ public class Exporter {
 	 */
 	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
 		DataStore dataStore = matrix.getDataStore();
-		boolean writeAnyway = true;
+
+		// We want to put some stuff into the title
+		StringBuffer buff_title = new StringBuffer();
 
 		// we begin by obtaining the Taxonsets (if any).
 		Taxonsets tx = matrix.getTaxonsets(); 
 		StringBuffer buff_taxonsets = new StringBuffer();
 		if(tx.getTaxonsetList() != null) {
-			if(tx.getTaxonsetList().size() > 32) {
-				MessageBox mb = new MessageBox(
+			if(tx.getTaxonsetList().size() >= 32) {
+				new MessageBox(
 					matrix.getFrame(),
 					"Too many taxonsets!",
-					"According to the manual, TNT can only handle 32 taxonsets. You have " + tx.getTaxonsetList().size() + " taxonsets. Would you like me to write out all the taxonsets anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any taxonsets.",
-					MessageBox.MB_YESNO);
-
-				writeAnyway = false;
-				if(mb.showMessageBox() == MessageBox.MB_YES)
-					writeAnyway = true;
+					"According to the manual, TNT can only handle 32 taxonsets. You have " + tx.getTaxonsetList().size() + " taxonsets. I will write the remaining taxonsets into the file title, from where you can copy it into the correct position in the file as needed.").go();
 			}
 
-			if(writeAnyway) {
-				buff_taxonsets.append("agroup\n");
+			buff_taxonsets.append("agroup\n");
 
-				Vector v = tx.getTaxonsetList();
-				Iterator i = v.iterator();
-				int x = 0;
-				while(i.hasNext()) {
-					String taxonsetName = (String) i.next();
-					// TNT has offsets from '0'
-					String str = getTaxonset(taxonsetName, 0);
-					if(str != null) 
-					{
+			Vector v = tx.getTaxonsetList();
+			Iterator i = v.iterator();
+			int x = 0;
+			while(i.hasNext()) {
+				String taxonsetName = (String) i.next();
+				// TNT has offsets from '0'
+				String str = getTaxonset(taxonsetName, 0);
+				if(str != null) 
+				{
+					if(x == 31)
+						buff_title.append("agroup\n");
+
+					if(x <= 31)
 						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
-						x++;
-					}
+					else
+						buff_title.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
+					x++;
 				}
-
-				buff_taxonsets.append(";\n\n\n");
 			}
-		}
 
-		writeAnyway = true;
+			buff_taxonsets.append(";\n\n\n");
+
+			if(x >= 32)
+				buff_title.append(";\n\n");
+		}
 		
 		// set up the 'sets' buffer
-		if(dataStore.getColumns().size() > 32) {
-			MessageBox mb = new MessageBox(
+		if(dataStore.getColumns().size() >= 32) {
+			new MessageBox(
 					matrix.getFrame(),
-					"Too many files!",
-					"According to the manual, TNT can only handle 32 character sets. You have " + dataStore.getColumns().size() + " character sets. Would you like me to write all the groups out anyway? TNT might not be able to read this file.\n\nClick 'No' to not write out any sets.",
-					MessageBox.MB_YESNO);
+					"Too many character sets!",
+					"According to the manual, TNT can only handle 32 character sets. You have " + dataStore.getColumns().size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
 
-			writeAnyway = false;
-			if(mb.showMessageBox() == MessageBox.MB_YES)
-				writeAnyway = true;
 		}
 		
 		StringBuffer buff_sets = new StringBuffer();
-		if(writeAnyway) {
-			buff_sets.append("xgroup\n");
+		buff_sets.append("xgroup\n");
 
-			Iterator i = dataStore.getColumns().iterator();	
-			int at = 0;
-			int colid = 0;
-			while(i.hasNext()) {
-				String colName = (String) i.next();
+		Iterator i = dataStore.getColumns().iterator();	
+		int at = 0;
+		int colid = 0;
+		while(i.hasNext()) {
+			String colName = (String) i.next();
 
+			if(colid == 31)
+				buff_title.append("xgroup\n");
+
+			if(colid <= 31)
 				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-				colid++;
+			else
+				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
 
-				for(int x = 0; x < dataStore.getColumnLength(colName); x++) {
+			for(int x = 0; x < dataStore.getColumnLength(colName); x++) {
+				if(colid <= 31)
 					buff_sets.append(at + " ");
-					at++;
-				}
-				
-				buff_sets.append("\n");
+				else
+					buff_title.append(at + " ");
+				at++;
 			}
-			
-			buff_sets.append("\n;\n\n");
-		}
 
+			if(colid <= 31)
+				buff_sets.append("\n");
+			else
+				buff_title.append("\n");
+			
+			// increment the column id
+			colid++;
+		}
+		
+		buff_sets.append("\n;\n\n");
+
+		if(colid > 31)
+			buff_title.append("\n;");
+
+		// go!
 		if(delay != null)
 			delay.begin();		
 
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
 
 		writer.println("nstates dna;");
-		writer.print("xread\n'Exported by " + matrix.getName() + " on " + new Date() + "'\n");
+		writer.println("xread\n'Exported by " + matrix.getName() + " on " + new Date() + ".");
+		if(buff_title.length() > 0) {
+			writer.println("Additional taxonsets and character sets will be placed below this line.");
+			writer.println(buff_title.toString());
+			writer.println("Additional taxonsets and character sets end here.");
+		}
+		writer.println("'");
 		writer.println(dataStore.getCompleteSequenceLengthWithGaps() + " " + dataStore.getSequencesCount());
 
 		Iterator i_rows = dataStore.getSequences().iterator();
