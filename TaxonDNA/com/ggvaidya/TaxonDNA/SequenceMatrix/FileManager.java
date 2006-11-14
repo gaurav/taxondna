@@ -190,7 +190,6 @@ public class FileManager implements FormatListener {
 		SequenceList sequences = null;
 		boolean sets_were_added = false;
 
-		
 		try {
 			if(handler != null) {
 				handler.addFormatListener(this);
@@ -214,7 +213,7 @@ public class FileManager implements FormatListener {
 						"Loading '" + file + "' into memory. Sorry for the delay!",
 						ProgressDialog.FLAG_NOCANCEL
 						),
-					this
+					this		// use us as the format listener
 					);
 			}
 
@@ -325,7 +324,10 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
-						matrix.getDataStore().addSequenceList(name, sl);
+						matrix.getDataStore().addSequenceList(name, sl, null);
+							// we OUGHT to provide a ProgressDialog here,
+							// but we've already got one open at this point, 
+							// so it's all good.
 					}
 					pd.end();
 
@@ -341,7 +343,13 @@ public class FileManager implements FormatListener {
 		// if we're here, we've only got one 'sequences'.
 		// so add it!
 		if(!sets_were_added) {
-			matrix.getDataStore().addSequenceList(sequences);
+			matrix.getDataStore().addSequenceList(sequences,
+					new ProgressDialog(
+						matrix.getFrame(),
+						"Please wait, adding sequences ...",
+						"The new sequences are being added to the table now. Sorry for the delay!"
+					)
+				);
 			matrix.updateDisplay();
 		}
 	}
