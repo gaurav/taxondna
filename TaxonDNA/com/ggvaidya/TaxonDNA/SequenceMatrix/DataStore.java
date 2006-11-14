@@ -518,7 +518,7 @@ public class DataStore implements TableModel {
 	 * This one is really just a wrapper; it figures out the name the
 	 * column ought to have, and then calls addSequenceList(colName, sl); 
 	 */
-	public void addSequenceList(SequenceList sl) { 
+	public void addSequenceList(SequenceList sl, DelayCallback delay) { 
 		sl.lock();
 
 		// 1. Figure out the column name.
@@ -545,7 +545,7 @@ public class DataStore implements TableModel {
 			}
 		}
 
-		addSequenceList(newColName, sl);
+		addSequenceList(newColName, sl, delay);
 		sl.unlock();
 	}
 
@@ -556,9 +556,16 @@ public class DataStore implements TableModel {
 	 * Important steps: create a new column, check for pre-existing sequences,
 	 * add all the sequences, and report sequences which got written over to
 	 * the user.
+	 * 
+	 * NOTE: We will NOT throw a DelayAbortedException. We will swallow it without
+	 * any effect, mostly because I don't see the point of loading _half_ a sequence
+	 * list.
 	 */
-	public void addSequenceList(String colName, SequenceList sl) { 	
+	public void addSequenceList(String colName, SequenceList sl, DelayCallback delay) { 	
 		sl.lock();
+
+		if(delay != null)
+			delay.begin();
 
 		// Set up us the new total width
 		setColumnLength(colName, sl.getMaxLength());
@@ -567,7 +574,17 @@ public class DataStore implements TableModel {
 		StringBuffer droppedSequences = new StringBuffer("");
 
 		Iterator i = sl.iterator();
+		int count = 0;
 		while(i.hasNext()) {
+			try {
+				if(delay != null)
+					delay.delay(count, sl.count());
+			} catch(DelayAbortedException e) {
+				// ignore!
+			}
+
+			count++;
+
 			Sequence seq = (Sequence) i.next();
 			String seqName = null;
 
@@ -630,6 +647,9 @@ public class DataStore implements TableModel {
 
 			mb.go();
 		}
+
+		if(delay != null)
+			delay.end();
 	
 		// Cleanup time
 		sl.unlock();
