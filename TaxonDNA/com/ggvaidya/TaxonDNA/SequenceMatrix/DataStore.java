@@ -563,7 +563,13 @@ public class DataStore implements TableModel {
 	 */
 	public void addSequenceList(String colName, SequenceList sl, DelayCallback delay) { 	
 		sl.lock();
+		
+		// we need to call getUseWhichName() early
+		// because we can't call it after the
+		// delay goes off. 
+		matrix.getPrefs().getUseWhichName();
 
+		// ookay, now that that's done ...
 		if(delay != null)
 			delay.begin();
 
