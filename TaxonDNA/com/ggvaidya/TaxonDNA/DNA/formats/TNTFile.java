@@ -44,6 +44,10 @@ public class TNTFile extends BaseFormatHandler {
 								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
+	// group constants
+	private static final int GROUP_CHARSET = 1;
+	private static final int GROUP_TAXONSET = 2;
+
 	/** Returns the extension. We'll go with '.fas' as our semi-official DOS-compat extension */
 	public String getExtension() {
 		return "tnt";
@@ -239,6 +243,24 @@ public class TNTFile extends BaseFormatHandler {
 					// xread {okay, we need to actually read the matrix itself}
 					else if(str.equalsIgnoreCase("xread")) {
 						xreadBlock(appendTo, tok, evt, delay, count_lines);
+						newCommand = true;
+						continue;
+					}
+
+					// xgroup/agroup
+					// 	{xgroup: character sets}
+					// 	{agroup: taxonsets}
+					// since the format is essentially identical, we'll use the
+					// same function to handle them
+					else if(str.equalsIgnoreCase("xgroup")) {
+						groupCommand(GROUP_CHARSET, appendTo, tok, evt, delay, count_lines);
+						newCommand = true;
+						continue;
+					}
+					else if(str.equalsIgnoreCase("agroup")) {
+						groupCommand(GROUP_TAXONSET, appendTo, tok, evt, delay, count_lines);
+						newCommand = true;
+						continue;
 					}
 
 					else {
@@ -249,6 +271,7 @@ public class TNTFile extends BaseFormatHandler {
 						// is activated, and we look for the next
 						// block.
 					}
+
 				} else {
 					// strange symbol (or ';') found
 					// since we're probably in a 'strange' block, we can just
@@ -534,6 +557,207 @@ public class TNTFile extends BaseFormatHandler {
 		// and you ESPECIALLY don't need to deal with this, praise the Lord
 		tok.whitespaceChars('\r', '\r');
 		tok.whitespaceChars('\n', '\n');
+	}
+
+	/**
+	 * Parses a 'group' command. Group commands are relatively easy to work with; they go like this:
+	 * 	(=\d+ (\(\w+\))* (\d+)*)*
+	 * 	  ^       ^        ^
+	 * 	  |	 |	  \----------	one or more char/taxon numbers
+	 * 	  |	 \-------------------	the name of this group (if any)
+	 * 	  \--------------------------	the number of this group (not important to us, except that /=\d+/ 
+	 * 	  				indicates a new taxongroup starting
+	 * In this function, I'll use ?group or _group to indicate, err, well, /[ax]group/.
+	 */
+	public void groupCommand(int which_group, SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+		throws FormatException, DelayAbortedException, IOException
+	{
+		int begin_at = tok.lineno();					// which line did this group start at 
+
+		String current_command_name = "";
+		if(which_group == GROUP_CHARSET)
+			current_command_name = "xgroup";
+		else
+			current_command_name = "agroup";
+
+		System.err.println("Beginning: " + current_command_name);
+
+		// okay, '?group' has started?
+		if(
+				tok.ttype == StreamTokenizer.TT_WORD && 
+				(
+				 	tok.sval.equalsIgnoreCase("xgroup") ||
+					tok.sval.equalsIgnoreCase("agroup")
+				)
+		)
+			;	// we've already got xread on the stream, do nothing
+		else	
+			tok.nextToken();		// this token IS '_group'!
+
+		// since fullstops can be used in ranges, we NEED them to be wordChars, 
+		// so that they turn up as a word (i.e., '23.26' is returned as '23.26',
+		// not '23' '.' '26')
+		tok.wordChars('.', '.');
+
+		// okay, we pop into the loop. we're looking for:
+		// 	';'	-> exit
+		// 	'='	-> start new group (slurp group id)
+		// 	'('	-> set title for last group (slurp until terminating ')')
+		// 	word	-> ought to be either:
+		// 			\d+	->	one single unit to be added to the group
+		// 			\d+\.\d+ ->	a range to be added. note that some programs
+		// 					like spewing ranges out as consecutive numbers.
+		// 					we ought to track this, watch for a line, and
+		// 					then ... oh, never MIND.
+		//
+		// this effectively means that you can pull crazy shit like:
+		// 	xgroup (ha ha!) =1 34.24 (this is weird, innit?) 13 54 (multiple titles wtf?) 24.52 =2 13
+		// and so on. But hey, well formed files will work just fine.
+		// 
+		Hashtable hash_group_ids = new Hashtable();			// String id -> Sequence
+		String currentName = "";
+		while(true) {
+			int type = tok.nextToken();
+
+			if(delay != null)
+				delay.delay(tok.lineno(), count_lines);
+
+			if(type == StreamTokenizer.TT_EOF) {
+				// wtf?!
+				throw formatException(tok, "I've reached the end of the file, but the '" + current_command_name + "' beginning at line " + begin_at + " was never terminated.");
+			}
+
+			if(type == ';')
+				// it's over. Go back home, etc.
+				break;
+
+			if(type == '=') {
+				// okay, the next token ought to be a unique group id
+				if(tok.nextToken() != StreamTokenizer.TT_WORD) {
+					throw formatException(tok, "Expecting the group id, but found '" + (char)tok.ttype + "' instead!");
+				} else {
+					if(hash_group_ids.get(tok.sval) != null)
+						throw formatException(tok, "Duplicate group id '" + tok.sval + "' found!");
+
+					// okay, set the new group id!
+					hash_group_ids.put(tok.sval, new Integer(0));
+					currentName = "Group #" + tok.sval;
+				}
+
+				continue;
+			} 
+
+			else if(type == '(') {
+				// okay, now we basically read until the closing ')'
+				// and store it in currentName
+				StringBuffer buff_name = new StringBuffer();
+				int title_began = tok.lineno();
+
+				while(tok.nextToken() != ')') {
+					if(delay != null)
+						delay.delay(tok.lineno(), count_lines);
+
+					if(tok.ttype == StreamTokenizer.TT_EOF)
+						throw formatException(tok, "The title which began in " + current_command_name + " on line " + title_began + " is not terminated! (I can't find the ')' which would end it).");
+					else if(tok.ttype == StreamTokenizer.TT_WORD)
+						buff_name.append(tok.sval);
+					else
+						buff_name.append((char) tok.ttype);
+				}
+
+				currentName = buff_name.toString();
+
+				continue;
+
+			} else if(type == StreamTokenizer.TT_WORD) {
+				// word!
+				String word = tok.sval;
+
+				// now, this is either:
+				// 1.	\d+	->	a number! submit straightaway, get on with life
+				// 2.	\d+.	->	a range, from number to LENGTH_OF_SET. submit, etc.
+				// 3.	.\d+	->	a range, from 0 to number. submit, etc.
+				// 4.	\d+.\d+	->	a range, from num1 to num2. submit, etc.
+				//
+				// the trick is figuring out which one is which.
+				//
+			
+				if(word.indexOf('.') == -1) {
+					int locus = atoi(word, tok);
+
+
+					if(which_group == GROUP_CHARSET) {
+						locus++;	// convert from TNT loci (0-based) to normal loci (1-based)
+						fireEvent(evt.makeCharacterSetFoundEvent(
+								currentName,
+								locus,
+								locus));
+						System.err.println("New single-character block: " + currentName + " at " + locus);
+					}
+
+					continue;
+				} else {
+					// okay, there's a fullstop here ...
+					// sigh.
+					//
+					// you have to wonder why you bother, sometimes.
+
+					int from = 0;
+					int to = 0;
+					if(word.charAt(0) == '.') {
+						// it's a '.\d+' or a '.'
+						
+						if(word.length() == 1) {
+							// it's a '.'
+							from = 0;
+							to = appendTo.getMaxLength();
+						} else {
+							// it's a '.\d+'
+							from = 0;
+							to = atoi(word.substring(1), tok);
+						}
+
+					} else if(word.charAt(word.length() - 1) == '.') {
+						// it's at the end
+						
+						from = atoi(word.substring(0, word.length() - 1), tok);
+						to = appendTo.getMaxLength();
+					} else {
+						// it's in the middle
+						int indexOf = word.indexOf('.');
+
+						from = atoi(word.substring(0, indexOf - 1), tok);
+						to = atoi(word.substring(indexOf + 1), tok);
+					}
+
+					if(which_group == GROUP_CHARSET) {
+						from++;		// convert from TNT loci (0-based) to normal loci (1-based)
+						to++;
+						fireEvent(evt.makeCharacterSetFoundEvent(
+								currentName,
+								from,
+								to));
+						System.err.println("New multi-character block: " + currentName + " from " + from + " to " + to);
+					}
+
+					continue;
+				}	
+
+			} else {
+				throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the " + current_command_name + " command beginning on line " + begin_at + "! Are you sure it's supposed to be here?");
+			}
+		}
+
+		// Restore '.' to its usual position as a character. 
+		tok.ordinaryChar('.');
+	}	
+
+	private int atoi(String word, StreamTokenizer tok) throws FormatException {
+		try {
+			return Integer.parseInt(word);
+		} catch(NumberFormatException e) {
+			throw formatException(tok, "Could not convert word '" + word + "' to a number: " + e);
+		}
 	}
 
 	/**
