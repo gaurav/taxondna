@@ -517,7 +517,7 @@ public class Sequence  implements Comparable, Testable {
 		// make sure we're not being fed garbage
 		if(
 				from < 1 || 		// the first char is index = 1
-				to <= from ||		// the 'to' field must be greater than the 'from' field
+				to < from ||		// the 'to' field must be greater than or equal to the 'from' field
 				to > getLength()	// the 'to' field must not be greater than the length of the sequence
 		)
 			throw new SequenceException(this.getFullName(), "There is no subsequence at (" + from + ", " + to + ") in sequence " + this);
