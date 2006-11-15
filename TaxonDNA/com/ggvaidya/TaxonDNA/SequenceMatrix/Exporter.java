@@ -175,14 +175,14 @@ public class Exporter {
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
 		DataStore dataStore = matrix.getDataStore();
-		List columns = new Vector(dataStore.getColumns());
-		List sequences = new Vector(dataStore.getSequences());
+		List columns = new Vector(dataStore.getSortedColumns());
+		List sequences = new Vector(dataStore.getSortedSequences());
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
 			// it's a length!
 			int length = -1;
-			name = name.replaceAll(Taxonsets.prefix_Length, "");
+			name = name.replaceFirst(Taxonsets.prefix_Length, "");
 
 			try {
 				length = Integer.parseInt(name);
@@ -197,16 +197,24 @@ public class Exporter {
 
 				if(myLength >= length)
 					buff.append((x + offset) + " ");
-				x++;
 			}
 
-			if(buff.length() == 0)
-				return null;
+		} else if(name.startsWith(Taxonsets.prefix_TaxonsHaving)) {
+			name = name.replaceFirst(Taxonsets.prefix_TaxonsHaving, "");
+
+			// so ... we've got a name now
+			for(int x = 0; x < sequences.size(); x++) {
+				String seqName = (String) sequences.get(x);
+
+				if(matrix.getDataStore().getSequence(name, seqName) != null)
+					buff.append((x + offset) + " ");
+			}
+
 
 		} else if(name.startsWith(Taxonsets.prefix_CharSets)) {
 			// it's a charset!
 			int charsets = -1;	
-			name = name.replaceAll(Taxonsets.prefix_CharSets, "");
+			name = name.replaceFirst(Taxonsets.prefix_CharSets, "");
 
 			try {
 				charsets = Integer.parseInt(name);
@@ -223,8 +231,6 @@ public class Exporter {
 					buff.append((x + offset) + " ");
 			}
 
-			if(buff.length() == 0)
-				return null;
 		} else {
 			throw new RuntimeException("Unknown taxonset " + name + " in Exporter.getTaxonset()");
 		}
