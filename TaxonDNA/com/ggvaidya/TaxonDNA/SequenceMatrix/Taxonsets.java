@@ -49,6 +49,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	//
 	public static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
 	public static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
+	public static final String 	prefix_TaxonsHaving		=	"TAXONS_HAVING_";	// For gene-based taxonsets
 
 	// Our variables
 	// keeping track of values, etc.
@@ -67,6 +68,9 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	private Button			btn_CharSets		=	new Button("Add");
 	private java.awt.List		list_totalCharSets	=	new java.awt.List(5);
 	private Button			btn_totalCharSets_Delete=	new Button("Delete this taxonset");
+
+	private Checkbox		check_generateGeneSets 	=	new Checkbox("Generate taxonsets containing particular genes");
+
 	private Button 			btn_Ok 			=	new Button("OK");
 
 	/**
@@ -117,6 +121,8 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		btn_totalCharSets_Delete.addActionListener(this);
 		btn_totalCharSets_Delete.setEnabled(false);
 		rl.add(btn_totalCharSets_Delete, RightLayout.NEXTLINE | RightLayout.FLUSHRIGHT);
+
+		rl.add(check_generateGeneSets, RightLayout.NEXTLINE | RightLayout.FILL_3);
 		
 		dialog.add(options);
 
@@ -175,6 +181,8 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			vec_CharSets.add(new Integer(x));
 		}
 
+		// turn genesets on
+		check_generateGeneSets.setState(true);
 	}
 
 	/**
@@ -321,7 +329,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 	/**
 	 * Returns a Vector of all the taxonSets we have (as String).
-	 * You can then query this list against getTaxonset(String) to
+	 * You can then query this list against Exporter.getTaxonset(String) to
 	 * get the Taxonset in question (as a single line, etc.)
 	 */
 	public Vector getTaxonsetList() {
@@ -342,6 +350,16 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			
 			result.add(Taxonsets.prefix_CharSets + it);
 		}
+
+		// give him Geneset taxonsets
+		if(check_generateGeneSets.getState()) {
+			i = matrix.getDataStore().getColumns().iterator();
+			while(i.hasNext()) {
+				String colName = (String)i.next();
+				result.add(Taxonsets.prefix_TaxonsHaving + colName);
+			}
+		}
+			
 
 		return result;
 	}	
