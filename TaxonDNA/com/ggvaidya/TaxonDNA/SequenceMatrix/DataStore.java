@@ -30,6 +30,8 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
+import java.awt.Color;		// for Color
+import java.awt.Component;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
@@ -77,8 +79,14 @@ public class DataStore implements TableModel {
 	private Vector			sortedColumnNames;
 
 	// For the display
-	public static final int		additionalColumns =	3;		// The number of 'extra columns'
+	public static final int		additionalColumns =	3;		// The number of 'extra columns
 										// col(0) = 
+	// Pairwise distances mode
+	private boolean 		pairwiseDistancesMode = false;
+	private String			pdm_seqName = null;
+	private Hashtable		pdm_hash_maxDist = null;
+	private Hashtable		pdm_hash_minDist = null;
+
 //
 // 0.	INTERNAL ACCESS FUNCTIONS. hash_columns does a lot of pretty strange shit in a very small space.
 // 	To sort this out, please do NOT use hash_columns directly; use the functions defined here.
@@ -824,6 +832,10 @@ public class DataStore implements TableModel {
 		sortedColumnNames = new Vector(getColumns());
 		Collections.sort(sortedColumnNames);
 
+		// do NOT resort sortedSequenceNames if we're in PDM
+		if(pairwiseDistancesMode)
+			return;
+
 		sortedSequenceNames = new Vector(getSequences());
 
 		switch(sort) {
@@ -991,6 +1003,44 @@ public class DataStore implements TableModel {
 		if(seq == null)
 			return "(N/A)";	
 
+		// if we're in PDM, we need to display the pairwise distance
+		if(pairwiseDistancesMode) {
+			Sequence seq_compareAgainst = getSequence(colName, pdm_seqName); 
+			if(seq_compareAgainst == null)
+				return "(N/A - bug)";
+
+			double dist = seq.getPairwise(seq_compareAgainst);
+
+			// min and max dist for this row
+			double minDist = +2.0;
+			double maxDist = -1.0;
+
+			if(pdm_hash_maxDist.get(colName) == null)
+				pdm_hash_maxDist.put(colName, new Double(maxDist));
+			else
+				maxDist = ((Double)pdm_hash_maxDist.get(colName)).doubleValue();
+
+			if(pdm_hash_minDist.get(colName) == null)
+				pdm_hash_minDist.put(colName, new Double(minDist));
+			else
+				minDist = ((Double)pdm_hash_minDist.get(colName)).doubleValue();
+
+			if(dist > 0 && dist < minDist) {
+				minDist = dist;
+				pdm_hash_minDist.put(colName, new Double(minDist));
+			}
+
+			if(dist > 0 && dist > maxDist) {
+				maxDist = dist;
+				pdm_hash_maxDist.put(colName, new Double(maxDist));
+			}
+
+			if(seqName.equals(pdm_seqName))
+				return "(N/A)";
+			else
+				return percentage(dist - minDist, maxDist - minDist) + "%";
+		}
+
 		int internalGaps = seq.countInternalGaps();
 		int n_chars = seq.countBases('N');
 		if(internalGaps == 0) {
@@ -1004,6 +1054,10 @@ public class DataStore implements TableModel {
 			else
 				return seq.getActualLength() + " (" + internalGaps + " gaps, " + n_chars + " 'N' characters)";
 		}
+	}
+
+	private double percentage(double x, double y) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
 	}
 
 	/**
@@ -1072,6 +1126,9 @@ public class DataStore implements TableModel {
 	 * and update everything.
 	 */
 	public void renameSequence(String seqOld, String seqNew) {
+		if(seqOld.equals(seqNew))
+			return;
+
 		String strWarning = fakeRenameSequence(seqOld, seqNew);
 
 		if(strWarning != null) {
@@ -1117,4 +1174,245 @@ public class DataStore implements TableModel {
 
 		updateDisplay();
 	}
+
+	//
+	// PAIRWISE DISTANCE SHENANIGANS
+	// Very experimental, so feel free to play around/change code/rename stuff
+	// here, as long as you make the necessary changes in SequenceMatrix.java
+	//
+	/**
+	 * Sets the dataStore into PairwiseDistanceMode. Please keep in sync
+	 * with exitPairwiseDistanceMode(), which should undo EVERYTHING this
+	 * method does.
+	 *
+	 * @return true, if we're now in PDM
+	 */
+	public boolean enterPairwiseDistanceMode() {
+		// we need atleast one sequence name to do this
+		if(getSequences().size() == 0) {
+			new MessageBox(
+					matrix.getFrame(),
+					"You need atleast one sequence to run this analysis!",
+					"I can't run a pairwise distance analysis without atleast one sequence! Try loading a sequence and trying again.").go();
+			return false;
+		}
+
+		// Figure out a list of 'complete' columns 
+		Vector completeColNames = new Vector();
+
+		Iterator i = getColumns().iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+			
+			if(getSequenceNamesByColumn(colName).size() == getSequencesCount())
+				completeColNames.add(colName);
+		}
+
+		// 
+		// Report error if we're missing any
+		//
+		if(completeColNames.size() == 0) {
+			new MessageBox(
+					matrix.getFrame(),
+					"Couldn't generate a reference sequence list!",
+					"I need atleast one gene without any missing or N/A sequences in order to generate a reference sequence. You don't have any! Sorry!").go();
+			return false;
+		}
+
+		//
+		// Generate the reference sequence
+		//
+		ProgressDialog pd = new ProgressDialog(
+			matrix.getFrame(),		
+			"Please wait, calculating reference sequence ...",
+			"I am generating a 'reference sequence' from all complete gene sets. Please wait!"
+		);
+		pd.begin();
+		
+		// we need to pick a 'volunteer' to sort against, though.
+		// the following code will work UNLESS there are no sequences
+		// (which should already have been checked for by this point
+		// of time)
+		//
+		// this is being done here, because we'll need to get the
+		// sequence while combining them (to avoid having to
+		// use Sequence.getFullName(), which doesn't have any
+		// link to getSequences().get(x))
+		//
+		pdm_seqName = (String) getSortedSequences().get(0);
+		Sequence sortAgainst = null;
+
+		Hashtable hash_seqToSeqName = new Hashtable();	// maps seq (Sequence) to the seqName (String)
+		SequenceList sl = new SequenceList();
+
+		// for each sequence
+		i = getSequences().iterator();
+		int count_sequences = getSequencesCount();
+		int count = 0;
+		while(i.hasNext()) {
+			try {
+				pd.delay(count, count_sequences);
+			} catch(DelayAbortedException e) {
+				return false;
+			}
+
+			String seqName = (String) i.next();
+			Sequence seq = new Sequence();
+			seq.changeName(seqName);
+
+			// for each complete column
+			Iterator i_col = completeColNames.iterator();
+			while(i_col.hasNext()) {
+				String colName = (String) i_col.next();
+
+				// should never be null!
+				Sequence seq_segment = getSequence(colName, seqName);
+				seq.appendSequence(seq_segment);
+			}
+
+			sl.add(seq);
+
+			if(seqName.equals(pdm_seqName))
+				sortAgainst = seq;
+		}
+		
+		pd.end();
+		
+		if(sortAgainst == null)
+			throw new RuntimeException("I can't find a sequence named '" + pdm_seqName + "'! But it was here just a minute ago!");
+
+		// we now have sl, a reference sequence list
+		// as well as sortAgainst, our reference guy to
+		// sort against.
+		//
+		// sort it!
+
+		SortedSequenceList ssl = new SortedSequenceList(sl);
+		try {
+			ssl.sortAgainst(
+				sortAgainst,
+				new ProgressDialog(
+					matrix.getFrame(),
+					"Please wait, sorting reference sequence list ...",
+					"I'm now sorting the reference sequence list. This could take a while, depending on how big your dataset is."
+				)
+			);
+		} catch(DelayAbortedException e) {
+			return false;
+		}
+
+		// okay, so NOW we have a sorted sequence list
+		// now things get a LOT more hairy, very, very quickly
+		//
+		// 1. 	we need to save a copy of the sequence list by taxon name, as
+		// 	this will be our new 'sequence name list'. Which means we
+		// 	save it as a vector, and get all the TableModel functions to
+		// 	use that if we're in PDM.
+		//
+		// 2.	we also need to calculate every single pairwise distance
+		//	to the initial sequence. But how? Calc each dist and store
+		//	it? Do each one on the run? One step at a time, I guess.
+		//
+		
+		// WARNING WARNING WARNING
+		// We are now entering the non-cancellable zone!
+		// You should NOT cancel out of here!
+		// NEIN NEIN NEIN
+		
+		sortedSequenceNames = new Vector();
+		pdm_hash_maxDist = new Hashtable();
+		pdm_hash_minDist = new Hashtable();
+
+		for(int x = 0; x < ssl.count(); x++) {
+			Sequence seq = (Sequence) ssl.get(x);
+			String seqName = seq.getFullName();	// this isn't a seq from the table, but 
+								// a generated seq, which has the actual
+								// sequence names! so it's all good.
+			
+			sortedSequenceNames.add(seqName);
+		}
+
+		pairwiseDistancesMode = true;
+		
+		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer());
+
+		// TODO: hack, hack: the first call will calculate everything,
+		// and store the largest distances, which are used for call #2
+		//
+		// doesn't seem to work, so we'll CALL them ALL OURSELVES!
+		// hmpf
+		for(int y = 0; y < getColumnCount(); y++) {
+			for(int z = 0; z < getRowCount(); z++) {
+				getValueAt(z, y);
+			}
+		}
+
+		updateDisplay();
+
+		return true;
+	}
+
+	/**
+	 * Undoes all the changes made by enterPairwiseDistanceMode(). Each and every one.
+	 * 	 
+	 * @return true, if we're now out of PDM
+	 */
+	public boolean exitPairwiseDistanceMode() {
+		pairwiseDistancesMode = false;
+
+		matrix.getJTable().setDefaultRenderer(String.class, new DefaultTableCellRenderer());
+
+		resort(sortBy);
+
+		updateDisplay();
+
+		return true;
+	}
+}
+
+class PDMColorRenderer extends DefaultTableCellRenderer
+{
+    public PDMColorRenderer() {}
+ 
+    public Component getTableCellRendererComponent(JTable table,
+                                                   Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus,
+                                                   int row,
+                                                   int col)
+    {
+	// what would defaulttablecellrenderer do?
+        JComponent comp = (JComponent) super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,col);
+
+	comp.setOpaque(false);
+
+	if(row < 1 || col < DataStore.additionalColumns)
+		return comp;
+	
+	String val = (String) value;
+
+	if(val.equals("(N/A)"))
+		return comp;
+
+	if(val.equals("(N/A - bug)"))
+		return comp;
+
+	val = val.replaceAll("\\%", "");
+
+	try {
+		double d = Double.parseDouble(val)/100.0;
+
+		comp.setOpaque(true);
+
+		if(d < 0 || d > 1)
+			comp.setBackground(Color.getHSBColor(0.0f, 0.0f, 1.0f)); 
+		else
+			comp.setBackground(Color.getHSBColor(0.0f, (float)d, 1.0f)); 
+
+	} catch(NumberFormatException e) {
+		// ah, ferget it
+	}
+		       
+        return comp;
+    }
 }
