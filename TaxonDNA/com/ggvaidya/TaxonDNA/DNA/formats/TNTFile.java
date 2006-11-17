@@ -167,6 +167,7 @@ public class TNTFile extends BaseFormatHandler {
 			// 	in TNT, lemme know.
 
 			tok.ordinaryChar('/');	// this is the default StringTokenizer comment char, so we need to set it back to nothingness
+			tok.wordChars('@', '@');	// this is a special command we look out for in the title
 
 			// turn off parseNumbers()
 		        tok.ordinaryChar('.');
@@ -181,7 +182,7 @@ public class TNTFile extends BaseFormatHandler {
 					// we need to replace this manually. they form one 'word' in NEXUS.
 
 			tok.ordinaryChar('\'');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
-			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to distinguish commands 
+			tok.ordinaryChar(';');	// We need this to be an 'ordinary' so that we can use it to distinguish commands 
 		
 			// states
 			int 		commentLevel = 		0;
@@ -197,7 +198,7 @@ public class TNTFile extends BaseFormatHandler {
 
 				/* Now ... to business! */
 				int type = tok.nextToken();
-				
+
 				// break at end of file
 				if(type == StreamTokenizer.TT_EOF)
 					break;
@@ -212,6 +213,8 @@ public class TNTFile extends BaseFormatHandler {
 					continue;
 				}
 
+
+				// if we're in a comment, skip normal stuff
 				if(commentLevel > 0)
 					continue;
 
@@ -310,7 +313,6 @@ public class TNTFile extends BaseFormatHandler {
 		String lastSequenceName = null;
 		int seq_names_count = 0;
 		int begin_at = tok.lineno();		// which line did this xreadBlock start at
-		int lineno = tok.lineno();
 		char missingChar =	'?';
 		char gapChar =		'-';		// there is no standard definition of which characters
 	       						// TNT uses for these, nor can I figure out how to
@@ -320,11 +322,6 @@ public class TNTFile extends BaseFormatHandler {
 		tok.wordChars(gapChar,gapChar);
 	        tok.wordChars(missingChar,missingChar);
 
-		// To handle the []s correctly, we really need to process the newlines separately
-		// note the implicit assumption, that we only have ONE sequence per LINE.
-		tok.ordinaryChars('\r', '\r');
-		tok.ordinaryChars('\n', '\n');
-
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
 
@@ -333,51 +330,52 @@ public class TNTFile extends BaseFormatHandler {
 			;	// we've already got xread on the stream, do nothing
 		else	
 			tok.nextToken();		// this token IS 'xread'
-		
-		// handle the possible newline in between, and all that, gah, etc.
-		do {
-			tok.nextToken();
-			lineno++;
-		} while(tok.ttype == '\r' || tok.ttype == '\n');
-		lineno--;
 
+		// now, move on to the token after 'xread'
+		tok.nextToken();
+		
 		// first, we get the title
 		StringBuffer title = null;
 		if(tok.ttype == '\'') {
 			title = new StringBuffer();
 
 			while(true) {
+				if(delay != null)
+					delay.delay(tok.lineno(), count_lines);
+				
 				int type = tok.nextToken();
 
-				if(delay != null)
-					delay.delay(lineno, count_lines);
-				
 				if(type == '\'')
 					break;
 
-				if(type == StreamTokenizer.TT_WORD)
-					title.append(tok.sval);
-				else
+				// comment commands (our hacks, basically)
+				if(type == StreamTokenizer.TT_WORD) {
+					if(tok.sval.length() > 0 && tok.sval.charAt(0) == '@') {
+						// special command!
+						if(tok.sval.equalsIgnoreCase("@xgroup")) {
+							groupCommand(GROUP_CHARSET, appendTo, tok, evt, delay, count_lines);
+						} else if(tok.sval.equalsIgnoreCase("@agroup")) {
+							groupCommand(GROUP_TAXONSET, appendTo, tok, evt, delay, count_lines);
+						} else {
+							// oops ... not a command! (that we recognize, anyway)
+						}
+					} else {
+						title.append(tok.sval);
+					}
+				} else
 					title.append(type);
-
-				if(type == '\r' || type == '\n')
-					lineno++;
 
 				if(type == StreamTokenizer.TT_EOF)
 					throw formatException(tok, "The title doesn't seem to have been closed properly. Are you sure the final quote character is present?");
 			}
 		}
 		
-		// handle the possible newline in between, and all that, gah, etc.
-		do {
-			lineno++;
-			tok.nextToken();
-		} while(tok.ttype == '\r' || tok.ttype == '\n');
-		lineno--;
-
 		// finished (or, err, not) the (optional) title
 		// but we NEED two numbers now
+
+		// number of characters
 		int nChars = 0;
+		tok.nextToken();
 		if(tok.ttype != StreamTokenizer.TT_WORD)
 			throw formatException(tok, "Couldn't find the number of characters. I found '" + (char)tok.ttype + "' instead!");
 		try {
@@ -386,13 +384,9 @@ public class TNTFile extends BaseFormatHandler {
 			throw formatException(tok, "Couldn't convert this file's character count (which is \"" + tok.sval + "\") into a number. Are you sure it's really a number?");
 		}
 
-		do {
-			tok.nextToken();
-			lineno++;
-		} while(tok.ttype == '\r' || tok.ttype == '\n');
-		lineno--;
-		
+		// number of taxa
 		int nTax = 0;
+		tok.nextToken();
 		if(tok.ttype != StreamTokenizer.TT_WORD)
 			throw formatException(tok, "Couldn't find the number of taxa. I found '" + (char)tok.ttype + "' instead!");
 		try {
@@ -400,6 +394,12 @@ public class TNTFile extends BaseFormatHandler {
 		} catch(NumberFormatException e) {
 			throw formatException(tok, "Couldn't convert this file's taxon count (which is \"" + tok.sval + "\") into a number. Are you sure it's really a number?");
 		}
+		
+		// To handle the []s correctly, we really need to process the newlines separately
+		// note the implicit assumption, that we only have ONE sequence per LINE.
+		tok.ordinaryChars('\r', '\r');
+		tok.ordinaryChars('\n', '\n');
+		int lineno = tok.lineno();
 		
 		// okay, all done ... sigh.
 		// now we can fingally go into the big loop
@@ -582,17 +582,7 @@ public class TNTFile extends BaseFormatHandler {
 
 		System.err.println("Beginning: " + current_command_name);
 
-		// okay, '?group' has started?
-		if(
-				tok.ttype == StreamTokenizer.TT_WORD && 
-				(
-				 	tok.sval.equalsIgnoreCase("xgroup") ||
-					tok.sval.equalsIgnoreCase("agroup")
-				)
-		)
-			;	// we've already got xread on the stream, do nothing
-		else	
-			tok.nextToken();		// this token IS '_group'!
+		// okay, we're assuming that '?group' has already started.
 
 		// since fullstops can be used in ranges, we NEED them to be wordChars, 
 		// so that they turn up as a word (i.e., '23.26' is returned as '23.26',
@@ -616,6 +606,10 @@ public class TNTFile extends BaseFormatHandler {
 		// 
 		Hashtable hash_group_ids = new Hashtable();			// String id -> Sequence
 		String currentName = "";
+
+		int sequence_begin = -1;
+		int sequence_end = -1;
+
 		while(true) {
 			int type = tok.nextToken();
 
@@ -632,6 +626,26 @@ public class TNTFile extends BaseFormatHandler {
 				break;
 
 			if(type == '=') {
+				// we've got a new sequence
+				// BUT, first, we need to ensure that the last sequence is terminated
+					// fire the last 
+					if(sequence_begin == -1 || sequence_end == -1) {
+						// no sequences have begun yet. booyah.
+					} else {
+						if(which_group == GROUP_CHARSET) {
+							fireEvent(evt.makeCharacterSetFoundEvent(
+								currentName,
+								sequence_begin + 1,
+								sequence_end + 1)
+							);
+							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+						}
+					}
+					
+					// then set up the next one
+					sequence_begin = -1;
+					sequence_end = -1;
+
 				// okay, the next token ought to be a unique group id
 				if(tok.nextToken() != StreamTokenizer.TT_WORD) {
 					throw formatException(tok, "Expecting the group id, but found '" + (char)tok.ttype + "' instead!");
@@ -685,14 +699,30 @@ public class TNTFile extends BaseFormatHandler {
 				if(word.indexOf('.') == -1) {
 					int locus = atoi(word, tok);
 
+					if(sequence_begin == -1) {
+						sequence_begin = locus;
+					}
 
-					if(which_group == GROUP_CHARSET) {
-						locus++;	// convert from TNT loci (0-based) to normal loci (1-based)
-						fireEvent(evt.makeCharacterSetFoundEvent(
-								currentName,
-								locus,
-								locus));
-						System.err.println("New single-character block: " + currentName + " at " + locus);
+					if(sequence_end == -1 || sequence_end == locus - 1) {	// if sequence_end is pointing at the LAST locus,
+						sequence_end = locus;	// move it to the current position
+
+						// the sequence continues, so we do NOT fire now
+					} else {
+						// the sequence ends here!
+						// fire the last 
+						if(which_group == GROUP_CHARSET) {
+							fireEvent(evt.makeCharacterSetFoundEvent(
+									currentName,
+									sequence_begin + 1,
+									sequence_end + 1)
+								);
+							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+
+						}
+						
+						// then set up the next one
+						sequence_begin = locus;
+						sequence_end = locus;
 					}
 
 					continue;
@@ -702,6 +732,24 @@ public class TNTFile extends BaseFormatHandler {
 					//
 					// you have to wonder why you bother, sometimes.
 
+					// one question: do we have an unfired sequence?
+					// if we do, fire it first!
+						// fire the last 
+						if(which_group == GROUP_CHARSET) {
+							fireEvent(evt.makeCharacterSetFoundEvent(
+									currentName,
+									sequence_begin + 1,
+									sequence_end + 1)
+								);
+							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+
+						}
+						
+						// then set up the next one
+						sequence_begin = -1;
+						sequence_end = -1;
+
+					// okay, now we can fire this next bugger
 					int from = 0;
 					int to = 0;
 					if(word.charAt(0) == '.') {
@@ -748,9 +796,23 @@ public class TNTFile extends BaseFormatHandler {
 			}
 		}
 
+		// do we have an incomplete sequence?
+		if(sequence_begin != -1 && sequence_end != -1) {
+			// fire the last 
+			if(which_group == GROUP_CHARSET) {
+				fireEvent(evt.makeCharacterSetFoundEvent(
+					currentName,
+					sequence_begin + 1,
+					sequence_end + 1)
+				);
+				System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+
+			}
+		}
+
 		// Restore '.' to its usual position as a character. 
 		tok.ordinaryChar('.');
-	}	
+	}
 
 	private int atoi(String word, StreamTokenizer tok) throws FormatException {
 		try {
