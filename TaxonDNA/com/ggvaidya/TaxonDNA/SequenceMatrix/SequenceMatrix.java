@@ -1,6 +1,6 @@
 /**
  * SequenceMatrix represents datasets in a matrix of sequences versus genes.
- * This gives it an edge against TaxonDNA, which really sees datasets as
+ * This gives it an edge against SpeciesIdentifier, which really sees datasets as
  * a sequence-to-polypeptide map. SequenceMatrix can therefore *really*
  * import in GenBank and Nexus formats (it's import will, I suppose, be
  * something to behold). God only knows if it will 'live' within TaxonDNA
@@ -54,23 +54,23 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
 	// The following variables create and track our AWT interface
-	private Frame		mainFrame 		= new Frame();
-	private JTable		mainTable		= null;	
+	private Frame		mainFrame 		= new Frame();		// A frame
+	private JTable		mainTable		= null;			// with a table
 
 	// Other components of SequenceMatrix
 	// information
-	private DataStore	dataStore		= new DataStore(this);
+	private DataStore	dataStore		= new DataStore(this);	// the datastore: stores data
 
 	// files
-	private FileManager	fileMan			= new FileManager(this);
-	private Exporter	exporter		= new Exporter(this);
-
+	private FileManager	fileMan			= new FileManager(this); // file manager: handles files coming in
+	private Exporter	exporter		= new Exporter(this);	// and the actual exports go thru exporter
+	
 	// dialogs
-	private Preferences	prefs			= new Preferences(this);
-	private Taxonsets	taxonSets		= new Taxonsets(this);
+	private Preferences	prefs			= new Preferences(this); // preferences are stored here
+	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
 
 	// analyses
-	private FindDistances	findDistances		= new FindDistances(this);
+	private FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
 //
 //	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
@@ -163,8 +163,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// easy: we could just query the table and spit it out!
 		if(cmd.equals("Export table as tab-delimited"))
 			fileMan.exportTableAsTabDelimited();
-
 		
+		// Export -> One file per column. 
 		if(cmd.equals("Export table as sequences (one file per column)"))
 			fileMan.exportSequencesByColumn();
 
@@ -318,6 +318,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 				dtde.rejectDrop();
 				return;
 			}
+			dtde.dropComplete(true);		// so long and thanks for all the fish!
 
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
@@ -325,17 +326,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 				fileMan.addFile(file);
 			}
-
-			dtde.dropComplete(true);
 		} else {
 			dtde.rejectDrop();
 		}
 	}
 	public void dropActionChanged(DropTargetDragEvent dtde) {}
 
+	/** This really ought to be a static variable in the itemStateChanged function. Ah, well. */
 	private CheckboxMenuItem last_chmi = null;
 	/**
-	 * An item listener, used for the sort sub-menu
+	 * An item listener, used for the sort sub-menu. 
 	 */
 	public void	itemStateChanged(ItemEvent e) {
 		CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();
