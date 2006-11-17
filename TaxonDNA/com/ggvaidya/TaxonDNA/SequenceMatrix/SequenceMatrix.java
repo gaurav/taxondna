@@ -340,6 +340,29 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void	itemStateChanged(ItemEvent e) {
 		CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();
 
+		// 
+		// HANDLER CODE FOR CHECKBOX ITEMS IN THE MENU (STUPID SUN BUG #4024569)
+		//
+		if(chmi.getLabel().equals("Display pairwise distances")) {
+			// note: this is actually the NEW state
+			if(chmi.getState() == true) {
+				if(dataStore.enterPairwiseDistanceMode())
+					chmi.setState(true);
+				else
+					chmi.setState(false);		// just in case
+			} else {
+				if(dataStore.exitPairwiseDistanceMode())
+					chmi.setState(false);
+				else
+					chmi.setState(true);		// just in case
+			}
+
+			return;
+		}
+
+		// 
+		// HANDLER CODE FOR THE LIST
+		//
 		if(last_chmi != null)
 			last_chmi.setState(false);
 
@@ -581,13 +604,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		sort.addActionListener(this);
 		view.add(sort);
 
+		chmi = new CheckboxMenuItem("Display pairwise distances", false);
+		chmi.addItemListener(this);
+		view.add(chmi);
+
 		view.addActionListener(this);
 		menubar.add(view);
 
 		// Analysis menu
 		Menu	analyses	= 	new Menu("Analyses");
 		analyses.add(new MenuItem("Find all zero percent distances"));
-		analyses.add(new MenuItem("Calculate the rank table"));
 		analyses.addActionListener(this);
 		menubar.add(analyses);
 
@@ -680,6 +706,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 */
 	public TableModel getTableModel() {
 		return (TableModel) dataStore;
+	}
+
+	/**
+	 * Returns the Table.
+	 */
+	public JTable getJTable() {
+		return mainTable;
 	}
 
 	
