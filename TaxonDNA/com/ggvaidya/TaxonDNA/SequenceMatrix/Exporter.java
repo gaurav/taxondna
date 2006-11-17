@@ -526,7 +526,7 @@ public class Exporter {
 				if(str != null) 
 				{
 					if(x == 31)
-						buff_title.append("agroup\n");
+						buff_title.append("@agroup\n");
 
 					if(x <= 31)
 						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
@@ -560,8 +560,8 @@ public class Exporter {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
-			if(colid == 31)
-				buff_title.append("xgroup\n");
+			if(colid == 32)
+				buff_title.append("@xgroup\n");
 
 			if(colid <= 31)
 				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
