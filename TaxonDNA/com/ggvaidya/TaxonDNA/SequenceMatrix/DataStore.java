@@ -643,6 +643,13 @@ public class DataStore implements TableModel {
 			setSequence(colName, seqName, seq);
 		}
 
+		// update the data
+		updateDisplay();
+
+		// close the progressbar, so we can talk to the user if need be
+		if(delay != null)
+			delay.end();
+
 		// Communicate the droppedSequences list to the user
 		if(droppedSequences.length() > 0) {
 			MessageBox mb = new MessageBox(
@@ -654,12 +661,8 @@ public class DataStore implements TableModel {
 			mb.go();
 		}
 
-		if(delay != null)
-			delay.end();
-	
 		// Cleanup time
 		sl.unlock();
-		updateDisplay();
 
 	}
 
