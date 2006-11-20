@@ -251,7 +251,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			str.append(bin.size() + "\t" + hash_species_this.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\n");
 		}
 
-		str.append("\n\nSummary of species\nSpecies\tSequences\tFound in how many clusters?\tFound with how many other species?\n");
+		str.append("\n\nSummary of species\n\nSPECIES\tSEQUENCES\tFOUND IN HOW MANY CLUSTERS?\tFOUND WITH HOW MANY OTHER SPECIES?\n");
 
 		Enumeration enu = hash_species.keys();
 		while(enu.hasMoreElements()) {
