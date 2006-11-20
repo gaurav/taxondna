@@ -474,7 +474,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		int row = mainTable.rowAtPoint(e.getPoint());
 		int col = mainTable.columnAtPoint(e.getPoint());
 
-		if(row != -1 && col != -1 && col != 0) {
+		if(row != -1 && col != -1 && col >= DataStore.additionalColumns) {
 			// it's, like, valid, dude.
 			dataStore.toggleCancelled(
 					dataStore.getColumnName(col),
