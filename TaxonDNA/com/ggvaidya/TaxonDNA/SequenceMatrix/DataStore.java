@@ -233,8 +233,13 @@ public class DataStore implements TableModel {
 
 		Sequence seq = (Sequence) col.get(seqName);
 
+		// if seq doesn't exist, just ignore it;
+		// it's hard for anybody but us to check whether
+		// a certain sequence is N/A or CANCELLED.
 		if(seq == null)
-			throw new IllegalArgumentException("Column '" + colName + "' doesn't have a sequence named '" + seqName + "'");
+			return;
+
+			// throw new IllegalArgumentException("Column '" + colName + "' doesn't have a sequence named '" + seqName + "'");
 
 		if(cancelled) {
 			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", new Object());
@@ -912,7 +917,48 @@ public class DataStore implements TableModel {
 
 	public void updateNoSort() {
 //		fireTableModelEvent(new TableModelEvent(this));
+		
+		// okay, firing the table model event resets everything
+		// this is good for us (since even minor changes, like 
+		// deleting a sequence, can cause major changes, like
+		// removing an entire column which only contained that
+		// one sequence).
+		//
+		// on the other hand, we need to conserve the column
+		// widths. Since i can't find any better way of making
+		// this happen, i'm just going to save them all (into
+		// a hashtable by 'identifier'), then spew them back
+		// out again.
+		//
+		// and may God have mercy on my soul.
+		//
+		Hashtable widths = new Hashtable();
+		JTable j = matrix.getJTable();
+		if(j == null)
+			return;
+		
+
+		// save all widths
+		TableColumnModel tcm = j.getColumnModel();
+		if(tcm == null)
+			return;
+
+		Enumeration e = tcm.getColumns();
+		while(e.hasMoreElements()) {
+			TableColumn tc = (TableColumn) e.nextElement();
+			widths.put(tc.getIdentifier(), new Integer(tc.getWidth()));
+		}
+
 		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+		
+		e = tcm.getColumns();
+		while(e.hasMoreElements()) {
+			TableColumn tc = (TableColumn) e.nextElement();
+
+			Integer oldWidth = (Integer) widths.get(tc.getIdentifier());
+			if(oldWidth != null)
+				tc.setPreferredWidth(oldWidth.intValue());
+		}
 	}
 
 //
