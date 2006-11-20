@@ -227,7 +227,7 @@ public class NexusFile extends BaseFormatHandler {
 				if(type == StreamTokenizer.TT_WORD) {
 					String str = tok.sval;
 
-					if(str.equalsIgnoreCase("END")) {
+					if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
 						//System.err.println("Leaving strange block");
 						//if(newCommand && tok.nextToken() == ';') {
 							// okay, it's an 'END;'
@@ -356,8 +356,22 @@ public class NexusFile extends BaseFormatHandler {
 					str = tok.sval;
 
 					if(str.equalsIgnoreCase("INTERLEAVE")) {
-						// turn interleaving on
-						isDatasetInterleaved = true;
+						str = getValueOfKey(tok);
+
+						if(str == null) {
+							// just INTERLEAVE; as per standard, 
+							// this means INTERLEAVE is ON
+							isDatasetInterleaved = true;
+						} else {
+							// now, str is either 'YES' or 'NO' or, err, something else
+							// 
+							// we'll try to be careful about it - you explicitly need
+							// a 'YES' to activate this
+							if(str.equalsIgnoreCase("YES"))
+								isDatasetInterleaved = true;
+							else
+								isDatasetInterleaved = false;
+						}
 					}
 		
 					else if(str.equalsIgnoreCase("DATATYPE")) {
@@ -465,7 +479,7 @@ public class NexusFile extends BaseFormatHandler {
 						inIgnoredCommand = true;
 					}
 
-					if(str.equalsIgnoreCase("END")) {
+					if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
 						//System.err.println("Leaving strange block");
 						// Note: PAUP will spit out blocks with END without a terminating ';'.
 //						if(newCommand && tok.nextToken() == ';') {
@@ -541,7 +555,7 @@ public class NexusFile extends BaseFormatHandler {
 				//System.err.println("New command: " + str);
 
 				// is it over?
-				if(str.equalsIgnoreCase("END")) {
+				if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
 					//System.err.println("Leaving strange block");
 //					if(newCommand && tok.nextToken() == ';') {
 						// okay, it's an 'END;'
