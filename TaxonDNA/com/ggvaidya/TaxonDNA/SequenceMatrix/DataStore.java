@@ -5,6 +5,20 @@
  * we aren't UI-independent at all, although we will
  * talk mostly to other objects rather than actually
  * *doing* things ourselves.
+ *
+ * TABLE MODELS: We are now 'outsourcing' Table Models
+ * entirely. DataStore will handle communication to
+ * and from the TableModels, and will act as a single
+ * major TableModel itself. What this means is:
+ *
+ * JTable ------------&gt; DataStore.getValueAt(...), etc. ------------&gt; Display...Model.getValueAt(...), etc.
+ * Display...Model.fireTableModelEvent() ------&gt; DataStore.fireT... ----&gt; TableModelListeners
+ *
+ * In a nutshell: nobody needs to know about this at all.
+ * Everybody can just act as if DataStore is the one and
+ * only TableModel. We figure out which display mode we're
+ * in, and route the incoming messages appropriately.
+ *
  */
 
 /*
@@ -35,6 +49,11 @@ import java.awt.Component;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
+
+import java.awt.MenuItem;
+import java.awt.Menu;
+import java.awt.PopupMenu;
+import java.awt.event.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
@@ -73,19 +92,16 @@ public class DataStore implements TableModel {
 	public static final int		SORT_BYSECONDNAME =	1;		// sort names by species epithet 
 	public static final int		SORT_BYCHARSETS =	2;		// sort names by character sets
 	public static final int		SORT_BYTOTALLENGTH =	3;		// sort names by total length
-	private int			sortBy 	= 		SORT_BYNAME;	// By default, we sort by name
+
+	private int			sortBy 	= 		SORT_BYNAME;
+	private boolean			sortBroken =		true;		// assume the sort is 'broken'
 
 	private Vector			sortedSequenceNames;
 	private Vector			sortedColumnNames;
 
-	// For the display
-	public static final int		additionalColumns =	3;		// The number of 'extra columns
-										// col(0) = 
-	// Pairwise distances mode
-	private boolean 		pairwiseDistancesMode = false;
-	private String			pdm_seqName = null;
-	private Hashtable		pdm_hash_maxDist = null;
-	private Hashtable		pdm_hash_minDist = null;
+	// For the table-model-switcheroo thingie
+	private TableModel		currentTableModel =	null;
+	private int			additionalColumns =	0;
 
 //
 // 0.	INTERNAL ACCESS FUNCTIONS. hash_columns does a lot of pretty strange shit in a very small space.
@@ -145,7 +161,14 @@ public class DataStore implements TableModel {
 	 * keep just such a list for easy retrieval. Indexing, you know. All the cool kids
 	 * are doing it.
 	 */
-	public Set getSequences() {
+	public List getSequences() {
+		if(sortBroken)
+			resort(sortBy);
+
+		return (List) sortedSequenceNames;
+	}
+
+	public Set getSequencesUnsorted() {
 		Hashtable ht = (Hashtable) hash_master.get("");
 
 		if(ht == null)
@@ -154,31 +177,71 @@ public class DataStore implements TableModel {
 		return ht.keySet();
 	}
 
-	public List getSortedSequences() {
-		return (List) sortedSequenceNames;
-	}
+	/**
+	 * Returns a set of all column names in this dataStore, uns
+	 */
+	public List getColumns() {
+		if(sortBroken)
+			resort(sortBy);
 
-	public List getSortedColumns() {
 		return (List) sortedColumnNames;
 	}
 
-	public SequenceList getSequenceListByColumn(String colName) {
-		SequenceList list = new SequenceList();
+	/**
+	 * Returns a set of all column names in this dataStore.
+	 */
+	public Set getColumnsUnsorted() {
+		Set set = new HashSet(hash_master.keySet());	// copy this
+		set.remove("");	// get rid of the 'meta' data
+		return set;
+	}
+
+	/**
+	 * Returns a set of all sequence names in column 'colName',
+	 * IN ORDER.
+	 */
+	public List getSequenceNamesByColumn(String colName) {
+		LinkedList ll = new LinkedList();
 
 		validateColName(colName);
 
-		Iterator i = getSequenceNamesByColumn(colName).iterator();
+		if(!isColumn(colName))
+			return ll;
+
+		Iterator i = getSequences().iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+
+			if(getSequence(colName, seqName) != null)
+				ll.add(seqName);
+		}
+
+		return (List) ll;
+	}
+
+
+	/**
+	 * Returns a SequenceList containing all the sequences in a column,
+	 * IN ORDER.
+	 */
+	public SequenceList getSequenceListByColumn(String colName) {
+		SequenceList sl = new SequenceList();
+
+		validateColName(colName);
+
+		if(!isColumn(colName))
+			return null;
+
+		Iterator i = getSequences().iterator();
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
 			Sequence seq = getSequence(colName, seqName);
 
-			if(seq == null)
-				throw new RuntimeException("In DataStore.getSequenceListByColumn: sequence (" + colName + ", " + seqName + ") does not exist, although getSequenceNamesByColumn returns it.");
-
-			list.add(seq);
+			if(seq != null)
+				sl.add(seq);
 		}
 
-		return list;
+		return sl;
 	}
 
 	/**
@@ -193,7 +256,6 @@ public class DataStore implements TableModel {
 		return ht.size();
 	}
 	
-
 	/**
 	 * Checks whether the sequence at (colName, seqName) is 'cancelled'.
 	 * A cancelled sequence cannot be accessed via getSequence(), which
@@ -246,6 +308,9 @@ public class DataStore implements TableModel {
 		} else {
 			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", null);
 		}
+
+		// sort order has been broken
+		sortBroken = true;
 	}
 
 	/**
@@ -282,6 +347,9 @@ public class DataStore implements TableModel {
 
 			ht.put(seqName, new Integer(oldCount+1));
 		}
+
+		// okay, by this point, the sort has been broken
+		sortBroken = true;
 	}
 
 	/**	
@@ -329,30 +397,9 @@ public class DataStore implements TableModel {
 				}
 			}
 		}
-	}
 
-	/**
-	 * Returns a set of all sequence names in column 'colName'.
-	 */
-	public Set getSequenceNamesByColumn(String colName) {
-		validateColName(colName);
-
-		Hashtable col = (Hashtable) hash_master.get(colName);
-		if(col == null)
-			return null;
-		
-		Set set = new HashSet(col.keySet());
-		set.remove("");
-		return set;
-	}
-
-	/**
-	 * Returns a set of all column names in this dataStore.
-	 */
-	public Set getColumns() {
-		Set set = new HashSet(hash_master.keySet());	// copy this
-		set.remove("");	// get rid of the 'meta' data
-		return set;
+		// sort order was broken
+		sortBroken = true;
 	}
 
 	/**
@@ -380,7 +427,7 @@ public class DataStore implements TableModel {
 
 		validateSeqName(seqName);
 
-		Iterator i = getColumns().iterator();
+		Iterator i = getColumnsUnsorted().iterator();
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
@@ -408,6 +455,9 @@ public class DataStore implements TableModel {
 		}
 		
 		col.put("", new Integer(newLength));
+
+		// just to be on the safe side, assume this broke sort too
+		sortBroken = true;
 	}
 
 	/**
@@ -509,7 +559,6 @@ public class DataStore implements TableModel {
 
 		return count;
 	}
-	
 
 // 
 // 1. 	CONSTRUCTOR. We need a SequenceMatrix object to talk to the user with.
@@ -520,6 +569,8 @@ public class DataStore implements TableModel {
 	 */
 	public DataStore(SequenceMatrix sm) {
 		matrix = sm;
+		currentTableModel = (TableModel) new DisplayCountsModel(matrix, this);
+		additionalColumns = 3;
 		updateSort(SORT_BYNAME);	// this will do nothing, but will prime the sort Vectors for future use
 	}
 
@@ -832,16 +883,14 @@ public class DataStore implements TableModel {
 	 * So:
 	 * 	(x-coord, y-coord) 	is mapped to		(colName, seqName)
 	 * 	(colName, seqName)	is mapped to		(Sequence)
+	 *
+	 * NOTE: Do NOT check if it's already sorted, unless you also check broken!
 	 */
 	private void resort(int sort) {
-		sortedColumnNames = new Vector(getColumns());
+		sortedColumnNames = new Vector(getColumnsUnsorted());
 		Collections.sort(sortedColumnNames);
 
-		// do NOT resort sortedSequenceNames if we're in PDM
-		if(pairwiseDistancesMode)
-			return;
-
-		sortedSequenceNames = new Vector(getSequences());
+		sortedSequenceNames = new Vector(getSequencesUnsorted());
 
 		switch(sort) {
 			case SORT_BYTOTALLENGTH:
@@ -859,6 +908,7 @@ public class DataStore implements TableModel {
 		}
 
 		sortBy = sort;
+		sortBroken = false;
 	}	
 
 //
@@ -882,6 +932,16 @@ public class DataStore implements TableModel {
 //		|
 //	DataStore.getColumnName(...)
 //	DataStore.getValueAt(...)
+//
+//	PHASE 2: The above mechanism has been changed (again). Now, we create a 
+//	DisplayCountsModel, which handles the nitty-gritty. We are responsible for
+//	passing all messages on.
+//
+//	Eventually, we will also have a DisplayPairwiseModel. At this point, things
+//	really get an awful lot of fun, since we have to figure out WHICH MODEL TO
+//	TALK TO, then talk to that model. And switch from one to the other.
+//
+//	Sigh. 
 //
 
 //
@@ -964,50 +1024,40 @@ public class DataStore implements TableModel {
 //
 // 6.2. THE TABLE MODEL SYSTEM. This is how the JTable talks to us ... and we talk back.
 //
-
 	/**
 	 * Tells us what *class* of object to expect in columns. We can safely expect Strings.
 	 * I don't think the world is ready for transferable Sequences just yet ...
 	 */
 	public Class getColumnClass(int columnIndex) {
-		return String.class;
+		return currentTableModel.getColumnClass(columnIndex);  
 	}
 
 	/**
 	 * Gets the number of columns.
 	 */
 	public int getColumnCount() {
-		return getColumns().size() + additionalColumns; 
+		return currentTableModel.getColumnCount();
 	}
 	
 	/**
 	 * Gets the number of rows.
 	 */
 	public int getRowCount() {
-		return getSequencesCount();
+		return currentTableModel.getRowCount(); 
 	}
 
 	/**
 	 * Gets the name of column number 'columnIndex'.
 	 */
         public String getColumnName(int columnIndex) {
-		if(columnIndex == 0)
-			return "";		// upper left hand box
-
-		if(columnIndex == 1)
-			return "Total length";
-
-		if(columnIndex == 2)
-			return "Number of sets";
-
-		return (String) sortedColumnNames.get(columnIndex - additionalColumns);
+		return currentTableModel.getColumnName(columnIndex);
 	}
 
 	/**
 	 * Convenience function.
 	 */
 	public String getRowName(int rowIndex) {
-		return (String) getValueAt(rowIndex, 0);
+		return (String) currentTableModel.getValueAt(0, rowIndex);
 	}
 
 	/**
@@ -1018,101 +1068,14 @@ public class DataStore implements TableModel {
 	 * 3.	(0, 0) is to be a blank box (new String("")).
 	 */
         public Object getValueAt(int rowIndex, int columnIndex) {
-		if(sortedSequenceNames.size() == 0)
-			return "No sequences loaded";
-
-		if(columnIndex == 0) {
-			// columnZero == names
-			return (String) sortedSequenceNames.get(rowIndex);
-		}
-
-		String seqName = (String) sortedSequenceNames.get(rowIndex); 
-		if(seqName == null)
-			throw new IllegalArgumentException("Either rowIndex is out of range (rowIndex="+rowIndex+"), or sortedSequenceNames isn't primed.");
-
-		if(columnIndex == 1) {
-			// total length	
-			return getCompleteSequenceLength(seqName) + " bp";
-		}
-
-		if(columnIndex == 2) {
-			// no of charsets
-			return getCharsetsCount(seqName) + "";
-		}
-
-		String colName  = (String) sortedColumnNames.get(columnIndex - additionalColumns);
-		if(isSequenceCancelled(colName, seqName))
-			return "(CANCELLED)";
-		Sequence seq 	= getSequence(colName, seqName);
-
-		// is it perhaps not defined for this column?
-		if(seq == null)
-			return "(N/A)";	
-
-		// if we're in PDM, we need to display the pairwise distance
-		if(pairwiseDistancesMode) {
-			Sequence seq_compareAgainst = getSequence(colName, pdm_seqName); 
-			if(seq_compareAgainst == null)
-				return "(N/A - bug)";
-
-			double dist = seq.getPairwise(seq_compareAgainst);
-
-			// min and max dist for this row
-			double minDist = +2.0;
-			double maxDist = -1.0;
-
-			if(pdm_hash_maxDist.get(colName) == null)
-				pdm_hash_maxDist.put(colName, new Double(maxDist));
-			else
-				maxDist = ((Double)pdm_hash_maxDist.get(colName)).doubleValue();
-
-			if(pdm_hash_minDist.get(colName) == null)
-				pdm_hash_minDist.put(colName, new Double(minDist));
-			else
-				minDist = ((Double)pdm_hash_minDist.get(colName)).doubleValue();
-
-			if(dist > 0 && dist < minDist) {
-				minDist = dist;
-				pdm_hash_minDist.put(colName, new Double(minDist));
-			}
-
-			if(dist > 0 && dist > maxDist) {
-				maxDist = dist;
-				pdm_hash_maxDist.put(colName, new Double(maxDist));
-			}
-
-			if(seqName.equals(pdm_seqName))
-				return "(N/A)";
-			else
-				return percentage(dist - minDist, maxDist - minDist) + "%";
-		}
-
-		int internalGaps = seq.countInternalGaps();
-		int n_chars = seq.countBases('N');
-		if(internalGaps == 0) {
-			if(n_chars == 0)
-				return seq.getActualLength() + "";
-			else
-				return seq.getActualLength() + " (" + n_chars + " 'N' characters)";
-		} else {
-			if(n_chars == 0)
-				return seq.getActualLength() + " (" + internalGaps + " gaps)";
-			else
-				return seq.getActualLength() + " (" + internalGaps + " gaps, " + n_chars + " 'N' characters)";
-		}
-	}
-
-	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return currentTableModel.getValueAt(rowIndex, columnIndex);
 	}
 
 	/**
 	 * Determines if you can edit anything. Which is only the sequences column.
 	 */
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 0)
-			return true;
-		return false;
+		return currentTableModel.isCellEditable(rowIndex, columnIndex);
 	}
 
 	/** 
@@ -1120,12 +1083,7 @@ public class DataStore implements TableModel {
 	 * sequences column. 
 	 */
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		if(columnIndex == 0) {
-			String strOld = (String) getValueAt(rowIndex, columnIndex);
-			String strNew = (String) aValue;
-
-			renameSequence(strOld, strNew);
-		}
+		currentTableModel.setValueAt(aValue, rowIndex, columnIndex);
 	}
 
 //
@@ -1216,249 +1174,75 @@ public class DataStore implements TableModel {
 			}
 		}
 
-		
-
 		updateDisplay();
 	}
 
-	//
-	// PAIRWISE DISTANCE SHENANIGANS
-	// Very experimental, so feel free to play around/change code/rename stuff
-	// here, as long as you make the necessary changes in SequenceMatrix.java
-	//
+//
+// UI over the table
+//
 	/**
-	 * Sets the dataStore into PairwiseDistanceMode. Please keep in sync
-	 * with exitPairwiseDistanceMode(), which should undo EVERYTHING this
-	 * method does.
-	 *
-	 * @return true, if we're now in PDM
+	 * Event: somebody right clicked in the mainTable somewhere
 	 */
+	public void rightClick(MouseEvent e, int col, int row) {
+		/*
+		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
+		*/
+		String colName = getColumnName(col);
+		String rowName = getRowName(row);
+
+		PopupMenu pm = new PopupMenu();
+
+		if(col == 0) {
+			// colName == ""
+			// we'll replace this with 'Sequence names'
+			colName = "Sequence names";
+		}
+
+		if(col < additionalColumns) {
+			// it's a 'special' column
+			// we can't do things to it
+			pm.add("Column: " + colName);
+		} else {
+			Menu colMenu = new Menu("Column: " + colName);
+			MenuItem delThisCol = new MenuItem("Delete this column");
+			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
+			colMenu.add(delThisCol);
+			colMenu.addActionListener(matrix);	// wtf really?
+			pm.add(colMenu);
+		}
+
+		Menu rowMenu = new Menu("Row: " + rowName);
+		MenuItem delThisRow = new MenuItem("Delete this row");
+		delThisRow.setActionCommand("ROW_DELETE:" + rowName);
+		rowMenu.add(delThisRow);
+		rowMenu.addActionListener(matrix);		// wtf really?
+		pm.add(rowMenu);
+
+		matrix.getJTable().add(pm);			// yrch!
+		pm.show(matrix.getJTable(), e.getX(), e.getY());
+	}
+
+	/**
+	 * Event: somebody double clicked in the mainTable somewhere
+	 */
+	public void doubleClick(MouseEvent e, int col, int row) {
+		if(row != -1 && col != -1 && col >= additionalColumns) {
+			// it's, like, valid, dude.
+			toggleCancelled(getColumnName(col), getRowName(row));
+		}
+
+	}
+
+
+	/** Activate PDM */
 	public boolean enterPairwiseDistanceMode() {
-		// we need atleast one sequence name to do this
-		if(getSequences().size() == 0) {
-			new MessageBox(
-					matrix.getFrame(),
-					"You need atleast one sequence to run this analysis!",
-					"I can't run a pairwise distance analysis without atleast one sequence! Try loading a sequence and trying again.").go();
-			return false;
-		}
-
-		// Figure out a list of 'complete' columns 
-		Vector completeColNames = new Vector();
-
-		Iterator i = getColumns().iterator();
-		while(i.hasNext()) {
-			String colName = (String) i.next();
-			
-			if(getSequenceNamesByColumn(colName).size() == getSequencesCount())
-				completeColNames.add(colName);
-		}
-
-		// 
-		// Report error if we're missing any
-		//
-		if(completeColNames.size() == 0) {
-			new MessageBox(
-					matrix.getFrame(),
-					"Couldn't generate a reference sequence list!",
-					"I need atleast one gene without any missing or N/A sequences in order to generate a reference sequence. You don't have any! Sorry!").go();
-			return false;
-		}
-
-		//
-		// Generate the reference sequence
-		//
-		ProgressDialog pd = new ProgressDialog(
-			matrix.getFrame(),		
-			"Please wait, calculating reference sequence ...",
-			"I am generating a 'reference sequence' from all complete gene sets. Please wait!"
-		);
-		pd.begin();
-		
-		// we need to pick a 'volunteer' to sort against, though.
-		// the following code will work UNLESS there are no sequences
-		// (which should already have been checked for by this point
-		// of time)
-		//
-		// this is being done here, because we'll need to get the
-		// sequence while combining them (to avoid having to
-		// use Sequence.getFullName(), which doesn't have any
-		// link to getSequences().get(x))
-		//
-		pdm_seqName = (String) getSortedSequences().get(0);
-		Sequence sortAgainst = null;
-
-		Hashtable hash_seqToSeqName = new Hashtable();	// maps seq (Sequence) to the seqName (String)
-		SequenceList sl = new SequenceList();
-
-		// for each sequence
-		i = getSequences().iterator();
-		int count_sequences = getSequencesCount();
-		int count = 0;
-		while(i.hasNext()) {
-			try {
-				pd.delay(count, count_sequences);
-			} catch(DelayAbortedException e) {
-				return false;
-			}
-
-			String seqName = (String) i.next();
-			Sequence seq = new Sequence();
-			seq.changeName(seqName);
-
-			// for each complete column
-			Iterator i_col = completeColNames.iterator();
-			while(i_col.hasNext()) {
-				String colName = (String) i_col.next();
-
-				// should never be null!
-				Sequence seq_segment = getSequence(colName, seqName);
-				seq.appendSequence(seq_segment);
-			}
-
-			sl.add(seq);
-
-			if(seqName.equals(pdm_seqName))
-				sortAgainst = seq;
-		}
-		
-		pd.end();
-		
-		if(sortAgainst == null)
-			throw new RuntimeException("I can't find a sequence named '" + pdm_seqName + "'! But it was here just a minute ago!");
-
-		// we now have sl, a reference sequence list
-		// as well as sortAgainst, our reference guy to
-		// sort against.
-		//
-		// sort it!
-
-		SortedSequenceList ssl = new SortedSequenceList(sl);
-		try {
-			ssl.sortAgainst(
-				sortAgainst,
-				new ProgressDialog(
-					matrix.getFrame(),
-					"Please wait, sorting reference sequence list ...",
-					"I'm now sorting the reference sequence list. This could take a while, depending on how big your dataset is."
-				)
-			);
-		} catch(DelayAbortedException e) {
-			return false;
-		}
-
-		// okay, so NOW we have a sorted sequence list
-		// now things get a LOT more hairy, very, very quickly
-		//
-		// 1. 	we need to save a copy of the sequence list by taxon name, as
-		// 	this will be our new 'sequence name list'. Which means we
-		// 	save it as a vector, and get all the TableModel functions to
-		// 	use that if we're in PDM.
-		//
-		// 2.	we also need to calculate every single pairwise distance
-		//	to the initial sequence. But how? Calc each dist and store
-		//	it? Do each one on the run? One step at a time, I guess.
-		//
-		
-		// WARNING WARNING WARNING
-		// We are now entering the non-cancellable zone!
-		// You should NOT cancel out of here!
-		// NEIN NEIN NEIN
-		
-		sortedSequenceNames = new Vector();
-		pdm_hash_maxDist = new Hashtable();
-		pdm_hash_minDist = new Hashtable();
-
-		for(int x = 0; x < ssl.count(); x++) {
-			Sequence seq = (Sequence) ssl.get(x);
-			String seqName = seq.getFullName();	// this isn't a seq from the table, but 
-								// a generated seq, which has the actual
-								// sequence names! so it's all good.
-			
-			sortedSequenceNames.add(seqName);
-		}
-
-		pairwiseDistancesMode = true;
-		
-		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer());
-
-		// TODO: hack, hack: the first call will calculate everything,
-		// and store the largest distances, which are used for call #2
-		//
-		// doesn't seem to work, so we'll CALL them ALL OURSELVES!
-		// hmpf
-		for(int y = 0; y < getColumnCount(); y++) {
-			for(int z = 0; z < getRowCount(); z++) {
-				getValueAt(z, y);
-			}
-		}
-
-		updateDisplay();
-
-		return true;
+		return false;
 	}
 
-	/**
-	 * Undoes all the changes made by enterPairwiseDistanceMode(). Each and every one.
-	 * 	 
-	 * @return true, if we're now out of PDM
-	 */
+	/** Deactivate PDM */
 	public boolean exitPairwiseDistanceMode() {
-		pairwiseDistancesMode = false;
-
-		matrix.getJTable().setDefaultRenderer(String.class, new DefaultTableCellRenderer());
-
-		resort(sortBy);
-
-		updateDisplay();
-
-		return true;
+		return false;
 	}
 }
 
-class PDMColorRenderer extends DefaultTableCellRenderer
-{
-    public PDMColorRenderer() {}
- 
-    public Component getTableCellRendererComponent(JTable table,
-                                                   Object value,
-                                                   boolean isSelected,
-                                                   boolean hasFocus,
-                                                   int row,
-                                                   int col)
-    {
-	// what would defaulttablecellrenderer do?
-        JComponent comp = (JComponent) super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,col);
 
-	comp.setOpaque(false);
-
-	if(row < 1 || col < DataStore.additionalColumns)
-		return comp;
-	
-	String val = (String) value;
-
-	if(val.equals("(N/A)"))
-		return comp;
-
-	if(val.equals("(N/A - bug)"))
-		return comp;
-
-	val = val.replaceAll("\\%", "");
-
-	try {
-		double d = Double.parseDouble(val)/100.0;
-
-		comp.setOpaque(true);
-
-		if(d < 0 || d > 1)
-			comp.setBackground(Color.getHSBColor(0.0f, 0.0f, 1.0f)); 
-		else
-			comp.setBackground(Color.getHSBColor(0.0f, (float)d, 1.0f)); 
-
-	} catch(NumberFormatException e) {
-		// ah, ferget it
-	}
-		       
-        return comp;
-    }
-}
