@@ -246,11 +246,7 @@ public class FileManager implements FormatListener {
 							// time to do that.
 
 					
-					ProgressDialog pd = new ProgressDialog(
-							matrix.getFrame(),
-							"Please wait, splitting sets ...",
-							"Please wait while I split this file up into its constituent datasets. Sorry for the wait!");
-					pd.begin();
+//					pd.begin();
 
 					/////////////////////////////////////////////////////////////////////////////////
 					// TODO: This code is busted. Since we're not sure what ORDER the messages come
@@ -274,11 +270,20 @@ public class FileManager implements FormatListener {
 					Iterator i_sets = hash_sets.keySet().iterator();
 					int set_count = 0;
 					while(i_sets.hasNext()) {
-						pd.delay(set_count, hash_sets.size());
+						//pd.delay(set_count, hash_sets.size());
 						set_count++;
-
+						
 						String name = (String) i_sets.next();
 						Vector v = (Vector) hash_sets.get(name);
+						
+						ProgressDialog pd = new ProgressDialog(
+							matrix.getFrame(),
+							"Please wait, separating out set '" + name + "' ...",
+							"Please wait while I separate out '" + name + "'. Sorry for the wait!");
+						pd.begin();		// and the addSequenceList(..., pd) call will
+									// eventually call pd.end(). It's hacky, I know!
+									// I'm sorry, Grandpa!
+
 
 						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
@@ -300,7 +305,7 @@ public class FileManager implements FormatListener {
 									//System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 									seq_out.appendSequence(seq.getSubsequence(from, to));
 								} catch(SequenceException e) {
-									pd.end();
+									//pd.end();
 
 									MessageBox mb_2 = new MessageBox(
 											matrix.getFrame(),
@@ -324,12 +329,8 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
-						matrix.getDataStore().addSequenceList(name, sl, null);
-							// we OUGHT to provide a ProgressDialog here,
-							// but we've already got one open at this point, 
-							// so it's all good.
+						matrix.getDataStore().addSequenceList(name, sl, pd);
 					}
-					pd.end();
 
 					sequences.unlock();
 
