@@ -47,21 +47,17 @@
 		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
-	<!-- release:			Prepares ChangeLog and Readme files. 
+	<!-- build:			Prepares ChangeLog and Readme files. 
 					This is also the most convenient way to
 					ensure that all Jars are built
+
+					Does NOT make a final zip. 'release' does this.
 	-->
-	<target name="release" depends="SpeciesIdentifier,SequenceMatrix">
+	<target name="build" depends="SpeciesIdentifier,SequenceMatrix">
 		<!--		<copy file="CHANGELOG.txt" todir="Release" />
 		<copy file="README.txt" todir="Release" overwrite="yes" />
 		-->
 
-		<zip 
-			destfile="../TaxonDNA-${version}.zip"
-			basedir="Release/"
-			comment="(c) Gaurav Vaidya, 2006"
-			update="false"
-		/>
 	</target>
 
 	<!-- src:			Zips up the ENTIRE directory into one
@@ -93,5 +89,19 @@
 		<delete dir="${build.dir}" />
 		<mkdir dir="${build.dir}" />
 		<mkdir dir="${build.dir}/classes" />
+	</target>
+
+	<!-- rebuild:			Cleans the build path, then generates a build -->
+	<target name="rebuild" depends="clean,build">
+	</target>
+
+	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
+	<target name="release" depends="build">
+		<zip 
+			destfile="../TaxonDNA-${version}.zip"
+			basedir="Release/"
+			comment="(c) Gaurav Vaidya, 2006"
+			update="false"
+		/>
 	</target>
 </project>
