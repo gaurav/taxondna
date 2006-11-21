@@ -677,31 +677,26 @@ public class NexusFile extends BaseFormatHandler {
 	 *
 	 * @throws IOException if the tokenizer gets IO issues.
 	 */
-	private String getValueOfKey(StreamTokenizer tok) throws IOException {
+	private String getValueOfKey(StreamTokenizer tok) throws FormatException, IOException {
 		if(tok.nextToken() == '=') {
 			int type = tok.nextToken();
 			// all good so far
 			if(type == StreamTokenizer.TT_WORD) {
 				// yay! we got a word
 				return tok.sval;
-			}
-
-			// sometimes, we will have a weird symbol
-			// luckily, this only really happens for
-			// fields like 'GAP' and 'MISSING', which
-			// should really have only one character
-			// anyway.
-			if(
+			} else if(
 					!Character.isWhitespace((char)type)	&&
 					!Character.isISOControl((char)type)
 			) {
 				char data[] = {(char)type};
 				return new String(data);
+			} else {
+				throw formatException(tok, "Unexpected value '" + (char) type + "' found when looking for the value of a KEY=VALUE pair.");
 			}
+		} else {
+			tok.pushBack();	// push the last token back in	
+			return null;
 		}
-
-		// something went wrong
-		return null;
 	}
 	
 	/**
