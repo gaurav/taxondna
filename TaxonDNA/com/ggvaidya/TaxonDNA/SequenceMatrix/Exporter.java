@@ -98,7 +98,7 @@ public class Exporter {
 
 		DataStore store = matrix.getDataStore();
 
-		Vector vec_sequences = new Vector(store.getSortedSequences());
+		Vector vec_sequences = new Vector(store.getSequences());
 		int count_columns = store.getColumns().size();
 		Iterator i = store.getColumns().iterator();
 
@@ -175,8 +175,8 @@ public class Exporter {
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
 		DataStore dataStore = matrix.getDataStore();
-		List columns = new Vector(dataStore.getSortedColumns());
-		List sequences = new Vector(dataStore.getSortedSequences());
+		List columns = dataStore.getColumns();
+		List sequences = dataStore.getSequences();
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
