@@ -236,7 +236,8 @@ public class FileManager implements FormatListener {
 						matrix.getFrame(),
 						"I see sets!",
 						"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
-						MessageBox.MB_YESNO);
+						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
+
 				if(mb.showMessageBox() == MessageBox.MB_YES) {
 					matrix.getPrefs().getUseWhichName();
 							// we don't actually need this; but it
