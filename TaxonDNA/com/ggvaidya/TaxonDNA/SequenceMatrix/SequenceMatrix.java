@@ -392,97 +392,28 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private PopupMenu popupMenu = null;
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource().equals(mainTable)) {
+			int colIndex = mainTable.columnAtPoint(e.getPoint());
+			int rowIndex = mainTable.rowAtPoint(e.getPoint());
+
 			// check for right clicks
 			if(e.isPopupTrigger())
-				rightClick(e);
+				dataStore.rightClick(e, colIndex, rowIndex);
 
 			// check for double clicks
 			if(e.getClickCount() == 2)
-				doubleClick(e);
+				dataStore.doubleClick(e, colIndex, rowIndex);
 		}
 	}
 	public void mouseEntered(MouseEvent e) {}
 	public void mouseExited(MouseEvent e) {} 
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {
-		if(e.getSource().equals(mainTable)) {
-			if(e.isPopupTrigger())
-				rightClick(e);
-		}
+//		if(e.getSource().equals(mainTable)) {
+//			if(e.isPopupTrigger())
+//				dataStore.rightClick(e);
+//		}
 	}
 
-	/**
-	 * Event: somebody right clicked in the mainTable somewhere
-	 */
-	public void rightClick(MouseEvent e) {
-		/*
-		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
-		*/
-		int col = mainTable.columnAtPoint(e.getPoint());
-		int row = mainTable.rowAtPoint(e.getPoint());
-
-		String colName = dataStore.getColumnName(col);
-		String rowName = dataStore.getRowName(row);
-
-		PopupMenu pm = new PopupMenu();
-
-		if(col == 0) {
-			// colName == ""
-			// we'll replace this with 'Sequence names'
-			colName = "Sequence names";
-		}
-
-		if(col <= 2) {
-			// it's a 'special' column
-			// we can't do things to it
-			pm.add("Column: " + colName);
-		} else {
-			Menu colMenu = new Menu("Column: " + colName);
-			MenuItem delThisCol = new MenuItem("Delete this column");
-			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
-			colMenu.add(delThisCol);
-			colMenu.addActionListener(this);
-			pm.add(colMenu);
-		}
-
-		Menu rowMenu = new Menu("Row: " + rowName);
-		MenuItem delThisRow = new MenuItem("Delete this row");
-		delThisRow.setActionCommand("ROW_DELETE:" + rowName);
-		rowMenu.add(delThisRow);
-		rowMenu.addActionListener(this);
-		pm.add(rowMenu);
-
-		mainTable.add(pm);
-		pm.show(mainTable, e.getX(), e.getY());
-
-		/*
-		MessageBox mb = new MessageBox(
-				mainFrame,
-				"Are you sure?",
-				"Are you sure you want to remove column '" + colName + "'? This can't be undone!",
-				MessageBox.MB_YESNO);
-		if(mb.showMessageBox() == MessageBox.MB_YES) {
-			dataStore.deleteColumn(colName);
-		}
-		*/
-	}
-
-	/**
-	 * Event: somebody double clicked in the mainTable somewhere
-	 */
-	public void doubleClick(MouseEvent e) {
-		int row = mainTable.rowAtPoint(e.getPoint());
-		int col = mainTable.columnAtPoint(e.getPoint());
-
-		if(row != -1 && col != -1 && col >= DataStore.additionalColumns) {
-			// it's, like, valid, dude.
-			dataStore.toggleCancelled(
-					dataStore.getColumnName(col),
-					dataStore.getRowName(row)
-			);
-		}
-
-	}
 
 //
 //	4.	FUNCTIONAL CODE. It does things.
