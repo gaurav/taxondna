@@ -32,11 +32,15 @@ package com.ggvaidya.TaxonDNA.UI;
 import java.awt.*;
 import java.awt.event.*;
 
+import java.util.*;	// for Hashtable
+
 public class MessageBox extends Dialog implements ActionListener {
 	private String		title = "";
 	private String		message = "";
 	private int		flags = 0;
 	private int		clicked = 0;
+
+	private static Hashtable hash_setForAll = new Hashtable();
 	
 	// constants
 	// both for type and for return by show()
@@ -48,6 +52,22 @@ public class MessageBox extends Dialog implements ActionListener {
 	public static final int	MB_NO =		0x0004;
 	/** The "CANCEL" button was pressed */	
 	public static final int	MB_CANCEL =	0x0008;
+	/** The "Yes to all" button was pressed */
+	public static final int MB_YESTOALL =	0x000F;
+	/** The "No to all" button was pressed */
+	public static final int MB_NOTOALL =	0x0010;
+
+	// flags
+	/** 
+	 * Specify that the title is unique to the entire program,
+	 * and can be used to uniquely identify this particular message. 
+	 */
+	public static final int MB_TITLE_IS_UNIQUE = 0x0100;
+	/** 
+	 * Specify that the message is unique to the entire program,
+	 * and can be used to uniquely identify this particular message. 
+	 */
+	public static final int MB_MESSAGE_IS_UNIQUE = 0x0200;
 
 	/** Create an "simple" messageBox, with a single "OK" button. */
 	public static final int	MB_SIMPLE = 	0x1000;
@@ -57,6 +77,11 @@ public class MessageBox extends Dialog implements ActionListener {
 	public static final int	MB_YESNO =	0x2000;
 	/** Create a yes/no messageBox, with a single "CANCEL" button. */
 	public static final int	MB_YESNOCANCEL= 0x4000;
+	/** Create a yes/no/yes to all/no to all messageBox. You must set
+	 * MB_TITLE_IS_UNIQUE or MB_MESSAGE_IS_UNIQUE if you use this
+	 * option */
+	public static final int	MB_YESNOTOALL = 0x8000;
+
 
 	/** The default flags (if you use the flagless constructors) */
 	private static final int DEFAULT_FLAGS = MB_OK | MB_ERROR;
@@ -121,6 +146,15 @@ public class MessageBox extends Dialog implements ActionListener {
 		this.title = title;
 		this.message = message;
 		this.flags = flags;
+
+		if((flags & MB_YESNOTOALL) != 0) {
+			if(
+				((flags & MB_TITLE_IS_UNIQUE) == 0) && 
+			       	((flags & MB_MESSAGE_IS_UNIQUE) == 0)
+			) {
+				throw new IllegalArgumentException("MessageBox creation attempted with MB_YESNOTOALL set, but without either MB_TITLE_IS_UNIQUE or MB_MESSAGE_IS_UNIQUE set!");
+			}
+		}
 	}
 
 	/**
@@ -198,6 +232,22 @@ public class MessageBox extends Dialog implements ActionListener {
 			btn = new Button(" Cancel ");
 			btn.addActionListener(this);
 			buttons.add(btn);
+		} else if((flags & MB_YESNOTOALL) != 0) {
+			btn = new Button(" Yes to all ");
+			btn.addActionListener(this);
+			buttons.add(btn);
+
+			btn = new Button("   Yes   ");
+			btn.addActionListener(this);
+			buttons.add(btn);
+
+			btn = new Button("   No    ");
+			btn.addActionListener(this);
+			buttons.add(btn);
+
+			btn = new Button(" No to all ");
+			btn.addActionListener(this);
+			buttons.add(btn);			
 		}
 		add(buttons, BorderLayout.SOUTH);
 
@@ -222,8 +272,13 @@ public class MessageBox extends Dialog implements ActionListener {
 		} else if(cmd.equals("Cancel")) {
 			clicked = MB_CANCEL;
 			dispose();
+		} else if(cmd.equals("Yes to all")) {
+			clicked = MB_YESTOALL;
+			dispose();
+		} else if(cmd.equals("No to all")) {
+			clicked = MB_NOTOALL;
+			dispose();
 		}
-
 	}
 
 	/**
@@ -231,11 +286,38 @@ public class MessageBox extends Dialog implements ActionListener {
 	 * will return one of the MB_OK, MB_CANCEL, etc. constants
 	 */
 	public int showMessageBox() {
+		if((flags & MB_YESNOTOALL) != 0 && hash_setForAll.get(this.getUniqueIdentifier()) != null) {
+			// we've already got a stored up option!
+			Integer i = (Integer) hash_setForAll.get(this.getUniqueIdentifier());
+			return i.intValue();
+		}
+
 		draw();
 
 		setVisible(true); // this will block until everything's done
 
+		if((flags & MB_YESNOTOALL) != 0) {
+			if(clicked == MB_YESTOALL) {
+				hash_setForAll.put(this.getUniqueIdentifier(), new Integer(MB_YES));
+				return MB_YES;
+			} else if(clicked == MB_NOTOALL) {
+				hash_setForAll.put(this.getUniqueIdentifier(), new Integer(MB_NO));
+				return MB_NO;
+			} else	// either MB_YES or MB_NO
+				return clicked;
+		}
+
 		return clicked;
+	}
+
+	/**
+	 * Returns the UniqueIdentifier for this message box
+	 */
+	public String getUniqueIdentifier() {
+		if((flags & MB_MESSAGE_IS_UNIQUE) != 0)
+			return message;
+		else
+			return title;
 	}
 
 	/**
