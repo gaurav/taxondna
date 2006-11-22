@@ -136,7 +136,7 @@ public class DisplayCountsModel implements TableModel {
 
 		// sanity checks
 		if(colName == null)
-			throw new IllegalArgumentException("Either rowIndex is out of range (rowIndex="+rowIndex+"), or sortedSequenceNames isn't primed.");
+			throw new IllegalArgumentException("Either columnIndex is out of range (columnIndex="+columnIndex+"), or sortedSequenceNames isn't primed.");
 
 		if(seqName == null)
 			throw new IllegalArgumentException("Either rowIndex is out of range (rowIndex="+rowIndex+"), or sortedSequenceNames isn't primed.");
