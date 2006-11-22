@@ -102,6 +102,9 @@ public class DataStore implements TableModel {
 	// For the outgroup selection and display, etc.
 	private String			outgroupName =		null;
 
+	// Counting the number of cancelled sequences (so we know while exporting, etc.)
+	private int			count_cancelledSequences = 0;
+
 	// For the table-model-switcheroo thingie
 	private TableModel		currentTableModel =	null;
 	private int			additionalColumns =	0;
@@ -311,6 +314,12 @@ public class DataStore implements TableModel {
 		} else {
 			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", null);
 		}
+
+		// count it up
+		if(cancelled)
+			count_cancelledSequences++;
+		else
+			count_cancelledSequences--;
 
 		// sort order has been broken
 		sortBroken = true;
@@ -1314,6 +1323,13 @@ public class DataStore implements TableModel {
 	public void setOutgroupName(String newName) {
 		outgroupName = newName;
 		sortBroken = true;
+	}
+
+	/**
+	 * How many sequences are currently cancelled?
+	 */
+	public int getCancelledSequencesCount() {
+		return count_cancelledSequences;
 	}
 
 	/** Activate PDM */

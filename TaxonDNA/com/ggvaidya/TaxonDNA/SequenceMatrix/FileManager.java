@@ -421,6 +421,9 @@ public class FileManager implements FormatListener {
 	 * 	future.
 	 */
 	public void exportAsNexus() {
+		if(!checkCancelledBeforeExport())
+			return;
+
 		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
 		if(f == null)
 			return;
@@ -456,6 +459,9 @@ public class FileManager implements FormatListener {
 	 * 	future.
 	 */
 	public void exportAsTNT() {
+		if(!checkCancelledBeforeExport())
+			return;
+
 		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
 		if(f == null)
 			return;
@@ -620,5 +626,26 @@ public class FileManager implements FormatListener {
 
 		// not consumed
 		return false;
+	}
+
+	/**
+	 * Check to see whether any cancelled sequences exist; any data in such sequences
+	 * will be completely LOST on export.
+	 */
+	public boolean checkCancelledBeforeExport() {
+		int cancelled = matrix.getDataStore().getCancelledSequencesCount();
+
+		if(cancelled == 0)
+			return true;
+
+		MessageBox mb = new MessageBox(
+				matrix.getFrame(),
+				"Warning: Cancelled sequences aren't exported!",
+				"You have " + cancelled + " cancelled sequence(s) in your dataset. These sequences will not be exported! Are you sure you are okay with losing the data in these sequences?",
+				MessageBox.MB_YESNO | MessageBox.MB_TITLE_IS_UNIQUE);
+		if(mb.showMessageBox() == MessageBox.MB_YES)
+			return true;
+		else
+			return false;
 	}
 }
