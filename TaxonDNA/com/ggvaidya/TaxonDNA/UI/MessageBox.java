@@ -343,6 +343,14 @@ public class MessageBox extends Dialog implements ActionListener {
 		MessageBox mb = new MessageBox(parent, title, message, MB_SIMPLE);
 		mb.showMessageBox();
 	}
+
+	/**
+	 * Resets any session-based information we carry (right now, that's only the hash_setForAll used
+	 * by MB_YESTOALL)
+	 */
+	public static void resetSession() {
+		hash_setForAll = new Hashtable();
+	}
 	
 	/*
 	 * Dummy test 

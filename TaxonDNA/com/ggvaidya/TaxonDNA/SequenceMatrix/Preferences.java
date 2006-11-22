@@ -342,6 +342,6 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 		// clear all session-based variables
 		// right now, this is only PREF_NOT_SET_YET.
 		prefName = PREF_NOT_SET_YET;
-
+		MessageBox.resetSession();		// reset all MB_YESNOTOALL
 	}
 }
