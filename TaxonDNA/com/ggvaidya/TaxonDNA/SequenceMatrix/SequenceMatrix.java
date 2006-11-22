@@ -267,6 +267,17 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 				mb.go();
 			}
 		}
+
+		if(cmd.length() >= 14 && cmd.substring(0, 14).equals("MAKE_OUTGROUP:")) {
+			String seqName = cmd.substring(14);
+
+			if(seqName.equals(""))
+				dataStore.setOutgroupName(null);
+			else
+				dataStore.setOutgroupName(seqName);
+
+			updateDisplay();
+		}
 	}
 
 	//
@@ -389,7 +400,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// rightClick(MouseEvent) and doubleClick(MouseEvent)
 	// events around for your enjoyment.
 	//
-	private PopupMenu popupMenu = null;
 	public void mouseClicked(MouseEvent e) {
 		if(e.getSource().equals(mainTable)) {
 			int colIndex = mainTable.columnAtPoint(e.getPoint());
@@ -408,10 +418,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void mouseExited(MouseEvent e) {} 
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {
-//		if(e.getSource().equals(mainTable)) {
-//			if(e.isPopupTrigger())
-//				dataStore.rightClick(e);
-//		}
+		// windows needs this; dunno if anybody actually uses the 
+		// mouseClicked() one as well
+		//
+		if(e.getSource().equals(mainTable)) {
+			int colIndex = mainTable.columnAtPoint(e.getPoint());
+			int rowIndex = mainTable.rowAtPoint(e.getPoint());
+		
+			if(e.isPopupTrigger())
+				dataStore.rightClick(e, colIndex, rowIndex);
+		}
 	}
 
 

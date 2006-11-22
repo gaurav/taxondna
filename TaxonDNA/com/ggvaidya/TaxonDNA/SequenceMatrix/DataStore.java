@@ -99,6 +99,9 @@ public class DataStore implements TableModel {
 	private Vector			sortedSequenceNames;
 	private Vector			sortedColumnNames;
 
+	// For the outgroup selection and display, etc.
+	private String			outgroupName =		null;
+
 	// For the table-model-switcheroo thingie
 	private TableModel		currentTableModel =	null;
 	private int			additionalColumns =	0;
@@ -111,7 +114,7 @@ public class DataStore implements TableModel {
 	/**
 	 * Checks whether 'colName' MIGHT BE a valid column name. Note that we don't actually check
 	 * whether colName *is* a valid column name. Mainly, this is to enforce the rule that colName
-	 * might not be equal to "", since we use that key in the hashtable to store metadata.
+	 * must not be equal to "", since we use that key in the hashtable to store metadata.
 	 */
 	private void validateColName(String colName) {
 		// da rulez: a colName can't be "" or null. Everything else is okay.
@@ -392,6 +395,9 @@ public class DataStore implements TableModel {
 				if(oldCount == 0) {
 					// get rid of the sequence!
 					ht.remove(seqName);
+					if(outgroupName != null && seqName.equalsIgnoreCase(outgroupName)) {
+						outgroupName = null;	
+					}
 				} else {
 					ht.put(seqName, new Integer(oldCount));
 				}
@@ -798,12 +804,48 @@ public class DataStore implements TableModel {
 // 	But we'll need to sort before we display, in order to avoid disappointment.
 //
 	/**
+	 * A convenience function which checks to see if either name1 or name2 are the
+	 * outgroupName, in which case they'll get sorted up.
+	 */
+	private int checkForOutgroup(String name1, String name2) {
+		if(outgroupName == null)
+			return 0;
+
+		if(name1.equalsIgnoreCase(outgroupName))
+			return -1;
+		if(name2.equalsIgnoreCase(outgroupName))
+			return +1;
+		return 0;
+	}
+
+	/**
+	 * A sort Comparator which sorts a collection of Strings in natural order - except that outgroups get
+	 * sorted to the top.
+	 */
+	private class SortByName implements Comparator {
+		public int	compare(Object o1, Object o2) {
+			String str1 = (String) o1;
+			String str2 = (String) o2;
+
+			int res = checkForOutgroup(str1, str2);
+			if(res != 0)
+				return res;
+
+			return str1.compareTo(str2);
+		}
+	}
+
+	/**
 	 * A sort Comparator which sorts a collection of Strings by - of all things - their SECOND name. Such is life.
 	 */
 	private class SortBySecondName implements Comparator {
 		public int 	compare(Object o1, Object o2) {
 			String str1 = (String) o1;
 			String str2 = (String) o2;
+
+			int res = checkForOutgroup(str1, str2);
+			if(res != 0)
+				return res;
 
 			String str1_second = null;
 			String str2_second = null;
@@ -845,6 +887,10 @@ public class DataStore implements TableModel {
 		public int 	compare(Object o1, Object o2) {
 			String str1 = (String) o1;
 			String str2 = (String) o2;
+			
+			int res = checkForOutgroup(str1, str2);
+			if(res != 0)
+				return res;
 
 			int countCharsets1 = store.getCharsetsCount(str1);
 			int countCharsets2 = store.getCharsetsCount(str2);
@@ -866,6 +912,10 @@ public class DataStore implements TableModel {
 		public int 	compare(Object o1, Object o2) {
 			String str1 = (String) o1;
 			String str2 = (String) o2;
+			
+			int res = checkForOutgroup(str1, str2);
+			if(res != 0)
+				return res;
 
 			int count1 = store.getCompleteSequenceLength(str1);
 			int count2 = store.getCompleteSequenceLength(str2);
@@ -904,7 +954,7 @@ public class DataStore implements TableModel {
 				break;
 			case SORT_BYNAME:
 			default:
-				Collections.sort(sortedSequenceNames);
+				Collections.sort(sortedSequenceNames, new SortByName());
 		}
 
 		sortBy = sort;
@@ -1057,7 +1107,7 @@ public class DataStore implements TableModel {
 	 * Convenience function.
 	 */
 	public String getRowName(int rowIndex) {
-		return (String) currentTableModel.getValueAt(0, rowIndex);
+		return (String) currentTableModel.getValueAt(rowIndex, 0);
 	}
 
 	/**
@@ -1147,6 +1197,11 @@ public class DataStore implements TableModel {
 				return;
 		}
 
+		if(outgroupName != null && seqOld.equals(outgroupName)) {
+			outgroupName = seqNew;
+			sortBroken = true;
+		}
+
 		// actually rename things in the Master Hash
 		Iterator i_cols = getColumns().iterator();
 		while(i_cols.hasNext()) {
@@ -1212,9 +1267,21 @@ public class DataStore implements TableModel {
 		}
 
 		Menu rowMenu = new Menu("Row: " + rowName);
+
 		MenuItem delThisRow = new MenuItem("Delete this row");
 		delThisRow.setActionCommand("ROW_DELETE:" + rowName);
 		rowMenu.add(delThisRow);
+
+		if(outgroupName != null && rowName.equals(outgroupName)) {
+			MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
+			makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
+			rowMenu.add(makeOutgroup);			
+		} else {
+			MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
+			makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
+			rowMenu.add(makeOutgroup);
+		}
+
 		rowMenu.addActionListener(matrix);		// wtf really?
 		pm.add(rowMenu);
 
@@ -1230,9 +1297,24 @@ public class DataStore implements TableModel {
 			// it's, like, valid, dude.
 			toggleCancelled(getColumnName(col), getRowName(row));
 		}
-
 	}
 
+	/**
+	 * Get the current outgroup.
+	 * @return null, if there is no current outgroup.
+	 */
+	public String getOutgroupName() {
+		return outgroupName;
+	}
+
+	/**
+	 * Set the current outgroup. Changes the current outgroup
+	 * to the name mentioned.
+	 */
+	public void setOutgroupName(String newName) {
+		outgroupName = newName;
+		sortBroken = true;
+	}
 
 	/** Activate PDM */
 	public boolean enterPairwiseDistanceMode() {
