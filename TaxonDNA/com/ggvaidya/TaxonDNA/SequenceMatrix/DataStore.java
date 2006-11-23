@@ -1332,14 +1332,42 @@ public class DataStore implements TableModel {
 		return count_cancelledSequences;
 	}
 
-	/** Activate PDM */
+	/** 
+	 * Activate PDM. Normally, we'd ask the user
+	 * at this point which column he wants to use, 
+	 * but for now we can just ignore it and get
+	 * on with life.
+	 */
 	public boolean enterPairwiseDistanceMode() {
-		return false;
+		if(getColumns().size() == 0)
+			return false;
+
+		return enterPairwiseDistanceMode((String)getColumns().get(0));
 	}
 
-	/** Deactivate PDM */
+	/** Activate PDM */
+	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
+		DisplayPairwiseModel pdm = new DisplayPairwiseModel(matrix, this);
+		if(!pdm.enterPairwiseDistanceMode(colNameOfInterest))
+			return false;
+
+		currentTableModel = (TableModel) pdm;
+		updateDisplay();
+		return true;
+	}
+
+	/** Deactivate PDM
+	 * @throws ClassCastException (?) if you're NOT in PDM when you call this method!
+	 */
 	public boolean exitPairwiseDistanceMode() {
-		return false;
+		DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
+
+		if(!dpm.exitPairwiseDistanceMode())
+			return false;
+
+		currentTableModel = new DisplayCountsModel(matrix, this);
+		updateDisplay();
+		return true;
 	}
 }
 
