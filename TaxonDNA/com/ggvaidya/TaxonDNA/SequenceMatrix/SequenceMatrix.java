@@ -240,6 +240,19 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			}
 		}
 
+		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
+			String colName = cmd.substring(7);
+
+			if(!dataStore.isColumn(colName)) {
+				MessageBox mb = new MessageBox(mainFrame,
+					"Invalid column specified!",
+					"You tried to do a PDM against column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
+				mb.go();
+			} else {
+				dataStore.enterPairwiseDistanceMode(colName);
+			}
+		}
+
 		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
 			String seqName = cmd.substring(11);
 
