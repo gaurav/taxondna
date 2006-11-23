@@ -55,10 +55,44 @@ public class DisplayPairwiseModel implements TableModel {
 
 	private List		columnList 		= 	null;
 	private List		sequencesList		=	null;
+	private List		scores			=	null;
 	private String		seqName_top = null;		// the 'selected' sequence
 
-	private Hashtable	pdm_hash_maxDist = null;	// a hash of maximum distances in a column
-	private Hashtable	pdm_hash_minDist = null;	// a hash of minimum distances in a column
+	private double		distances[][]		=	null;
+	private double		norm_distances[][]	=	null;
+	private int		ranks[][]		=	null;
+
+	public static double	DIST_ILLEGAL		=	-32.0;
+	public static double	DIST_NO_COMPARE_SEQ 	=	-64.0;
+	public static double	DIST_SEQ_NA		=	-128.0;
+	public static double	DIST_NO_OVERLAP		=	-256.0;	
+	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
+
+	private class Score implements Comparable {
+			private String seqName = "";
+			private double pairwise = 0.0;
+
+			public Score(String seqName, double pairwise) {
+				this.seqName = seqName;
+				this.pairwise = pairwise;
+			}
+
+			private String getSeqName()	{	return seqName;		}
+			private double getPairwise() 	{	return pairwise;	}
+
+			public int compareTo(Object o) {
+				Score s = (Score) o;
+
+				if(getSeqName().equals(seqName_top))
+					return -1;
+
+				if(s.getSeqName().equals(seqName_top))
+					return +1;
+
+				return (int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
+					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise()));
+			}
+		};
 
 //
 // 1.	CONSTRUCTOR
@@ -113,111 +147,159 @@ public class DisplayPairwiseModel implements TableModel {
 		// step 1: pick the sequence we're going to use as the one-on-top
 		seqName_top = (String) dataStore.getSequences().get(0);
 
-		// step 2: generate the reference sequence list
-		List sequences = dataStore.getSequences();
-		List columns = dataStore.getColumns();
+		// step 2: copy out a basic sequencesList 
+		sequencesList = new Vector(dataStore.getSequences());
+		
+		// step 4: move colNameOfInterest to the start of the listing
+		columnList = dataStore.getColumns();
+		columnList.remove(colNameOfInterest);
+		columnList.add(0, colNameOfInterest);
 
-		class Score implements Comparable {
-			private String seqName = "";
-			private double pairwise = 0.0;
+		// Okay: NOW, we need to calculate all the distances! Isn't this fun?!
+		distances = new double[columnList.size()][sequencesList.size()];	// TODO: catch OutOfMemory here?
 
-			public Score(String seqName, double pairwise) {
-				this.seqName = seqName;
-				this.pairwise = pairwise;
+		double max[] = new double[columnList.size()];
+		Arrays.fill(max, -1.0);
+		double min[] = new double[columnList.size()];
+		Arrays.fill(min, +2.0);
+
+		// pass 1: calculate all the distances, figure out max and min
+		for(int x = 0; x < columnList.size(); x++) {
+			String colName = (String) columnList.get(x);
+
+			for(int y = 0; y < sequencesList.size(); y++) {
+				String seqName = (String) sequencesList.get(y);
+
+				Sequence seq = dataStore.getSequence(colName, seqName);
+				Sequence seq_compare = dataStore.getSequence(colName, seqName_top);
+
+				double dist = DIST_ILLEGAL;
+				if(seq_compare == null) {
+					dist = DIST_NO_COMPARE_SEQ;
+				}
+				else if(seqName_top.equals(seqName)) {
+					dist = DIST_SEQ_ON_TOP;
+				} else if(seq == null) {
+					dist = DIST_SEQ_NA;
+				}
+				else if((dist = seq.getPairwise(seq_compare)) < 0) {
+					// illegal!
+					dist = DIST_NO_OVERLAP;
+				}
+
+				distances[x][y] = dist;
+
+				if(dist >= 0) {
+					if(dist > max[x])
+						max[x] = dist;
+
+					if(dist < min[x])
+						min[x] = dist;
+				}
 			}
+		}
 
-			private String getSeqName()	{	return seqName;		}
-			private double getPairwise() 	{	return pairwise;	}
+		// pass 2: normalise this
+		norm_distances = new double[columnList.size()][sequencesList.size()];
 
-			public int compareTo(Object o) {
-				Score s = (Score) o;
-
-				if(getSeqName().equals(seqName_top))
-					return -1;
-
-				if(s.getSeqName().equals(seqName_top))
-					return +1;
-
-				return (int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise()));
+		for(int x = 0; x < columnList.size(); x++) {
+			for(int y = 0; y < sequencesList.size(); y++) {
+				if(distances[x][y] >= 0)
+					norm_distances[x][y] = (distances[x][y] - min[x])/(max[x] - min[x]);
+				else
+					norm_distances[x][y] = distances[x][y];	// save the <0's
 			}
-		};
+		}
 
-		Vector scores = new Vector();
+		// pass 3: now, we've got rationalised numbers
+		// we need to figure out the average of THESE, and use THIS to sort the
+		// sequenceList.
+		scores = (List) new Vector();
 
-		Iterator i_seq = sequences.iterator();
-		while(i_seq.hasNext()) {
-			String seqName = (String) i_seq.next();
-			double totalScore = 0;
+		for(int y = 0; y < sequencesList.size(); y++) {
+			String seqName = (String) sequencesList.get(y);
+			
+			double totalScore = 0.0;
+			int count = 0;
 
-			// don't do seqName_top
-			if(seqName.equals(seqName_top)) {
-				scores.add(new Score(seqName_top, 0));
-				continue;
-			}
+			for(int x = 0; x < columnList.size(); x++) {
+				String colName = (String) columnList.get(x);
 
-			int count_validSequences = 0;
-			double sum_distances = 0.0;
-			Iterator i_col = columns.iterator();
-			while(i_col.hasNext()) {
-				String colName = (String) i_col.next();
-
-				// don't do the Column Of Interest
 				if(colName.equals(colNameOfInterest))
 					continue;
 
-				// let's do this!
-				Sequence seqTop = dataStore.getSequence(colName, seqName_top);
-				Sequence seq = dataStore.getSequence(colName, seqName);
-
-				if(seqTop == null)
-					continue;		// TODO fix this!
-
-				if(seq == null)
-					continue;
-				
-				double pairwise = seqTop.getPairwise(seq);
-				if(pairwise < 0)
-					continue;
-
-				// okay, it's a valid distance
-				sum_distances += pairwise;
-				count_validSequences++;		
+				if(distances[x][y] >= 0) {
+					totalScore += norm_distances[x][y];
+					count++;
+				}
 			}
 
-			totalScore = sum_distances / (double)count_validSequences;
+			totalScore = totalScore/count;
 
 			scores.add(new Score(seqName, totalScore));
 		}
 
-		// step 3: sort the reference sequence list
+		// sort out the sequence names ...
 		Collections.sort(scores);
 
+		double[][] old_distances = distances;		// ditto (see below)
+		double[][] old_norm_distances = norm_distances;	// I'm just saving a pointer, I hope
+		norm_distances = new double[columnList.size()][scores.size()];	// and writing over the old POINTER,
+										// NOT the old data. I hope.
+		distances = new double[columnList.size()][scores.size()];	// ditto (see above)
+
+		// ... and resort the distances[][] table.
+		Iterator i = scores.iterator();	
+		int seqIndex = 0;
+		while(i.hasNext()) {
+			String seqName = ((Score) i.next()).getSeqName();
+
+			int oldIndex = sequencesList.indexOf(seqName);
+
+			for(int x = 0; x < columnList.size(); x++) {
+				distances[x][seqIndex] = old_distances[x][oldIndex];
+				norm_distances[x][seqIndex] = old_norm_distances[x][oldIndex];
+			}
+
+			seqIndex++;
+		}
+
+		old_distances = null;	// free the array	
+		old_norm_distances = null;
 		sequencesList = (List) new Vector();
 
-		Iterator i = scores.iterator();
+		i = scores.iterator();
 		while(i.hasNext()) {
-			Score s = (Score) i.next();
-			String seqName = s.getSeqName();
+			String seqName = ((Score) i.next()).getSeqName();
 
 			sequencesList.add(seqName);
 		}
 
-		// TODO: temporary hack
-		columnList = dataStore.getColumns();
-		pdm_hash_maxDist = new Hashtable();
-		pdm_hash_minDist = new Hashtable();
+		// Now that we have a definite list, nicely synced up and
+		// everything, we can figure out the rank table!
+		//
+		ranks = new int[columnList.size()][sequencesList.size()];
+		for(int x = 0; x < columnList.size(); x++) {
+			LinkedList ll = new LinkedList();		// easier to append
 
-		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer(Color.BLACK));
-		matrix.getJTable().getColumnModel().getColumn(additionalColumns + 1).setCellRenderer(new PDMColorRenderer(Color.RED));
-		
-		// hmpf
-		for(int y = 0; y < getColumnCount(); y++) {
-			for(int z = 0; z < getRowCount(); z++) {
-				getValueAt(z, y);
+			for(int y = 0; y < sequencesList.size(); y++) {
+				if(distances[x][y] >= 0)
+					ll.add(new Double(distances[x][y]));
+			}
+
+			Collections.sort(ll);	
+
+			for(int y = 0; y < sequencesList.size(); y++) {
+				if(distances[x][y] >= 0)
+					ranks[x][y] = ll.indexOf(new Double(distances[x][y]));
+				else
+					ranks[x][y] = (int) Math.floor(distances[x][y]);
 			}
 		}
 
+		// finally, set the default renderer up, and we're good to go! 
+		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer(this));
+		
 		pd.end();
 
 		return true;
@@ -287,7 +369,7 @@ public class DisplayPairwiseModel implements TableModel {
 			return "";		// upper left hand box
 
 		if(columnIndex == 1)
-			return "Total length";
+			return "Total score";
 
 		if(columnIndex == 2)
 			return "Number of sets";
@@ -326,57 +408,37 @@ public class DisplayPairwiseModel implements TableModel {
 
 		// if it's the total length column, return the total length columns
 		if(columnIndex == 1)
-			return dataStore.getCompleteSequenceLength(seqName) + " bp";
+			return percentage(((Score) scores.get(rowIndex)).getPairwise(), 1.0) + "%";
 
 		// if it's the number of charsets column, return that.
 		if(columnIndex == 2)
 			return dataStore.getCharsetsCount(seqName) + "";
 
 		// okay, it's an actual 'sequence'
-		// is it cancelled?
-		if(dataStore.isSequenceCancelled(colName, seqName))
-			return "(CANCELLED)";
+		int col = columnIndex - additionalColumns;
+		int row = rowIndex;
 
-		// if not, get the sequence
-		Sequence seq 	= dataStore.getSequence(colName, seqName);
+		int ndist = (int) Math.round(norm_distances[col][row] * 100);
+		int rank = ranks[col][row];
+		double dist = distances[col][row];
 
-		if(seq == null)
-			return "(N/A)";	
-
-		Sequence seq_compareAgainst = dataStore.getSequence(colName, seqName_top); 
-		if(seq_compareAgainst == null)
+		// there ARE ways to do this properly, but I just can't be arsed right now
+		// TODO do this properly
+		if(dist >= 0) {
+			return rank + ": " + ndist + "% (" + percentage(dist, 1.0) + "%)";
+		} else if(dist == DIST_ILLEGAL) {
+			return "(N/A - SUPERbug)";
+		} else if(dist == DIST_NO_COMPARE_SEQ) {
 			return "(N/A - bug)";
-
-		double dist = seq.getPairwise(seq_compareAgainst);
-
-		// min and max dist for this row
-		double minDist = +2.0;
-		double maxDist = -1.0;
-
-		if(pdm_hash_maxDist.get(colName) == null)
-			pdm_hash_maxDist.put(colName, new Double(maxDist));
-		else
-			maxDist = ((Double)pdm_hash_maxDist.get(colName)).doubleValue();
-
-		if(pdm_hash_minDist.get(colName) == null)
-			pdm_hash_minDist.put(colName, new Double(minDist));
-		else
-			minDist = ((Double)pdm_hash_minDist.get(colName)).doubleValue();
-
-		if(dist > 0 && dist < minDist) {
-			minDist = dist;
-			pdm_hash_minDist.put(colName, new Double(minDist));
-		}
-
-		if(dist > 0 && dist > maxDist) {
-			maxDist = dist;
-			pdm_hash_maxDist.put(colName, new Double(maxDist));
-		}
-
-		if(seqName.equals(seqName_top))
+		} else if(dist == DIST_SEQ_NA) {
 			return "(N/A)";
-		else
-			return percentage(dist - minDist, maxDist - minDist) + "%";
+		} else if(dist == DIST_NO_OVERLAP) {
+			return "(NO OVERLAP)";
+		} else if(dist == DIST_SEQ_ON_TOP) {
+			return "(ON TOP)";
+		} else {
+			return "(N/A - unknown)";
+		}
 	}
 
 	/** Convenience function */
@@ -411,18 +473,50 @@ public class DisplayPairwiseModel implements TableModel {
 
 class PDMColorRenderer extends DefaultTableCellRenderer
 {
-	private Color basicColor = Color.BLACK;
+	DisplayPairwiseModel dpm = null;
 
-	public PDMColorRenderer(Color basicColor) {
-		this.basicColor = basicColor;	
+	public PDMColorRenderer(DisplayPairwiseModel dpm) {
+		this.dpm = dpm;
+	}	
+
+	/**
+	 * Returns the colour for 'value' (which should be in the range [0, 1] inclusive)
+	 */
+	public Color getXORColor(Color basicColor, Color bg) {
+		Color textColor = Color.WHITE;
+		
+		if(basicColor.equals(Color.RED))
+			return Color.BLACK;
+
+		// assume basicColor is BLACK
+		if(bg.getRed() > 128) {
+			return Color.BLACK;
+		} else {
+			return Color.WHITE;
+		}
+/*
+		return new Color(
+				bg.getRed() ^ textColor.getRed(), 
+				bg.getGreen() ^ textColor.getGreen(),
+				bg.getBlue() ^ textColor.getBlue()
+		);
+		*/
 	}
 
-	public Color getColor(double value) {
-		if(basicColor.equals(Color.BLACK))
-			return Color.getHSBColor(0.0f, 0.0f, 1.0f - (float)value);
-		else 	// default: RED
-			return Color.getHSBColor(0.0f, 1.0f, (float)value);
-	}
+	/**
+	 * Returns the colour for 'value' (which should be in the range [0, 1] inclusive)
+	 */
+	public Color getColor(Color basicColor, double value) {
+		if(basicColor.equals(Color.BLACK)) {
+			// the XOR color get screwed up on HSB(0, 0, ~0.5),
+			// so we limit the range of black to within this area
+//			return Color.getHSBColor(0.0f, 0.0f, 1.0f - ((float)value * 0.4f));	
+			return Color.getHSBColor(0.0f, 0.0f, 1.0f - (float)value);	// without limit
+				
+		} else 	
+			// default: RED
+			return Color.getHSBColor(0.0f, (float)value, 1.0f);
+	}	
  
 	public Component getTableCellRendererComponent(JTable table,
                                                    Object value,
@@ -434,10 +528,18 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 	// what would defaulttablecellrenderer do?
         JComponent comp = (JComponent) super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,col);
 
+	// omfg it reuses the same JComponent!
 	comp.setOpaque(false);
+	comp.setForeground(Color.BLACK);
+	comp.setBackground(Color.WHITE);
 
-	if(row < 1 || col < DisplayPairwiseModel.additionalColumns)
+	if(row < 1 || col < DisplayPairwiseModel.additionalColumns) {
 		return comp;
+	}
+
+	Color basicColor = Color.BLACK;
+	if(col == DisplayPairwiseModel.additionalColumns)	// the 'special' column
+		basicColor = Color.RED;
 	
 	String val = (String) value;
 
@@ -447,17 +549,28 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 	if(val.equals("(N/A - bug)"))
 		return comp;
 
+	if(val.indexOf(':') != -1)
+		val = val.substring(0, val.indexOf(':'));
+	if(val.indexOf('%') != -1)
+		val = val.substring(0, val.indexOf('%'));
 	val = val.replaceAll("\\%", "");
+	val = val.replaceAll("\\:", "");
 
 	try {
-		double d = Double.parseDouble(val)/100.0;
+		// double d = Double.parseDouble(val)/100.0;
+		//
+		// okay, NOW we're using ranks
+		double d = Double.parseDouble(val)/dpm.getRowCount();
 
 		comp.setOpaque(true);
 
-		if(d < 0 || d > 1)
-			comp.setBackground(getColor(0.0)); 
-		else
-			comp.setBackground(getColor(d)); 
+		if(d < 0 || d > 1) {
+			comp.setBackground(getColor(basicColor, 0.0)); 
+			comp.setForeground(getXORColor(basicColor, comp.getBackground()));
+		} else {
+			comp.setBackground(getColor(basicColor, d)); 
+			comp.setForeground(getXORColor(basicColor, comp.getBackground()));
+		}
 
 	} catch(NumberFormatException e) {
 		// ah, ferget it
