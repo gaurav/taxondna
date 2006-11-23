@@ -1268,9 +1268,15 @@ public class DataStore implements TableModel {
 			pm.add("Column: " + colName);
 		} else {
 			Menu colMenu = new Menu("Column: " + colName);
+			
 			MenuItem delThisCol = new MenuItem("Delete this column");
 			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
 			colMenu.add(delThisCol);
+
+			MenuItem pdmThisCol = new MenuItem("Do a PDM on this column");
+			pdmThisCol.setActionCommand("DO_PDM:" + colName);
+			colMenu.add(pdmThisCol);
+
 			colMenu.addActionListener(matrix);	// wtf really?
 			pm.add(colMenu);
 		}
@@ -1347,6 +1353,19 @@ public class DataStore implements TableModel {
 
 	/** Activate PDM */
 	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
+		// are we already in PDM? In which case, we just need to
+		// swap the colNameOfInterest around
+		if(currentTableModel.getClass().equals(DisplayPairwiseModel.class)) {
+			// already in PDM, need to turn this off
+			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
+
+			if(isColumn(colNameOfInterest)) {
+				if(!dpm.exitPairwiseDistanceMode())
+					return false;
+			} else
+				return false;		// booh! no such column!
+		}
+
 		DisplayPairwiseModel pdm = new DisplayPairwiseModel(matrix, this);
 		if(!pdm.enterPairwiseDistanceMode(colNameOfInterest))
 			return false;
