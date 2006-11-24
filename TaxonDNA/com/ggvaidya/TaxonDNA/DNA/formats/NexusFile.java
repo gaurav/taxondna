@@ -181,6 +181,8 @@ public class NexusFile extends BaseFormatHandler {
 		        tok.wordChars('|','|');		// this is officially allowed in Nexus, and pretty convenient for us
 			tok.wordChars('_', '_');
 					// we need to replace this manually. they form one 'word' in NEXUS.
+			tok.wordChars('(','(');		// sequences which use '(ACTG)' = 'N' will now be read in in one shot.
+			tok.wordChars(')',')');
 
 			tok.ordinaryChar('[');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
 			tok.ordinaryChar(']');	// We need this to be a 'word' so that we can use it to discriminate comments
