@@ -90,7 +90,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		try {
 			reader = new BufferedReader(new FileReader(file));
 
-			Pattern 	pSequence =	Pattern.compile("^[A-Za-z\\-\\? ]*$");
+			Pattern 	pSequence =	Pattern.compile("^[A-Za-z\\-\\?\\[\\]\\(\\) ]*$");
 			Pattern 	pBlank	=	Pattern.compile("^\\s*$");
 			Pattern 	pComment =	Pattern.compile("^\\s*#.*$");
 			Pattern		pName =		Pattern.compile("^>\\s*(.*)\\s*$");
