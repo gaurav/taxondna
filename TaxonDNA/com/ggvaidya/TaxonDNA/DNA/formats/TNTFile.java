@@ -310,7 +310,6 @@ public class TNTFile extends BaseFormatHandler {
 		throws FormatException, DelayAbortedException, IOException
 	{
 		Interleaver interleaver = new Interleaver();
-		String lastSequenceName = null;
 		int seq_names_count = 0;
 		int begin_at = tok.lineno();		// which line did this xreadBlock start at
 		char missingChar =	'?';
@@ -321,6 +320,8 @@ public class TNTFile extends BaseFormatHandler {
 
 		tok.wordChars(gapChar,gapChar);
 	        tok.wordChars(missingChar,missingChar);
+		tok.wordChars('[', '[');		// for [ACTG] -> N type stuff
+		tok.wordChars(']', ']');	
 
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
@@ -368,6 +369,9 @@ public class TNTFile extends BaseFormatHandler {
 				if(type == StreamTokenizer.TT_EOF)
 					throw formatException(tok, "The title doesn't seem to have been closed properly. Are you sure the final quote character is present?");
 			}
+		} else {
+			// err, no title?
+			tok.pushBack();
 		}
 		
 		// finished (or, err, not) the (optional) title
@@ -395,14 +399,9 @@ public class TNTFile extends BaseFormatHandler {
 			throw formatException(tok, "Couldn't convert this file's taxon count (which is \"" + tok.sval + "\") into a number. Are you sure it's really a number?");
 		}
 		
-		// To handle the []s correctly, we really need to process the newlines separately
-		// note the implicit assumption, that we only have ONE sequence per LINE.
-		tok.ordinaryChars('\r', '\r');
-		tok.ordinaryChars('\n', '\n');
-		int lineno = tok.lineno();
-		
 		// okay, all done ... sigh.
 		// now we can fingally go into the big loop
+		int lineno = tok.lineno();
 
 		while(true) {
 			int type = tok.nextToken();
@@ -418,19 +417,6 @@ public class TNTFile extends BaseFormatHandler {
 			if(type == ';')
 				// it's over. Go back home, etc.
 				break;
-
-			if(type == '\n' || type == '\r') {
-				// okay, it's a new line
-				// clear the last sequence name
-				lastSequenceName = null;
-				lineno++;
-
-				if(type == 13)		// if we see carraige return, SKIP IT
-					lineno--;	// this isn't serious, but the lineno count will double
-							// (since on CR+LF systems, we match BOTH CR and LF)
-
-				continue;
-			}
 
 			// okay, i'm commenting out this comment handling
 			// code IN CASE it's ever needed again.
@@ -448,73 +434,23 @@ public class TNTFile extends BaseFormatHandler {
 			if(commentLevel > 0)
 				continue;
 			*/
-			if(type == '[') {
-				// first of all: do we have a sequence name?
-				if(lastSequenceName == null) {
-					// oh no you didn't!
-					throw formatException(tok, "Unexpected '[' found outside a sequence.");
-				}
-
-				// okay .. the next 'word' should be the set of characters which make up this
-				// one character. The next token should then be the closing ']'. Anything else
-				// is evil and scum and really very not nice.
-				if(tok.nextToken() == StreamTokenizer.TT_WORD) {
-					String word = tok.sval;
-
-					if(tok.nextToken() == ']') {
-						// okay, so we need to make a character out of word ...
-						char dna_char = '-';
-						for(int x = 0; x < word.length(); x++) {
-							//System.err.println(dna_char + " and " + word.charAt(x) + " become " + Sequence.consensus(dna_char, word.charAt(x)));
-							dna_char = Sequence.consensus(dna_char, word.charAt(x));
-						}
-
-						try {
-							interleaver.appendSequence(lastSequenceName, new Character(dna_char).toString());
-							//System.err.println("Adding " + new Character(dna_char).toString());
-						} catch(SequenceException e) {
-							formatException(tok, "Internal error while processing square brackets: this should never happen. Please contact the programmer!");
-						}
-					} else {
-						throw formatException(tok, "Unexpected '" + (char)tok.ttype + "' inside square brackets.");
-					}
-				} else {
-					throw formatException(tok, "Unexpected '" + (char)tok.ttype + "' within square brackets.");
-				}
-
-				continue;
-			}
-
 			if(type == StreamTokenizer.TT_WORD) {
 				// word!
 				String word = tok.sval;
 
-				// okay, here's how it works: sequence names ought to be 'words' alternating
-				// with, err, other words. I really have no idea what state the Tokenizer is
-				// in right now, but I'm going to assume that the following 'just works'.
-				//
-				// Of course, if it doesn't, I'll be right back to fix it, won't I?
-				// Grr.
-				//
+				// get the sequence name
 				String seq_name = new String(word);	// otherwise, technically, both word and seq 
 									// would point to tok.sval.
 				seq_name = seq_name.replace('_', ' ');
-				String sequence = null;
 				
-				if(lastSequenceName == null) {
-					if(tok.nextToken() != StreamTokenizer.TT_WORD) {
-						throw formatException(tok, "I recognize sequence name '" + name + "', but instead of the sequence, I find '" + (char)tok.ttype + "'. What's going on?");
-					}
-					sequence = tok.sval;
-					
-					// save this one for future reference
-					lastSequenceName = seq_name;
-					seq_names_count++;
-				} else {
-					seq_name = lastSequenceName;
-					sequence = word;
+				// get the sequence itself
+				if(tok.nextToken() != StreamTokenizer.TT_WORD) {
+					throw formatException(tok, "I recognize sequence name '" + name + "', but instead of the sequence, I find '" + (char)tok.ttype + "'. What's going on?");
 				}
+				String sequence = tok.sval;
+				seq_names_count++;
 
+				// add the sequence to the interleaver
 				try {
 					interleaver.appendSequence(seq_name, sequence);
 
@@ -553,10 +489,6 @@ public class TNTFile extends BaseFormatHandler {
 		// only important in the xread section
 	        tok.ordinaryChar(gapChar);
 	        tok.ordinaryChar(missingChar);
-
-		// and you ESPECIALLY don't need to deal with this, praise the Lord
-		tok.whitespaceChars('\r', '\r');
-		tok.whitespaceChars('\n', '\n');
 	}
 
 	/**
