@@ -679,14 +679,51 @@ public class Sequence  implements Comparable, Testable {
 		// we're case insensitive here, so make the string uppercase first
 		seq = seq.toUpperCase();
 
+		// step 1: we need to look for [...] or (...), then replace
+		// the sequence unit with the 'combined' character
+		StringBuffer seq_buff = new StringBuffer();
+		for(int x = 0; x < seq.length(); x++) {
+			char ch = seq.charAt(x);
+
+			if(ch == '(' || ch == '[') {
+				StringBuffer buff = new StringBuffer();
+
+				for(int y = x + 1; y < seq.length(); y++, x++) {	// we need to keep 'x' synchronized with us!
+					ch = seq.charAt(y);
+
+					if(ch == '(' || ch == '[')
+						throw new SequenceException(this.name, "Character '" + ch + "' found unexpectedly while inside a ambiguous base");
+					else if(ch == ')' || ch == ']')
+						break;
+					else
+						buff.append(ch);
+				}
+				x++;	// move past the ')' or ']'
+
+				// now, we need to convert buff into an int
+				int singleChar = 0;
+				for(int y = 0; y < buff.length(); y++) {
+					char aChar = buff.charAt(y);
+
+					if(!isValid(aChar))
+						throw new SequenceException(this.name, "Invalid character '" + ch + "' found in sequence.");
+
+					singleChar |= getint(aChar);
+				}
+
+				seq_buff.append(getcode(singleChar));
+			} else {
+				seq_buff.append(ch);
+			}
+		}
+		char[] sequence = seq_buff.toString().toCharArray();
+
 		// we change the gaps before and after the sequence itself to '_',
 		// which represent external GAPs. Using '_' in the sequence itself
 		// will cause a SequenceException
-		char[] sequence = seq.toCharArray();
 		int length = sequence.length;
 		int forwardStrokeStoppedAt = 0;
-
-		       	
+		 
 		// forward stroke
 		for(int x = 0; x < sequence.length; x++) {
 			if(sequence[x] == '_')
