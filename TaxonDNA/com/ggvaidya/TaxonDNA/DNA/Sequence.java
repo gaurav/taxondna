@@ -512,15 +512,25 @@ public class Sequence  implements Comparable, Testable {
 	 *
 	 * Note that this also means that 'to' is inclusive (i.e., if you want the chars between
 	 * (zero-based) 'a' and 'b', you need to getSubsequence(a - 1, b)
+	 *
+	 * IMPORTANT NOTE: Providing backward pointing references, like (200, 100), will return
+	 * the REVERSE COMPLEMENT of (100, 200). Just saying.
 	 */
 	public Sequence getSubsequence(int from, int to) throws SequenceException {
 		// make sure we're not being fed garbage
 		if(
 				from < 1 || 		// the first char is index = 1
-				to < from ||		// the 'to' field must be greater than or equal to the 'from' field
 				to > getLength()	// the 'to' field must not be greater than the length of the sequence
 		)
 			throw new SequenceException(this.getFullName(), "There is no subsequence at (" + from + ", " + to + ") in sequence " + this);
+
+		boolean complement = false;
+		if(to < from) {
+			complement = true;
+			int tmp = from;
+			from = to;
+			to = tmp;
+		}
 		
 		String seq_str = getSequence();
 		int no_gaps_to_fill = 0;
@@ -550,6 +560,17 @@ public class Sequence  implements Comparable, Testable {
 				buff.append('-');
 
 			seq_str += buff.toString();
+		}
+
+		if(complement) {
+			// RC the resulting string
+			StringBuffer tmp = new StringBuffer(seq_str).reverse();	
+
+			for(int x = 0; x < seq_str.length(); x++) {
+				tmp.setCharAt(x, complement(tmp.charAt(x)));
+			}
+
+			seq_str = tmp.toString();
 		}
 
 		try {
