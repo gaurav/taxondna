@@ -98,8 +98,9 @@ public class SequenceList implements List, Testable {
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.NexusFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.TNTFile());
+			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.SequencesFile());
 
-			formatsHandled = "Fasta, Mega and Nexus";
+			formatsHandled = "Fasta, Mega, Nexus, TNT and Sequences";
 		}
 	}
 
