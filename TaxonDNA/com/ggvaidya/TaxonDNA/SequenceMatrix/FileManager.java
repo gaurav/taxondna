@@ -303,7 +303,7 @@ public class FileManager implements FormatListener {
 								int to = ftp.to;
 
 								try {
-									//System.err.println("Cutting " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+									// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 									seq_out.appendSequence(seq.getSubsequence(from, to));
 								} catch(SequenceException e) {
 									//pd.end();
