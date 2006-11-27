@@ -282,12 +282,12 @@ public class Exporter {
 	 *
 	 * @throws IOException if there was a problem writing this file
 	 */
-	public void exportAsNexus(File f, DelayCallback delay) throws IOException, DelayAbortedException {
+	public void exportAsNexus(File f, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
 		DataStore dataStore = matrix.getDataStore();
 		int countThisLoop = 0;
 
 		// how do we have to do this?
-		int how = matrix.getPrefs().getNexusOutput();
+		int how = exportAs;
 
 		// set up delay 
 		if(delay != null)
@@ -472,7 +472,7 @@ public class Exporter {
 		// otherwise, err ... actually write the darn file out to begin with :p
 		if(how == Preferences.PREF_NEXUS_INTERLEAVED) {
 			NexusFile nf = new NexusFile();
-			nf.writeNexusFile(f, list, matrix.getPrefs().getNexusInterleaveAt(), buff_sets.toString(), 
+			nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(), 
 					new ProgressDialog(
 						matrix.getFrame(),
 						"Please wait, writing file ...",
