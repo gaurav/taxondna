@@ -82,6 +82,17 @@ public class FileInputPanel extends Panel implements ActionListener, TextListene
 		add(browse, BorderLayout.EAST);
 	}
 
+	/** But what if you've got a dialog? Obviously something as 
+	 * mindbogglingly stupid as pretending a MODAL DIALOG just
+	 * DOESN'T EXIST, and directly calling the it's parent Frame,
+	 * won't just magically work, will it?! But if you know
+	 * Java at ALL, you'll know, hey, know what, IT JUST FRIGGIN'
+	 * MIGHT. Sigh.
+	 */
+	public FileInputPanel(String label, int mode, Dialog dialog) {
+		this(label, mode, (Frame) dialog.getOwner());
+	}
+
 	/**
 	 * We should atleast _try_ and look presentable
 	 */
