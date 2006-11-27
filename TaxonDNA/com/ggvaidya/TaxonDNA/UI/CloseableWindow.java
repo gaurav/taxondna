@@ -25,7 +25,7 @@ package com.ggvaidya.TaxonDNA.UI;
 import java.awt.*;
 import java.awt.event.*;
 
-public class CloseableWindow implements WindowListener {
+public class CloseableWindow implements WindowListener, KeyListener {
 	private static CloseableWindow 	singleton = null;
 
 	private CloseableWindow() {
@@ -40,6 +40,7 @@ public class CloseableWindow implements WindowListener {
 	/** Creates a default button named "OK". */
 	public static Window wrap(Window wrap) {
 		wrap.addWindowListener(CloseableWindow.getInstance());
+		//wrap.addKeyListener(CloseableWindow.getInstance());	-- DOESN'T WORK!
 		return wrap;
 	}
 
@@ -53,4 +54,17 @@ public class CloseableWindow implements WindowListener {
 	public void windowDeiconified(WindowEvent e) {}
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}
+
+	public void keyPressed(KeyEvent e) {
+		System.err.println("Source: " + e.getSource());
+		if(Window.class.isAssignableFrom(e.getSource().getClass())) {
+			if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+				((Window) e.getSource()).setVisible(false);
+			}
+		}
+
+	}
+	public void keyReleased(KeyEvent e) {}
+	public void keyTyped(KeyEvent e) {}
+
 }
