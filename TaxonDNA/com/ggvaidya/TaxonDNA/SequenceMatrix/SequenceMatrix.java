@@ -187,13 +187,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileMan.exportAsTNT();
 
 		//
-		// Settings -> Preferences. Allows you to change how SequenceMatrix
-		// works.
-		//
-		if(cmd.equals("Preferences"))
-			prefs.go();
-
-		//
 		// Settings -> Taxonsets. Activate the Taxonsets system!
 		if(cmd.equals("Taxonsets"))
 			taxonSets.go();
@@ -589,7 +582,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Settings menu
 		Menu 	settings	=	new Menu("Settings");
 		settings.add(new MenuItem("Taxonsets"));
-		settings.add(new MenuItem("Preferences"));
 		settings.addActionListener(this);
 		menubar.add(settings);
 
