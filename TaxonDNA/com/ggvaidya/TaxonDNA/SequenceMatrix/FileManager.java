@@ -420,34 +420,100 @@ public class FileManager implements FormatListener {
 	 * 	Right now we're outsourcing this to the SequenceGrid; we might bring it in here in the
 	 * 	future.
 	 */
-	public void exportAsNexus() {
+	public void exportAsNexus() {	
 		if(!checkCancelledBeforeExport())
 			return;
 
-		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
-		if(f == null)
-			return;
+		Dialog frame = (Dialog) CloseableWindow.wrap(new Dialog(matrix.getFrame(), "Export as Nexus ...", true));
+		RightLayout rl = new RightLayout(frame);
+		frame.setLayout(rl);
 
-		try {
-			matrix.getExporter().exportAsNexus(f, 
-					new ProgressDialog(
-						matrix.getFrame(), 
-						"Please wait, exporting dataset ...",
-						"The dataset is being exported. Sorry for the delay."
-						)
-			);
+		rl.add(new Label("File to save to:"), RightLayout.NONE);
+		FileInputPanel finp = new FileInputPanel(
+					null, 
+					FileInputPanel.MODE_FILE_WRITE,	
+					frame
+				);
+		rl.add(finp, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
-			MessageBox mb = new MessageBox(
-					matrix.getFrame(),
-					"Success!",
-					"This set was successfully exported to '" + f + "' in the Nexus format."
-					);
-			mb.go();
+		rl.add(new Label("Export as:"), RightLayout.NEXTLINE);
+		Choice choice_exportAs = new Choice();
+		choice_exportAs.add("Interleaved");
+		choice_exportAs.add("Blocks (NOT usable on Macintosh versions of PAUP* and MacClade!)");
+		choice_exportAs.add("One single (potentially very long) line");
+		rl.add(choice_exportAs, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
-		} catch(IOException e) {
-			reportIOException(e, f, IOE_WRITING);
-		} catch(DelayAbortedException e) {
-			reportDelayAbortedException(e, "Export of Nexus file");
+		rl.add(new Label("Interleave at:"), RightLayout.NEXTLINE);
+		TextField tf_interleaveAt = new TextField();
+		rl.add(tf_interleaveAt, RightLayout.BESIDE | RightLayout.STRETCH_X);
+
+		DefaultButton btn = new DefaultButton(frame, "Write files");
+		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		choice_exportAs.select(matrix.getPrefs().getPreference("exportAsNexus_exportAs", 0));
+		tf_interleaveAt.setText(new Integer(matrix.getPrefs().getPreference("exportAsNexus_interleaveAt", 1000)).toString());
+		finp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
+
+		frame.pack();
+		frame.setVisible(true);
+
+		File file = finp.getFile();
+		if(btn.wasClicked() && file != null) {
+			matrix.getPrefs().setPreference("exportAsNexus_exportAs", choice_exportAs.getSelectedIndex());
+
+			int exportAs = Preferences.PREF_NEXUS_INTERLEAVED;
+			switch(choice_exportAs.getSelectedIndex()) {
+				default:
+				case 0:
+					exportAs = Preferences.PREF_NEXUS_INTERLEAVED;
+					break;
+				case 1:
+					exportAs = Preferences.PREF_NEXUS_BLOCKS;
+					break;
+				case 2:
+					exportAs = Preferences.PREF_NEXUS_SINGLE_LINE;
+					break;
+			}
+
+			int interleaveAt = 1000;
+			try {
+				interleaveAt = Integer.parseInt(tf_interleaveAt.getText());
+			} catch(NumberFormatException e) {
+				if(new MessageBox(matrix.getFrame(), 
+						"Warning: Couldn't interpret 'Interleave At'",
+						"I can't figure out which number you mean by '" + tf_interleaveAt.getText() + "'. I'm going to use '1000' as a default length. Is that alright with you?",
+						MessageBox.MB_YESNO).showMessageBox() == MessageBox.MB_NO)
+					return;
+				interleaveAt = 1000;
+			}
+			matrix.getPrefs().setPreference("exportAsNexus_interleaveAt", interleaveAt);
+			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", file.getAbsolutePath());
+
+			// phew ... go!
+			try {
+				matrix.getExporter().exportAsNexus(
+						file,
+						exportAs,
+						interleaveAt,
+						new ProgressDialog(
+							matrix.getFrame(),
+							"Please wait, exporting sequences ...",
+							"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!")
+				);
+			} catch(IOException e) {
+				MessageBox mb = new MessageBox(
+						matrix.getFrame(),
+						"Error writing sequences to file!",
+						"The following error occured while writing sequences to file: " + e
+						);
+				mb.go();
+
+				return;
+			} catch(DelayAbortedException e) {
+				return;
+			}
+
+			new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a Nexus file.").go();
 		}
 	}
 
