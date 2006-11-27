@@ -58,9 +58,10 @@ public class DefaultButton extends Button implements ActionListener, KeyListener
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(this)) {
+			wasClicked = true;
+
 			// that's us!
 			if(parentWindow != null) {
-				wasClicked = true;
 				parentWindow.setVisible(false);
 				parentWindow.dispose();
 			}
@@ -74,7 +75,7 @@ public class DefaultButton extends Button implements ActionListener, KeyListener
 	public void keyTyped(KeyEvent e) {
 		if(e.getKeyCode() == KeyEvent.VK_ENTER) {
 			processActionEvent(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, getActionCommand()));
-		}	
+		}
 	}
 	
 	/** KeyListener detritus. */
