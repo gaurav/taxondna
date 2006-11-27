@@ -54,12 +54,13 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class Preferences implements WindowListener, ItemListener, ActionListener {
+public class Preferences implements ActionListener {
 	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object
-	private Dialog 			dialog 	= null;			// the Dialog which we need to display
 
 	//
-	// Options
+	// Options: note that we don't actually store these anymore; we're just a
+	// proxy for the java.util.prefs interface
+	//
 	
 	// How should Nexus output be formatted?
 	//
@@ -77,14 +78,6 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	public static final int		PREF_USE_SPECIES_NAME	=	1;
 	private static int		prefName =			PREF_NOT_SET_YET;
 
-	// 
-	// Our User Interface
-	//
-	private Choice 			choice_nexusOutput 	= 	new Choice();
-	private TextField		tf_nexusOutputInterleaved =	new TextField("1000");
-	private Choice			choice_useWhichName	=	new Choice();
-	private Button 			btn_Ok 			=	new Button("OK");
-
 	/**
 	 * Constructor. Sets up the UI (on the dialog object, which isn't madeVisible just yet)
 	 * and 
@@ -92,62 +85,6 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	public Preferences(SequenceMatrix matrix) {
 		// set up the SequenceMatrix
 		this.matrix = matrix;
-
-		// set up 'dialog'
-		dialog = new Dialog(matrix.getFrame(), "Preferences", true);
-
-		Panel options = new Panel();
-		RightLayout rl = new RightLayout(options);
-		options.setLayout(rl);
-
-		// Output Nexus files as: (choice_nexusOutput)
-		choice_nexusOutput.add("Interleaved");
-		choice_nexusOutput.add("Blocks (NOT usable on Macintosh versions of PAUP* and MacClade!)");
-		choice_nexusOutput.add("One single (potentially very long) line");
-
-		choice_nexusOutput.addItemListener(this);
-		rl.add(new Label("Output Nexus files as: "), RightLayout.LEFT);
-		rl.add(choice_nexusOutput, RightLayout.BESIDE | RightLayout.STRETCH_X);
-
-		rl.add(new Label("Interleave Nexus files at (in base pairs): "), RightLayout.NEXTLINE);
-		rl.add(tf_nexusOutputInterleaved, RightLayout.BESIDE | RightLayout.STRETCH_X);
-
-		choice_useWhichName.addItemListener(this);
-		choice_useWhichName.add("Use the sequence's full name");
-		choice_useWhichName.add("Use the sequence's species name");
-		rl.add(new Label("Which name should I use?"), RightLayout.NEXTLINE);
-		rl.add(choice_useWhichName, RightLayout.BESIDE);
-
-		dialog.add(options);
-
-		// set up the 'buttons' bar ... which is really just the 'OK' button
-		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-		// set up the okay button
-		btn_Ok.addActionListener(this);
-		buttons.add(btn_Ok);
-
-		dialog.add(buttons, BorderLayout.SOUTH);
-
-		// register us as a 'listener'
-		dialog.addWindowListener(this);
-	}
-
-	/**
-	 * Our proxy for dialog's setVisible(). Please use this to
-	 * 'activate' the dialog.
-	 */
-	public void setVisible(boolean state) {
-		if(state) {
-			dialog.pack();
-			dialog.setVisible(true);
-		} else {
-			if(verify()) {
-				dialog.setVisible(false);
-				dialog.dispose();
-			}
-		}
 	}
 
 	// 
@@ -181,29 +118,6 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 	 */
 	public int getPreference(String key, int def) {
 		return java.util.prefs.Preferences.userNodeForPackage(getClass()).getInt(key, def);
-	}
-
-	//
-	// get the specific Preferences themselves
-	//
-	/** Returns either PREF_NEXUS_INTERLEAVED, PREF_NEXUS_SINGLE_LINE or PREF_NEXUS_BLOCKS */
-	public int getNexusOutput() {
-		return choice_nexusOutput.getSelectedIndex();
-	}
-
-	/** Returns the length of the blocks you'd like Nexus to spit out */
-	public int getNexusInterleaveAt() {
-		if(getNexusOutput() == PREF_NEXUS_BLOCKS)
-			return 0;
-		try {
-			int x = Integer.parseInt(tf_nexusOutputInterleaved.getText());
-			if(x < 1)
-				return -1;
-			return x;
-		} catch(NumberFormatException e) {
-			// shouldn't happen (see verify()), but just in case
-			return -1;
-		}
 	}
 
 	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
@@ -247,10 +161,6 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 			return prefName;
 	}
 
-	//
-	// Listeners
-	// 
-
 	/**
 	 * Handles Action events (such as the 'OK' button).
 	 */
@@ -259,17 +169,12 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 
 		Object src = e.getSource();
 
-		if(src.equals(btn_Ok))
-			setVisible(false);
-
 		if(e.getActionCommand().equals("Use sequence names")) {
 			prefName = PREF_USE_FULL_NAME;
-			choice_useWhichName.select(PREF_USE_FULL_NAME);
 			close_parent_dialog = true;
 
 		} else if(e.getActionCommand().equals("Use species names")) {
 			prefName = PREF_USE_SPECIES_NAME;
-			choice_useWhichName.select(PREF_USE_SPECIES_NAME);
 			close_parent_dialog = true;
 		}
 
@@ -281,62 +186,7 @@ public class Preferences implements WindowListener, ItemListener, ActionListener
 			dg.setVisible(false);
 		}
 	}
-
-	/**
-	 * Handles Item events (such as whether tf_nexusOutputInterleaved
-	 * should be enabled or not).
-	 */
-	public void itemStateChanged(ItemEvent e) {
-		Object src = e.getSource();
-
-		if(src.equals(choice_nexusOutput)) {
-			if(getNexusOutput() == PREF_NEXUS_INTERLEAVED)
-				tf_nexusOutputInterleaved.setEnabled(true);
-			else
-				tf_nexusOutputInterleaved.setEnabled(false);
-		} else if(src.equals(choice_useWhichName)) {
-			prefName = choice_useWhichName.getSelectedIndex();
-		}
-	}
-
-	/**
-	 * Check to make sure that all input 'makes sense'.
-	 * @return true, if it's okay to exit.
-	 */
-	private boolean verify() {
-		// check getNexusInterleave
-		if(getNexusInterleaveAt() == -1) {
-			MessageBox mb = new MessageBox(
-					matrix.getFrame(),
-					"Error in Nexus 'Interleave At' value",
-					"You specified an invalid or un-understandable value for the Nexus 'Interleave at' argument.\n\nI am going to set it to interleave at 1000bp instead. Is this okay?",
-					MessageBox.MB_YESNO);
-			if(mb.showMessageBox() == MessageBox.MB_YES)
-				tf_nexusOutputInterleaved.setText("1000");
-			else
-				// MB_NO
-				return false;
-		}
-
-		return true;
-	}
-
-	// 
-	// WindowListener methods
-	//
-	public void windowActivated(WindowEvent e) {}
-	public void windowClosed(WindowEvent e) {}
-	public void windowClosing(WindowEvent e) {
-		setVisible(false);
-	}
-	public void windowDeactivated(WindowEvent e) {}
-	public void windowDeiconified(WindowEvent e) {}
-	public void windowIconified(WindowEvent e) {}
-	public void windowOpened(WindowEvent e) {}
-
-	public void go() {
-		setVisible(true);
-	}
+	
 
 	public void beginNewSession() {
 		// clear all session-based variables
