@@ -457,8 +457,8 @@ public class FileManager implements FormatListener {
 		frame.pack();
 		frame.setVisible(true);
 
-		File file = finp.getFile();
-		if(btn.wasClicked() && file != null) {
+		File file = null;
+		if(btn.wasClicked() && ((file = finp.getFile()) != null)) {
 			matrix.getPrefs().setPreference("exportAsNexus_exportAs", choice_exportAs.getSelectedIndex());
 
 			int exportAs = Preferences.PREF_NEXUS_INTERLEAVED;
