@@ -11,6 +11,8 @@
  * SequenceMatrix will, hopefully, be a much SMALLER program than TaxonDNA.
  * We will also experiment with Swing, just to see how that goes (and because
  * JTable would save work like nobody's business).
+ * 
+ * @author Gaurav Vaidya, gaurav@ggvaidya.com
  *
  */
 
@@ -37,23 +39,26 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
+// AWT Stuff
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.datatransfer.*;	// for drag-n-drop
-import java.awt.dnd.*;		// drag-n-drop
 import java.io.*;
 import java.util.*;
+import java.awt.dnd.*;		// for drag-n-drop
+import java.awt.datatransfer.*;	// for drag-n-drop
 
+// Swing stuff
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.table.*;
 
+// TaxonDNA stuff
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
-	// The following variables create and track our AWT interface
+	// The following variables create and track our user interface
 	private Frame		mainFrame 		= new Frame();		// A frame
 	private JTable		mainTable		= null;			// with a table
 
@@ -65,7 +70,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private FileManager	fileMan			= new FileManager(this); // file manager: handles files coming in
 	private Exporter	exporter		= new Exporter(this);	// and the actual exports go thru exporter
 	
-	// dialogs
+	// additional functionality
 	private Preferences	prefs			= new Preferences(this); // preferences are stored here
 	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
 
@@ -80,17 +85,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * SequenceMatrix's entry point. Our arguments are the files we must open
 	 * initially.
 	 *
-	 * This is slighly redundant, but it allows us to "create" SequenceMatrices
-	 * from other programs without much fuss.
 	 */
 	public static void main(String[] args) {
-		Vector files	=	new Vector();
-
-		for(int x = 0; x < args.length; x++) {
-			files.add(new File(args[x]));	
-		}
-
-		new SequenceMatrix( files );
+		new SequenceMatrix( Arrays.asList(args) );
 	}
 	
 //
@@ -105,22 +102,83 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 *
 	 * @param files A vector of files to load in.
 	 */
-	public SequenceMatrix(Vector files) {
+	public SequenceMatrix(Collection files) {
 		createUI();			// create our user interface
 
 		// now load up all the files
 		Iterator i = files.iterator();
 		while(i.hasNext()) {
-			File f = (File) i.next();
+			File f = new File((String) i.next());
 
 			fileMan.addFile(f);
 		}
 
 		resetFrameTitle();
 	}
+//
+// GETTERS: Returns values of possible interest, etc.
+//
+	/**
+	 * Returns the current Frame object.
+	 */
+	public Frame		getFrame() {
+		return mainFrame;
+	}
+	
+	/**
+	 * Returns the Preferences object (so you can see what the user wants).
+	 */
+	public Preferences getPrefs() {
+		return prefs;
+	}
+
+	/**
+	 * Returns the Exporter.
+	 */
+	public Exporter getExporter() {
+		return exporter;
+	}
+
+	/**
+	 * Returns the DataStore object, should you want it.
+	 */
+	public DataStore getDataStore() {
+		return dataStore;
+	}
+
+	/**
+	 * Returns the DataModel. Now, in Reality, this is
+	 * just the dataStore object, suitable casted. But
+	 * since it's an abstraction, I figured, hey, why
+	 * not.
+	 */
+	public TableModel getTableModel() {
+		return (TableModel) dataStore;
+	}
+
+	/**
+	 * Returns the Table.
+	 */
+	public JTable getJTable() {
+		return mainTable;
+	}
+
+	/**
+	 * Returns the Taxonsets component.
+	 */
+	public Taxonsets getTaxonsets() {
+		return taxonSets;
+	}
+	
+	/**
+	 * Returns the citation used by SequenceMatrix.
+	 */
+	public String getCitation() {
+		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
+	}
 
 //
-// 	3.	EVENT PROCESSING. Handles stuff which happens to the main frame, mostly.
+// 	4.	EVENT PROCESSING. Handles stuff which happens to the main frame, mostly.
 // 		This involves menu, window and drop listening.
 //
 	/**
@@ -160,13 +218,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			findDistances.go();
 		}
 
+		/*
 		// Analyses -> Calculate the rank table
 		if(cmd.equals("Calculate the rank table")) {
 			// do something;
 		}
+		*/
 
-		// Export -> Export table as tab delimited. Should be fairly
-		// easy: we could just query the table and spit it out!
+		// Export -> Export table as tab delimited.
 		if(cmd.equals("Export table as tab-delimited"))
 			fileMan.exportTableAsTabDelimited();
 		
@@ -175,25 +234,20 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileMan.exportSequencesByColumn();
 
 		//
-		// Export -> Export as NEXUS. Since TaxonDNA doesn't understand
-		// complex sequences, we do all of these manually. Thankfully,
-		// there's not a lot that needs to be done.
-		//
-		// We basically just 'export' this on to the MatrixModel,
-		// who knows all about such things.
+		// Export -> Export as NEXUS.
 		//
 		if(cmd.equals("Export sequences as NEXUS"))
 			fileMan.exportAsNexus();
 
 		//
-		// Export -> Export as TNT
-		// Exports the current dataset in TNT.
+		// Export -> Export as TNT.
 		//
 		if(cmd.equals("Export sequences as TNT"))
 			fileMan.exportAsTNT();
 
 		//
-		// Settings -> Taxonsets. Activate the Taxonsets system!
+		// Settings -> Taxonsets. Allows you to manipulate taxonsets. 
+		//
 		if(cmd.equals("Taxonsets"))
 			taxonSets.go();
 
@@ -219,9 +273,17 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 
 		// 
-		// ACTION COMMANDS FOR THE MAIN TABLE POPUP MENU 
+		// ACTION COMMANDS FOR THE MAIN TABLE POPUP MENU
+		// Basically, these popups create certain action commands
+		// like 'COLUMN_DELETE:colName', which we can then parse
+		// and use to do things.
+		//
+		// These should probably be replaced by String.regionMatch...(),
+		// but it's plenty understandable (if ugly and verbose), and most
+		// importantly, it DOES THE JOB. So it stays.
 		//
 
+		// Delete a column
 		if(cmd.length() > 14 && cmd.substring(0, 14).equals("COLUMN_DELETE:")) {
 			String colName = cmd.substring(14);
 
@@ -239,6 +301,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			}
 		}
 
+		// Do a PDM on a particular column
 		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
 			String colName = cmd.substring(7);
 
@@ -252,6 +315,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			}
 		}
 
+		// Delete a particular row
 		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
 			String seqName = cmd.substring(11);
 
@@ -280,6 +344,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			}
 		}
 
+		// Make a particular row into the 'outgroup', i.e. the sequence fixed on
+		// top of the sequence listings.
 		if(cmd.length() >= 14 && cmd.substring(0, 14).equals("MAKE_OUTGROUP:")) {
 			String seqName = cmd.substring(14);
 
@@ -303,14 +369,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void windowIconified(WindowEvent e) {}
 	public void windowOpened(WindowEvent e) {}	
 	/**
-	 * If somebody tries to close the window, call our local exit() before closing the Window
+	 * If somebody tries to close the window, call our local exit()
+	 * to shut things down. 
 	 */
 	public void windowClosing(WindowEvent e) {
 		exit();
 	}
 
 	//
-	// The following functions are part of the Drop target listener stuff.
+	// The following functions handle drag and drop.
 	//
 	public void dragEnter(DropTargetDragEvent dtde) {
 		if(dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
@@ -384,7 +451,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		}
 
 		// 
-		// HANDLER CODE FOR THE LIST
+		// HANDLER CODE FOR THE "SORT BY ..." MENU
+		// Note that the following code is pretty badly
+		// tuned specifically for SORT BY. If you're not
+		// using sort by, you really should have returned
+		// by this point.
 		//
 		if(last_chmi != null)
 			last_chmi.setState(false);
@@ -410,19 +481,29 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	//
 	// Don't play around with this: there's are handy 
 	// rightClick(MouseEvent) and doubleClick(MouseEvent)
-	// events around for your enjoyment.
+	// in the DataStore for your enjoyment.
 	//
 	public void mouseClicked(MouseEvent e) {
-		if(e.getSource().equals(mainTable)) {
+		// either TableHeader or mainTable will work (fine)
+		if(e.getSource().equals(mainTable.getTableHeader()) || e.getSource().equals(mainTable)) {
 			int colIndex = mainTable.columnAtPoint(e.getPoint());
 			int rowIndex = mainTable.rowAtPoint(e.getPoint());
 
+			// if we're in the TableHeader, we're automatically popup 
+			boolean popup = e.isPopupTrigger();
+			if(e.getSource().equals(mainTable.getTableHeader()))
+				popup = true;
+			
+			// hack: a triple click becomes a right click
+			if(e.getClickCount() == 3)
+				popup = true;
+
 			// check for right clicks
-			if(e.isPopupTrigger())
+			if(popup)
 				dataStore.rightClick(e, colIndex, rowIndex);
 
-			// check for double clicks
-			if(e.getClickCount() == 2)
+			// check for double clicks (but not both!)
+			else if(e.getClickCount() == 2)
 				dataStore.doubleClick(e, colIndex, rowIndex);
 		}
 	}
@@ -430,28 +511,21 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void mouseExited(MouseEvent e) {} 
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {
-		// windows needs this; dunno if anybody actually uses the 
-		// mouseClicked() one as well
+		// MS Windows needs this; dunno if anybody actually uses BOTH ...
 		//
-		if(e.getSource().equals(mainTable)) {
-			int colIndex = mainTable.columnAtPoint(e.getPoint());
-			int rowIndex = mainTable.rowAtPoint(e.getPoint());
-		
-			if(e.isPopupTrigger())
-				dataStore.rightClick(e, colIndex, rowIndex);
-		}
+		mouseClicked(e);
 	}
 
 
 //
-//	4.	FUNCTIONAL CODE. It does things.
+//	5.	FUNCTIONAL CODE. It does things.
 //
 //		Mostly, it's used by us to call bits of code to 'do' things: exit SequenceMatrix,
 //		exportAsNexus, etc. Public functions can be called by other components to do
 //		things, such as poke a sequence straight onto the screen.
 
 	/**
-	 * Updates the display. In our case, we just need to call the TableModel
+	 * Updates the display. In our case, we just need to call the DataStore 
 	 * and tell it about this.
 	 */
 	public void updateDisplay() {
@@ -459,7 +533,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 
 	/**
-	 * Clears all the sequences away.
+	 * Removes all the sequences.
 	 */
 	public void clear() {
 		dataStore.clear();
@@ -476,25 +550,18 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
 
+		// main table
 		mainTable = new JTable(dataStore);
 		mainTable.addMouseListener(this);
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
 		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
+		mainTable.getTableHeader().addMouseListener(this);
 		mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	// ha-ha!
+
+		// put the maintable into a scroll pane
 		JScrollPane scrollPane = new JScrollPane(mainTable);
-		// i get these dimensions straight from the java docs, so
-		// don't blame me and change them if you like, etc.
-		//
-		// p.s. Commented out, this causes a funky MacOS X GUI bug.
-//		mainTable.setPreferredScrollableViewportSize(new Dimension(500, 200));
 		scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 		mainFrame.add(scrollPane);
-
-		// HACK: MacOS X (or BorderLayout?) places the ScrollPane at (0, 0)
-		// 	which on OS X is the upper left corner of the title bar.
-		// 	We need it to be at the top of the client area, which ought
-		// 	to be stored in getInsets(). So we're going to place
-		// 	a blank component on the top of the screen.
 
 		// Start the mainFrame!
 		mainFrame.pack();
@@ -511,8 +578,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 	
 	/**
-	 * Resets the title of the main frame. You don't need to know this: you can safely
-	 * unlockSequenceList(sequences) and this will be handled.
+	 * Resets the title of the main frame. This is from the old SpeciesIdentifier
+	 * code, but it doesn't actually do anything much any more. Maybe we'll 
+	 * eventually tie this into FileManager or DataStore and put up the number
+	 * of charsets or something, but for now, we really don't need that. At all.
 	 */
 	private void resetFrameTitle() {
 		mainFrame.setTitle(getName());
@@ -599,13 +668,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		menubar.add(help);
 		menubar.setHelpMenu(help);
 		
-		// Creates a popup menu for later use
-		/*
-		popupMenu =  PopupMenu("Matrix options");
-
-		mainFrame.add(popupMenu);
-		*/
-
 		return menubar;
 	}
 
@@ -618,7 +680,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.dispose();		// this "closes" this window; whether or not this 
 						// terminates the application depends on whether 
 						// other stuff is running.
-		System.exit(0);			// until we run this command. then it's all dead, all right.
+		System.exit(0);			// until we run this command. *then*, it's dead, all right.
 
 	}
 
@@ -629,64 +691,4 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		return "TaxonDNA/SequenceMatrix " + Versions.getTaxonDNA();
 	}
 
-	/**
-	 * Returns the current Frame object.
-	 */
-	public Frame		getFrame() {
-		return mainFrame;
-	}
-	
-	/**
-	 * Returns the Preferences object (so you can see what the user wants).
-	 */
-	public Preferences getPrefs() {
-		return prefs;
-	}
-
-	/**
-	 * Returns the Exporter.
-	 */
-	public Exporter getExporter() {
-		return exporter;
-	}
-
-	/**
-	 * Returns the DataStore object, should you want it.
-	 */
-	public DataStore getDataStore() {
-		return dataStore;
-	}
-
-	/**
-	 * Returns the DataModel. Now, in Reality, this is
-	 * just the dataStore object, suitable casted. But
-	 * since it's an abstraction, I figured, hey, why
-	 * not.
-	 */
-	public TableModel getTableModel() {
-		return (TableModel) dataStore;
-	}
-
-	/**
-	 * Returns the Table.
-	 */
-	public JTable getJTable() {
-		return mainTable;
-	}
-
-	
-
-	/**
-	 * Returns the Taxonsets component.
-	 */
-	public Taxonsets getTaxonsets() {
-		return taxonSets;
-	}
-	
-	/**
-	 * Returns the citation used by SequenceMatrix.
-	 */
-	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
-	}
 }
