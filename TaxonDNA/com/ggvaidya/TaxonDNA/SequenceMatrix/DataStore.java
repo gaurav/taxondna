@@ -1283,7 +1283,9 @@ public class DataStore implements TableModel {
 		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
 		*/
 		String colName = getColumnName(col);
-		String rowName = getRowName(row);
+		String rowName = "";
+		if(row > 0)				// we don't use the value of rowName if (row == 0)
+			rowName = getRowName(row);
 
 		PopupMenu pm = new PopupMenu();
 
@@ -1312,34 +1314,38 @@ public class DataStore implements TableModel {
 			pm.add(colMenu);
 		}
 
-		Menu rowMenu = new Menu("Row: " + rowName);
-
-		MenuItem delThisRow = new MenuItem("Delete this row");
-		delThisRow.setActionCommand("ROW_DELETE:" + rowName);
-		rowMenu.add(delThisRow);
-
-		if(outgroupName != null && rowName.equals(outgroupName)) {
-			MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
-			makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
-			rowMenu.add(makeOutgroup);			
+		if(row <= 0) {
+			pm.add("Row: Headers");
 		} else {
-			MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
-			makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
-			rowMenu.add(makeOutgroup);
+			Menu rowMenu = new Menu("Row: " + rowName);
+
+			MenuItem delThisRow = new MenuItem("Delete this row");
+			delThisRow.setActionCommand("ROW_DELETE:" + rowName);
+			rowMenu.add(delThisRow);
+
+			if(outgroupName != null && rowName.equals(outgroupName)) {
+				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
+				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
+				rowMenu.add(makeOutgroup);			
+			} else {
+				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
+				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
+				rowMenu.add(makeOutgroup);
+			}
+
+			rowMenu.addActionListener(matrix);		// wtf really?
+			pm.add(rowMenu);
 		}
 
-		rowMenu.addActionListener(matrix);		// wtf really?
-		pm.add(rowMenu);
-
-		matrix.getJTable().add(pm);			// yrch!
-		pm.show(matrix.getJTable(), e.getX(), e.getY());
+		((JComponent)e.getSource()).add(pm);			// yrch!
+		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
 	}
 
 	/**
 	 * Event: somebody double clicked in the mainTable somewhere
 	 */
 	public void doubleClick(MouseEvent e, int col, int row) {
-		if(row != -1 && col != -1 && col >= additionalColumns) {
+		if(row > 0 && col != -1 && col >= additionalColumns) {
 			// it's, like, valid, dude.
 			toggleCancelled(getColumnName(col), getRowName(row));
 		}
