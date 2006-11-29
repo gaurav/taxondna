@@ -556,6 +556,46 @@ public class FileManager implements FormatListener {
 	}
 
 	/**
+	 * 	Export the current set as a TNT file. Be warned that File 'f' will be
+	 * 	completely overwritten.
+	 *
+	 * 	Right now we're outsourcing this to the SequenceGrid; we might bring it in here in the
+	 * 	future.
+	 */
+	public void exportAsSequences() {
+		//if(!checkCancelledBeforeExport())
+		//	return;
+		//
+		// we don't need to check, since #sequences handles cancelled sequences fine.
+
+		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
+		if(f == null)
+			return;
+
+		try {
+			matrix.getExporter().exportAsSequences(f, 
+					new ProgressDialog(
+						matrix.getFrame(), 
+						"Please wait, exporting dataset ...",
+						"The dataset is being exported. Sorry for the delay."					
+					)
+			);
+
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Success!",
+					"This set was successfully exported to '" + f + "' in the Sequences format."
+					);
+			mb.go();
+
+		} catch(IOException e) {
+			reportIOException(e, f, IOE_WRITING);
+		} catch(DelayAbortedException e) {
+			reportDelayAbortedException(e, "Export of Sequence file");
+		}
+	}
+
+	/**
 	 * Export the table itself as a tab delimited file.
 	 */
 	public void exportTableAsTabDelimited() {
