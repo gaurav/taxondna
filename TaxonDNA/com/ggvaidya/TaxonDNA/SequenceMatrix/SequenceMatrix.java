@@ -144,6 +144,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileMan.addFile();
 
 		//
+		// File -> Save. Effectively an 'export as #sequences'.
+		//
+		if(cmd.equals("Save"))
+			fileMan.exportAsSequences();
+
+		//
 		// File -> Exit. Calls our exit() way out.
 		//
 		if(cmd.equals("Exit"))
@@ -524,6 +530,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		Menu 	file		=	new Menu("File");
 		file.add(new MenuItem("Clear all"));
 		file.add(new MenuItem("Add sequences"));
+		file.add(new MenuItem("Save"));
 //		file.addSeparator();
 //		file.add(new MenuItem("Save", new MenuShortcut(KeyEvent.VK_S)));
 //		file.add(new MenuItem("Save As", null));
