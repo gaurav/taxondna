@@ -163,6 +163,28 @@ public class DataStore implements TableModel {
 	}
 
 	/**
+	 * Returns a cancelled sequence in column colName and with the sequence name seqName.
+	 * As a bonus, it works for ANY sequence, but don't tell 'em I told you that.
+	 *
+	 * @return null, if either the column or sequence name does not exist (or the sequence name does not exist in this column)
+	 */
+	public Sequence getCancelledSequence(String colName, String seqName) {
+		validateColName(colName);
+		validateSeqName(seqName);
+
+		Hashtable col = (Hashtable) hash_master.get(colName);
+		if(col == null)
+			return null;
+
+		Sequence seq = (Sequence) col.get(seqName);
+
+		if(seq == null)
+			return null;
+
+		return seq;
+	}	
+
+	/**
 	 * Returns a list of all sequence names in our datastore. This is easy, since we
 	 * keep just such a list for easy retrieval. Indexing, you know. All the cool kids
 	 * are doing it.
@@ -429,7 +451,8 @@ public class DataStore implements TableModel {
 
 		Hashtable col = (Hashtable) hash_master.get(colName);
 		if(col == null)
-			throw new IllegalArgumentException("Column '" + colName + "' doesn't exist.");
+			return -1;
+			// throw new IllegalArgumentException("Column '" + colName + "' doesn't exist.");
 		
 		return ((Integer)col.get("")).intValue();
 	}
@@ -652,9 +675,6 @@ public class DataStore implements TableModel {
 		if(delay != null)
 			delay.begin();
 
-		// Set up us the new total width
-		setColumnLength(colName, sl.getMaxLength());
-
 		// String buffer droppedSequences records which sequences were dropped, so we can let the user know.
 		StringBuffer droppedSequences = new StringBuffer("");
 
@@ -695,6 +715,14 @@ public class DataStore implements TableModel {
 					break;
 			}
 
+			// HACK/TODO: For use by #sequences loading
+			// (see Exporter)
+			if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName") != null)
+				colName = (String) seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName");
+
+			if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName") != null)
+				seqName = (String) seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName");
+
 			// Is there already a sequence with this name?
 			Sequence seq_old = getSequence(colName, seqName);
 			if(seq_old != null) {
@@ -710,11 +738,14 @@ public class DataStore implements TableModel {
 			}
 
 			// Is it the right size?
-			if(seq.getLength() < sl.getMaxLength()) { 
-				droppedSequences.append("\t" + seqName + ": It is too short (" + seq.getLength() + " bp, while the column is supposed to be " + sl.getMaxLength() + " bp)\n");
+			int colLength = getColumnLength(colName);
+			if(colLength == -1) {
+				// not defined yet
+			} else if(seq.getLength() < colLength) { 
+				droppedSequences.append("\t" + seqName + ": It is too short (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
 				continue;
-			} else if(seq.getLength() > sl.getMaxLength()) {
-				droppedSequences.append("\t" + seqName + ": It is too long (" + seq.getLength() + " bp, while the column is supposed to be " + sl.getMaxLength() + " bp)\n");
+			} else if(seq.getLength() > colLength) {
+				droppedSequences.append("\t" + seqName + ": It is too long (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
 				continue;
 			}
 
