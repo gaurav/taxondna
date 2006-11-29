@@ -40,11 +40,14 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class Exporter {
+public class Exporter implements SequencesHandler {
 	private SequenceMatrix matrix;
 
 	public Exporter(SequenceMatrix matrix) {
 		this.matrix = matrix;
+
+		// register us with SequencesFile
+		SequencesFile.addSequencesHandler(this);
 	}
 
 	//
@@ -237,6 +240,91 @@ public class Exporter {
 
 		return buff.toString();
 	}	
+
+	/**
+	 * Exports the current matrix as a Sequences file. I wish we could use the main system to pull off
+	 * this particular trick, but it really is a whole lot easier to just write it out. Atleast I can
+	 * say that's because the output format is so incredibly well done :P.
+	 */
+	public void exportAsSequences(File f, DelayCallback delay) throws IOException, DelayAbortedException {
+		if(delay != null)
+			delay.begin();
+
+		PrintWriter writer = new PrintWriter(f);
+		writer.println("#sequences (nucleotide sequencematrix)");
+		writer.println();
+
+		List colNames = matrix.getDataStore().getColumns();
+		List seqNames = matrix.getDataStore().getSequences();
+
+		Iterator i_cols = colNames.iterator();
+		while(i_cols.hasNext()) {
+			String colName = (String) i_cols.next();
+
+			Iterator i_seqs = seqNames.iterator();
+			while(i_seqs.hasNext()) {
+				String seqName = (String) i_seqs.next();
+
+				Sequence seq = matrix.getDataStore().getSequence(colName, seqName);
+				boolean cancelled = false;
+				if(seq == null) {
+					if(matrix.getDataStore().isSequenceCancelled(colName, seqName)) {
+						seq = matrix.getDataStore().getCancelledSequence(colName, seqName);
+						cancelled = true;
+					} else 
+						continue;
+				}
+
+				writer.println("> " + seq.getFullName());
+				writer.println("^sequencematrix.colname " + colName);
+				writer.println("^sequencematrix.seqname " + seqName);
+				if(cancelled)
+					writer.println("^sequencematrix.cancelled");
+				writer.println(seq.getSequenceWrapped(70));
+
+				writer.println();
+			}
+		}
+
+		if(delay != null)
+			delay.end();
+	}
+
+//
+// EXPERIMENTAL SEQUENCES HANDLER
+//
+	public boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException { 
+		String[] ret = new String[2];
+
+		if(SequencesFile.isCommand(cmdLine, ret)) {
+			String key = ret[0];
+			String val = ret[1];
+
+			if(key.equalsIgnoreCase("sequencematrix.colname")) {
+				// ooooooooooh kay .. so how ah?
+				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName", val);
+
+				return true;
+			} else if(key.equalsIgnoreCase("sequencematrix.seqname")) {
+				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName", val);
+
+				return true;
+			} else if(key.equalsIgnoreCase("sequencematrix.cancelled")) {
+				// it's an ugly hack, but it'll do for now
+				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", new Object());
+
+				return true;
+			}
+		}
+
+		return false; 
+	}
+	public boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException { return false; }
+	public String writeLocalCommand(Sequence seq) { return null; }
+	public String writeGlobalCommand(SequenceList list) { return null; }
+	public String getSequencesHandlerName() {
+		return "sequencematrix";
+	}
 
 	/**
 	 * Export the current matrix as Nexus. Note that this function might
