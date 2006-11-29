@@ -62,6 +62,14 @@
  * 1.	Names which are composed entirely of whitespace are allowed, and
  * 	accepted as such. Really.
  *
+ * SECTION 2: TAG GROUPS
+ * nucleotide:	the sequence information is nucleotide information
+ * taxonomy:
+ * 	^gi			GI number
+ * 	^species		Species name
+ * 	^subspecies		Subspecies name
+ * 	^family			Family name
+ *
  * @author Gaurav Vaidya, gaurav@ggvaidya.com 
  */
 
@@ -94,6 +102,43 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class SequencesFile extends BaseFormatHandler implements Testable {
+	/** A vector of all command families supported by us (SequencesHandler). */
+	private static Vector vec_handlers = new Vector();
+	
+	/** A vector of all command familie NAMES supported by us (String). */
+	private static Vector vec_handlers_names = new Vector();
+
+	/** Register a SequencesHandler with SequencesFile. */
+	public static void addSequencesHandler(SequencesHandler handler) {
+		synchronized(vec_handlers) {
+			vec_handlers.add(handler);
+			vec_handlers_names.add(handler.getSequencesHandlerName());
+		}
+	}
+
+	/** Helper function to get a key/value pair out of sequences.
+	 * There are three better ways of writing this function depending
+	 * on whether we can use:
+	 * 1.	Multiple return values
+	 * 2.	Continuations
+	 * 3.	References/pointers
+	 *
+	 * @param ret An array of two parts, both strings. ret[0] is filled in with the key, ret[1] is filled in with the value.
+	 * */
+	public static boolean isCommand(String line, String ret[]) {
+		Matcher m = p_keyValue.matcher(line);
+
+		if(m.matches()) {	// warning: we're using matches() since we ARE using the entire string
+					// if you need to find() stuff, change this!
+			ret[0] = m.group(1).trim();
+			ret[1] = m.group(2).trim();
+			return true;
+		}		
+
+		return false;
+	}
+	private static Pattern		p_keyValue = Pattern.compile("^[\\^\\@]\\s*([\\w\\.]+)\\s*(.*)$");
+
 	/** Creates a SequencesFile reader/writer. */
 	public SequencesFile() {}
 	
@@ -145,14 +190,100 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 	}
 
 	public void fireLocalCmds(Sequence seq, Vector localCmds) throws FormatException {
-		if(localCmds.size() > 0)
-			throw new FormatException("Invalid local commands on sequence '" + seq.getFullName() + "'");
+		Iterator i = localCmds.iterator();
+		while(i.hasNext()) {
+			String localCmd = (String) i.next();
+			boolean handled = false;
+
+			synchronized(vec_handlers) {
+				Iterator i_handlers = vec_handlers.iterator();
+
+				while(i_handlers.hasNext()) {
+					SequencesHandler handler = (SequencesHandler) i_handlers.next();
+
+					if(handler.readLocalCommand(localCmd, seq)) {
+						handled = true;
+						break;	// somebody consumed the command
+					}
+				}
+			}
+
+			if(!handled)
+				throw new FormatException("Local command '" + localCmd + "' in sequence " + seq.getFullName() + " cannot be interpreted by this program!");
+		}
 	} 
 
 	public void fireGlobalCmds(SequenceList list, Vector globalCmds) throws FormatException {
-		if(globalCmds.size() > 0)
-			throw new FormatException("Invalid global commands in file!");
+		Iterator i = globalCmds.iterator();
+		while(i.hasNext()) {
+			String globalCmd = (String) i.next();
+			boolean handled = false;
+
+			synchronized(vec_handlers) {
+				Iterator i_handlers = vec_handlers.iterator();
+
+				while(i_handlers.hasNext()) {
+					SequencesHandler handler = (SequencesHandler) i_handlers.next();
+
+					if(handler.readGlobalCommand(globalCmd, list)) {
+						handled = true;
+						break;	// somebody consumed the command
+					}
+				}
+			}
+
+			if(!handled)
+				throw new FormatException("Global command '" + globalCmd + "' cannot be interpreted by this program!");
+		}
 	}
+
+	private String getLocalCommands(Sequence seq) {
+		StringBuffer buff = null;
+
+		synchronized(vec_handlers) {
+			Iterator i_handlers = vec_handlers.iterator();
+
+			while(i_handlers.hasNext()) {
+				SequencesHandler handler = (SequencesHandler) i_handlers.next();
+
+				String str = handler.writeLocalCommand(seq);
+				if(str != null) {
+					if(buff == null)
+						buff = new StringBuffer();
+					buff.append(str + "\n");	// just in case
+				}
+			}
+		}
+
+		if(buff == null)
+			return null;
+		else
+			return buff.toString().trim();	// this is okay, since the local command will be written out with a writeln anyway
+	}
+
+	private String getGlobalCommands(SequenceList sl) {
+		StringBuffer buff = null;
+
+		synchronized(vec_handlers) {
+			Iterator i_handlers = vec_handlers.iterator();
+
+			while(i_handlers.hasNext()) {
+				SequencesHandler handler = (SequencesHandler) i_handlers.next();
+
+				String str = handler.writeGlobalCommand(sl);
+				if(str != null) {
+					if(buff == null)
+						buff = new StringBuffer();
+					buff.append(str + "\n");	// just in case
+				}
+			}
+		}
+
+		if(buff == null)
+			return null;
+		else
+			return buff.toString().trim();	// this is okay, since the local command will be written out with a writeln anyway
+	}	
 
 	/**
 	 * Appends the contents of a FASTA file to the specified SequenceList.
@@ -168,8 +299,8 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 		Pattern 	pBlank	=	Pattern.compile("^\\s*$");
 		Pattern 	pComment =	Pattern.compile("#.*$");
 		Pattern		pName =		Pattern.compile("^\\s*>\\s*(.*)\\s*$");
-		Pattern		pGlobalCmd =	Pattern.compile("^\\s*@\\s*(\\w+)\\s+(.*)\\s*$");
-		Pattern		pLocalCmd =	Pattern.compile("^\\s*^\\s*(\\w+)\\s+(.*)\\s*$");
+		Pattern		pGlobalCmd =	Pattern.compile("^\\s*\\@(.*)$");
+		Pattern		pLocalCmd =	Pattern.compile("^\\s*\\^(.*)$");
 
 		String		name =	"0";			// as per spec
 		StringBuffer	data = 	new StringBuffer();	// building up data
@@ -194,7 +325,6 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 		while(reader.ready()) {
 			line_no++;
 				
-
 			try {
 				if(delay != null)
 					delay.delay(line_no, count_lines);
@@ -292,7 +422,7 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 	}
 
 	/**
-	 * Write this SequenceList into a Fasta file.
+	 * Write this SequenceList into a '#sequences' file.
 	 *
 	 * @throws IOException if there was an error during input/output. 
 	 * @throws DelayAbortedException if the user aborted this function.
@@ -306,12 +436,18 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 		if(delay != null)
 			delay.begin();
 
+		// TODO: Quick and dirty implementation, we'll have to make
+		// this a whole lot better once we're done with this thang ...
+		StringBuffer signature = new StringBuffer();
+		Iterator i_names = vec_handlers_names.iterator();
+
+		while(i_names.hasNext()) {
+			signature.append(((String)i_names.next()) + " ");
+		}
+
+		writer.println("#sequences (nucleotide " + signature.toString().trim() + ")");
+
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
-
-			writer.println(">" + seq.getFullName());
-			writer.println(seq.getSequenceWrapped(70));
-
 			try {
 				if(delay != null)
 					delay.delay(x, count);
@@ -321,9 +457,19 @@ public class SequencesFile extends BaseFormatHandler implements Testable {
 					delay.end();	
 				throw e;
 			}
-
 			x++;
+
+			Sequence seq = (Sequence) i.next();
+
+			writer.println(">" + seq.getFullName());
+			String commands = getLocalCommands(seq);
+			if(commands != null)
+				writer.println(commands);
+			writer.println(seq.getSequenceWrapped(70));
 		}
+		String commands = getGlobalCommands(set);
+		if(commands != null)
+			writer.println(commands);
 
 		if(delay != null)
 			delay.end();
