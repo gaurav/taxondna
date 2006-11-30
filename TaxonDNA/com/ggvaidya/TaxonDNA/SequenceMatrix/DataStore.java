@@ -1019,7 +1019,9 @@ public class DataStore implements TableModel {
 		if(!suppressUpdates && DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
 			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
 
-			dpm.resortPairwiseDistanceMode();
+			if(!dpm.resortPairwiseDistanceMode())		// uh-oh ... something went wrong!
+				if(!exitPairwiseDistanceMode())		// go back to a sensible state
+					fatalError();
 
 			return;
 		}
@@ -1425,12 +1427,14 @@ public class DataStore implements TableModel {
 	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
 		// are we already in PDM? In which case, we just need to
 		// swap the colNameOfInterest around
-		if(currentTableModel.getClass().equals(DisplayPairwiseModel.class)) {
+		if(DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
 			// already in PDM, need to turn this off
 			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
 
 			if(isColumn(colNameOfInterest)) {
-				if(!dpm.exitPairwiseDistanceMode())
+				if(dpm.resortPairwiseDistanceMode(colNameOfInterest))
+					updateDisplay();
+				else
 					return false;
 			} else
 				return false;		// booh! no such column!
@@ -1459,6 +1463,15 @@ public class DataStore implements TableModel {
 		pdm_colName = null;
 		updateDisplay();
 		return true;
+	}
+
+	// just in case
+	private void fatalError() {
+		new MessageBox(
+				matrix.getFrame(),
+				"Something went horribly wrong!",
+				"There was a programming error in this program. I can't get back to a normal state. I'm going to remove all your sequences, which means you'll lose all your changes. I'm so very sorry. Please let the programmers know, and we'll get working on this immediately. Sorry again!").go();
+		clear();
 	}
 }
 
