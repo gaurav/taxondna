@@ -489,6 +489,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			int colIndex = mainTable.columnAtPoint(e.getPoint());
 			int rowIndex = mainTable.rowAtPoint(e.getPoint());
 
+			// somehow, tablehandlers generate BOTH mouseClicked and mouseReleased,
+			// while tables don't. So ...
+			if(e.getSource().equals(mainTable.getTableHeader())) {
+				if(e.getID() == MouseEvent.MOUSE_RELEASED)
+					return;
+			}
+
 			// if we're in the TableHeader, we're automatically popup 
 			boolean popup = e.isPopupTrigger();
 			if(e.getSource().equals(mainTable.getTableHeader()))
@@ -511,9 +518,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void mouseExited(MouseEvent e) {} 
 	public void mousePressed(MouseEvent e) {}
 	public void mouseReleased(MouseEvent e) {
-		// MS Windows needs this; dunno if anybody actually uses BOTH ...
+		// MS Windows needs this; also, Windows generates both mouseReleased 
+		// and mouseClicked events when double clicking. So, if and only if
+		// this is a right click activator, do we pass it on.
 		//
-		mouseClicked(e);
+		if(e.isPopupTrigger())
+			mouseClicked(e);
 	}
 
 
