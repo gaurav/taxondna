@@ -147,7 +147,7 @@ public class DisplayCountsModel implements TableModel {
 
 		// if it's the total length column, return the total length columns
 		if(columnIndex == 1)
-			return dataStore.getCompleteSequenceLength(seqName) + " bp";
+			return dataStore.getCombinedSequenceLength(seqName) + " bp";
 
 		// if it's the number of charsets column, return that.
 		if(columnIndex == 2)

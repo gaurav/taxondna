@@ -196,7 +196,7 @@ public class Exporter implements SequencesHandler {
 			// now figure out a list of all taxa with atleast 'length' total length
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x); 
-				int myLength = matrix.getDataStore().getCompleteSequenceLength(seqName);
+				int myLength = matrix.getDataStore().getCombinedSequenceLength(seqName);
 
 				if(myLength >= length)
 					buff.append((x + offset) + " ");
@@ -446,7 +446,7 @@ public class Exporter implements SequencesHandler {
 			writer.println("");
 
 			writer.println("BEGIN DATA;");
-			writer.println("\tDIMENSIONS NTAX=" + dataStore.getSequencesCount() + " NCHAR=" + dataStore.getCompleteSequenceLengthWithGaps() + ";");
+			writer.println("\tDIMENSIONS NTAX=" + dataStore.getSequencesCount() + " NCHAR=" + dataStore.getCompleteSequenceLength() + ";");
 
 			writer.print("\tFORMAT DATATYPE=DNA GAP=- MISSING=? ");
 			if(how == Preferences.PREF_NEXUS_BLOCKS)
@@ -692,7 +692,7 @@ public class Exporter implements SequencesHandler {
 			writer.println("Additional taxonsets and character sets end here.");
 		}
 		writer.println("'");
-		writer.println(dataStore.getCompleteSequenceLengthWithGaps() + " " + dataStore.getSequencesCount());
+		writer.println(dataStore.getCompleteSequenceLength() + " " + dataStore.getSequencesCount());
 
 		Iterator i_rows = dataStore.getSequences().iterator();
 		int count_rows = 0;
