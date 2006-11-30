@@ -69,6 +69,7 @@ public class DisplayPairwiseModel implements TableModel {
 	public static double	DIST_SEQ_NA		=	-128.0;
 	public static double	DIST_NO_OVERLAP		=	-256.0;	
 	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
+	public static double 	DIST_CANCELLED		=	-2048.0;
 
 	private class Score implements Comparable {
 			private String seqName = "";
@@ -182,7 +183,10 @@ public class DisplayPairwiseModel implements TableModel {
 				else if(seqName_top.equals(seqName)) {
 					dist = DIST_SEQ_ON_TOP;
 				} else if(seq == null) {
-					dist = DIST_SEQ_NA;
+					if(dataStore.isSequenceCancelled(colName, seqName))
+						dist = DIST_CANCELLED;
+					else
+						dist = DIST_SEQ_NA;
 				}
 				else if((dist = seq.getPairwise(seq_compare)) < 0) {
 					// illegal!
@@ -325,16 +329,20 @@ public class DisplayPairwiseModel implements TableModel {
 	/**
 	 * Resort pairwise distances mode. Resorts the PDM based on updated data.
 	 */
-	public void resortPairwiseDistanceMode(String colName) {
-		exitPairwiseDistanceMode();
-		enterPairwiseDistanceMode(colName);
+	public boolean resortPairwiseDistanceMode(String colName) {
+		if(!exitPairwiseDistanceMode())
+			return false;
+		if(!enterPairwiseDistanceMode(colName))
+			return false;
+
+		return true;
 	}
 
 	/**
 	 * A helper function to resort to the last selected column name.
 	 */
-	public void resortPairwiseDistanceMode() {
-		resortPairwiseDistanceMode(last_colNameOfInterest);
+	public boolean resortPairwiseDistanceMode() {
+		return resortPairwiseDistanceMode(last_colNameOfInterest);
 	}
 
 //
@@ -456,6 +464,8 @@ public class DisplayPairwiseModel implements TableModel {
 			return "(NO OVERLAP)";
 		} else if(dist == DIST_SEQ_ON_TOP) {
 			return "(ON TOP)";
+		} else if(dist == DIST_CANCELLED) {
+			return "(CANCELLED)";
 		} else {
 			return "(N/A - unknown)";
 		}
