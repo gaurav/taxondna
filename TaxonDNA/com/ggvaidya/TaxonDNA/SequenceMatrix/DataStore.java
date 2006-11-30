@@ -108,6 +108,15 @@ public class DataStore implements TableModel {
 	// For the table-model-switcheroo thingie
 	private TableModel		currentTableModel =	null;
 	private int			additionalColumns =	0;
+	private String			pdm_colName =		null;
+
+	// For controlling updates
+	private boolean			suppressUpdates =	false;		// we don't actually use this,
+										// because a suprisingly large amount
+										// of code depends on being able to
+										// know what everybody's doing at
+										// every instant, or something like
+										// that. Maybe after some refactoring?
 
 //
 // 0.	INTERNAL ACCESS FUNCTIONS. hash_columns does a lot of pretty strange shit in a very small space.
@@ -240,7 +249,7 @@ public class DataStore implements TableModel {
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
 
-			if(getSequence(colName, seqName) != null)
+			if(getCancelledSequence(colName, seqName) != null)
 				ll.add(seqName);
 		}
 
@@ -517,7 +526,7 @@ public class DataStore implements TableModel {
 	 * Constructs a sequence consisting of all non-cancelled sequences
 	 * for a specified seqName.
 	 */
-	public Sequence getCompleteSequence(String seqName) {
+	public Sequence getCombinedSequence(String seqName) {
 		Sequence result = new Sequence();
 
 		validateSeqName(seqName);
@@ -538,7 +547,7 @@ public class DataStore implements TableModel {
 	 * Determine the total length of a sequence consisting of all 
 	 * non-cancelled sequences for a specified seqName.
 	 */
-	public int getCompleteSequenceLength(String seqName) {
+	public int getCombinedSequenceLength(String seqName) {
 		int total = 0;
 
 		validateSeqName(seqName);
@@ -560,7 +569,7 @@ public class DataStore implements TableModel {
 	 * identical to getCompleteSequence, except that we insert
 	 * full length gaps into empty slots.
 	 */
-	public Sequence getCompleteSequenceWithGaps(String seqName) {
+	public Sequence getCompleteSequence(String seqName) {
 		Sequence result = new Sequence();
 
 		validateSeqName(seqName);
@@ -585,7 +594,7 @@ public class DataStore implements TableModel {
 	 * that we insert full length gaps into empty slots, and
 	 * *then* measure them.
 	 */
-	public int getCompleteSequenceLengthWithGaps() {
+	public int getCompleteSequenceLength() {
 		int count = 0;
 
 		Iterator i = getColumns().iterator();
@@ -802,6 +811,13 @@ public class DataStore implements TableModel {
 			deleteSequence(colName, seqName);
 		}
 
+		// Since PDM can't be used with one column, we need to turn PDM off if
+		// we just deleted the PDM column
+		if(DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
+			if(colName.equals(pdm_colName))
+				exitPairwiseDistanceMode();
+		}
+
 		// aaaaaaaaaaaand ... done!
 		updateDisplay();
 	}
@@ -957,8 +973,8 @@ public class DataStore implements TableModel {
 			if(res != 0)
 				return res;
 
-			int count1 = store.getCompleteSequenceLength(str1);
-			int count2 = store.getCompleteSequenceLength(str2);
+			int count1 = store.getCombinedSequenceLength(str1);
+			int count2 = store.getCombinedSequenceLength(str2);
 
 			return (count2 - count1);
 		}
@@ -999,6 +1015,14 @@ public class DataStore implements TableModel {
 
 		sortBy = sort;
 		sortBroken = false;
+		
+		if(!suppressUpdates && DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
+			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
+
+			dpm.resortPairwiseDistanceMode();
+
+			return;
+		}
 	}	
 
 //
@@ -1056,16 +1080,25 @@ public class DataStore implements TableModel {
 	}
 
 	public void updateSort(int sortBy) {
+		if(suppressUpdates)
+			return;
+
 		resort(sortBy);
 		updateNoSort();
 	}
 	
 	public void updateDisplay() {
+		if(suppressUpdates)
+			return;
+
 		resort(sortBy);
 		updateNoSort();
 	}
 
 	public void updateNoSort() {
+		if(suppressUpdates)
+			return;
+
 //		fireTableModelEvent(new TableModelEvent(this));
 		
 		// okay, firing the table model event resets everything
@@ -1408,6 +1441,7 @@ public class DataStore implements TableModel {
 			return false;
 
 		currentTableModel = (TableModel) pdm;
+		pdm_colName = colNameOfInterest;
 		updateDisplay();
 		return true;
 	}
@@ -1422,6 +1456,7 @@ public class DataStore implements TableModel {
 			return false;
 
 		currentTableModel = new DisplayCountsModel(matrix, this);
+		pdm_colName = null;
 		updateDisplay();
 		return true;
 	}
