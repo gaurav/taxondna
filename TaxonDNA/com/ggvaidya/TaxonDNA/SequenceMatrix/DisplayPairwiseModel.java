@@ -53,6 +53,8 @@ public class DisplayPairwiseModel implements TableModel {
 	private DataStore	dataStore 		=	null;
 	public static final int additionalColumns 	= 	3;	// Sequence name, total length, and # of charsets
 
+	private String		last_colNameOfInterest	=	null;
+
 	private List		columnList 		= 	null;
 	private List		sequencesList		=	null;
 	private List		scores			=	null;
@@ -299,6 +301,9 @@ public class DisplayPairwiseModel implements TableModel {
 
 		// finally, set the default renderer up, and we're good to go! 
 		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer(this));
+
+		// oh - don't forget to set the last_colNameOfInterest!
+		last_colNameOfInterest = colNameOfInterest;
 		
 		pd.end();
 
@@ -312,10 +317,25 @@ public class DisplayPairwiseModel implements TableModel {
 	 */
 	public boolean exitPairwiseDistanceMode() {
 		matrix.getJTable().setDefaultRenderer(String.class, new DefaultTableCellRenderer());
-		dataStore.updateDisplay();
+//		dataStore.updateDisplay();
 
 		return true;
 	}	
+
+	/**
+	 * Resort pairwise distances mode. Resorts the PDM based on updated data.
+	 */
+	public void resortPairwiseDistanceMode(String colName) {
+		exitPairwiseDistanceMode();
+		enterPairwiseDistanceMode(colName);
+	}
+
+	/**
+	 * A helper function to resort to the last selected column name.
+	 */
+	public void resortPairwiseDistanceMode() {
+		resortPairwiseDistanceMode(last_colNameOfInterest);
+	}
 
 //
 // 1.	THE TABLE MODEL LISTENER SYSTEM. We use this to let people know
