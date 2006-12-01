@@ -286,6 +286,9 @@ public class Exporter implements SequencesHandler {
 			}
 		}
 
+		writer.flush();
+		writer.close();
+
 		if(delay != null)
 			delay.end();
 	}
