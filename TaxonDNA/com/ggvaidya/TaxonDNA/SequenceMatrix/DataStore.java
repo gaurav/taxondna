@@ -1078,7 +1078,7 @@ public class DataStore implements TableModel {
 			TableModelListener l = (TableModelListener)i.next();	
 
 			l.tableChanged(e);
-		}		
+		}
 	}
 
 	public void updateSort(int sortBy) {
@@ -1117,16 +1117,21 @@ public class DataStore implements TableModel {
 		//
 		// and may God have mercy on my soul.
 		//
+		Hashtable widths = saveWidths();
+		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+		restoreWidths(widths);
+	}
+
+	private Hashtable saveWidths() {
 		Hashtable widths = new Hashtable();
 		JTable j = matrix.getJTable();
 		if(j == null)
-			return;
-		
+			return null;
 
 		// save all widths
 		TableColumnModel tcm = j.getColumnModel();
 		if(tcm == null)
-			return;
+			return null;
 
 		Enumeration e = tcm.getColumns();
 		while(e.hasMoreElements()) {
@@ -1134,16 +1139,30 @@ public class DataStore implements TableModel {
 			widths.put(tc.getIdentifier(), new Integer(tc.getWidth()));
 		}
 
-		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+		return widths;
+	}
+
+	private void restoreWidths(Hashtable widths) {
+		if(widths == null)
+			return;
 		
-		e = tcm.getColumns();
+		JTable j = matrix.getJTable();
+		if(j == null)
+			return;
+		
+		// load all widths
+		TableColumnModel tcm = j.getColumnModel();
+		if(tcm == null)
+			return;
+
+		Enumeration e = tcm.getColumns();
 		while(e.hasMoreElements()) {
 			TableColumn tc = (TableColumn) e.nextElement();
 
 			Integer oldWidth = (Integer) widths.get(tc.getIdentifier());
 			if(oldWidth != null)
 				tc.setPreferredWidth(oldWidth.intValue());
-		}
+		}	
 	}
 
 //
@@ -1428,13 +1447,14 @@ public class DataStore implements TableModel {
 		// are we already in PDM? In which case, we just need to
 		// swap the colNameOfInterest around
 		if(DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
-			// already in PDM, need to turn this off
+			// already in PDM, need to call resort
 			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
 
 			if(isColumn(colNameOfInterest)) {
-				if(dpm.resortPairwiseDistanceMode(colNameOfInterest))
+				if(dpm.resortPairwiseDistanceMode(colNameOfInterest)) {
 					updateDisplay();
-				else
+					return true;
+				} else
 					return false;
 			} else
 				return false;		// booh! no such column!
