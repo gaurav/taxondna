@@ -87,6 +87,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 *
 	 */
 	public static void main(String[] args) {
+		Sequence.setMinOverlap(1);	// even a single overlap is okay
 		new SequenceMatrix( Arrays.asList(args) );
 	}
 	
