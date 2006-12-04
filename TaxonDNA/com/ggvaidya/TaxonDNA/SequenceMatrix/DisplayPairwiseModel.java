@@ -32,6 +32,9 @@ import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
+import java.net.*;		// for URLConnection, etc.
+import java.lang.reflect.*;	// Reflection
+
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.event.*;
@@ -39,6 +42,8 @@ import java.awt.event.*;
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
 import javax.swing.table.*;
+
+import Jama.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -311,6 +316,8 @@ public class DisplayPairwiseModel implements TableModel {
 		
 		pd.end();
 
+		testCorrelation();
+
 		return true;
 	}
 
@@ -499,6 +506,181 @@ public class DisplayPairwiseModel implements TableModel {
 	}
 
 
+//
+// MATHEMATICS BACKING THE CORRELATION CALCULATIONS
+//
+	/**
+	 * Calculates and returns the correlation between two columns;
+	 * in this case indicated by indices into the arrays used by
+	 * us.
+	 */
+	public double getCorrelation(int x, int y) {
+		if(distances == null)
+			return -1.0;
+
+		int n = sequencesList.size() - 1;	// well, this'll need fixing
+
+		double sum_x = sum(x);	
+		double sum_y = sum(y);
+
+		double sum_x2 = sum_squared(x);
+		double sum_y2 = sum_squared(y);
+
+		double variable_x = (n * sum_x2) - (sum_x * sum_x);
+		double variable_y = (n * sum_y2) - (sum_y * sum_y);		
+
+		// since these cases mean that there is inadequate information
+		// for a match (too many N/A sequences, basically) this is
+		// logically the same as there being no correlation between
+		// this pair of numbers
+		if(variable_x <= 0)
+			return 0.0;
+
+		if(variable_y <= 0)
+			return 0.0;
+
+		double sum_xy = sum_xy(x, y);
+
+		return (
+				((double)n * sum_xy) - (sum_x * sum_y)
+			) 
+			/ 
+			(
+			 	Math.sqrt(
+					variable_x
+				) 
+				*
+				Math.sqrt(
+					variable_y
+				)
+			);
+	}
+
+	private double sum(int colIndex) {
+		int length = sequencesList.size(); 
+		double sum = 0;
+
+		for(int x = 0; x < length; x++) {
+			double d = distances[colIndex][x];
+
+			if(d < 0)
+				continue;
+
+			sum += d;
+		}
+
+		return sum;
+	}
+
+	private double sum_squared(int colIndex) {
+		int length = sequencesList.size(); 
+		double sum = 0;
+
+		for(int x = 0; x < length; x++) {
+			double d = distances[colIndex][x];
+
+			if(d < 0)
+				continue;
+
+			sum += (d * d);
+		}
+
+		return sum;
+	}
+
+	private double sum_xy(int colIndex_1, int colIndex_2) {
+		int length = sequencesList.size(); 
+		double sum = 0;
+
+		for(int x = 0; x < length; x++) {
+			double d1 = distances[colIndex_1][x];
+			if(d1 < 0)
+				continue;
+
+			double d2 = distances[colIndex_2][x];
+			if(d2 < 0)
+				continue;
+
+			sum += (d1 * d2);
+		}
+
+		return sum;
+	}
+
+	private void testCorrelation() {
+		if(columnList == null || columnList.size() < 1)
+			return;
+		
+		System.err.println("R_sq = " + getRSquared());
+	}
+
+	public double getRSquared() {
+		int N = columnList.size();
+
+		double dist[][] = null;
+//		try {
+			dist = (double[][]) distances.clone();
+//		} catch(CloneNotSupportedException e) {
+//			throw new RuntimeException("CloneNotSupported: " + e);
+//		}
+		double R_iy[] = new double[N - 1];
+		double R_ii[][] = new double[N - 1][N - 1];
+
+		// calculate R_iy, the column vector of correlations between X_i and Y
+		int y = 0;
+		for(int x = 1; x < N; x++) {
+//			R_iy[x - 1] = getCorrelation(0, x);
+		}
+
+		double total = 0;
+		long n = 0;
+		// calculate R_ii, the matrix of correlations amongst Xs
+		for(y = 0; y < N; y++) {
+			for(int x = 0; x < N; x++) {
+				if(y == x)
+					continue;
+
+				double c = getCorrelation(y, x);
+//				System.err.println("(" + y + ", " + x + ") " + c);
+				total += c;
+				n++;
+			}
+		}
+
+		System.err.println("n = " + n);
+
+		if(total > 0)
+			return (total / (double)n);
+
+		if(n == 0)
+			return -1;
+
+		// Use Jama to handle our Matrix maths
+		Matrix m_R_ii = new Matrix(R_ii);
+		Matrix m_R_ii_inv = m_R_ii.inverse();
+		if(m_R_ii_inv.times(m_R_ii).equals(Matrix.identity(m_R_ii.getRowDimension(), m_R_ii.getColumnDimension())))
+			System.err.println("Non inverse!");
+		Matrix m_R_iy = new Matrix(R_iy, R_iy.length);
+
+		Matrix betas = m_R_ii_inv.times(m_R_iy);
+
+		double R_sq = 0;
+		for(y = 0; y < N - 1; y++) {
+			double beta_i = betas.get(y, 0);
+			double r_i = R_iy[y];
+			if(beta_i > 1.0 || beta_i < -1.0)
+				System.err.println("beta_" + y + " = " + beta_i);
+			if(r_i > 1.0 || r_i < -1.0)
+				System.err.println("r_" + y + " = " + r_i);
+			R_sq += (r_i * beta_i);
+		}
+
+		return R_sq;
+	}
+
+	public boolean identical(double x, double y) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+	}
 }
 
 class PDMColorRenderer extends DefaultTableCellRenderer
