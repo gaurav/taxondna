@@ -683,14 +683,19 @@ public class DisplayPairwiseModel implements TableModel {
 		// 	the initial, final and difference.
 		// 3.	we sort them by difference (we can actually use Score to do this!)
 
-		// get the place we're going to keep the scores ready
-		Vector vec_scores = new Vector();
-
 		// what's the initial R2?
 		double r2_initial = -1;
 
 		String colNameOfInterest = last_colNameOfInterest;
 		String initial_seqName = (String) sequencesList.get(0);
+
+		Hashtable ht_scoresPerGene = new Hashtable();
+		Iterator i = columnList.iterator();
+		while(i.hasNext()) {
+			String name = (String) i.next();
+
+			ht_scoresPerGene.put(name, new Vector());
+		}
 
 		Vector initialSequencesList = new Vector(sequencesList);
 		for(int z = 0; z < initialSequencesList.size(); z++) {
@@ -713,8 +718,11 @@ public class DisplayPairwiseModel implements TableModel {
 					double r2_final =	getRSquared();
 					double diff = 		r2_final - r2_initial;
 
-					String name = seqName_z + ":" + seqName + ":" + colName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
-					vec_scores.add(new Score(name, r2_final, -1));
+//					String name = seqName_z + ":" + seqName + ":" + colName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
+					String name = seqName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
+
+					((Vector)ht_scoresPerGene.get(colName)).add(new Score(name, r2_final, -1));
+//					vec_scores.add(new Score(name, diff, -1));
 	
 					// uncancel (or recancel) this sequence
 					ignore_col = -1;
@@ -729,22 +737,37 @@ public class DisplayPairwiseModel implements TableModel {
 		r2_initial = getRSquared();
 
 		// sort 'em!
-		Collections.sort(vec_scores); 	// sorts it backwards, since all Scores have a constant of -1
-
 		StringBuffer buff = new StringBuffer();
-		Iterator i = vec_scores.iterator();
-		int x = 0;
+
+		i = ht_scoresPerGene.keySet().iterator();
 		while(i.hasNext()) {
-			Score s = (Score) i.next();
+			String gene = (String) i.next();
 
-			if(x >= 20)
-				break;
-			x++;
+			int NO_SEQUENCES = 10;
+			buff.append("Top " + NO_SEQUENCES + " most improving sequences for gene " + gene  + "\n");
 
-			buff.append(x + ".\t" + s.getName() + "\n");
+			Vector v = (Vector) ht_scoresPerGene.get(gene);
+
+			Collections.sort(v);
+			
+			Iterator i2 = v.iterator();
+			int x = 0;
+			while(i2.hasNext()) {
+				Score s = (Score) i2.next();
+
+				if(s.getName().indexOf("(0.0)") != -1) {	// FIXME: TODO
+					continue;
+				}
+
+				if(x >= NO_SEQUENCES)
+					break;
+				x++;
+
+				buff.append("\t" + x + ".\t" + s.getName() + "\n");
+			}
 		}
 
-		System.err.println("Current R2 = " + r2_initial + "\n\nTop 10 most improving sequences:\n" + buff.toString());
+		System.err.println("Current R2 = " + r2_initial + "\n\n" + buff.toString());
 		
 		//MessageBox mb = new MessageBox(
 		//		matrix.getFrame(),
