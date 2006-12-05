@@ -76,29 +76,38 @@ public class DisplayPairwiseModel implements TableModel {
 	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
 	public static double 	DIST_CANCELLED		=	-2048.0;
 
+	private int		ignore_col		=	-1;	// the column component of the sequence to ignore while calculating correlation
+	private int		ignore_row		=	-1;	// the row component of the sequence to ignore while calculating correlation
+
 	private class Score implements Comparable {
 			private String seqName = "";
 			private double pairwise = 0.0;
+			private int constant = +1;
 
 			public Score(String seqName, double pairwise) {
 				this.seqName = seqName;
 				this.pairwise = pairwise;
 			}
+			
+			public Score(String seqName, double pairwise, int constant) {
+				this(seqName, pairwise);
+				this.constant = constant;
+			}
 
-			private String getSeqName()	{	return seqName;		}
+			private String getName()	{	return seqName;		}
 			private double getPairwise() 	{	return pairwise;	}
 
 			public int compareTo(Object o) {
 				Score s = (Score) o;
 
-				if(getSeqName().equals(seqName_top))
+				if(getName().equals(seqName_top))
 					return -1;
 
-				if(s.getSeqName().equals(seqName_top))
+				if(s.getName().equals(seqName_top))
 					return +1;
 
-				return (int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise()));
+				return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
+					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
 			}
 		};
 
@@ -118,6 +127,16 @@ public class DisplayPairwiseModel implements TableModel {
 //
 // 2.	INITIALIZATION CODE
 //
+	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
+		// step 1: pick the sequence we're going to use as the one-on-top
+		seqName_top = (String) dataStore.getSequences().get(0);
+
+		boolean b = enterPairwiseDistanceMode(colNameOfInterest, seqName_top);
+		if(b)
+			testCorrelation();
+
+		return b;
+	}
 	/**
 	 * Sets the dataStore into PairwiseDistanceMode. Please keep in sync
 	 * with exitPairwiseDistanceMode(), which should undo EVERYTHING this
@@ -125,7 +144,7 @@ public class DisplayPairwiseModel implements TableModel {
 	 *
 	 * @return true, if we're now in PDM
 	 */
-	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
+	public boolean enterPairwiseDistanceMode(String colNameOfInterest, String snt) {
 		// we need atleast one sequence name to do this
 		if(dataStore.getSequences().size() == 0) {
 			new MessageBox(
@@ -150,10 +169,10 @@ public class DisplayPairwiseModel implements TableModel {
 			"Please wait, calculating reference order ...",
 			"I am generating a 'reference order' . Please wait!"
 		);
-		pd.begin();
+//		pd.begin();
 
-		// step 1: pick the sequence we're going to use as the one-on-top
-		seqName_top = (String) dataStore.getSequences().get(0);
+		// step 1: copy whichever sequence we've been told to put on top
+		seqName_top = snt;
 
 		// step 2: copy out a basic sequencesList 
 		sequencesList = new Vector(dataStore.getSequences());
@@ -263,7 +282,7 @@ public class DisplayPairwiseModel implements TableModel {
 		Iterator i = scores.iterator();	
 		int seqIndex = 0;
 		while(i.hasNext()) {
-			String seqName = ((Score) i.next()).getSeqName();
+			String seqName = ((Score) i.next()).getName();
 
 			int oldIndex = sequencesList.indexOf(seqName);
 
@@ -281,7 +300,7 @@ public class DisplayPairwiseModel implements TableModel {
 
 		i = scores.iterator();
 		while(i.hasNext()) {
-			String seqName = ((Score) i.next()).getSeqName();
+			String seqName = ((Score) i.next()).getName();
 
 			sequencesList.add(seqName);
 		}
@@ -314,9 +333,7 @@ public class DisplayPairwiseModel implements TableModel {
 		// oh - don't forget to set the last_colNameOfInterest!
 		last_colNameOfInterest = colNameOfInterest;
 		
-		pd.end();
-
-		testCorrelation();
+		//pd.end();
 
 		return true;
 	}
@@ -460,7 +477,7 @@ public class DisplayPairwiseModel implements TableModel {
 		// there ARE ways to do this properly, but I just can't be arsed right now
 		// TODO do this properly
 		if(dist >= 0) {
-			return rank + ": " + ndist + "% (" + percentage(dist, 1.0) + "%)";
+			return ndist + "% #" + rank+ " (" + percentage(dist, 1.0) + "%)";
 		} else if(dist == DIST_ILLEGAL) {
 			return "(N/A - SUPERbug)";
 		} else if(dist == DIST_NO_COMPARE_SEQ) {
@@ -515,16 +532,55 @@ public class DisplayPairwiseModel implements TableModel {
 	 * us.
 	 */
 	public double getCorrelation(int x, int y) {
+		// okay, he're how it work:
+		// 1.	walk pairwise along the column. 
+		//
+		// 	For every valid match:
+		// 	1.	increment N
+		// 	2.	sum += x
+		// 	3.	sum_2 += (x * x)
+		// 	etc.
+		// ?
+		//
 		if(distances == null)
 			return -1.0;
 
-		int n = sequencesList.size() - 1;	// well, this'll need fixing
+		int n = 0;
 
-		double sum_x = sum(x);	
-		double sum_y = sum(y);
+		double sum_x = 0;
+		double sum_y = 0;
 
-		double sum_x2 = sum_squared(x);
-		double sum_y2 = sum_squared(y);
+		double sum_x2 = 0;
+		double sum_y2 = 0;
+
+		double sum_xy = 0;
+
+		if(distances[x][0] != DIST_SEQ_ON_TOP || distances[y][0] != DIST_SEQ_ON_TOP)
+			return -2;	// error
+
+		for(int c = 1; c < sequencesList.size(); c++) {
+			if(c == ignore_row) {
+				if(x == ignore_col || y == ignore_col)
+					continue;
+			}
+
+			double d_x = distances[x][c];
+			double d_y = distances[y][c];
+
+			if(d_x < 0 || d_y < 0)
+				continue;
+
+			// valid!
+			n++;
+
+			sum_x += d_x;
+			sum_x2 += (d_x * d_x);
+
+			sum_y += d_y;
+			sum_y2 += (d_y * d_y);
+
+			sum_xy += (d_x * d_y);
+		}
 
 		double variable_x = (n * sum_x2) - (sum_x * sum_x);
 		double variable_y = (n * sum_y2) - (sum_y * sum_y);		
@@ -539,8 +595,6 @@ public class DisplayPairwiseModel implements TableModel {
 		if(variable_y <= 0)
 			return 0.0;
 
-		double sum_xy = sum_xy(x, y);
-
 		return (
 				((double)n * sum_xy) - (sum_x * sum_y)
 			) 
@@ -554,64 +608,6 @@ public class DisplayPairwiseModel implements TableModel {
 					variable_y
 				)
 			);
-	}
-
-	private double sum(int colIndex) {
-		int length = sequencesList.size(); 
-		double sum = 0;
-
-		for(int x = 0; x < length; x++) {
-			double d = distances[colIndex][x];
-
-			if(d < 0)
-				continue;
-
-			sum += d;
-		}
-
-		return sum;
-	}
-
-	private double sum_squared(int colIndex) {
-		int length = sequencesList.size(); 
-		double sum = 0;
-
-		for(int x = 0; x < length; x++) {
-			double d = distances[colIndex][x];
-
-			if(d < 0)
-				continue;
-
-			sum += (d * d);
-		}
-
-		return sum;
-	}
-
-	private double sum_xy(int colIndex_1, int colIndex_2) {
-		int length = sequencesList.size(); 
-		double sum = 0;
-
-		for(int x = 0; x < length; x++) {
-			double d1 = distances[colIndex_1][x];
-			if(d1 < 0)
-				continue;
-
-			double d2 = distances[colIndex_2][x];
-			if(d2 < 0)
-				continue;
-
-			sum += (d1 * d2);
-		}
-
-		return sum;
-	}
-
-	private void testCorrelation() {
-		if(columnList == null || columnList.size() < 1)
-			return;
-		
-		System.err.println("R_sq = " + getRSquared());
 	}
 
 	public double getRSquared() {
@@ -642,18 +638,18 @@ public class DisplayPairwiseModel implements TableModel {
 
 				double c = getCorrelation(y, x);
 //				System.err.println("(" + y + ", " + x + ") " + c);
+				if(c < -1)		// error
+					continue;
 				total += c;
 				n++;
 			}
 		}
 
-		System.err.println("n = " + n);
-
-		if(total > 0)
-			return (total / (double)n);
-
 		if(n == 0)
 			return -1;
+
+		if(1 == 1)
+			return (total / (double)n);
 
 		// Use Jama to handle our Matrix maths
 		Matrix m_R_ii = new Matrix(R_ii);
@@ -676,6 +672,85 @@ public class DisplayPairwiseModel implements TableModel {
 		}
 
 		return R_sq;
+	}
+
+	public void testCorrelation() {
+		// here's what we do ...
+		// 1. 	cancel every single sequence, one by one (note that this actually means
+		// 	we UNCANCEL sequences which are already cancelled, which does kinda sorta
+		// 	make something of a logical sense to me).
+		// 2.	we calculate the getRSquared() for the entire dataset as a whole, storing
+		// 	the initial, final and difference.
+		// 3.	we sort them by difference (we can actually use Score to do this!)
+
+		// get the place we're going to keep the scores ready
+		Vector vec_scores = new Vector();
+
+		// what's the initial R2?
+		double r2_initial = -1;
+
+		String colNameOfInterest = last_colNameOfInterest;
+		String initial_seqName = (String) sequencesList.get(0);
+
+		Vector initialSequencesList = new Vector(sequencesList);
+		for(int z = 0; z < initialSequencesList.size(); z++) {
+			String seqName_z = (String) initialSequencesList.get(z);
+			enterPairwiseDistanceMode(colNameOfInterest, seqName_z);
+		
+			r2_initial = 	getRSquared();
+
+			for(int y = 0; y < columnList.size(); y++) {
+				String colName = (String) columnList.get(y);
+
+				for(int x = 1; x < sequencesList.size(); x++) {
+					String seqName = (String) sequencesList.get(x);
+
+					// cancel (or uncancel) this sequence
+					ignore_col = y;
+					ignore_row = x;
+
+					// what's the R_squared now?
+					double r2_final =	getRSquared();
+					double diff = 		r2_final - r2_initial;
+
+					String name = seqName_z + ":" + seqName + ":" + colName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
+					vec_scores.add(new Score(name, r2_final, -1));
+	
+					// uncancel (or recancel) this sequence
+					ignore_col = -1;
+					ignore_row = -1;
+				}
+			}
+
+			exitPairwiseDistanceMode();
+		}
+
+		enterPairwiseDistanceMode(colNameOfInterest, initial_seqName);
+		r2_initial = getRSquared();
+
+		// sort 'em!
+		Collections.sort(vec_scores); 	// sorts it backwards, since all Scores have a constant of -1
+
+		StringBuffer buff = new StringBuffer();
+		Iterator i = vec_scores.iterator();
+		int x = 0;
+		while(i.hasNext()) {
+			Score s = (Score) i.next();
+
+			if(x >= 20)
+				break;
+			x++;
+
+			buff.append(x + ".\t" + s.getName() + "\n");
+		}
+
+		System.err.println("Current R2 = " + r2_initial + "\n\nTop 10 most improving sequences:\n" + buff.toString());
+		
+		//MessageBox mb = new MessageBox(
+		//		matrix.getFrame(),
+		//		"Top 10 most improving sequences",
+		//		"The following sequences most improve the total R2 when cancelled (or uncancelled):\n" + buff.toString());
+		//mb.go();
 	}
 
 	public boolean identical(double x, double y) {
@@ -772,7 +847,7 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 		// double d = Double.parseDouble(val)/100.0;
 		//
 		// okay, NOW we're using ranks
-		double d = Double.parseDouble(val)/dpm.getRowCount();
+		double d = Double.parseDouble(val)/100; //dpm.getRowCount();
 
 		comp.setOpaque(true);
 
