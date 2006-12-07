@@ -38,13 +38,21 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
+import java.awt.*;
+import java.awt.event.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
+
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TableManager {
-	
+
 //
 //	CONSTANTS
 //
@@ -66,6 +74,9 @@ public class TableManager {
 	// We need to track the DisplayModes
 	private DisplayMode	currentDisplayMode =	null;
 	private int		currentMode =		DISPLAY_SEQUENCES;
+	private Vector		vec_displayModes = 	new Vector();		// stores instances of the DisplayModes 
+										// so we don't have to keep creating
+										// them
 
 //
 // 0.	CONSTRUCTOR. Creates the TableManager.
@@ -80,12 +91,7 @@ public class TableManager {
 // 1.	GETTERS. Returns the state or instance variable of the table
 // 	at the moment.
 //
-	/** 
-	 * Returns true if 'colName' is really a column.
-	 */
-	public boolean doesColumnExist(String colName) {
-		return dataStore.isColumn(colName);
-	}
+
 
 // 
 // 2.	SETTERS. Lets you set states or variables for us.
@@ -103,14 +109,6 @@ public class TableManager {
 		updateDisplay();
 	}
 
-	/**
-	 * Deletes a single column from the table.
-	 */
-	public void deleteColumn(String colName) {
-		dataStore.deleteColumn(colName);
-		updateDisplay();
-	}
-
 //
 // X.	FILE HANDLING CODE. This is where we deal with file handling.
 //
@@ -119,21 +117,135 @@ public class TableManager {
 // X.	SEQUENCE HANDLING CODE. This is the bit where we talk to the DataStore, and
 // 	back to anybody who would like to have a word. 
 //
-	public void addSequenceList(String colName, SequenceList sl, DelayCallback delay) {
-		dataStore.addSequenceList(colName, sl, delay);	
+	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) {
+		dataStore.addSequenceList(colName, sl, complaints, delay);	
 		updateDisplay();
 	}
 
-	public void addSequenceList(SequenceList sl, DelayCallback delay) {
-		dataStore.addSequenceList(sl, delay);
+	/** 
+	 * Returns true if 'colName' is really a column.
+	 */
+	public boolean doesColumnExist(String colName) {
+		return dataStore.isColumn(colName);
+	}	
+
+	public void addSequenceList(SequenceList sl, StringBuffer complaints, DelayCallback delay) {
+		dataStore.addSequenceList(sl, complaints, delay);
 		updateDisplay();
 	}
+
+	public void deleteColumn(String colName) {
+		dataStore.deleteColumn(colName);
+		updateDisplay();
+	}
+
+	public void deleteRow(String seqName) {
+		dataStore.deleteRow(seqName);
+		updateDisplay();
+	}
+
+	public void setReferenceSequenceName(String seqName) {
+		// what to do, what to say
+		// shall we carry a treasure away
+		// what a gem, what a pearl
+		// beyond rubies is our little seqName
+	}
+
+//
+// X.	USER INTERFACE
+//
+	/**
+	 * Event: somebody right clicked in the mainTable somewhere
+	 */
+	public void rightClick(MouseEvent e, int col, int row) {
+		/*
+		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
+		/
+		String colName = getColumnName(col);
+		String rowName = "";
+		if(row > 0)				// we don't use the value of rowName if (row == 0)
+			rowName = getRowName(row);
+
+		PopupMenu pm = new PopupMenu();
+
+		if(col == 0) {
+			// colName == ""
+			// we'll replace this with 'Sequence names'
+			colName = "Sequence names";
+		}
+
+		if(col < additionalColumns) {
+			// it's a 'special' column
+			// we can't do things to it
+			pm.add("Column: " + colName);
+		} else {
+			Menu colMenu = new Menu("Column: " + colName);
+			
+			MenuItem delThisCol = new MenuItem("Delete this column");
+			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
+			colMenu.add(delThisCol);
+
+			MenuItem pdmThisCol = new MenuItem("Do a PDM on this column");
+			pdmThisCol.setActionCommand("DO_PDM:" + colName);
+			colMenu.add(pdmThisCol);
+
+			colMenu.addActionListener(matrix);	// wtf really?
+			pm.add(colMenu);
+		}
+
+		if(row <= 0) {
+			pm.add("Row: Headers");
+		} else {
+			Menu rowMenu = new Menu("Row: " + rowName);
+
+			MenuItem delThisRow = new MenuItem("Delete this row");
+			delThisRow.setActionCommand("ROW_DELETE:" + rowName);
+			rowMenu.add(delThisRow);
+
+			if(outgroupName != null && rowName.equals(outgroupName)) {
+				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
+				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
+				rowMenu.add(makeOutgroup);			
+			} else {
+				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
+				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
+				rowMenu.add(makeOutgroup);
+			}
+
+			rowMenu.addActionListener(matrix);		// wtf really?
+			pm.add(rowMenu);
+		}
+
+		((JComponent)e.getSource()).add(pm);			// yrch!
+		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
+		*/
+	}
+
+	/**
+	 * Event: somebody double clicked in the mainTable somewhere
+	 */
+	public void doubleClick(MouseEvent e, int col, int row) {
+		/*
+		if(row > 0 && col != -1 && col >= additionalColumns) {
+			// it's, like, valid, dude.
+			toggleCancelled(getColumnName(col), getRowName(row));
+		}
+		*/
+	}	
 
 //
 // 4. 	DISPLAY MODE MANAGING CODE. Changes display modes, handles routing
 // 	on to the specific objects which actually do the display mode-ing,
 // 	and handling incoming event calls (updateDisplay(), etc.)
 //
+	/** 
+	  * changeDisplayMode() on a diet: one argument only! Obviously, the
+	  * mode to switch to.
+	  */
+	public void changeDisplayMode(int mode) {
+		changeDisplayMode(mode, null);
+	}
+
 	/** 
 	 * Easily the ugliest function EVER, changeDisplayMode() will change
 	 * the display mode to the mode specified by mode (which is one of the
@@ -148,7 +260,7 @@ public class TableManager {
 
 		currentDisplayMode = getDisplayMode(mode);
 
-		currentDisplayMode.activateDisplay(table);
+		currentDisplayMode.activateDisplay(table, argument);
 		currentMode = mode;
 	}
 
@@ -156,23 +268,23 @@ public class TableManager {
 	 * I'm sorry, I couldn't resist. Never 'new' when you can
 	 * reload, right?
 	 */
-	public void getDisplayMode(int mode) {
+	public DisplayMode getDisplayMode(int mode) {
 		DisplayMode dm = (DisplayMode) vec_displayModes.get(mode);
 
 		if(dm == null) {
 			switch(mode) {
 				default:
 				case DISPLAY_SEQUENCES:
-					dm = new DisplaySequencesMode(this);
+//					dm = new DisplaySequencesMode(this);
 					break;
 				case DISPLAY_DISTANCES:
-					dm = new DisplayDistancesMode(this);
+//					dm = new DisplayDistancesMode(this);
 					break;
 				case DISPLAY_RANKS:
-					dm = new DisplayRanksMode(this);
+//					dm = new DisplayRanksMode(this);
 					break;
 			}
-			vec_displayModes.put(mode, dm);
+			vec_displayModes.set(mode, dm);
 		}
 
 		return dm;
@@ -188,15 +300,20 @@ public class TableManager {
 //
 // X.	HACKS. These might have to go eventually
 //
-	public void getCancelledSequencesCount() {
+	public int getCancelledSequencesCount() {
 		return dataStore.getCancelledSequencesCount();
 	}
 
 	public DataStore getDataStore() {
 		return dataStore;
 	}
+
+	public TableModel getTableModel() {
+		return (TableModel) currentDisplayMode;
+	}
 }
 
+/*
 // CODE MOVING IN FROM DATASTORE
 
 //
@@ -206,7 +323,7 @@ public class TableManager {
 	/**
 	 * A convenience function which checks to see if either name1 or name2 are the
 	 * outgroupName, in which case they'll get sorted up.
-	 */
+	 /
 	private int checkForOutgroup(String name1, String name2) {
 		if(outgroupName == null)
 			return 0;
@@ -221,7 +338,7 @@ public class TableManager {
 	/**
 	 * A sort Comparator which sorts a collection of Strings in natural order - except that outgroups get
 	 * sorted to the top.
-	 */
+	 /
 	private class SortByName implements Comparator {
 		public int	compare(Object o1, Object o2) {
 			String str1 = (String) o1;
@@ -237,7 +354,7 @@ public class TableManager {
 
 	/**
 	 * A sort Comparator which sorts a collection of Strings by - of all things - their SECOND name. Such is life.
-	 */
+	 /
 	private class SortBySecondName implements Comparator {
 		public int 	compare(Object o1, Object o2) {
 			String str1 = (String) o1;
@@ -276,7 +393,7 @@ public class TableManager {
 
 	/**
 	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the number of charsets it has.
-	 */
+	 /
 	private class SortByCharsets implements Comparator {
 		private DataStore store = null;
 
@@ -301,7 +418,7 @@ public class TableManager {
 
 	/**
 	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the total actual count of bases.
-	 */
+	 /
 	private class SortByTotalActualLength implements Comparator {
 		private DataStore store = null;
 
@@ -335,7 +452,7 @@ public class TableManager {
 	 * 	(colName, seqName)	is mapped to		(Sequence)
 	 *
 	 * NOTE: Do NOT check if it's already sorted, unless you also check broken!
-	 */
+	 
 	private void resort(int sort) {
 		sortedColumnNames = new Vector(getColumnsUnsorted());
 		Collections.sort(sortedColumnNames);
@@ -415,15 +532,6 @@ public class TableManager {
 		tableModelListeners.remove(l);
 	}
 
-	public void fireTableModelEvent(TableModelEvent e) {
-		Iterator i = tableModelListeners.iterator();
-		while(i.hasNext()) {
-			TableModelListener l = (TableModelListener)i.next();	
-
-			l.tableChanged(e);
-		}
-	}
-
 	public void updateSort(int sortBy) {
 		if(suppressUpdates)
 			return;
@@ -472,35 +580,35 @@ public class TableManager {
 	/**
 	 * Tells us what *class* of object to expect in columns. We can safely expect Strings.
 	 * I don't think the world is ready for transferable Sequences just yet ...
-	 */
+	 /
 	public Class getColumnClass(int columnIndex) {
 		return currentTableModel.getColumnClass(columnIndex);  
 	}
 
 	/**
 	 * Gets the number of columns.
-	 */
+	 /
 	public int getColumnCount() {
 		return currentTableModel.getColumnCount();
 	}
 	
 	/**
 	 * Gets the number of rows.
-	 */
+	 /
 	public int getRowCount() {
 		return currentTableModel.getRowCount(); 
 	}
 
 	/**
 	 * Gets the name of column number 'columnIndex'.
-	 */
+	 /
         public String getColumnName(int columnIndex) {
 		return currentTableModel.getColumnName(columnIndex);
 	}
 
 	/**
 	 * Convenience function.
-	 */
+	 /
 	public String getRowName(int rowIndex) {
 		return (String) currentTableModel.getValueAt(rowIndex, 0);
 	}
@@ -511,14 +619,14 @@ public class TableManager {
 	 * 1.	Row 0 is reserved for the column names.
 	 * 2.	Column 0 is reserved for the row names.
 	 * 3.	(0, 0) is to be a blank box (new String("")).
-	 */
+	 /
         public Object getValueAt(int rowIndex, int columnIndex) {
 		return currentTableModel.getValueAt(rowIndex, columnIndex);
 	}
 
 	/**
 	 * Determines if you can edit anything. Which is only the sequences column.
-	 */
+	 /
         public boolean isCellEditable(int rowIndex, int columnIndex) {
 		return currentTableModel.isCellEditable(rowIndex, columnIndex);
 	}
@@ -526,7 +634,7 @@ public class TableManager {
 	/** 
 	 * Allows the user to set the value of a particular cell. That is, the
 	 * sequences column. 
-	 */
+	 /
 	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 		currentTableModel.setValueAt(aValue, rowIndex, columnIndex);
 	}
@@ -545,86 +653,11 @@ public class TableManager {
 //
 // UI over the table
 //
-	/**
-	 * Event: somebody right clicked in the mainTable somewhere
-	 */
-	public void rightClick(MouseEvent e, int col, int row) {
-		/*
-		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
-		*/
-		String colName = getColumnName(col);
-		String rowName = "";
-		if(row > 0)				// we don't use the value of rowName if (row == 0)
-			rowName = getRowName(row);
-
-		PopupMenu pm = new PopupMenu();
-
-		if(col == 0) {
-			// colName == ""
-			// we'll replace this with 'Sequence names'
-			colName = "Sequence names";
-		}
-
-		if(col < additionalColumns) {
-			// it's a 'special' column
-			// we can't do things to it
-			pm.add("Column: " + colName);
-		} else {
-			Menu colMenu = new Menu("Column: " + colName);
-			
-			MenuItem delThisCol = new MenuItem("Delete this column");
-			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
-			colMenu.add(delThisCol);
-
-			MenuItem pdmThisCol = new MenuItem("Do a PDM on this column");
-			pdmThisCol.setActionCommand("DO_PDM:" + colName);
-			colMenu.add(pdmThisCol);
-
-			colMenu.addActionListener(matrix);	// wtf really?
-			pm.add(colMenu);
-		}
-
-		if(row <= 0) {
-			pm.add("Row: Headers");
-		} else {
-			Menu rowMenu = new Menu("Row: " + rowName);
-
-			MenuItem delThisRow = new MenuItem("Delete this row");
-			delThisRow.setActionCommand("ROW_DELETE:" + rowName);
-			rowMenu.add(delThisRow);
-
-			if(outgroupName != null && rowName.equals(outgroupName)) {
-				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
-				rowMenu.add(makeOutgroup);			
-			} else {
-				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
-				rowMenu.add(makeOutgroup);
-			}
-
-			rowMenu.addActionListener(matrix);		// wtf really?
-			pm.add(rowMenu);
-		}
-
-		((JComponent)e.getSource()).add(pm);			// yrch!
-		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
-	}
-
-	/**
-	 * Event: somebody double clicked in the mainTable somewhere
-	 */
-	public void doubleClick(MouseEvent e, int col, int row) {
-		if(row > 0 && col != -1 && col >= additionalColumns) {
-			// it's, like, valid, dude.
-			toggleCancelled(getColumnName(col), getRowName(row));
-		}
-	}
-
+/*
 	/**
 	 * Get the current outgroup.
 	 * @return null, if there is no current outgroup.
-	 */
+	 /
 	public String getOutgroupName() {
 		return outgroupName;
 	}
@@ -632,17 +665,10 @@ public class TableManager {
 	/**
 	 * Set the current outgroup. Changes the current outgroup
 	 * to the name mentioned.
-	 */
+	 /
 	public void setOutgroupName(String newName) {
 		outgroupName = newName;
 		sortBroken = true;
-	}
-
-	/**
-	 * How many sequences are currently cancelled?
-	 */
-	public int getCancelledSequencesCount() {
-		return count_cancelledSequences;
 	}
 
 	/** 
@@ -650,7 +676,7 @@ public class TableManager {
 	 * at this point which column he wants to use, 
 	 * but for now we can just ignore it and get
 	 * on with life.
-	 */
+	 /
 	public boolean enterPairwiseDistanceMode() {
 		if(getColumns().size() == 0)
 			return false;
@@ -658,7 +684,7 @@ public class TableManager {
 		return enterPairwiseDistanceMode((String)getColumns().get(0));
 	}
 
-	/** Activate PDM */
+	/** Activate PDM /
 	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
 		// are we already in PDM? In which case, we just need to
 		// swap the colNameOfInterest around
@@ -688,7 +714,7 @@ public class TableManager {
 
 	/** Deactivate PDM
 	 * @throws ClassCastException (?) if you're NOT in PDM when you call this method!
-	 */
+	 /
 	public boolean exitPairwiseDistanceMode() {
 		DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
 
@@ -709,7 +735,7 @@ public class TableManager {
 				"There was a programming error in this program. I can't get back to a normal state. I'm going to remove all your sequences, which means you'll lose all your changes. I'm so very sorry. Please let the programmers know, and we'll get working on this immediately. Sorry again!").go();
 		clear();
 	}
-
+*/
 // NOTES:
 // 1.	on renameSequence(), the outgroup should 'move' with the rename
 // 2.	

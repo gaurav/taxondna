@@ -330,13 +330,19 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
-						matrix.getTableManager().addSequenceList(name, sl, pd);
+						StringBuffer buff_complaints = new StringBuffer();
+						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
+						if(buff_complaints.length() > 0) {
+							new MessageBox(	matrix.getFrame(),
+									name + ": Some sequences weren't added!",
+									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+							).go();
+						}
 					}
 
 					sequences.unlock();
 
 					hash_sets.clear();
-					matrix.updateDisplay();
 					sets_were_added = true;
 				}
 			}
@@ -345,14 +351,23 @@ public class FileManager implements FormatListener {
 		// if we're here, we've only got one 'sequences'.
 		// so add it!
 		if(!sets_were_added) {
+			StringBuffer buff_complaints = new StringBuffer();
 			matrix.getTableManager().addSequenceList(sequences,
+					buff_complaints,
 					new ProgressDialog(
 						matrix.getFrame(),
 						"Please wait, adding sequences ...",
 						"The new sequences are being added to the table now. Sorry for the delay!"
 					)
 				);
-			matrix.updateDisplay();
+
+			if(buff_complaints.length() > 0) {
+				new MessageBox(	
+					matrix.getFrame(),
+					file + ": Some sequences weren't added!",
+					"Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
+				).go();
+			}
 		}
 	}
 

@@ -70,7 +70,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	
 	// managers
 	private FileManager	fileManager		= new FileManager(this); // file manager: handles files coming in
-	private TableManager	tableManager		= new TableManager(this); // the table manager handles mid-level UI
+	private TableManager	tableManager		= null;			// the table manager handles mid-level UI
 	
 	// additional functionality
 	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
@@ -336,7 +336,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
 			String seqName = cmd.substring(11);
 
-			tableManager.deleteSequence(seqName);
+			tableManager.deleteRow(seqName);
 		}
 
 		// Make a particular row into the 'outgroup', i.e. the sequence fixed on
@@ -429,15 +429,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(chmi.getLabel().equals("Display pairwise distances")) {
 			// note: this is actually the NEW state
 			if(chmi.getState() == true) {
-				if(tableManager.enterPairwiseDistanceMode())
-					chmi.setState(true);
-				else
-					chmi.setState(false);		// just in case
+				tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+				chmi.setState(true);
 			} else {
-				if(tableManager.exitPairwiseDistanceMode())
-					chmi.setState(false);
-				else
-					chmi.setState(true);		// just in case
+				tableManager.changeDisplayMode(TableManager.DISPLAY_SEQUENCES);
+				chmi.setState(false);
 			}
 
 			return;
@@ -453,6 +449,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(last_chmi != null)
 			last_chmi.setState(false);
 
+		/*
 		String label = chmi.getLabel();
 		if(label.equals("By name"))
 			tableManager.resort(DataStore.SORT_BYNAME);
@@ -465,6 +462,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		if(label.equals("By total length"))
 			tableManager.resort(DataStore.SORT_BYTOTALLENGTH);
+		*/
 
 		chmi.setState(true);
 		last_chmi = chmi;
@@ -539,12 +537,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setBackground(SystemColor.control);
 
 		// main table
-		mainTable = new JTable(tableManager.getTableModel());
+		mainTable = new JTable();
 		mainTable.addMouseListener(this);
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
 		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
 		mainTable.getTableHeader().addMouseListener(this);
 		mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	// ha-ha!
+
+		tableManager = new TableManager(this, mainTable);
+		mainTable.setModel(tableManager.getTableModel());
 
 		// put the maintable into a scroll pane
 		JScrollPane scrollPane = new JScrollPane(mainTable);
@@ -664,7 +665,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 *	the power of System.exit(0).
 	 */
 	private void exit() {
-		clear(); 
+		tableManager.clear(); 
 		mainFrame.dispose();		// this "closes" this window; whether or not this 
 						// terminates the application depends on whether 
 						// other stuff is running.

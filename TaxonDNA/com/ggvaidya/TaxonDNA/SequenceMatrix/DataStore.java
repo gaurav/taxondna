@@ -35,6 +35,7 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
+import java.util.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -177,7 +178,7 @@ public class DataStore {
 		validateColName(colName);
 
 		if(!isColumn(colName))
-			return ll;
+			return set;
 
 		Iterator i = getSequences().iterator();
 		while(i.hasNext()) {
@@ -286,9 +287,6 @@ public class DataStore {
 			count_cancelledSequences++;
 		else
 			count_cancelledSequences--;
-
-		// sort order has been broken
-		sortBroken = true;
 	}
 
 	/**
@@ -394,9 +392,6 @@ public class DataStore {
 				if(oldCount == 0) {
 					// get rid of the sequence!
 					ht.remove(seqName);
-					if(outgroupName != null && seqName.equalsIgnoreCase(outgroupName)) {
-						outgroupName = null;	
-					}
 				} else {
 					ht.put(seqName, new Integer(oldCount));
 				}
@@ -428,7 +423,7 @@ public class DataStore {
 
 		validateSeqName(seqName);
 
-		Iterator i = getColumnsUnsorted().iterator();
+		Iterator i = getColumns().iterator();
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
@@ -563,6 +558,13 @@ public class DataStore {
 		return count;
 	}
 
+	/**
+	 * How many sequences are currently cancelled?
+	 */
+	public int getCancelledSequencesCount() {
+		return count_cancelledSequences;
+	}
+
 // 
 // 1. 	CONSTRUCTOR. We need a SequenceMatrix object to talk to the user with.
 //
@@ -578,9 +580,9 @@ public class DataStore {
 	/**
 	 * Add a new sequence list to this dataset.
 	 * This one is really just a wrapper; it figures out the name the
-	 * column ought to have, and then calls addSequenceList(colName, sl); 
+	 * column ought to have, and then calls addSequenceList(colName, sl, delay); 
 	 */
-	public void addSequenceList(SequenceList sl, DelayCallback delay) throws IndexOutOfBoundsException { 
+	public void addSequenceList(SequenceList sl, StringBuffer complaints, DelayCallback delay) throws IndexOutOfBoundsException { 
 		sl.lock();
 
 		// 1. Figure out the column name.
@@ -604,7 +606,7 @@ public class DataStore {
 		}
 
 		// use this column name, and add the sequence list
-		addSequenceList(newColName, sl, delay);
+		addSequenceList(newColName, sl, complaints, delay);
 
 		sl.unlock();
 	}
@@ -662,7 +664,7 @@ public class DataStore {
 				continue;
 			
 			// Figure out the 'seqName'
-			String seqName = seq.getFullName();
+			seqName = seq.getFullName();
 
 			// Check if we have cues as to what to call this sequence
 			if(seq.getProperty(INITIAL_SEQNAME_PROPERTY) != null)
@@ -747,6 +749,20 @@ public class DataStore {
 		Iterator i = new HashSet(getSequenceNamesByColumn(colName)).iterator();
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
+
+			deleteSequence(colName, seqName);
+		}
+	}
+
+	/**
+	 * Deletes the row named 'seqName'.
+	 *
+	 * Once again, having an efficient, useful and workhorseable deleteSequence() is half the battle.
+	 */
+	public void deleteRow(String seqName) {
+		Iterator i = getColumns().iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
 
 			deleteSequence(colName, seqName);
 		}

@@ -38,6 +38,9 @@
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.util.*;	// Vectors, Lists and the like
+import javax.swing.*;
+import javax.swing.table.*;
+import javax.swing.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -151,9 +154,14 @@ public abstract class DisplayMode implements TableModel {
 //
 // 5.	DISPLAY MODE METHODS	
 //
+	/** Overload this one if you need an argument as well. */
+	public void activateDisplay(JTable table, Object argument) {
+		this.table = table;	
+	}
+
 	/** Activate this display on the table mentioned. */
 	public void activateDisplay(JTable table) {
-		this.table = table;
+		activateDisplay(table, null);
 	}
 
 	/** Deactivate this display from the table mentioned. */
@@ -167,5 +175,17 @@ public abstract class DisplayMode implements TableModel {
 	 */
 	public void updateDisplay() {
 		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+	}
+
+	/**
+	 * Send a TableModelEvent to every listener. 
+	 */
+	public void fireTableModelEvent(TableModelEvent e) {
+		Iterator i = tableModelListeners.iterator();
+		while(i.hasNext()) {
+			TableModelListener l = (TableModelListener)i.next();	
+
+			l.tableChanged(e);
+		}
 	}
 }

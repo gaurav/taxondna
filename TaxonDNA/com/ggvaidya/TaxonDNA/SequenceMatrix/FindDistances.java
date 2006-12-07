@@ -1,6 +1,7 @@
 /**
  * Finds particular distances. Ideal for looking for all zero percent distances, but we can 
  * really find any arbitrary distance you might want to look for.
+ *
  */
 
 /*
@@ -40,7 +41,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class FindDistances implements WindowListener, ActionListener, TableModelListener {
+public class FindDistances implements WindowListener, ActionListener {
 	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object
 	private Dialog 			dialog 	= null;			// the Dialog which we need to display
 
@@ -66,7 +67,7 @@ public class FindDistances implements WindowListener, ActionListener, TableModel
 		// we need to add a TableModelListener (of all things!) onto the tableModel.
 		// We will use the listener to figure out when we need to flush our
 		// datastructures.
-		matrix.getTableModel().addTableModelListener(this);
+//		matrix.getTableManager().getTableModel().addTableModelListener(this);
 
 		// set up 'dialog'
 		dialog = new Dialog(matrix.getFrame(), "Find Distances", false);
@@ -145,11 +146,12 @@ public class FindDistances implements WindowListener, ActionListener, TableModel
 		//
 		// Step 2. Get the pairwiseDistances ready.
 		//
-		if(pdColumns == null) {
+		if(true || pdColumns == null) {	// since we don't reset pdColumns when the table changes
+						// we can't guarantee that the last pdColumns is still valid
 			pdColumns = new Vector();
 
 			// get a SequenceList for each column
-			DataStore ds = matrix.getDataStore();
+			DataStore ds = matrix.getTableManager().getDataStore();
 			Iterator i = ds.getColumns().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
@@ -237,14 +239,6 @@ public class FindDistances implements WindowListener, ActionListener, TableModel
 				return;
 			}
 		}
-	}
-
-	//
-	// TableModelListener
-	//
-	public void tableChanged(TableModelEvent e) {
-		// TODO: clear the local data structures
-		pdColumns = null;
 	}
 
 	// 

@@ -58,7 +58,7 @@ public class Exporter implements SequencesHandler {
 	 * brainless, dump-everything-on-the-table-to-file function.
 	 */
 	public void exportTableAsTabDelimited(File file) throws IOException {
-		TableModel tableModel = matrix.getTableModel();
+		TableModel tableModel = matrix.getTableManager().getTableModel();
 		
 		PrintWriter writer = new PrintWriter(new FileWriter(file));
 
@@ -101,7 +101,7 @@ public class Exporter implements SequencesHandler {
 
 		DataStore store = matrix.getTableManager().getDataStore();
 
-		Vector vec_sequences = new Vector(store.getSequences());
+		Vector vec_sequences = new Vector( (Collection) store.getSequences());
 		int count_columns = store.getColumns().size();
 		Iterator i = store.getColumns().iterator();
 
@@ -178,8 +178,8 @@ public class Exporter implements SequencesHandler {
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
 		DataStore dataStore = matrix.getTableManager().getDataStore();
-		List columns = dataStore.getColumns();
-		List sequences = dataStore.getSequences();
+		List columns = new Vector(dataStore.getColumns());
+		List sequences = new Vector(dataStore.getSequences());
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
@@ -254,8 +254,8 @@ public class Exporter implements SequencesHandler {
 		writer.println("#sequences (nucleotide sequencematrix)");
 		writer.println();
 
-		List colNames = matrix.getTableManager().getDataStore().getColumns();
-		List seqNames = matrix.getTableManager().getDataStore().getSequences();
+		List colNames = new Vector(matrix.getTableManager().getDataStore().getColumns());
+		List seqNames = new Vector(matrix.getTableManager().getDataStore().getSequences());
 
 		Iterator i_cols = colNames.iterator();
 		while(i_cols.hasNext()) {
