@@ -1,23 +1,14 @@
 /**
- * The DataStore is the underlying datastore for
- * _everything_ in SequenceMatrix. The UI talks to
- * us, and we do the needful. Unlike the DNA.* family,
- * we aren't UI-independent at all, although we will
- * talk mostly to other objects rather than actually
- * *doing* things ourselves.
+ * The DataStore is the underlying datastore for in SequenceMatrix. 
+ * After the Great Creation of the Table Manager (circa early evening, 
+ * Dec 5, 2006), the DataStore was forked to be ENTIRELY the backend, 
+ * mindlessly storing (colName, seqName)-located information for retrieval
+ * and usage. 
  *
- * TABLE MODELS: We are now 'outsourcing' Table Models
- * entirely. DataStore will handle communication to
- * and from the TableModels, and will act as a single
- * major TableModel itself. What this means is:
- *
- * JTable ------------&gt; DataStore.getValueAt(...), etc. ------------&gt; Display...Model.getValueAt(...), etc.
- * Display...Model.fireTableModelEvent() ------&gt; DataStore.fireT... ----&gt; TableModelListeners
- *
- * In a nutshell: nobody needs to know about this at all.
- * Everybody can just act as if DataStore is the one and
- * only TableModel. We figure out which display mode we're
- * in, and route the incoming messages appropriately.
+ * We work closely with the TableManager on UI based events. However, all
+ * actual display/etc. is handled by the TableManager. We don't TOUCH all
+ * that crap. We do one thing (manage sequences in columns) and we do it
+ * WELL. Everybody else is free to pick up on whatever they want.
  *
  */
 
@@ -44,39 +35,24 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
-import java.awt.Color;		// for Color
-import java.awt.Component;
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
-
-import java.awt.MenuItem;
-import java.awt.Menu;
-import java.awt.PopupMenu;
-import java.awt.event.*;
-
-import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
-import javax.swing.table.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DataStore implements TableModel {
-	// We use a metric TON of constants. Consistant naming is the only real way
-	// to make sure these get sorted out properly.
+public class DataStore {
+	// The property value we use for Sequence.getProperty(...)
+	/** If this property is set to ANY non-null value (we use a new Object()), it means that particular sequence has been cancelled. You can uncancel it by setting this property to null. */
+	public static final String CANCELLED_PROPERTY =	"com.ggvaidya.TaxonDNA.SequenceMatrix.DataStore.cancelled";
 
-	//
-	// Variables we'll need to track
-	//
-	SequenceMatrix matrix = 	null;	
-	Vector tableModelListeners = 	new Vector();		// a vector of all the TableModelListeners 
-								// who are listening to us
+	/** If this property is set during an addSequenceList(), then the name specified is used as the column name instead of the column specified to the addSequenceList() call. */
+	public static final String INITIAL_COLNAME_PROPERTY = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName";
+	/** If this property is set during an addSequenceList(), then the name specified is used as the sequence name (the seqName) instead of the full sequence name. This allows us to reimplement [[Use Species Name/Use Sequence Name]] options without actually pissing anybody off.
+	 */
+	public static final String INITIAL_SEQNAME_PROPERTY = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName";
 
-	// The, err, Data. That we Store. You know.
-	//
+	// The Data.
 	private Hashtable hash_master = new Hashtable();	// the master hash:
 								// Hashtable[colName] = Hashtable[seqName] = Sequence
 								// Hashtable[colName] = Hashtable[""] = Integer(max_length)
@@ -87,36 +63,8 @@ public class DataStore implements TableModel {
 								// life more fun for the debuggers. Please use the
 								// helper functions below.
 
-	// How to sort the sequences
-	public static final int		SORT_BYNAME =		0;		// sort names alphabetically
-	public static final int		SORT_BYSECONDNAME =	1;		// sort names by species epithet 
-	public static final int		SORT_BYCHARSETS =	2;		// sort names by character sets
-	public static final int		SORT_BYTOTALLENGTH =	3;		// sort names by total length
-
-	private int			sortBy 	= 		SORT_BYNAME;
-	private boolean			sortBroken =		true;		// assume the sort is 'broken'
-
-	private Vector			sortedSequenceNames;
-	private Vector			sortedColumnNames;
-
-	// For the outgroup selection and display, etc.
-	private String			outgroupName =		null;
-
 	// Counting the number of cancelled sequences (so we know while exporting, etc.)
-	private int			count_cancelledSequences = 0;
-
-	// For the table-model-switcheroo thingie
-	private TableModel		currentTableModel =	null;
-	private int			additionalColumns =	0;
-	private String			pdm_colName =		null;
-
-	// For controlling updates
-	private boolean			suppressUpdates =	false;		// we don't actually use this,
-										// because a suprisingly large amount
-										// of code depends on being able to
-										// know what everybody's doing at
-										// every instant, or something like
-										// that. Maybe after some refactoring?
+	private int	count_cancelledSequences = 0;
 
 //
 // 0.	INTERNAL ACCESS FUNCTIONS. hash_columns does a lot of pretty strange shit in a very small space.
@@ -165,7 +113,7 @@ public class DataStore implements TableModel {
 		if(seq == null)
 			return null;
 
-		if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled") != null)
+		if(seq.getProperty(CANCELLED_PROPERTY) != null)
 			return null;
 
 		return seq;
@@ -194,18 +142,9 @@ public class DataStore implements TableModel {
 	}	
 
 	/**
-	 * Returns a list of all sequence names in our datastore. This is easy, since we
-	 * keep just such a list for easy retrieval. Indexing, you know. All the cool kids
-	 * are doing it.
+	 * Returns a set of all sequence names in our datastore, unsorted.
 	 */
-	public List getSequences() {
-		if(sortBroken)
-			resort(sortBy);
-
-		return (List) sortedSequenceNames;
-	}
-
-	public Set getSequencesUnsorted() {
+	public Set getSequences() {
 		Hashtable ht = (Hashtable) hash_master.get("");
 
 		if(ht == null)
@@ -215,30 +154,25 @@ public class DataStore implements TableModel {
 	}
 
 	/**
-	 * Returns a set of all column names in this dataStore, uns
+	 * Returns a set of all column names in this dataStore, unsorted.
 	 */
-	public List getColumns() {
-		if(sortBroken)
-			resort(sortBy);
-
-		return (List) sortedColumnNames;
-	}
-
-	/**
-	 * Returns a set of all column names in this dataStore.
-	 */
-	public Set getColumnsUnsorted() {
+	public Set getColumns() {
 		Set set = new HashSet(hash_master.keySet());	// copy this
 		set.remove("");	// get rid of the 'meta' data
 		return set;
 	}
 
 	/**
-	 * Returns a set of all sequence names in column 'colName',
-	 * IN ORDER.
+	 * Returns a set of all sequence names in column 'colName'. No order guaranteed,
+	 * although you WILL get all the cancelled sequences as well (i.e. ALL sequence
+	 * names). Is that smart? Is that wise? Does it ring true?
+	 * 
+	 * Yeah. Why not?
+	 *
+	 * TODO: Confirm random dialog in comment. Does it? Really?
 	 */
-	public List getSequenceNamesByColumn(String colName) {
-		LinkedList ll = new LinkedList();
+	public Set getSequenceNamesByColumn(String colName) {
+		Set set = (Set) new HashSet();
 
 		validateColName(colName);
 
@@ -250,16 +184,16 @@ public class DataStore implements TableModel {
 			String seqName = (String) i.next();
 
 			if(getCancelledSequence(colName, seqName) != null)
-				ll.add(seqName);
+				set.add(seqName);
 		}
 
-		return (List) ll;
+		return set;
 	}
 
-
 	/**
-	 * Returns a SequenceList containing all the sequences in a column,
-	 * IN ORDER.
+	 * Returns a SequenceList containing all the sequences in a column.
+	 * No order guaranteed, which makes me wonder why you'd want to do
+	 * this at all.
 	 */
 	public SequenceList getSequenceListByColumn(String colName) {
 		SequenceList sl = new SequenceList();
@@ -288,7 +222,7 @@ public class DataStore implements TableModel {
 		Hashtable ht = (Hashtable) hash_master.get("");
 
 		if(ht == null)
-			return -1;	// just an empty Set
+			return 0;	// just an empty DataStore
 
 		return ht.size();
 	}
@@ -296,7 +230,8 @@ public class DataStore implements TableModel {
 	/**
 	 * Checks whether the sequence at (colName, seqName) is 'cancelled'.
 	 * A cancelled sequence cannot be accessed via getSequence(), which
-	 * will pretend it doesn't exist (returning null as it does).
+	 * will pretend it doesn't exist (returning null as it does). You
+	 * *can* access cancelled sequences via getCancelledSequence();
 	 */
 	public boolean isSequenceCancelled(String colName, String seqName) {
 		validateColName(colName);
@@ -311,7 +246,7 @@ public class DataStore implements TableModel {
 		if(seq == null)
 			return false;
 
-		if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled") != null)
+		if(seq.getProperty(CANCELLED_PROPERTY) != null)
 			return true;
 
 		return false;
@@ -341,9 +276,9 @@ public class DataStore implements TableModel {
 			// throw new IllegalArgumentException("Column '" + colName + "' doesn't have a sequence named '" + seqName + "'");
 
 		if(cancelled) {
-			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", new Object());
+			seq.setProperty(CANCELLED_PROPERTY, new Object());
 		} else {
-			seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", null);
+			seq.setProperty(CANCELLED_PROPERTY, null);
 		}
 
 		// count it up
@@ -356,6 +291,26 @@ public class DataStore implements TableModel {
 		sortBroken = true;
 	}
 
+	/**
+	 *	Toggles 'cancelled' state on the specified sequence.
+	 *	i.e. if it is cancelled, it is now uncancelled; and
+	 *	vice versa.
+	 *
+	 *	I'd optimize this (by unrolling the function calls)
+	 *	but you know what they say about premature 
+	 *	optimization!
+	 *
+	 *	That's actually a pretty good point, since we're
+	 *	not likely to toggle cancelled very frequently
+	 *	or anything.
+	 */
+	public void toggleCancelled(String colName, String seqName) {
+		if(isSequenceCancelled(colName, seqName))
+			setSequenceCancelled(colName, seqName, false);
+		else
+			setSequenceCancelled(colName, seqName, true);
+	}
+	
 	/**
 	 * Overwrites or creates a sequence entry, and puts 'seq' there.
 	 *
@@ -370,15 +325,22 @@ public class DataStore implements TableModel {
 
 		Hashtable col = (Hashtable) hash_master.get(colName);
 		if(col == null) {
+			// column doesn't exist: MAKE IT!
 			col = new Hashtable();
 			hash_master.put(colName, col);
 			col.put("", new Integer(seq.getLength()));
+		} else {
+			// test the column length
+			if(seq.getLength() != getColumnLength(colName))
+				throw new IllegalArgumentException("Column " + colName + " has a length of " + getColumnLength(colName) + ", but you are trying to set a sequence '" + seqName + "' with a length of " + seq.getLength());
 		}
 		col.put(seqName, seq);
 		
-		// update hash_master.get("")
+		// by now, the sequence has been 'inserted'.
+		// now, we need to update the master index
 		Hashtable ht = (Hashtable) hash_master.get("");
 		if(ht == null) {
+			// we don't have a master index: MAKE IT!
 			ht = new Hashtable();
 			hash_master.put("", ht);
 		}
@@ -390,14 +352,11 @@ public class DataStore implements TableModel {
 
 			ht.put(seqName, new Integer(oldCount+1));
 		}
-
-		// okay, by this point, the sort has been broken
-		sortBroken = true;
 	}
 
 	/**	
-	 * 	Deletes the sequence mentioned from the column mentioned. It also gets rid of the column itself, if
-	 * 	it's empty.
+	 * 	Deletes the sequence mentioned from the column mentioned. It also 
+	 * 	gets rid of the column itself, if it's empty.
 	 */
 	public void deleteSequence(String colName, String seqName) {
 		validateColName(colName);
@@ -443,17 +402,12 @@ public class DataStore implements TableModel {
 				}
 			}
 		}
-
-		// sort order was broken
-		sortBroken = true;
 	}
 
 	/**
-	 * Returns the 'width' (or length, whatever) of a column. This
+	 * Returns the 'width' (or length, whatever) of column colName. This
 	 * is the basepair width that new sequences must be the same size
 	 * as.
-	 *
-	 * TODO: Put in an option to turn this off?
 	 */
 	public int getColumnLength(String colName) {
 		validateColName(colName);
@@ -488,8 +442,10 @@ public class DataStore implements TableModel {
 	
 	/**
 	 * Directly sets the 'width' (or length, whatever) of a column.
-	 * This is used by the addSequence functions to add a new
-	 * sequence.
+	 * 
+	 * TODO: Rewrite this to be resilient to column length changes?
+	 * 	By padding every sequence up to the newLength? It's worth
+	 * 	a think.
 	 */
 	public void setColumnLength(String colName, int newLength) {
 		validateColName(colName);
@@ -502,9 +458,6 @@ public class DataStore implements TableModel {
 		}
 		
 		col.put("", new Integer(newLength));
-
-		// just to be on the safe side, assume this broke sort too
-		sortBroken = true;
 	}
 
 	/**
@@ -524,7 +477,10 @@ public class DataStore implements TableModel {
 
 	/**	
 	 * Constructs a sequence consisting of all non-cancelled sequences
-	 * for a specified seqName.
+	 * for a specified seqName. Note the distinction between a CombinedSequence
+	 * and a CompleteSequence: a CombinedSequence consists of all the sequences
+	 * which exist, while CompleteSequence consists of all the sequences required
+	 * to recreate the line in SequenceMatrix - i.e., INCLUDING the gaps.
 	 */
 	public Sequence getCombinedSequence(String seqName) {
 		Sequence result = new Sequence();
@@ -611,15 +567,10 @@ public class DataStore implements TableModel {
 // 1. 	CONSTRUCTOR. We need a SequenceMatrix object to talk to the user with.
 //
 	/** 
-	 * We need to know the SequenceMatrix we're serving, so that we can talk
-	 * to the user. All else is vanity. Vanity, vanity, vanity.
+	 * In this Brave New World, DataStores are bound to nobody at all. Really.
+	 * We just store data. What more do you want? 
 	 */
-	public DataStore(SequenceMatrix sm) {
-		matrix = sm;
-		currentTableModel = (TableModel) new DisplayCountsModel(matrix, this);
-		additionalColumns = 3;
-		updateSort(SORT_BYNAME);	// this will do nothing, but will prime the sort Vectors for future use
-	}
+	public DataStore() {}
 
 //
 // 2.	ADD COMMANDS. Add a SequenceList, add a file, that sort of thing.	
@@ -629,7 +580,7 @@ public class DataStore implements TableModel {
 	 * This one is really just a wrapper; it figures out the name the
 	 * column ought to have, and then calls addSequenceList(colName, sl); 
 	 */
-	public void addSequenceList(SequenceList sl, DelayCallback delay) { 
+	public void addSequenceList(SequenceList sl, DelayCallback delay) throws IndexOutOfBoundsException { 
 		sl.lock();
 
 		// 1. Figure out the column name.
@@ -646,45 +597,49 @@ public class DataStore implements TableModel {
 			x++;
 
 			if(x > 999999) {
-				new MessageBox(
-						matrix.getFrame(),
-						"Sorry: I can only count up to 999,999!",
-						"SequenceMatrix can only create 999,999 columns with the same column name. Sorry! Please let us know if this limit is too low for you."
-						).go();
 				sl.unlock();
-				return;
+
+				throw new IndexOutOfBoundsException("SequenceMatrix can only create 999,999 columns with the same column name. Sorry! Please let us know if this limit is too low for you.");
 			}
 		}
 
+		// use this column name, and add the sequence list
 		addSequenceList(newColName, sl, delay);
+
 		sl.unlock();
 	}
 
 	/**
 	 * Add a new sequence list to this dataset.
-	 * @param colName The name of the new column to create for this SequenceList.
+	 * @param colName The name of the column to insert this SequenceList into.
+	 * @param sl The sequence list to add under this colName 
 	 *
 	 * Important steps: create a new column, check for pre-existing sequences,
 	 * add all the sequences, and report sequences which got written over to
 	 * the user.
+	 *
+	 * Note that we don't check the column name: all the level 0 functions are
+	 * validating it, and we don't touch any of the tables without them. If the
+	 * column name is a duplicate, we'll insert the sequence list into the pre-existing
+	 * column you specify, which is pretty much guaranteed to be a disaster unless 
+	 * the columns have the same length, in which case there will be much overwriting
+	 * of sequences and gnashing of teeth, etc.
+	 *
+	 * If you've used this function earlier, you'll notice we DON'T do name processing
+	 * now. That code has moved into TableManager. We're not responsible!
 	 * 
 	 * NOTE: We will NOT throw a DelayAbortedException. We will swallow it without
 	 * any effect, mostly because I don't see the point of loading _half_ a sequence
 	 * list.
 	 */
-	public void addSequenceList(String colName, SequenceList sl, DelayCallback delay) { 	
+	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) { 	
 		sl.lock();
 		
-		// we need to call getUseWhichName() early
-		// because we can't call it after the
-		// delay goes off. 
-		matrix.getPrefs().getUseWhichName();
-
-		// ookay, now that that's done ...
+		// let's roll!
 		if(delay != null)
 			delay.begin();
 
-		// String buffer droppedSequences records which sequences were dropped, so we can let the user know.
+		// Stringbuffer droppedSequences records which sequences were dropped, so we can let the user know.
 		StringBuffer droppedSequences = new StringBuffer("");
 
 		Iterator i = sl.iterator();
@@ -707,30 +662,24 @@ public class DataStore implements TableModel {
 				continue;
 			
 			// Figure out the 'seqName'
-			switch(matrix.getPrefs().getUseWhichName()) {
-				case Preferences.PREF_USE_SPECIES_NAME:
-					seqName = seq.getSpeciesName();
+			String seqName = seq.getFullName();
 
-					if(seqName == null) {
-						// no species name? use full name
-						seqName = seq.getFullName();
-					}
+			// Check if we have cues as to what to call this sequence
+			if(seq.getProperty(INITIAL_SEQNAME_PROPERTY) != null)
+				seqName = (String) seq.getProperty(INITIAL_SEQNAME_PROPERTY);
 
-					break;
-
-				default:
-				case Preferences.PREF_USE_FULL_NAME:
-					seqName = seq.getFullName();
-					break;
-			}
-
-			// HACK/TODO: For use by #sequences loading
-			// (see Exporter)
-			if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName") != null)
-				colName = (String) seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName");
-
-			if(seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName") != null)
-				seqName = (String) seq.getProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName");
+			// TODO: Cleanup this bit.
+			// 
+			// As a bit of a HACK, we can put this sequence into another
+			// column ENTIRELY if it wants. This allows the #sequences format 
+			// to work the way it does, cueing us on where the sequence is
+			// supposed to go. It's not very nice, but we can pull off this
+			// hack without confusing things much, or ruining things for other
+			// people, which - at the end of the day - really is all that 
+			// matters.
+			//
+			if(seq.getProperty(INITIAL_COLNAME_PROPERTY) != null)
+				colName = (String) seq.getProperty(INITIAL_COLNAME_PROPERTY);
 
 			// Is there already a sequence with this name?
 			Sequence seq_old = getSequence(colName, seqName);
@@ -762,27 +711,15 @@ public class DataStore implements TableModel {
 			setSequence(colName, seqName, seq);
 		}
 
-		// update the data
-		updateDisplay();
-
 		// close the progressbar, so we can talk to the user if need be
 		if(delay != null)
 			delay.end();
 
-		// Communicate the droppedSequences list to the user
-		if(droppedSequences.length() > 0) {
-			MessageBox mb = new MessageBox(
-					matrix.getFrame(),
-					"Warning: Sequences were dropped!",
-					"Some sequences in the column '" + colName + "' were not added to the dataset. These are:\n" + droppedSequences.toString()
-				);
-
-			mb.go();
-		}
+		// fill up the complaints area with our complaints
+		complaints.append(droppedSequences);	
 
 		// Cleanup time
 		sl.unlock();
-
 	}
 
 //
@@ -804,28 +741,25 @@ public class DataStore implements TableModel {
 		}
 
 		// deleteSequence() every sequence in this column
+		//
+		// I have no idea why we allocate a new HashSet at this point, and
+		// I'm too scared to try and figure it out.
 		Iterator i = new HashSet(getSequenceNamesByColumn(colName)).iterator();
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
 
 			deleteSequence(colName, seqName);
 		}
-
-		// Since PDM can't be used with one column, we need to turn PDM off if
-		// we just deleted the PDM column
-		if(DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
-			if(colName.equals(pdm_colName))
-				exitPairwiseDistanceMode();
-		}
-
-		// aaaaaaaaaaaand ... done!
-		updateDisplay();
 	}
 
 	/**
 	 * Clear *everything*.
 	 */
 	public void clear() {
+		// I'm guessing we allocate a HashSet for the
+		// same reason we allocate one in deleteColumns(),
+		// but once again, I'm clueless. Sorry.
+		//
 		Set set = new HashSet(getColumns());
 		Iterator i = set.iterator();
 		while(i.hasNext()) {
@@ -833,401 +767,6 @@ public class DataStore implements TableModel {
 		
 			deleteColumn(colName);
 		}
-
-		// reset the session preferences
-		matrix.getPrefs().beginNewSession();
-	}
-
-//
-// 4.	THE 'TOGGLE' MECHANISM.
-//
-	/**
-	 *	Toggles 'cancelled' state on the specified sequence.
-	 *	i.e. if it is cancelled, it is now uncancelled; and
-	 *	vice versa.
-	 */
-	public void toggleCancelled(String colName, String seqName) {
-		if(isSequenceCancelled(colName, seqName))
-			setSequenceCancelled(colName, seqName, false);
-		else
-			setSequenceCancelled(colName, seqName, true);
-
-		updateDisplay();
-	}
-
-//
-// 5.	SORTING. Obviously the next section down ought to be the display code.
-// 	But we'll need to sort before we display, in order to avoid disappointment.
-//
-	/**
-	 * A convenience function which checks to see if either name1 or name2 are the
-	 * outgroupName, in which case they'll get sorted up.
-	 */
-	private int checkForOutgroup(String name1, String name2) {
-		if(outgroupName == null)
-			return 0;
-
-		if(name1.equalsIgnoreCase(outgroupName))
-			return -1;
-		if(name2.equalsIgnoreCase(outgroupName))
-			return +1;
-		return 0;
-	}
-
-	/**
-	 * A sort Comparator which sorts a collection of Strings in natural order - except that outgroups get
-	 * sorted to the top.
-	 */
-	private class SortByName implements Comparator {
-		public int	compare(Object o1, Object o2) {
-			String str1 = (String) o1;
-			String str2 = (String) o2;
-
-			int res = checkForOutgroup(str1, str2);
-			if(res != 0)
-				return res;
-
-			return str1.compareTo(str2);
-		}
-	}
-
-	/**
-	 * A sort Comparator which sorts a collection of Strings by - of all things - their SECOND name. Such is life.
-	 */
-	private class SortBySecondName implements Comparator {
-		public int 	compare(Object o1, Object o2) {
-			String str1 = (String) o1;
-			String str2 = (String) o2;
-
-			int res = checkForOutgroup(str1, str2);
-			if(res != 0)
-				return res;
-
-			String str1_second = null;
-			String str2_second = null;
-
-			Pattern p = Pattern.compile("\\w+\\s+(\\w+)\\b");	// \b = word boundary
-
-			Matcher m = p.matcher(str1);
-			if(m.lookingAt())
-				str1_second = m.group(1);
-			
-			m = p.matcher(str2);
-			if(m.lookingAt())
-				str2_second = m.group(1);
-
-			if(str1_second == null) {
-				if(str2_second == null)
-					return 0;		// identical
-				else 
-					return +1;		// str2 is valid
-			}
-
-			if(str2_second == null)
-				return -1;			// str1 is valid
-
-			return str1_second.compareTo(str2_second);
-		}
-	}
-
-	/**
-	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the number of charsets it has.
-	 */
-	private class SortByCharsets implements Comparator {
-		private DataStore store = null;
-
-		public SortByCharsets(DataStore store) {
-			this.store = store;
-		}
-
-		public int 	compare(Object o1, Object o2) {
-			String str1 = (String) o1;
-			String str2 = (String) o2;
-			
-			int res = checkForOutgroup(str1, str2);
-			if(res != 0)
-				return res;
-
-			int countCharsets1 = store.getCharsetsCount(str1);
-			int countCharsets2 = store.getCharsetsCount(str2);
-
-			return (countCharsets2 - countCharsets1);
-		}
-	}
-
-	/**
-	 * A sort Comparator which sorts a collection of Strings (really taxon names) by the total actual count of bases.
-	 */
-	private class SortByTotalActualLength implements Comparator {
-		private DataStore store = null;
-
-		public SortByTotalActualLength(DataStore store) {
-			this.store = store;
-		}
-
-		public int 	compare(Object o1, Object o2) {
-			String str1 = (String) o1;
-			String str2 = (String) o2;
-			
-			int res = checkForOutgroup(str1, str2);
-			if(res != 0)
-				return res;
-
-			int count1 = store.getCombinedSequenceLength(str1);
-			int count2 = store.getCombinedSequenceLength(str2);
-
-			return (count2 - count1);
-		}
-	}
-
-	/**
-	 * Actually resort the sequences as instructed. We have a bunch of Vectors
-	 * (sortedColumnNames and sortedSequenceNames) which store the column and 
-	 * sequence order. They really ought to be resorted once new sequences are
-	 * added.
-	 *
-	 * So:
-	 * 	(x-coord, y-coord) 	is mapped to		(colName, seqName)
-	 * 	(colName, seqName)	is mapped to		(Sequence)
-	 *
-	 * NOTE: Do NOT check if it's already sorted, unless you also check broken!
-	 */
-	private void resort(int sort) {
-		sortedColumnNames = new Vector(getColumnsUnsorted());
-		Collections.sort(sortedColumnNames);
-
-		sortedSequenceNames = new Vector(getSequencesUnsorted());
-
-		switch(sort) {
-			case SORT_BYTOTALLENGTH:
-				Collections.sort(sortedSequenceNames, new SortByTotalActualLength(this));
-				break;
-			case SORT_BYCHARSETS:
-				Collections.sort(sortedSequenceNames, new SortByCharsets(this));
-				break;
-			case SORT_BYSECONDNAME:
-				Collections.sort(sortedSequenceNames, new SortBySecondName());
-				break;
-			case SORT_BYNAME:
-			default:
-				Collections.sort(sortedSequenceNames, new SortByName());
-		}
-
-		sortBy = sort;
-		sortBroken = false;
-		
-		if(!suppressUpdates && DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
-			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
-
-			if(!dpm.resortPairwiseDistanceMode())		// uh-oh ... something went wrong!
-				if(!exitPairwiseDistanceMode())		// go back to a sensible state
-					fatalError();
-
-			return;
-		}
-	}	
-
-//
-// 6.	DISPLAY THE SEQUENCE. This code will 'update' the code to screen. Except that
-// 	what we _really_ do is to send messages to all the TableModelListeners that we
-// 	are changing, and then 'return' the right information to them.
-//
-// 	This is hard to explain at 12pm on a Monday morning (Monday morning bluuuuueeees),
-// 	so:
-//
-//	DataStore.updateSequence(seqName)
-//	DataStore.updateColumn(colName)
-//	DataStore.updateSort(newSort)
-//	DataStore.updateDisplay()
-//		|
-//		+-------------------------------------------------------+
-//									|
-//							{Registered TableModelListener #1}
-//		+---------------------------------------{Registered TableModelListener #2}
-//		|					{Registered TableModelListener ...}
-//		|
-//	DataStore.getColumnName(...)
-//	DataStore.getValueAt(...)
-//
-//	PHASE 2: The above mechanism has been changed (again). Now, we create a 
-//	DisplayCountsModel, which handles the nitty-gritty. We are responsible for
-//	passing all messages on.
-//
-//	Eventually, we will also have a DisplayPairwiseModel. At this point, things
-//	really get an awful lot of fun, since we have to figure out WHICH MODEL TO
-//	TALK TO, then talk to that model. And switch from one to the other.
-//
-//	Sigh. 
-//
-
-//
-// 6.1.	THE TABLE MODEL LISTENER SYSTEM. We use this to let people know
-// 	we've changed. When we change.
-//
-	public void addTableModelListener(TableModelListener l) {
-		tableModelListeners.add(l);
-	}
-	
-	public void removeTableModelListener(TableModelListener l) {
-		tableModelListeners.remove(l);
-	}
-
-	public void fireTableModelEvent(TableModelEvent e) {
-		Iterator i = tableModelListeners.iterator();
-		while(i.hasNext()) {
-			TableModelListener l = (TableModelListener)i.next();	
-
-			l.tableChanged(e);
-		}
-	}
-
-	public void updateSort(int sortBy) {
-		if(suppressUpdates)
-			return;
-
-		resort(sortBy);
-		updateNoSort();
-	}
-	
-	public void updateDisplay() {
-		if(suppressUpdates)
-			return;
-
-		resort(sortBy);
-		updateNoSort();
-	}
-
-	public void updateNoSort() {
-		if(suppressUpdates)
-			return;
-
-//		fireTableModelEvent(new TableModelEvent(this));
-		
-		// okay, firing the table model event resets everything
-		// this is good for us (since even minor changes, like 
-		// deleting a sequence, can cause major changes, like
-		// removing an entire column which only contained that
-		// one sequence).
-		//
-		// on the other hand, we need to conserve the column
-		// widths. Since i can't find any better way of making
-		// this happen, i'm just going to save them all (into
-		// a hashtable by 'identifier'), then spew them back
-		// out again.
-		//
-		// and may God have mercy on my soul.
-		//
-		Hashtable widths = saveWidths();
-		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
-		restoreWidths(widths);
-	}
-
-	private Hashtable saveWidths() {
-		Hashtable widths = new Hashtable();
-		JTable j = matrix.getJTable();
-		if(j == null)
-			return null;
-
-		// save all widths
-		TableColumnModel tcm = j.getColumnModel();
-		if(tcm == null)
-			return null;
-
-		Enumeration e = tcm.getColumns();
-		while(e.hasMoreElements()) {
-			TableColumn tc = (TableColumn) e.nextElement();
-			widths.put(tc.getIdentifier(), new Integer(tc.getWidth()));
-		}
-
-		return widths;
-	}
-
-	private void restoreWidths(Hashtable widths) {
-		if(widths == null)
-			return;
-		
-		JTable j = matrix.getJTable();
-		if(j == null)
-			return;
-		
-		// load all widths
-		TableColumnModel tcm = j.getColumnModel();
-		if(tcm == null)
-			return;
-
-		Enumeration e = tcm.getColumns();
-		while(e.hasMoreElements()) {
-			TableColumn tc = (TableColumn) e.nextElement();
-
-			Integer oldWidth = (Integer) widths.get(tc.getIdentifier());
-			if(oldWidth != null)
-				tc.setPreferredWidth(oldWidth.intValue());
-		}	
-	}
-
-//
-// 6.2. THE TABLE MODEL SYSTEM. This is how the JTable talks to us ... and we talk back.
-//
-	/**
-	 * Tells us what *class* of object to expect in columns. We can safely expect Strings.
-	 * I don't think the world is ready for transferable Sequences just yet ...
-	 */
-	public Class getColumnClass(int columnIndex) {
-		return currentTableModel.getColumnClass(columnIndex);  
-	}
-
-	/**
-	 * Gets the number of columns.
-	 */
-	public int getColumnCount() {
-		return currentTableModel.getColumnCount();
-	}
-	
-	/**
-	 * Gets the number of rows.
-	 */
-	public int getRowCount() {
-		return currentTableModel.getRowCount(); 
-	}
-
-	/**
-	 * Gets the name of column number 'columnIndex'.
-	 */
-        public String getColumnName(int columnIndex) {
-		return currentTableModel.getColumnName(columnIndex);
-	}
-
-	/**
-	 * Convenience function.
-	 */
-	public String getRowName(int rowIndex) {
-		return (String) currentTableModel.getValueAt(rowIndex, 0);
-	}
-
-	/**
-	 * Gets the value at a particular column. The important
-	 * thing here is that two areas are 'special':
-	 * 1.	Row 0 is reserved for the column names.
-	 * 2.	Column 0 is reserved for the row names.
-	 * 3.	(0, 0) is to be a blank box (new String("")).
-	 */
-        public Object getValueAt(int rowIndex, int columnIndex) {
-		return currentTableModel.getValueAt(rowIndex, columnIndex);
-	}
-
-	/**
-	 * Determines if you can edit anything. Which is only the sequences column.
-	 */
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-		return currentTableModel.isCellEditable(rowIndex, columnIndex);
-	}
-
-	/** 
-	 * Allows the user to set the value of a particular cell. That is, the
-	 * sequences column. 
-	 */
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		currentTableModel.setValueAt(aValue, rowIndex, columnIndex);
 	}
 
 //
@@ -1239,7 +778,7 @@ public class DataStore implements TableModel {
 	 * DO anything - just figure out which changes need to be 
 	 * made, and report this back to the callee.
 	 */
-	public String fakeRenameSequence(String seqOld, String seqNew) {
+	public String testRenameSequence(String seqOld, String seqNew) {
 		StringBuffer buff_replaced = new StringBuffer();
 
 		// actually rename things in the Master Hash
@@ -1271,30 +810,14 @@ public class DataStore implements TableModel {
 
 	/**
 	 * Rename sequence seqOld to seqNew,
-	 * and update everything.
+	 * and update everything. This will do
+	 * it's job, barring an exception - to
+	 * see what consequences this move might
+	 * have, run testRenameSequence(...)
 	 */
-	public void renameSequence(String seqOld, String seqNew) {
+	public void forceRenameSequence(String seqOld, String seqNew) {
 		if(seqOld.equals(seqNew))
 			return;
-
-		String strWarning = fakeRenameSequence(seqOld, seqNew);
-
-		if(strWarning != null) {
-			MessageBox mb = new MessageBox(
-					matrix.getFrame(),
-					"Are you sure?",
-					"Renaming '" + seqOld + "' to '" + seqNew + "' will be tricky because there are already sequences named '" + seqNew + "' in the dataset. Are you sure you want to make these replacements?\n\nThe following replacements will be carried out:\n" + strWarning,
-					MessageBox.MB_YESNO
-					);
-
-			if(mb.showMessageBox() == MessageBox.MB_NO)
-				return;
-		}
-
-		if(outgroupName != null && seqOld.equals(outgroupName)) {
-			outgroupName = seqNew;
-			sortBroken = true;
-		}
 
 		// actually rename things in the Master Hash
 		Iterator i_cols = getColumns().iterator();
@@ -1322,177 +845,5 @@ public class DataStore implements TableModel {
 				}
 			}
 		}
-
-		updateDisplay();
-	}
-
-//
-// UI over the table
-//
-	/**
-	 * Event: somebody right clicked in the mainTable somewhere
-	 */
-	public void rightClick(MouseEvent e, int col, int row) {
-		/*
-		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
-		*/
-		String colName = getColumnName(col);
-		String rowName = "";
-		if(row > 0)				// we don't use the value of rowName if (row == 0)
-			rowName = getRowName(row);
-
-		PopupMenu pm = new PopupMenu();
-
-		if(col == 0) {
-			// colName == ""
-			// we'll replace this with 'Sequence names'
-			colName = "Sequence names";
-		}
-
-		if(col < additionalColumns) {
-			// it's a 'special' column
-			// we can't do things to it
-			pm.add("Column: " + colName);
-		} else {
-			Menu colMenu = new Menu("Column: " + colName);
-			
-			MenuItem delThisCol = new MenuItem("Delete this column");
-			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
-			colMenu.add(delThisCol);
-
-			MenuItem pdmThisCol = new MenuItem("Do a PDM on this column");
-			pdmThisCol.setActionCommand("DO_PDM:" + colName);
-			colMenu.add(pdmThisCol);
-
-			colMenu.addActionListener(matrix);	// wtf really?
-			pm.add(colMenu);
-		}
-
-		if(row <= 0) {
-			pm.add("Row: Headers");
-		} else {
-			Menu rowMenu = new Menu("Row: " + rowName);
-
-			MenuItem delThisRow = new MenuItem("Delete this row");
-			delThisRow.setActionCommand("ROW_DELETE:" + rowName);
-			rowMenu.add(delThisRow);
-
-			if(outgroupName != null && rowName.equals(outgroupName)) {
-				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
-				rowMenu.add(makeOutgroup);			
-			} else {
-				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
-				rowMenu.add(makeOutgroup);
-			}
-
-			rowMenu.addActionListener(matrix);		// wtf really?
-			pm.add(rowMenu);
-		}
-
-		((JComponent)e.getSource()).add(pm);			// yrch!
-		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
-	}
-
-	/**
-	 * Event: somebody double clicked in the mainTable somewhere
-	 */
-	public void doubleClick(MouseEvent e, int col, int row) {
-		if(row > 0 && col != -1 && col >= additionalColumns) {
-			// it's, like, valid, dude.
-			toggleCancelled(getColumnName(col), getRowName(row));
-		}
-	}
-
-	/**
-	 * Get the current outgroup.
-	 * @return null, if there is no current outgroup.
-	 */
-	public String getOutgroupName() {
-		return outgroupName;
-	}
-
-	/**
-	 * Set the current outgroup. Changes the current outgroup
-	 * to the name mentioned.
-	 */
-	public void setOutgroupName(String newName) {
-		outgroupName = newName;
-		sortBroken = true;
-	}
-
-	/**
-	 * How many sequences are currently cancelled?
-	 */
-	public int getCancelledSequencesCount() {
-		return count_cancelledSequences;
-	}
-
-	/** 
-	 * Activate PDM. Normally, we'd ask the user
-	 * at this point which column he wants to use, 
-	 * but for now we can just ignore it and get
-	 * on with life.
-	 */
-	public boolean enterPairwiseDistanceMode() {
-		if(getColumns().size() == 0)
-			return false;
-
-		return enterPairwiseDistanceMode((String)getColumns().get(0));
-	}
-
-	/** Activate PDM */
-	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
-		// are we already in PDM? In which case, we just need to
-		// swap the colNameOfInterest around
-		if(DisplayPairwiseModel.class.isAssignableFrom(currentTableModel.getClass())) {
-			// already in PDM, need to call resort
-			DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
-
-			if(isColumn(colNameOfInterest)) {
-				if(dpm.resortPairwiseDistanceMode(colNameOfInterest)) {
-					updateDisplay();
-					return true;
-				} else
-					return false;
-			} else
-				return false;		// booh! no such column!
-		}
-
-		DisplayPairwiseModel pdm = new DisplayPairwiseModel(matrix, this);
-		if(!pdm.enterPairwiseDistanceMode(colNameOfInterest))
-			return false;
-
-		currentTableModel = (TableModel) pdm;
-		pdm_colName = colNameOfInterest;
-		updateDisplay();
-		return true;
-	}
-
-	/** Deactivate PDM
-	 * @throws ClassCastException (?) if you're NOT in PDM when you call this method!
-	 */
-	public boolean exitPairwiseDistanceMode() {
-		DisplayPairwiseModel dpm = (DisplayPairwiseModel) currentTableModel;
-
-		if(!dpm.exitPairwiseDistanceMode())
-			return false;
-
-		currentTableModel = new DisplayCountsModel(matrix, this);
-		pdm_colName = null;
-		updateDisplay();
-		return true;
-	}
-
-	// just in case
-	private void fatalError() {
-		new MessageBox(
-				matrix.getFrame(),
-				"Something went horribly wrong!",
-				"There was a programming error in this program. I can't get back to a normal state. I'm going to remove all your sequences, which means you'll lose all your changes. I'm so very sorry. Please let the programmers know, and we'll get working on this immediately. Sorry again!").go();
-		clear();
 	}
 }
-
-
