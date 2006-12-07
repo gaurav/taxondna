@@ -53,27 +53,90 @@ public abstract class DisplayMode implements TableModel {
 	 * There's several functions who expect to find the table here.
 	 */
 	// my first protected variable! ::sniffs::
-	protected JTable		table =			new JTable();
+	protected TableManager		tableManager =		null;
+	protected JTable		table =			null;
 
 // Table model listeners
 	private Vector			tableModelListeners =	new Vector();
 
 //
+// 0.	OVERLOADED CODE. Here's how it works: if you want, you can just overload
+// 	the heck out of everybody (by which I mean the TableModel functions) and
+// 	just BE a table model - just remember to update the following two 
+// 	functions, so that the exporter can figure things out, and we'll all be
+// 	happy.
+//
+// 	HOWEVER, in the default implementation, we handle a lot of the grunge work
+// 	out here. I mean, if you DON'T overload the TableModel functions, DisplayMode 
+// 	will do all the work for you. In brief: the only functions you NEED to overload
+// 	are the following two. All else will be defaulted for you.
+//
+	protected List 	sortedColumns = null;		// note that this INCLUDES the additionalColumns
+	protected List 	sortedSequences = null;
+	protected int	additionalColumns = 0;
+
+	public abstract List getSortedColumns(Set colNames);
+	public abstract List getSortedSequences(Set seqNames);
+	public abstract String getValueAt(String colName, String seqName, Sequence seq);
+	public abstract void setValueAt(String colName, String seqName, Object aValue);
+
+//
 // 1.	GETTERS. Returns the state or instance variable of the table
 // 	at the moment.
 //
-	public Class getColumnClass(int columnIndex) { return String.class; }
+	public Class getColumnClass(int columnIndex) { 
+		return String.class; 
+	}
 
-	public abstract int getColumnCount();
-	public abstract String getColumnName(int columnIndex);
-	public abstract int getRowCount();
-	public abstract Object	getValueAt(int rowIndex, int columnIndex);
-	public abstract boolean	isCellEditable(int rowIndex, int columnIndex);
+	public int getColumnCount() {
+		return sortedColumns.size();	// which includes the additionalColumns, etc.
+	}
+
+	public String getColumnName(int columnIndex) {
+		return (String) sortedColumns.get(columnIndex);
+	}
+
+	// not in interface: just very convenient :)
+	public String getRowName(int rowIndex) {
+		return (String) sortedSequences.get(rowIndex);
+	}	
+
+	public int getRowCount() {
+		return sortedSequences.size();
+	}
+
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		String colName = getColumnName(columnIndex);
+		String rowName = getRowName(rowIndex);
+
+		if(columnIndex == 0) {
+			return getRowName(rowIndex);
+
+		} else if(columnIndex < additionalColumns) {
+			return getValueAt(colName, rowName, null);
+		} else {
+			Sequence seq = tableManager.getSequence(colName, rowName);
+
+			return getValueAt(colName, rowName, seq);
+		}
+	}
+
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		if(columnIndex == 0)	// yes, you can rename the sequence names
+			return true;
+		return false;		// but nothing else (by default)
+	}
 
 // 
 // 2.	SETTERS. Lets you set states or variables for us.
 //
-	public abstract void setValueAt(Object aValue, int rowIndex, int columnIndex);
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		if(columnIndex == 0)
+			tableManager.renameSequence(getRowName(rowIndex), (String)aValue);
+		else
+			setValueAt(getColumnName(columnIndex), getRowName(rowIndex), aValue);
+	}
+
 
 //
 // 3.	FUNCTIONAL CODE. Does something.

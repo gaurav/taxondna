@@ -59,6 +59,7 @@ public class TableManager {
 	public static final int		DISPLAY_SEQUENCES	=	0;	// our new name for the normal mode
 	public static final int		DISPLAY_DISTANCES	=	1;	// our new name for PDM mode
 	public static final int		DISPLAY_RANKS		=	2;	// our new name for the 'other' mode
+	public static final int		DISPLAY_LAST		=	2;	// the last DISPLAY_* value (used in init)
 
 //
 //	VARIABLES
@@ -74,9 +75,13 @@ public class TableManager {
 	// We need to track the DisplayModes
 	private DisplayMode	currentDisplayMode =	null;
 	private int		currentMode =		DISPLAY_SEQUENCES;
-	private Vector		vec_displayModes = 	new Vector();		// stores instances of the DisplayModes 
+	private DisplayMode[]	displayModes = 		new DisplayMode[DISPLAY_LAST + 1];		
+										// stores instances of the DisplayModes 
 										// so we don't have to keep creating
 										// them
+
+	private java.util.List	sortedColumns = 	null;
+	private java.util.List	sortedSequences =	null;
 
 //
 // 0.	CONSTRUCTOR. Creates the TableManager.
@@ -85,6 +90,9 @@ public class TableManager {
 	public TableManager(SequenceMatrix matrix, JTable jTable) {
 		this.matrix = matrix;
 		this.table = jTable;
+
+		currentDisplayMode = getDisplayMode(DISPLAY_SEQUENCES);
+		currentMode = DISPLAY_SEQUENCES;
 	}
 
 //
@@ -129,6 +137,10 @@ public class TableManager {
 		return dataStore.isColumn(colName);
 	}	
 
+	public Sequence getSequence(String colName, String seqName) {
+		return dataStore.getSequence(colName, seqName);
+	}
+
 	public void addSequenceList(SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(sl, complaints, delay);
 		updateDisplay();
@@ -144,12 +156,50 @@ public class TableManager {
 		updateDisplay();
 	}
 
+	public boolean isSequenceCancelled(String colName, String seqName) {
+		return dataStore.isSequenceCancelled(colName, seqName);
+	}
+
+	public int getCharsetsCount(String seqName) {
+		return dataStore.getCharsetsCount(seqName);
+	}
+
+	public int getSequenceLength() {
+		return dataStore.getCompleteSequenceLength();
+	}
+
+	public int getSequenceLength(String seqName) {
+		return dataStore.getCombinedSequenceLength(seqName);
+	}
+
 	public void setReferenceSequenceName(String seqName) {
 		// what to do, what to say
 		// shall we carry a treasure away
 		// what a gem, what a pearl
 		// beyond rubies is our little seqName
 	}
+
+	/**
+	 * Renames a sequence
+	 */
+	public void renameSequence(String oldName, String newName) {
+		String complaints = dataStore.testRenameSequence(oldName, newName);
+		if(complaints == null || complaints.length() == 0) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Warning: sequences will be deleted!",
+					"Renaming '" + oldName + "' to '" + newName + "' will cause the following problems. Are you sure you want to go ahead with this rename?\n" + complaints,
+					MessageBox.MB_YESNO
+			);
+
+			if(mb.showMessageBox() == MessageBox.MB_NO)
+				return;
+		}
+
+		dataStore.forceRenameSequence(oldName, newName);
+		updateDisplay();
+	}
+	
 
 //
 // X.	USER INTERFACE
@@ -159,7 +209,9 @@ public class TableManager {
 	 */
 	public void rightClick(MouseEvent e, int col, int row) {
 		/*
-		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
+			private List		sortedColumns = 	null
+;
+private List		sortedSequences =	null;popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
 		/
 		String colName = getColumnName(col);
 		String rowName = "";
@@ -269,13 +321,13 @@ public class TableManager {
 	 * reload, right?
 	 */
 	public DisplayMode getDisplayMode(int mode) {
-		DisplayMode dm = (DisplayMode) vec_displayModes.get(mode);
-
+		DisplayMode dm = displayModes[mode];
+		
 		if(dm == null) {
 			switch(mode) {
 				default:
 				case DISPLAY_SEQUENCES:
-//					dm = new DisplaySequencesMode(this);
+					dm = new DisplaySequencesMode(this);
 					break;
 				case DISPLAY_DISTANCES:
 //					dm = new DisplayDistancesMode(this);
@@ -284,8 +336,11 @@ public class TableManager {
 //					dm = new DisplayRanksMode(this);
 					break;
 			}
-			vec_displayModes.set(mode, dm);
+			displayModes[mode] = dm;
 		}
+
+		sortedColumns = dm.getSortedColumns(dataStore.getColumns());
+		sortedSequences = dm.getSortedSequences(dataStore.getSequences());
 
 		return dm;
 	}
@@ -294,8 +349,12 @@ public class TableManager {
 	 * UpdateDisplay calls on current DisplayMode to do its duty.
 	 */ 
 	public void updateDisplay() {
+		sortedColumns = currentDisplayMode.getSortedColumns(dataStore.getColumns());
+		sortedSequences = currentDisplayMode.getSortedSequences(dataStore.getSequences());
+
 		currentDisplayMode.updateDisplay();
 	}
+
 
 //
 // X.	HACKS. These might have to go eventually
