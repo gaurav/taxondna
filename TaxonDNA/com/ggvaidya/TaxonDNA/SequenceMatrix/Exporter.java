@@ -99,7 +99,7 @@ public class Exporter implements SequencesHandler {
 		if(delay != null)
 			delay.begin();
 
-		DataStore store = matrix.getDataStore();
+		DataStore store = matrix.getTableManager().getDataStore();
 
 		Vector vec_sequences = new Vector(store.getSequences());
 		int count_columns = store.getColumns().size();
@@ -177,7 +177,7 @@ public class Exporter implements SequencesHandler {
 	 */
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
-		DataStore dataStore = matrix.getDataStore();
+		DataStore dataStore = matrix.getTableManager().getDataStore();
 		List columns = dataStore.getColumns();
 		List sequences = dataStore.getSequences();
 
@@ -196,7 +196,7 @@ public class Exporter implements SequencesHandler {
 			// now figure out a list of all taxa with atleast 'length' total length
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x); 
-				int myLength = matrix.getDataStore().getCombinedSequenceLength(seqName);
+				int myLength = matrix.getTableManager().getDataStore().getCombinedSequenceLength(seqName);
 
 				if(myLength >= length)
 					buff.append((x + offset) + " ");
@@ -209,7 +209,7 @@ public class Exporter implements SequencesHandler {
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
 
-				if(matrix.getDataStore().getSequence(name, seqName) != null)
+				if(matrix.getTableManager().getDataStore().getSequence(name, seqName) != null)
 					buff.append((x + offset) + " ");
 			}
 
@@ -228,7 +228,7 @@ public class Exporter implements SequencesHandler {
 			// now figure out a list of all taxa with atleast 'charsets' number of charsets
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
-				int myCharsetCount = matrix.getDataStore().getCharsetsCount(seqName);
+				int myCharsetCount = matrix.getTableManager().getDataStore().getCharsetsCount(seqName);
 
 				if(myCharsetCount >= charsets)
 					buff.append((x + offset) + " ");
@@ -254,8 +254,8 @@ public class Exporter implements SequencesHandler {
 		writer.println("#sequences (nucleotide sequencematrix)");
 		writer.println();
 
-		List colNames = matrix.getDataStore().getColumns();
-		List seqNames = matrix.getDataStore().getSequences();
+		List colNames = matrix.getTableManager().getDataStore().getColumns();
+		List seqNames = matrix.getTableManager().getDataStore().getSequences();
 
 		Iterator i_cols = colNames.iterator();
 		while(i_cols.hasNext()) {
@@ -265,11 +265,11 @@ public class Exporter implements SequencesHandler {
 			while(i_seqs.hasNext()) {
 				String seqName = (String) i_seqs.next();
 
-				Sequence seq = matrix.getDataStore().getSequence(colName, seqName);
+				Sequence seq = matrix.getTableManager().getDataStore().getSequence(colName, seqName);
 				boolean cancelled = false;
 				if(seq == null) {
-					if(matrix.getDataStore().isSequenceCancelled(colName, seqName)) {
-						seq = matrix.getDataStore().getCancelledSequence(colName, seqName);
+					if(matrix.getTableManager().getDataStore().isSequenceCancelled(colName, seqName)) {
+						seq = matrix.getTableManager().getDataStore().getCancelledSequence(colName, seqName);
 						cancelled = true;
 					} else 
 						continue;
@@ -374,7 +374,7 @@ public class Exporter implements SequencesHandler {
 	 * @throws IOException if there was a problem writing this file
 	 */
 	public void exportAsNexus(File f, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
-		DataStore dataStore = matrix.getDataStore();
+		DataStore dataStore = matrix.getTableManager().getDataStore();
 		int countThisLoop = 0;
 
 		// how do we have to do this?
@@ -589,7 +589,7 @@ public class Exporter implements SequencesHandler {
 	 * @throws IOException if there was a problem writing this file
 	 */
 	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
-		DataStore dataStore = matrix.getDataStore();
+		DataStore dataStore = matrix.getTableManager().getDataStore();
 
 		// We want to put some stuff into the title
 		StringBuffer buff_title = new StringBuffer();
