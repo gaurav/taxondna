@@ -330,7 +330,7 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
-						matrix.getDataStore().addSequenceList(name, sl, pd);
+						matrix.getTableManager().addSequenceList(name, sl, pd);
 					}
 
 					sequences.unlock();
@@ -345,7 +345,7 @@ public class FileManager implements FormatListener {
 		// if we're here, we've only got one 'sequences'.
 		// so add it!
 		if(!sets_were_added) {
-			matrix.getDataStore().addSequenceList(sequences,
+			matrix.getTableManager().addSequenceList(sequences,
 					new ProgressDialog(
 						matrix.getFrame(),
 						"Please wait, adding sequences ...",
@@ -739,7 +739,7 @@ public class FileManager implements FormatListener {
 	 * will be completely LOST on export.
 	 */
 	public boolean checkCancelledBeforeExport() {
-		int cancelled = matrix.getDataStore().getCancelledSequencesCount();
+		int cancelled = matrix.getTableManager().getCancelledSequencesCount();
 
 		if(cancelled == 0)
 			return true;
