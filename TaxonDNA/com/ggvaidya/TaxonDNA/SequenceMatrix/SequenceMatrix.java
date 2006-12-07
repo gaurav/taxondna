@@ -64,14 +64,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 	// Other components of SequenceMatrix
 	// information
-	private DataStore	dataStore		= new DataStore(this);	// the datastore: stores data
-
-	// files
-	private FileManager	fileMan			= new FileManager(this); // file manager: handles files coming in
+//	private DataStore	dataStore		= new DataStore(this);	// the datastore: stores data
+	private Preferences	prefs			= new Preferences(this); // preferences are stored here
 	private Exporter	exporter		= new Exporter(this);	// and the actual exports go thru exporter
 	
+	// managers
+	private FileManager	fileManager		= new FileManager(this); // file manager: handles files coming in
+	private TableManager	tableManager		= new TableManager(this); // the table manager handles mid-level UI
+	
 	// additional functionality
-	private Preferences	prefs			= new Preferences(this); // preferences are stored here
 	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
 
 	// analyses
@@ -111,11 +112,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		while(i.hasNext()) {
 			File f = new File((String) i.next());
 
-			fileMan.addFile(f);
+			fileManager.addFile(f);
 		}
 
 		resetFrameTitle();
 	}
+
 //
 // GETTERS: Returns values of possible interest, etc.
 //
@@ -143,8 +145,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	/**
 	 * Returns the DataStore object, should you want it.
 	 */
-	public DataStore getDataStore() {
-		return dataStore;
+//	public DataStore getDataStore() {
+//		return dataStore;
+//	}
+
+	/**
+	 * Returns the FileManager.
+	 */
+	public FileManager getFileManager() {
+		return fileManager;
 	}
 
 	/**
@@ -153,8 +162,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * since it's an abstraction, I figured, hey, why
 	 * not.
 	 */
-	public TableModel getTableModel() {
-		return (TableModel) dataStore;
+//	public TableModel getTableModel() {
+//		return (TableModel) dataStore;
+//	}
+
+	/**
+	 * Returns the TableManager
+	 */
+	public TableManager getTableManager() {
+		return tableManager;
 	}
 
 	/**
@@ -192,7 +208,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// File -> New. Just close the present file. 
 		// 
 		if(cmd.equals("Clear all"))
-			dataStore.clear();
+			tableManager.clear();
 
 		//
 		// File -> Open. Tries to load the file specified.
@@ -200,13 +216,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// further is done.
 		//
 		if(cmd.equals("Add sequences"))
-			fileMan.addFile();
+			fileManager.addFile();
 
 		//
 		// File -> Save. Effectively an 'export as #sequences'.
 		//
 		if(cmd.equals("Save"))
-			fileMan.exportAsSequences();
+			fileManager.exportAsSequences();
 
 		//
 		// File -> Exit. Calls our exit() way out.
@@ -228,23 +244,23 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// Export -> Export table as tab delimited.
 		if(cmd.equals("Export table as tab-delimited"))
-			fileMan.exportTableAsTabDelimited();
+			fileManager.exportTableAsTabDelimited();
 		
 		// Export -> One file per column. 
 		if(cmd.equals("Export table as sequences (one file per column)"))
-			fileMan.exportSequencesByColumn();
+			fileManager.exportSequencesByColumn();
 
 		//
 		// Export -> Export as NEXUS.
 		//
 		if(cmd.equals("Export sequences as NEXUS"))
-			fileMan.exportAsNexus();
+			fileManager.exportAsNexus();
 
 		//
 		// Export -> Export as TNT.
 		//
 		if(cmd.equals("Export sequences as TNT"))
-			fileMan.exportAsTNT();
+			fileManager.exportAsTNT();
 
 		//
 		// Settings -> Taxonsets. Allows you to manipulate taxonsets. 
@@ -288,13 +304,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.length() > 14 && cmd.substring(0, 14).equals("COLUMN_DELETE:")) {
 			String colName = cmd.substring(14);
 
-			if(!dataStore.isColumn(colName)) {
+			if(!tableManager.doesColumnExist(colName)) {
 				MessageBox mb = new MessageBox(mainFrame,
 					"Invalid column specified!",
 					"You tried to delete column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
 				mb.go();
 			} else {
-				dataStore.deleteColumn(colName);
+				tableManager.deleteColumn(colName);
 				MessageBox mb = new MessageBox(mainFrame,
 						"Column '" + colName + "' deleted!",
 						"Column '" + colName + "' was deleted as per your instructions.");
@@ -306,13 +322,13 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
 			String colName = cmd.substring(7);
 
-			if(!dataStore.isColumn(colName)) {
+			if(!tableManager.doesColumnExist(colName)) {
 				MessageBox mb = new MessageBox(mainFrame,
 					"Invalid column specified!",
 					"You tried to do a PDM against column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
 				mb.go();
 			} else {
-				dataStore.enterPairwiseDistanceMode(colName);
+				tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES, colName);
 			}
 		}
 
@@ -320,29 +336,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
 			String seqName = cmd.substring(11);
 
-			Iterator i = dataStore.getColumns().iterator();
-			int count = 0;
-			while(i.hasNext()) {
-				String colName = (String) i.next();
-
-				if(dataStore.getSequence(colName, seqName) != null) {
-					dataStore.deleteSequence(colName, seqName);
-					count++;
-				}
-			}
-
-			if(count == 0) {
-				MessageBox mb = new MessageBox(mainFrame,
-					"Invalid sequence specified!",
-					"You tried to delete sequence '" + seqName + "', but there are no sequences with that name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
-				mb.go();
-			} else {
-				updateDisplay();
-				MessageBox mb = new MessageBox(mainFrame,
-						"Sequences deleted!",
-						count + " sequence(s) named '" + seqName + "' were deleted as per your instructions.");
-				mb.go();
-			}
+			tableManager.deleteSequence(seqName);
 		}
 
 		// Make a particular row into the 'outgroup', i.e. the sequence fixed on
@@ -351,11 +345,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			String seqName = cmd.substring(14);
 
 			if(seqName.equals(""))
-				dataStore.setOutgroupName(null);
+				tableManager.setReferenceSequenceName(null);
 			else
-				dataStore.setOutgroupName(seqName);
-
-			updateDisplay();
+				tableManager.setReferenceSequenceName(seqName);
 		}
 	}
 
@@ -415,7 +407,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			while(i.hasNext()) {
 				File file = 	(File) i.next();
 
-				fileMan.addFile(file);
+				fileManager.addFile(file);
 			}
 		} else {
 			dtde.rejectDrop();
@@ -437,12 +429,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(chmi.getLabel().equals("Display pairwise distances")) {
 			// note: this is actually the NEW state
 			if(chmi.getState() == true) {
-				if(dataStore.enterPairwiseDistanceMode())
+				if(tableManager.enterPairwiseDistanceMode())
 					chmi.setState(true);
 				else
 					chmi.setState(false);		// just in case
 			} else {
-				if(dataStore.exitPairwiseDistanceMode())
+				if(tableManager.exitPairwiseDistanceMode())
 					chmi.setState(false);
 				else
 					chmi.setState(true);		// just in case
@@ -463,16 +455,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		String label = chmi.getLabel();
 		if(label.equals("By name"))
-			dataStore.updateSort(DataStore.SORT_BYNAME);
+			tableManager.resort(DataStore.SORT_BYNAME);
 
 		if(label.equals("By species epithet"))
-			dataStore.updateSort(DataStore.SORT_BYSECONDNAME);
+			tableManager.resort(DataStore.SORT_BYSECONDNAME);
 		
 		if(label.equals("By number of character sets"))
-			dataStore.updateSort(DataStore.SORT_BYCHARSETS);
+			tableManager.resort(DataStore.SORT_BYCHARSETS);
 
 		if(label.equals("By total length"))
-			dataStore.updateSort(DataStore.SORT_BYTOTALLENGTH);
+			tableManager.resort(DataStore.SORT_BYTOTALLENGTH);
 
 		chmi.setState(true);
 		last_chmi = chmi;
@@ -508,11 +500,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 			// check for right clicks
 			if(popup)
-				dataStore.rightClick(e, colIndex, rowIndex);
+				tableManager.rightClick(e, colIndex, rowIndex);
 
 			// check for double clicks (but not both!)
 			else if(e.getClickCount() == 2)
-				dataStore.doubleClick(e, colIndex, rowIndex);
+				tableManager.doubleClick(e, colIndex, rowIndex);
 		}
 	}
 	public void mouseEntered(MouseEvent e) {}
@@ -536,21 +528,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 //		things, such as poke a sequence straight onto the screen.
 
 	/**
-	 * Updates the display. In our case, we just need to call the DataStore 
-	 * and tell it about this.
-	 */
-	public void updateDisplay() {
-		dataStore.updateDisplay();
-	}
-
-	/**
-	 * Removes all the sequences.
-	 */
-	public void clear() {
-		dataStore.clear();
-	}
-
-	/**
 	 * Creates the user interface of SequenceMatrix.
 	 */
 	private void createUI() {
@@ -562,7 +539,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setBackground(SystemColor.control);
 
 		// main table
-		mainTable = new JTable(dataStore);
+		mainTable = new JTable(tableManager.getTableModel());
 		mainTable.addMouseListener(this);
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
 		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
@@ -701,5 +678,4 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public String getName() {
 		return "TaxonDNA/SequenceMatrix " + Versions.getTaxonDNA();
 	}
-
 }
