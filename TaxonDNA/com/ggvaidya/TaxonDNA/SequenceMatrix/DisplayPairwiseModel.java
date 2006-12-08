@@ -1,5 +1,5 @@
 /**
- * This is a TableModel which displays the sequences (as returned by dataStore) by
+ * This is a DisplayMode which displays the sequences (as returned by dataStore) by
  * their pairwise distances. This is actually pretty complicated, so we'll be
  * talking to Prefs and to the use to figure out how to work this. Atleast now
  * we're in a class by ourselves, so it should be a bit easier to work with.
@@ -43,27 +43,13 @@ import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
 import javax.swing.table.*;
 
-import Jama.*;
-
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayPairwiseModel implements TableModel {
-	//
-	// Variables we'll need to track
-	//
-	private SequenceMatrix 	matrix 			= 	null;	
-	private DataStore	dataStore 		=	null;
-	public static final int additionalColumns 	= 	3;	// Sequence name, total length, and # of charsets
-
-	private String		last_colNameOfInterest	=	null;
-
-	private List		columnList 		= 	null;
-	private List		sequencesList		=	null;
-	private List		scores			=	null;
-	private String		seqName_top = null;		// the 'selected' sequence
+public class DisplayPairwiseMode implements TableModel {
+	private String		selected_colName	=	null;		// the colName who is leftmost
 
 	private double		distances[][]		=	null;
 	private double		norm_distances[][]	=	null;
@@ -116,72 +102,61 @@ public class DisplayPairwiseModel implements TableModel {
 //
 
 	/** 
-	 * We need to know the SequenceMatrix we're serving, so that we can talk
+	 * We need to know the TableManager we're serving, so that we can talk
 	 * to the user. All else is vanity. Vanity, vanity, vanity.
 	 */
-	public DisplayPairwiseModel(SequenceMatrix sm, DataStore ds) {
-		matrix = sm;
-		dataStore = ds;
+	public DisplayPairwiseModel(TableManager tm) {
+		tableManager = tm;
+		additionalColumns = 3;	// Sequence name, total length, and # of charsets
 	}
 
 //
 // 2.	INITIALIZATION CODE
 //
-	public boolean enterPairwiseDistanceMode(String colNameOfInterest) {
-		// step 1: pick the sequence we're going to use as the one-on-top
-		seqName_top = (String) dataStore.getSequences().get(0);
+	public void activateDisplay(JTable table, Object argument) {
+		super.activateDisplay(table, argument);
 
-		boolean b = enterPairwiseDistanceMode(colNameOfInterest, seqName_top);
-		if(b)
-			testCorrelation();
-
-		return b;
+		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
+		selected_colName = (String) argument; 
 	}
-	/**
-	 * Sets the dataStore into PairwiseDistanceMode. Please keep in sync
-	 * with exitPairwiseDistanceMode(), which should undo EVERYTHING this
-	 * method does.
-	 *
-	 * @return true, if we're now in PDM
-	 */
-	public boolean enterPairwiseDistanceMode(String colNameOfInterest, String snt) {
-		// we need atleast one sequence name to do this
-		if(dataStore.getSequences().size() == 0) {
-			new MessageBox(
-					matrix.getFrame(),
-					"You need atleast one sequence to run this analysis!",
-					"I can't run a pairwise distance analysis without atleast one sequence! Try loading a sequence and trying again.").go();
-			return false;
+
+	public void deactivateDisplay() {
+		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
+	}
+
+	public List getSortedColumns(Set colNames) {
+		Vector v = new Vector(colNames);
+		Collections.sort(v);
+
+		v.add(0, "Sequence name");
+		v.add(1, "Total score");
+		v.add(2, "No of charsets");
+
+		if(selected_colName != null) {
+			v.remove(selected_colName);
+			v.add(3, selected_colName);
 		}
 
-		// is there a real colNameOfInterest?
-		if(!dataStore.isColumn(colNameOfInterest)) {
-			new MessageBox(
-					matrix.getFrame(),
-					"Column name not present!",
-					"You are trying to generate a pairwise distance analysis on the column '" + colNameOfInterest + "'. This column, however, does not exist! This is most likely a programming bug. Please let the programmers know!").go();		
-			return false;
-		}
+		sortedColumns = v;
 
-		// okay! let's go! leeeeeeeeeeeeroy jenkins!
-		ProgressDialog pd = new ProgressDialog(
-			matrix.getFrame(),		
-			"Please wait, calculating reference order ...",
-			"I am generating a 'reference order' . Please wait!"
-		);
-//		pd.begin();
+		return (java.util.List ) v;
+	}
 
+	public List getSortedSequences(Set sequences) {
 		// step 1: copy whichever sequence we've been told to put on top
-		seqName_top = snt;
+		String seqName_top = tableManager.getReferenceSequence();
 
 		// step 2: copy out a basic sequencesList 
-		sequencesList = new Vector(dataStore.getSequences());
-		
-		// step 4: move colNameOfInterest to the start of the listing
-		columnList = dataStore.getColumns();
-		columnList.remove(colNameOfInterest);
-		columnList.add(0, colNameOfInterest);
+		List sequencesList = new Vector(sequences);
+		List columnList = new Vector(sortedColumns);
+		columnList.remove(0);		// get rid of "Sequence name"
+		columnList.remove(0);		// get rid of "Total score"
+		columnList.remove(0);		// get rid of "No of charsets"
 
+		if(columnList == null) {
+			throw new RuntimeException("Err ... I'm really sorry, but can you call getSortedColumns() before getSortedSequences()? Sorry!");
+		}
+		
 		// Okay: NOW, we need to calculate all the distances! Isn't this fun?!
 		distances = new double[columnList.size()][sequencesList.size()];	// TODO: catch OutOfMemory here?
 
@@ -327,115 +302,12 @@ public class DisplayPairwiseModel implements TableModel {
 			}
 		}
 
-		// finally, set the default renderer up, and we're good to go! 
-		matrix.getJTable().setDefaultRenderer(String.class, new PDMColorRenderer(this));
-
-		// oh - don't forget to set the last_colNameOfInterest!
-		last_colNameOfInterest = colNameOfInterest;
-		
-		//pd.end();
-
-		return true;
-	}
-
-	/**
-	 * Undoes all the changes made by enterPairwiseDistanceMode(). Each and every one.
-	 * 	 
-	 * @return true, if we're now out of PDM
-	 */
-	public boolean exitPairwiseDistanceMode() {
-		matrix.getJTable().setDefaultRenderer(String.class, new DefaultTableCellRenderer());
-//		dataStore.updateDisplay();
-
-		return true;
-	}	
-
-	/**
-	 * Resort pairwise distances mode. Resorts the PDM based on updated data.
-	 */
-	public boolean resortPairwiseDistanceMode(String colName) {
-		if(!exitPairwiseDistanceMode())
-			return false;
-		if(!enterPairwiseDistanceMode(colName))
-			return false;
-
-		return true;
-	}
-
-	/**
-	 * A helper function to resort to the last selected column name.
-	 */
-	public boolean resortPairwiseDistanceMode() {
-		return resortPairwiseDistanceMode(last_colNameOfInterest);
-	}
-
-//
-// 1.	THE TABLE MODEL LISTENER SYSTEM. We use this to let people know
-// 	we've changed. When we change.
-//
-	/** Don't call this function. We don't support it at all. */
-	public void addTableModelListener(TableModelListener l) {
-		throw new UnsupportedOperationException("You are not supposed to call " + this + ".addTableModelListener(" + l + ")!");
-	}
-	
-	/** Don't call this function. We don't support it at all. */
-	public void removeTableModelListener(TableModelListener l) {
-		throw new UnsupportedOperationException("You are not supposed to call " + this + ".removeTableModelListener(" + l + ")!");
-	}
-
-	/** Internal function to fire a TableModelEvent. We send it to the DataStore for further processing. */
-	private void fireTableModelEvent(TableModelEvent e) {
-		dataStore.fireTableModelEvent(e);
+		return sequencesList;
 	}
 
 //
 // 2. THE TABLE MODEL SYSTEM. This is how the JTable talks to us ... and we talk back.
 //
-	/**
-	 * Tells us what *class* of object to expect in columns. We can safely expect Strings.
-	 * I don't think the world is ready for transferable Sequences just yet ...
-	 */
-	public Class getColumnClass(int columnIndex) {
-		return String.class;
-	}
-
-	/**
-	 * Gets the number of columns.
-	 */
-	public int getColumnCount() {
-		return dataStore.getColumns().size() + additionalColumns; 
-	}
-
-	/**
-	 * Gets the number of rows.
-	 */
-	public int getRowCount() {
-		return sequencesList.size(); 
-	}
-
-	/**
-	 * Gets the name of column number 'columnIndex'.
-	 */
-        public String getColumnName(int columnIndex) {
-		if(columnIndex == 0)
-			return "";		// upper left hand box
-
-		if(columnIndex == 1)
-			return "Total score";
-
-		if(columnIndex == 2)
-			return "Number of sets";
-
-		return (String) columnList.get(columnIndex - additionalColumns);
-	}
-
-	/**
-	 * Convenience function.
-	 */
-	public String getRowName(int rowIndex) {
-		return (String) sequencesList.get(rowIndex);
-	}
-
 	/**
 	 * Gets the value at a particular column. The important
 	 * thing here is that two areas are 'special':
@@ -464,7 +336,7 @@ public class DisplayPairwiseModel implements TableModel {
 
 		// if it's the number of charsets column, return that.
 		if(columnIndex == 2)
-			return dataStore.getCharsetsCount(seqName) + "";
+			return tableManager.getCharsetsCount(seqName) + "";
 
 		// okay, it's an actual 'sequence'
 		int col = columnIndex - additionalColumns;
@@ -499,29 +371,6 @@ public class DisplayPairwiseModel implements TableModel {
 	private double percentage(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
 	}
-
-	/**
-	 * Determines if you can edit anything. Which is only the sequences column.
-	 */
-        public boolean isCellEditable(int rowIndex, int columnIndex) {
-		if(columnIndex == 0)
-			return true;
-		return false;
-	}
-
-	/** 
-	 * Allows the user to set the value of a particular cell. That is, the
-	 * sequences column. 
-	 */
-	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-		if(columnIndex == 0) {
-			String strOld = (String) getRowName(rowIndex);
-			String strNew = (String) aValue;
-
-			dataStore.renameSequence(strOld, strNew);
-		}
-	}
-
 
 //
 // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
@@ -648,9 +497,8 @@ public class DisplayPairwiseModel implements TableModel {
 		if(n == 0)
 			return -1;
 
-		if(1 == 1)
-			return (total / (double)n);
-
+		return (total / (double)n);
+/*
 		// Use Jama to handle our Matrix maths
 		Matrix m_R_ii = new Matrix(R_ii);
 		Matrix m_R_ii_inv = m_R_ii.inverse();
@@ -672,6 +520,7 @@ public class DisplayPairwiseModel implements TableModel {
 		}
 
 		return R_sq;
+*/
 	}
 
 	public void testCorrelation() {

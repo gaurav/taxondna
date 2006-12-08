@@ -57,7 +57,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener, MouseListener {
+public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener {
 	// The following variables create and track our user interface
 	private Frame		mainFrame 		= new Frame();		// A frame
 	private JTable		mainTable		= null;			// with a table
@@ -289,66 +289,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// END OF MAIN MENU
 		//
 
-		// 
-		// ACTION COMMANDS FOR THE MAIN TABLE POPUP MENU
-		// Basically, these popups create certain action commands
-		// like 'COLUMN_DELETE:colName', which we can then parse
-		// and use to do things.
-		//
-		// These should probably be replaced by String.regionMatch...(),
-		// but it's plenty understandable (if ugly and verbose), and most
-		// importantly, it DOES THE JOB. So it stays.
-		//
-
-		// Delete a column
-		if(cmd.length() > 14 && cmd.substring(0, 14).equals("COLUMN_DELETE:")) {
-			String colName = cmd.substring(14);
-
-			if(!tableManager.doesColumnExist(colName)) {
-				MessageBox mb = new MessageBox(mainFrame,
-					"Invalid column specified!",
-					"You tried to delete column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
-				mb.go();
-			} else {
-				tableManager.deleteColumn(colName);
-				MessageBox mb = new MessageBox(mainFrame,
-						"Column '" + colName + "' deleted!",
-						"Column '" + colName + "' was deleted as per your instructions.");
-				mb.go();
-			}
-		}
-
-		// Do a PDM on a particular column
-		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
-			String colName = cmd.substring(7);
-
-			if(!tableManager.doesColumnExist(colName)) {
-				MessageBox mb = new MessageBox(mainFrame,
-					"Invalid column specified!",
-					"You tried to do a PDM against column '" + colName + "', but there is no column with this name. This is most likely an error in the programming. Please try again, and inform us if the problem persists. Apologies!");
-				mb.go();
-			} else {
-				tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES, colName);
-			}
-		}
-
-		// Delete a particular row
-		if(cmd.length() > 11 && cmd.substring(0, 11).equals("ROW_DELETE:")) {
-			String seqName = cmd.substring(11);
-
-			tableManager.deleteRow(seqName);
-		}
-
-		// Make a particular row into the 'outgroup', i.e. the sequence fixed on
-		// top of the sequence listings.
-		if(cmd.length() >= 14 && cmd.substring(0, 14).equals("MAKE_OUTGROUP:")) {
-			String seqName = cmd.substring(14);
-
-			if(seqName.equals(""))
-				tableManager.setReferenceSequenceName(null);
-			else
-				tableManager.setReferenceSequenceName(seqName);
-		}
 	}
 
 	//
@@ -468,56 +408,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		last_chmi = chmi;
 	}
 
-	// MouseListener: for listening in on the Table model
-	//
-	// Don't play around with this: there's are handy 
-	// rightClick(MouseEvent) and doubleClick(MouseEvent)
-	// in the DataStore for your enjoyment.
-	//
-	public void mouseClicked(MouseEvent e) {
-		// either TableHeader or mainTable will work (fine)
-		if(e.getSource().equals(mainTable.getTableHeader()) || e.getSource().equals(mainTable)) {
-			int colIndex = mainTable.columnAtPoint(e.getPoint());
-			int rowIndex = mainTable.rowAtPoint(e.getPoint());
-
-			// somehow, tablehandlers generate BOTH mouseClicked and mouseReleased,
-			// while tables don't. So ...
-			if(e.getSource().equals(mainTable.getTableHeader())) {
-				if(e.getID() == MouseEvent.MOUSE_RELEASED)
-					return;
-			}
-
-			// if we're in the TableHeader, we're automatically popup 
-			boolean popup = e.isPopupTrigger();
-			if(e.getSource().equals(mainTable.getTableHeader()))
-				popup = true;
-			
-			// hack: a triple click becomes a right click
-			if(e.getClickCount() == 3)
-				popup = true;
-
-			// check for right clicks
-			if(popup)
-				tableManager.rightClick(e, colIndex, rowIndex);
-
-			// check for double clicks (but not both!)
-			else if(e.getClickCount() == 2)
-				tableManager.doubleClick(e, colIndex, rowIndex);
-		}
-	}
-	public void mouseEntered(MouseEvent e) {}
-	public void mouseExited(MouseEvent e) {} 
-	public void mousePressed(MouseEvent e) {}
-	public void mouseReleased(MouseEvent e) {
-		// MS Windows needs this; also, Windows generates both mouseReleased 
-		// and mouseClicked events when double clicking. So, if and only if
-		// this is a right click activator, do we pass it on.
-		//
-		if(e.isPopupTrigger())
-			mouseClicked(e);
-	}
-
-
 //
 //	5.	FUNCTIONAL CODE. It does things.
 //
@@ -538,10 +428,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// main table
 		mainTable = new JTable();
-		mainTable.addMouseListener(this);
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
 		mainTable.getTableHeader().setReorderingAllowed(false);	// don't you dare!
-		mainTable.getTableHeader().addMouseListener(this);
 		mainTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);	// ha-ha!
 
 		tableManager = new TableManager(this, mainTable);

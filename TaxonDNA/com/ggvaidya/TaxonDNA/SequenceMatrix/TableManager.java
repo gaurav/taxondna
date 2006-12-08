@@ -74,14 +74,19 @@ public class TableManager {
 
 	// We need to track the DisplayModes
 	private DisplayMode	currentDisplayMode =	null;
-	private int		currentMode =		DISPLAY_SEQUENCES;
+	private int		currentMode =		-1;
 	private DisplayMode[]	displayModes = 		new DisplayMode[DISPLAY_LAST + 1];		
 										// stores instances of the DisplayModes 
 										// so we don't have to keep creating
 										// them
 
+	// Our sequences
 	private java.util.List	sortedColumns = 	null;
 	private java.util.List	sortedSequences =	null;
+
+	// Our 'state'
+	private String		referenceTaxon = 	null; 
+	
 
 //
 // 0.	CONSTRUCTOR. Creates the TableManager.
@@ -91,19 +96,27 @@ public class TableManager {
 		this.matrix = matrix;
 		this.table = jTable;
 
-		currentDisplayMode = getDisplayMode(DISPLAY_SEQUENCES);
-		currentMode = DISPLAY_SEQUENCES;
+		changeDisplayMode(DISPLAY_SEQUENCES, null);
 	}
 
 //
 // 1.	GETTERS. Returns the state or instance variable of the table
 // 	at the moment.
 //
-
+	public String getReferenceSequence() {
+		return referenceTaxon;
+	}
 
 // 
 // 2.	SETTERS. Lets you set states or variables for us.
 //
+	public void setReferenceSequence(String x) {
+		if(referenceTaxon.equals(x))
+			return;			// don't change anything
+
+		referenceTaxon = x;
+		updateDisplay();
+	}
 
 //
 // 3.	FUNCTIONAL CODE. Does something.
@@ -115,6 +128,54 @@ public class TableManager {
 	public void clear() {
 		dataStore.clear();
 		updateDisplay();
+	}
+
+	/**
+	 * Resizes column 'x' to fit the widest entry.
+	 */
+	public void resizeColumnToFit(String x) {
+		TableColumnModel tcm = table.getColumnModel();
+		if(tcm == null)
+			return;		// it could happen
+
+		int col = sortedColumns.indexOf(x);
+		if(col == -1)
+			return;		// it could happen
+
+		TableColumn tc = tcm.getColumn(col);
+		if(tc == null)
+			return;		// it could happen
+	
+		// now, we need to manually figure out who needs the most space
+		int maxLength = 0;
+
+		// do the header
+		TableCellRenderer r = tc.getHeaderRenderer();
+		if(r == null) {
+			r = table.getTableHeader().getDefaultRenderer();
+		}
+
+		Component comp = r.getTableCellRendererComponent(table, tc.getHeaderValue(), true, true, -1, col);
+
+		if(comp != null)
+			maxLength = (int) comp.getPreferredSize().getWidth();
+		
+
+		// do all the entries in the column
+		for(int row = 0; row < sortedSequences.size(); row++) {
+			TableCellRenderer renderer = table.getCellRenderer(row, col);
+			Component c = renderer.getTableCellRendererComponent(table, table.getValueAt(row, col), true, true, row, col);
+
+			int length = -1;
+			if(c != null)
+				length = (int) c.getPreferredSize().getWidth();
+
+			if(length > maxLength)
+				maxLength = length;
+		}
+
+		if(maxLength > 0)
+			tc.setPreferredWidth(maxLength + 10);	// The '10' is for the margins
 	}
 
 //
@@ -156,6 +217,11 @@ public class TableManager {
 		updateDisplay();
 	}
 
+	public void toggleCancelled(String colName, String seqName) {
+		dataStore.toggleCancelled(colName, seqName);
+		updateDisplay();
+	}
+
 	public boolean isSequenceCancelled(String colName, String seqName) {
 		return dataStore.isSequenceCancelled(colName, seqName);
 	}
@@ -172,19 +238,18 @@ public class TableManager {
 		return dataStore.getCombinedSequenceLength(seqName);
 	}
 
-	public void setReferenceSequenceName(String seqName) {
-		// what to do, what to say
-		// shall we carry a treasure away
-		// what a gem, what a pearl
-		// beyond rubies is our little seqName
-	}
-
 	/**
 	 * Renames a sequence
 	 */
 	public void renameSequence(String oldName, String newName) {
+		if(oldName.equals(newName))
+			return;			// don't do same name transforms
+
 		String complaints = dataStore.testRenameSequence(oldName, newName);
-		if(complaints == null || complaints.length() == 0) {
+		if(	
+			(complaints != null)		&& 
+			(complaints.length() != 0)
+		) {
 			MessageBox mb = new MessageBox(
 					matrix.getFrame(),
 					"Warning: sequences will be deleted!",
@@ -308,7 +373,8 @@ private List		sortedSequences =	null;popupMenu.show((Component)e.getSource(), e.
 		if(mode == currentMode)
 			return;
 
-		currentDisplayMode.deactivateDisplay();
+		if(currentDisplayMode != null)
+			currentDisplayMode.deactivateDisplay();
 
 		currentDisplayMode = getDisplayMode(mode);
 

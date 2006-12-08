@@ -38,6 +38,9 @@
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.util.*;	// Vectors, Lists and the like
+
+import java.awt.event.*;
+
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.event.*;
@@ -47,7 +50,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public abstract class DisplayMode implements TableModel {
+public abstract class DisplayMode implements TableModel, MouseListener {
 // The Table we're displaying onto
 	/** Please do put your JTable value here, or put in 'null' if you're doing something funky.
 	 * There's several functions who expect to find the table here.
@@ -148,7 +151,7 @@ public abstract class DisplayMode implements TableModel {
 	 */
 	protected Hashtable saveWidths() {
 		Hashtable widths = new Hashtable();
-		JTable j = table; 
+		JTable j = table;
 		if(j == null)
 			return null;
 
@@ -219,7 +222,9 @@ public abstract class DisplayMode implements TableModel {
 //
 	/** Overload this one if you need an argument as well. */
 	public void activateDisplay(JTable table, Object argument) {
-		this.table = table;	
+		this.table = table;
+		table.addMouseListener(this);
+		table.getTableHeader().addMouseListener(this);
 	}
 
 	/** Activate this display on the table mentioned. */
@@ -229,6 +234,8 @@ public abstract class DisplayMode implements TableModel {
 
 	/** Deactivate this display from the table mentioned. */
 	public void deactivateDisplay() {
+		table.getTableHeader().removeMouseListener(this);
+		table.removeMouseListener(this);
 		this.table = null;
 	}
 
@@ -237,7 +244,9 @@ public abstract class DisplayMode implements TableModel {
 	 * remember to save and reload the table headers before you do!
 	 */
 	public void updateDisplay() {
+		Hashtable widths = saveWidths();
 		fireTableModelEvent(new TableModelEvent(this, TableModelEvent.HEADER_ROW));
+		restoreWidths(widths);
 	}
 
 	/**
@@ -250,5 +259,60 @@ public abstract class DisplayMode implements TableModel {
 
 			l.tableChanged(e);
 		}
+	}
+
+//
+//	USER INTERFACE: MOUSE. What would you do if I clicked on a cell?
+//	Overload rightClick() and leftClick(), but don't overload the
+//	MouseListener code ... it's not worth the effort, really.
+//
+	public void rightClick(MouseEvent e, int columnIndex, int rowIndex) {
+	}
+
+	public void doubleClick(MouseEvent e, int columnIndex, int rowIndex) {
+	}
+
+// MOUSELISTENER. Don't touch this, or rightClick()/leftClick() mightn't work
+	public void mouseClicked(MouseEvent e) {
+		// either TableHeader or table will work (fine)
+		if(e.getSource().equals(table.getTableHeader()) || e.getSource().equals(table)) {
+			int colIndex = table.columnAtPoint(e.getPoint());
+			int rowIndex = table.rowAtPoint(e.getPoint());
+
+			// somehow, tablehandlers generate BOTH mouseClicked and mouseReleased,
+			// while tables don't. So ...
+			if(e.getSource().equals(table.getTableHeader())) {
+				if(e.getID() == MouseEvent.MOUSE_RELEASED)
+					return;
+			}
+
+			// if we're in the TableHeader, we're automatically popup 
+			boolean popup = e.isPopupTrigger();
+			if(e.getSource().equals(table.getTableHeader()))
+				popup = true;
+			
+			// hack: a triple click becomes a right click
+			if(e.getClickCount() == 3)
+				popup = true;
+
+			// check for right clicks
+			if(popup)
+				rightClick(e, colIndex, rowIndex);
+
+			// check for double clicks (but not both!)
+			else if(e.getClickCount() == 2)
+				doubleClick(e, colIndex, rowIndex);
+		}
+	}
+	public void mouseEntered(MouseEvent e) {}
+	public void mouseExited(MouseEvent e) {} 
+	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		// MS Windows needs this; also, Windows generates both mouseReleased 
+		// and mouseClicked events when double clicking. So, if and only if
+		// this is a right click activator, do we pass it on.
+		//
+		if(e.isPopupTrigger())
+			mouseClicked(e);
 	}
 }
