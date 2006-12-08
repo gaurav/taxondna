@@ -430,13 +430,60 @@ public class DisplayCorrelationsMode extends DisplayMode {
 //
 // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
 //
+	double[][] correlations = null;
 	/**
 	 * Calculates and returns the correlation between two columns;
 	 * in this case indicated by indices into the arrays used by
 	 * us.
 	 */
 	public double getCorrelation(int x, int y) {
-		// okay, he're how it work:
+		// only do a half-rectangle (a triangle)
+		if(x == y)
+			return 1.0;		// identical columns are perfectly correlated
+
+		if(x > y)
+			return getCorrelation(y, x);		// only do a triangle
+
+		// okay, he're how it work: 
+		// 0.	HACK TIME! Okay, here's how we're REALLY going to do it:
+		// 	1.	The first time we're run, we generate an correlation
+		// 		matrix: column vs. column correlations for everything
+		// 		on the board. This matrix is obviously reset every
+		// 		time getSortedSequences() is called (alternatively,
+		// 		we could do it every time ignore_row and ignore_col
+		// 		are at -1).
+		//
+		// 	2.	Every subsequent time we're called (with ignore_row
+		// 		and ignore_col not being set to -1), we ONLY recalculate
+		// 		the part of the matrix which is relevant to the
+		// 		ignore_row/col. For a normal correlation matrix, this
+		// 		is every entry in that column's ROW and COLUMN.
+		//
+		// See below for the actual (non-pre-calculated algorithm)
+		//
+		if(ignore_col == -1 || correlations == null) {
+			int N = sortedColumns.size() - additionalColumns;
+
+			correlations = new double[N][N];
+
+			for(int c = 0; c < N; c++)
+				Arrays.fill(correlations[c], -1.0);
+		}
+
+		if(ignore_col != -1) {
+			// we have an ignore_row/col situation
+			// do we have to recalculate ourselves?
+			if(x != ignore_col && y != ignore_col) {
+				// we don't know which order we'll come up with next
+				if(correlations[x][y] != -1)
+					return correlations[x][y];
+				if(correlations[y][x] != -1)
+					return correlations[y][x];
+			}
+		}
+
+
+		//
 		// 1.	walk pairwise along the column. 
 		//
 		// 	For every valid match:
@@ -499,7 +546,7 @@ public class DisplayCorrelationsMode extends DisplayMode {
 		if(variable_y <= 0)
 			return 0.0;
 
-		return (
+		double r = (
 				((double)n * sum_xy) - (sum_x * sum_y)
 			) 
 			/ 
@@ -512,36 +559,28 @@ public class DisplayCorrelationsMode extends DisplayMode {
 					variable_y
 				)
 			);
+
+		correlations[x][y] = r;
+
+		return r;
 	}
 
 	public double getRSquared() {
 		int N = sortedColumns.size() - additionalColumns;
 
-		double dist[][] = null;
-//		try {
-			dist = (double[][]) distances.clone();
-//		} catch(CloneNotSupportedException e) {
-//			throw new RuntimeException("CloneNotSupported: " + e);
-//		}
+		double dist[][] = dist = (double[][]) distances.clone();
 		double R_iy[] = new double[N - 1];
 		double R_ii[][] = new double[N - 1][N - 1];
-
-		// calculate R_iy, the column vector of correlations between X_i and Y
-		int y = 0;
-		for(int x = 1; x < N; x++) {
-//			R_iy[x - 1] = getCorrelation(0, x);
-		}
-
 		double total = 0;
 		long n = 0;
+
 		// calculate R_ii, the matrix of correlations amongst Xs
-		for(y = 0; y < N; y++) {
+		for(int y = 0; y < N; y++) {
 			for(int x = 0; x < N; x++) {
-				if(y == x)
+				if(y < x)
 					continue;
 
 				double c = getCorrelation(y, x);
-//				System.err.println("(" + y + ", " + x + ") " + c);
 				if(c < -1)		// error
 					continue;
 				total += c;
@@ -553,29 +592,6 @@ public class DisplayCorrelationsMode extends DisplayMode {
 			return -1;
 
 		return (total / (double)n);
-/*
-		// Use Jama to handle our Matrix maths
-		Matrix m_R_ii = new Matrix(R_ii);
-		Matrix m_R_ii_inv = m_R_ii.inverse();
-		if(m_R_ii_inv.times(m_R_ii).equals(Matrix.identity(m_R_ii.getRowDimension(), m_R_ii.getColumnDimension())))
-			System.err.println("Non inverse!");
-		Matrix m_R_iy = new Matrix(R_iy, R_iy.length);
-
-		Matrix betas = m_R_ii_inv.times(m_R_iy);
-
-		double R_sq = 0;
-		for(y = 0; y < N - 1; y++) {
-			double beta_i = betas.get(y, 0);
-			double r_i = R_iy[y];
-			if(beta_i > 1.0 || beta_i < -1.0)
-				System.err.println("beta_" + y + " = " + beta_i);
-			if(r_i > 1.0 || r_i < -1.0)
-				System.err.println("r_" + y + " = " + r_i);
-			R_sq += (r_i * beta_i);
-		}
-
-		return R_sq;
-*/
 	}
 
 	public void testCorrelation() {
@@ -592,6 +608,9 @@ public class DisplayCorrelationsMode extends DisplayMode {
 
 		String colNameOfInterest = selected_colName;
 		String initial_seqName = (String) sortedSequences.get(0);
+
+		ignore_col = -1;
+		ignore_row = -1;
 
 		Hashtable ht_scoresPerGene = new Hashtable();
 		Iterator i = sortedColumns.iterator();
@@ -639,6 +658,8 @@ public class DisplayCorrelationsMode extends DisplayMode {
 		}
 
 		override_reference_sequence = null;
+		ignore_col = -1;
+		ignore_row = -1;
 		r2_initial = getRSquared();
 
 		// sort 'em!
