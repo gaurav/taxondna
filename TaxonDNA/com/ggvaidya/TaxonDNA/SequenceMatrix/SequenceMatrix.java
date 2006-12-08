@@ -366,6 +366,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// 
 		// HANDLER CODE FOR CHECKBOX ITEMS IN THE MENU (STUPID SUN BUG #4024569)
 		//
+		/*
 		if(chmi.getLabel().equals("Display pairwise distances")) {
 			// note: this is actually the NEW state
 			if(chmi.getState() == true) {
@@ -378,6 +379,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 			return;
 		}
+		*/
 
 		// 
 		// HANDLER CODE FOR THE "SORT BY ..." MENU
@@ -388,6 +390,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		if(last_chmi != null)
 			last_chmi.setState(false);
+
+		String label = chmi.getLabel();
+		if(label.equals("As sequences"))
+			tableManager.changeDisplayMode(TableManager.DISPLAY_SEQUENCES);
+
+		if(label.equals("As pairwise distances"))
+			tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+
+		if(label.equals("As correlations"))
+			tableManager.changeDisplayMode(TableManager.DISPLAY_CORRELATIONS);
 
 		/*
 		String label = chmi.getLabel();
@@ -489,11 +501,26 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		
 		// View menu
 		Menu	view		=	new Menu("View");
-		
+
+		// New view menu
+		CheckboxMenuItem chmi = new CheckboxMenuItem("As sequences", true);
+		chmi.addItemListener(this);
+		view.add(chmi);
+		last_chmi = chmi;
+
+		chmi = new CheckboxMenuItem("As pairwise distances", false);
+		chmi.addItemListener(this);
+		view.add(chmi);
+
+		chmi = new CheckboxMenuItem("As correlations", false);
+		chmi.addItemListener(this);
+		view.add(chmi);
+
 		// Sort sub-menu
+		/*
 		Menu 	sort		=	new Menu("Sort all sequences ");
 
-		CheckboxMenuItem chmi = new CheckboxMenuItem("By name", true);
+		chmi = new CheckboxMenuItem("By name", true);
 		chmi.addItemListener(this);
 		sort.add(chmi);
 		last_chmi = chmi;		// primes the clear-the-last-box option
@@ -513,6 +540,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		chmi = new CheckboxMenuItem("Display pairwise distances", false);
 		chmi.addItemListener(this);
 		view.add(chmi);
+		*/
 
 		view.addActionListener(this);
 		menubar.add(view);

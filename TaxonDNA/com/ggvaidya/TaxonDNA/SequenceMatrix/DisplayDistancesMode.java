@@ -48,7 +48,8 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayPairwiseMode implements TableModel {
+public class DisplayDistancesMode extends DisplayMode { 
+	public static final int	SELECTED_COLUMN		=	3;		// change this if the no of additionalColumns increase!
 	private String		selected_colName	=	null;		// the colName who is leftmost
 
 	private double		distances[][]		=	null;
@@ -62,10 +63,17 @@ public class DisplayPairwiseMode implements TableModel {
 	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
 	public static double 	DIST_CANCELLED		=	-2048.0;
 
+	private List		scores			=	null;
+
 	private int		ignore_col		=	-1;	// the column component of the sequence to ignore while calculating correlation
 	private int		ignore_row		=	-1;	// the row component of the sequence to ignore while calculating correlation
 
+	private String		override_reference_sequence = null;	// try not to think about this ;-)
+									// okay: for testCorrelation(), this will over-ride
+									// the reference sequence.
+
 	private class Score implements Comparable {
+			private String seqName_top = "";
 			private String seqName = "";
 			private double pairwise = 0.0;
 			private int constant = +1;
@@ -73,6 +81,8 @@ public class DisplayPairwiseMode implements TableModel {
 			public Score(String seqName, double pairwise) {
 				this.seqName = seqName;
 				this.pairwise = pairwise;
+
+				seqName_top = tableManager.getReferenceSequence();
 			}
 			
 			public Score(String seqName, double pairwise, int constant) {
@@ -105,7 +115,7 @@ public class DisplayPairwiseMode implements TableModel {
 	 * We need to know the TableManager we're serving, so that we can talk
 	 * to the user. All else is vanity. Vanity, vanity, vanity.
 	 */
-	public DisplayPairwiseModel(TableManager tm) {
+	public DisplayDistancesMode(TableManager tm) {
 		tableManager = tm;
 		additionalColumns = 3;	// Sequence name, total length, and # of charsets
 	}
@@ -113,15 +123,20 @@ public class DisplayPairwiseMode implements TableModel {
 //
 // 2.	INITIALIZATION CODE
 //
+	private TableCellRenderer static_oldRenderer = null;
 	public void activateDisplay(JTable table, Object argument) {
 		super.activateDisplay(table, argument);
 
-		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
 		selected_colName = (String) argument; 
+
+		static_oldRenderer = table.getDefaultRenderer(String.class);
+		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
+
 	}
 
 	public void deactivateDisplay() {
-		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
+//		table.setModel(null);		-- CANNOT - you better pick it up on the next activateDisplay()!
+		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
 	}
 
 	public List getSortedColumns(Set colNames) {
@@ -135,6 +150,11 @@ public class DisplayPairwiseMode implements TableModel {
 		if(selected_colName != null) {
 			v.remove(selected_colName);
 			v.add(3, selected_colName);
+		} else {
+			// no selected colname!
+			// pick sequence #3
+			if(v.size() > 3)
+				selected_colName = (String) v.get(3);
 		}
 
 		sortedColumns = v;
@@ -153,9 +173,20 @@ public class DisplayPairwiseMode implements TableModel {
 		columnList.remove(0);		// get rid of "Total score"
 		columnList.remove(0);		// get rid of "No of charsets"
 
-		if(columnList == null) {
-			throw new RuntimeException("Err ... I'm really sorry, but can you call getSortedColumns() before getSortedSequences()? Sorry!");
+		if(seqName_top == null) {
+			if(sequencesList.size() > 0)
+				seqName_top = (String) sequencesList.get(0);	
 		}
+
+		if(columnList == null || selected_colName == null || seqName_top == null) {
+			// something's not right; bail out
+			sortedSequences = sequencesList;
+
+			return sequencesList;
+		}
+
+		if(override_reference_sequence != null)
+			seqName_top = override_reference_sequence;
 		
 		// Okay: NOW, we need to calculate all the distances! Isn't this fun?!
 		distances = new double[columnList.size()][sequencesList.size()];	// TODO: catch OutOfMemory here?
@@ -172,8 +203,8 @@ public class DisplayPairwiseMode implements TableModel {
 			for(int y = 0; y < sequencesList.size(); y++) {
 				String seqName = (String) sequencesList.get(y);
 
-				Sequence seq = dataStore.getSequence(colName, seqName);
-				Sequence seq_compare = dataStore.getSequence(colName, seqName_top);
+				Sequence seq = tableManager.getSequence(colName, seqName);
+				Sequence seq_compare = tableManager.getSequence(colName, seqName_top);
 
 				double dist = DIST_ILLEGAL;
 				if(seq_compare == null) {
@@ -182,7 +213,7 @@ public class DisplayPairwiseMode implements TableModel {
 				else if(seqName_top.equals(seqName)) {
 					dist = DIST_SEQ_ON_TOP;
 				} else if(seq == null) {
-					if(dataStore.isSequenceCancelled(colName, seqName))
+					if(tableManager.isSequenceCancelled(colName, seqName))
 						dist = DIST_CANCELLED;
 					else
 						dist = DIST_SEQ_NA;
@@ -230,7 +261,7 @@ public class DisplayPairwiseMode implements TableModel {
 			for(int x = 0; x < columnList.size(); x++) {
 				String colName = (String) columnList.get(x);
 
-				if(colName.equals(colNameOfInterest))
+				if(colName.equals(selected_colName))
 					continue;
 
 				if(distances[x][y] >= 0) {
@@ -302,6 +333,7 @@ public class DisplayPairwiseMode implements TableModel {
 			}
 		}
 
+		sortedSequences = sequencesList;
 		return sequencesList;
 	}
 
@@ -372,6 +404,29 @@ public class DisplayPairwiseMode implements TableModel {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
 	}
 
+	public void setValueAt(String colName, String rowName, Object aValue) {
+		// nothing to do, to save his life, call his wife in
+		// nothing to say, but what the hey, how's your boy been
+		// nothing to do, it's up to you
+		// I've got nothing to say, but it's okay
+	}
+
+	public String getValueAt(String colName, String rowName, Sequence seq) {
+		// ignore
+		return null;
+	}
+
+	/**
+	 * Event: somebody double clicked in the mainTable somewhere
+	 */
+	public void doubleClick(MouseEvent e, int col, int row) {
+		if(row > 0 && col != -1 && col >= additionalColumns) {
+			// it's, like, valid, dude.
+			tableManager.toggleCancelled(getColumnName(col), getRowName(row));
+			testCorrelation();
+		}
+	}
+
 //
 // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
 //
@@ -407,7 +462,7 @@ public class DisplayPairwiseMode implements TableModel {
 		if(distances[x][0] != DIST_SEQ_ON_TOP || distances[y][0] != DIST_SEQ_ON_TOP)
 			return -2;	// error
 
-		for(int c = 1; c < sequencesList.size(); c++) {
+		for(int c = 1; c < sortedSequences.size(); c++) {
 			if(c == ignore_row) {
 				if(x == ignore_col || y == ignore_col)
 					continue;
@@ -460,7 +515,7 @@ public class DisplayPairwiseMode implements TableModel {
 	}
 
 	public double getRSquared() {
-		int N = columnList.size();
+		int N = sortedColumns.size() - additionalColumns;
 
 		double dist[][] = null;
 //		try {
@@ -535,32 +590,35 @@ public class DisplayPairwiseMode implements TableModel {
 		// what's the initial R2?
 		double r2_initial = -1;
 
-		String colNameOfInterest = last_colNameOfInterest;
-		String initial_seqName = (String) sequencesList.get(0);
+		String colNameOfInterest = selected_colName;
+		String initial_seqName = (String) sortedSequences.get(0);
 
 		Hashtable ht_scoresPerGene = new Hashtable();
-		Iterator i = columnList.iterator();
+		Iterator i = sortedColumns.iterator();
 		while(i.hasNext()) {
 			String name = (String) i.next();
 
 			ht_scoresPerGene.put(name, new Vector());
 		}
 
-		Vector initialSequencesList = new Vector(sequencesList);
+		Set sequencesSet = new HashSet(sortedSequences);
+		Vector initialSequencesList = new Vector(sortedSequences);
 		for(int z = 0; z < initialSequencesList.size(); z++) {
 			String seqName_z = (String) initialSequencesList.get(z);
-			enterPairwiseDistanceMode(colNameOfInterest, seqName_z);
+
+			override_reference_sequence = seqName_z;
+			getSortedSequences(sequencesSet);	// we don't need it, just the tables
 		
 			r2_initial = 	getRSquared();
 
-			for(int y = 0; y < columnList.size(); y++) {
-				String colName = (String) columnList.get(y);
+			for(int y = additionalColumns; y < sortedColumns.size(); y++) {
+				String colName = (String) sortedColumns.get(y);
 
-				for(int x = 1; x < sequencesList.size(); x++) {
-					String seqName = (String) sequencesList.get(x);
+				for(int x = 1; x < sortedSequences.size(); x++) {
+					String seqName = (String) sortedSequences.get(x);
 
 					// cancel (or uncancel) this sequence
-					ignore_col = y;
+					ignore_col = y - additionalColumns;
 					ignore_row = x;
 
 					// what's the R_squared now?
@@ -578,11 +636,9 @@ public class DisplayPairwiseMode implements TableModel {
 					ignore_row = -1;
 				}
 			}
-
-			exitPairwiseDistanceMode();
 		}
 
-		enterPairwiseDistanceMode(colNameOfInterest, initial_seqName);
+		override_reference_sequence = null;
 		r2_initial = getRSquared();
 
 		// sort 'em!
@@ -632,9 +688,9 @@ public class DisplayPairwiseMode implements TableModel {
 
 class PDMColorRenderer extends DefaultTableCellRenderer
 {
-	DisplayPairwiseModel dpm = null;
+	DisplayDistancesMode dpm = null;
 
-	public PDMColorRenderer(DisplayPairwiseModel dpm) {
+	public PDMColorRenderer(DisplayDistancesMode dpm) {
 		this.dpm = dpm;
 	}	
 
@@ -692,12 +748,12 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 	comp.setForeground(Color.BLACK);
 	comp.setBackground(Color.WHITE);
 
-	if(row < 1 || col < DisplayPairwiseModel.additionalColumns) {
+	if(row < 1 || col < DisplayDistancesMode.SELECTED_COLUMN) {
 		return comp;
 	}
 
 	Color basicColor = Color.BLACK;
-	if(col == DisplayPairwiseModel.additionalColumns)	// the 'special' column
+	if(col == DisplayDistancesMode.SELECTED_COLUMN)
 		basicColor = Color.RED;
 	
 	String val = (String) value;

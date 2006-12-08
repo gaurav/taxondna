@@ -225,6 +225,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 		this.table = table;
 		table.addMouseListener(this);
 		table.getTableHeader().addMouseListener(this);
+		table.setModel(this);
 	}
 
 	/** Activate this display on the table mentioned. */
@@ -234,6 +235,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 
 	/** Deactivate this display from the table mentioned. */
 	public void deactivateDisplay() {
+//		table.setModel(null);		-- CANNOT: you gotta remember this yourself!
 		table.getTableHeader().removeMouseListener(this);
 		table.removeMouseListener(this);
 		this.table = null;

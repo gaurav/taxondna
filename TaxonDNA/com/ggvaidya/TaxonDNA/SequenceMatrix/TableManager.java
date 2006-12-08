@@ -58,7 +58,7 @@ public class TableManager {
 //
 	public static final int		DISPLAY_SEQUENCES	=	0;	// our new name for the normal mode
 	public static final int		DISPLAY_DISTANCES	=	1;	// our new name for PDM mode
-	public static final int		DISPLAY_RANKS		=	2;	// our new name for the 'other' mode
+	public static final int		DISPLAY_CORRELATIONS		=	2;	// our new name for the 'other' mode
 	public static final int		DISPLAY_LAST		=	2;	// the last DISPLAY_* value (used in init)
 
 //
@@ -111,7 +111,7 @@ public class TableManager {
 // 2.	SETTERS. Lets you set states or variables for us.
 //
 	public void setReferenceSequence(String x) {
-		if(referenceTaxon.equals(x))
+		if(referenceTaxon != null && referenceTaxon.equals(x))
 			return;			// don't change anything
 
 		referenceTaxon = x;
@@ -265,91 +265,6 @@ public class TableManager {
 		updateDisplay();
 	}
 	
-
-//
-// X.	USER INTERFACE
-//
-	/**
-	 * Event: somebody right clicked in the mainTable somewhere
-	 */
-	public void rightClick(MouseEvent e, int col, int row) {
-		/*
-			private List		sortedColumns = 	null
-;
-private List		sortedSequences =	null;popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
-		/
-		String colName = getColumnName(col);
-		String rowName = "";
-		if(row > 0)				// we don't use the value of rowName if (row == 0)
-			rowName = getRowName(row);
-
-		PopupMenu pm = new PopupMenu();
-
-		if(col == 0) {
-			// colName == ""
-			// we'll replace this with 'Sequence names'
-			colName = "Sequence names";
-		}
-
-		if(col < additionalColumns) {
-			// it's a 'special' column
-			// we can't do things to it
-			pm.add("Column: " + colName);
-		} else {
-			Menu colMenu = new Menu("Column: " + colName);
-			
-			MenuItem delThisCol = new MenuItem("Delete this column");
-			delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
-			colMenu.add(delThisCol);
-
-			MenuItem pdmThisCol = new MenuItem("Do a PDM on this column");
-			pdmThisCol.setActionCommand("DO_PDM:" + colName);
-			colMenu.add(pdmThisCol);
-
-			colMenu.addActionListener(matrix);	// wtf really?
-			pm.add(colMenu);
-		}
-
-		if(row <= 0) {
-			pm.add("Row: Headers");
-		} else {
-			Menu rowMenu = new Menu("Row: " + rowName);
-
-			MenuItem delThisRow = new MenuItem("Delete this row");
-			delThisRow.setActionCommand("ROW_DELETE:" + rowName);
-			rowMenu.add(delThisRow);
-
-			if(outgroupName != null && rowName.equals(outgroupName)) {
-				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
-				rowMenu.add(makeOutgroup);			
-			} else {
-				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
-				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
-				rowMenu.add(makeOutgroup);
-			}
-
-			rowMenu.addActionListener(matrix);		// wtf really?
-			pm.add(rowMenu);
-		}
-
-		((JComponent)e.getSource()).add(pm);			// yrch!
-		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
-		*/
-	}
-
-	/**
-	 * Event: somebody double clicked in the mainTable somewhere
-	 */
-	public void doubleClick(MouseEvent e, int col, int row) {
-		/*
-		if(row > 0 && col != -1 && col >= additionalColumns) {
-			// it's, like, valid, dude.
-			toggleCancelled(getColumnName(col), getRowName(row));
-		}
-		*/
-	}	
-
 //
 // 4. 	DISPLAY MODE MANAGING CODE. Changes display modes, handles routing
 // 	on to the specific objects which actually do the display mode-ing,
@@ -396,10 +311,10 @@ private List		sortedSequences =	null;popupMenu.show((Component)e.getSource(), e.
 					dm = new DisplaySequencesMode(this);
 					break;
 				case DISPLAY_DISTANCES:
-//					dm = new DisplayDistancesMode(this);
+					dm = new DisplayDistancesMode(this);
 					break;
-				case DISPLAY_RANKS:
-//					dm = new DisplayRanksMode(this);
+				case DISPLAY_CORRELATIONS:
+					dm = new DisplayCorrelationsMode(this);
 					break;
 			}
 			displayModes[mode] = dm;
