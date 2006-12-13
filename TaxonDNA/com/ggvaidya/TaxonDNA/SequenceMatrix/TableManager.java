@@ -97,6 +97,7 @@ public class TableManager {
 		this.table = jTable;
 
 		changeDisplayMode(DISPLAY_SEQUENCES, null);
+		resizeColumns();
 	}
 
 //
@@ -128,6 +129,18 @@ public class TableManager {
 	public void clear() {
 		dataStore.clear();
 		updateDisplay();
+	}
+
+	/**
+	 * Resizes ALL columns to fit their widest entry.
+	 */
+	public void resizeColumns() {
+		Iterator i = sortedColumns.iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+
+			resizeColumnToFit(colName);
+		}
 	}
 
 	/**
