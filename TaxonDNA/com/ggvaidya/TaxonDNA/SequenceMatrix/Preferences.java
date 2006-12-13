@@ -120,7 +120,10 @@ public class Preferences implements ActionListener {
 		return java.util.prefs.Preferences.userNodeForPackage(getClass()).getInt(key, def);
 	}
 
-	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
+	/** 
+	 * Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME 
+	 * @deprecated FileManager is handling this. Why are you?
+	 */
 	public int getUseWhichName() {
 		if(prefName == PREF_NOT_SET_YET) {
 			Dialog dg = new Dialog(

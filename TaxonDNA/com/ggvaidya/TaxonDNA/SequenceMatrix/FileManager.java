@@ -54,6 +54,13 @@ public class FileManager implements FormatListener {
 	private Vector 		filesToLoad = new Vector();
 	private Hashtable 		hash_sets = new Hashtable();
 
+	// Should we use the full name or the species name?
+	//
+	public static final int		PREF_NOT_SET_YET	=	-1;	
+	public static final int		PREF_USE_FULL_NAME	=	0;	
+	public static final int		PREF_USE_SPECIES_NAME	=	1;
+	private static int		pref_useWhichName 	=	PREF_NOT_SET_YET;
+
 //
 //	0.	OUR CLASSES, WHO ART IN CORE
 //
@@ -182,6 +189,68 @@ public class FileManager implements FormatListener {
 		}
 	}
 
+	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
+	public void checkNameToUse() {
+		if(pref_useWhichName == PREF_NOT_SET_YET) {
+			Dialog dg = new Dialog(
+					matrix.getFrame(),
+					"Species names or sequence names?",
+					true);	// modal!
+			dg = (Dialog) CloseableWindow.wrap(dg);	// wrap it as a Closeable window
+
+			dg.setLayout(new BorderLayout());
+
+			TextArea ta = new TextArea("", 4, 40, TextArea.SCROLLBARS_VERTICAL_ONLY);
+			ta.setEditable(false);
+			ta.setText("Would you like to use the full sequence name? I could also try to determine the species name from the sequence name, and use that instead.");
+			dg.add(ta);
+
+			Panel buttons = new Panel();
+			buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+			DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
+			buttons.add(btn_seq);
+
+			// err ... wtf?
+			DefaultButton btn_species = new DefaultButton(dg, "Use species names");
+			buttons.add(btn_species);
+			dg.add(buttons, BorderLayout.SOUTH);
+
+			dg.pack();
+			dg.setVisible(true);
+		
+			if(btn_seq.wasClicked())
+				pref_useWhichName = PREF_USE_FULL_NAME;
+			else
+				pref_useWhichName = PREF_USE_SPECIES_NAME;
+		}
+	}	
+
+	/**
+	 * Sets up names to use by filling in INITIAL_SEQ_NAME in the
+	 * Sequence preferences, in-place. You ought to call this on 
+	 * a SequenceList before you send it in. Note that this function
+	 * works IN PLACE, but won't change names or anything - only
+	 * remove the old INITIAL_SEQ_NAME, and replace it with what
+	 * we think is the right initial seq name NOW. 
+	 */
+	private void setupNamesToUse(SequenceList list) {
+		if(pref_useWhichName == PREF_NOT_SET_YET)
+			checkNameToUse();			// sorry! but you really should
+								// have figured this out yourself
+
+		Iterator i = list.iterator();
+		while(i.hasNext()) {
+			Sequence seq = (Sequence) i.next();
+			String seqName = seq.getFullName();
+
+			if(pref_useWhichName == PREF_USE_SPECIES_NAME)
+				seqName = seq.getSpeciesName();
+
+			seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, seqName);
+		}
+	}
+
 	/**
 	 * Loads the file and handler. This is *very* synchronous, so please
 	 * call only from the Thread.
@@ -189,6 +258,10 @@ public class FileManager implements FormatListener {
 	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
 		SequenceList sequences = null;
 		boolean sets_were_added = false;
+
+		// ask the user how he'd like to specify the species or column names (?!),
+		// and save the output for future use.
+		checkNameToUse();
 
 		try {
 			if(handler != null) {
@@ -239,14 +312,6 @@ public class FileManager implements FormatListener {
 						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
 
 				if(mb.showMessageBox() == MessageBox.MB_YES) {
-					matrix.getPrefs().getUseWhichName();
-							// we don't actually need this; but it
-							// forces the dialog to come up now
-							// instead of after the ProgressDialog
-							// begins ... which would be a horrible
-							// time to do that.
-
-					
 //					pd.begin();
 
 					/////////////////////////////////////////////////////////////////////////////////
@@ -330,6 +395,8 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 
+						setupNamesToUse(sl);
+
 						StringBuffer buff_complaints = new StringBuffer();
 						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
 						if(buff_complaints.length() > 0) {
@@ -351,6 +418,8 @@ public class FileManager implements FormatListener {
 		// if we're here, we've only got one 'sequences'.
 		// so add it!
 		if(!sets_were_added) {
+			setupNamesToUse(sequences);
+
 			StringBuffer buff_complaints = new StringBuffer();
 			matrix.getTableManager().addSequenceList(sequences,
 					buff_complaints,
