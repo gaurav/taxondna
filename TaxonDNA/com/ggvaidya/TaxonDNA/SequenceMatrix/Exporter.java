@@ -96,14 +96,14 @@ public class Exporter implements SequencesHandler {
 	 * This really is kinda convoluted ... no, VERY convoluted. Hatred.
 	 */
 	public void exportSequencesByColumn(File dir, FormatHandler fh, boolean writeNASequences, DelayCallback delay) throws IOException, DelayAbortedException {
+		TableManager tm = matrix.getTableManager();
+
 		if(delay != null)
 			delay.begin();
 
-		DataStore store = matrix.getTableManager().getDataStore();
-
-		Vector vec_sequences = new Vector( (Collection) store.getSequences());
-		int count_columns = store.getColumns().size();
-		Iterator i = store.getColumns().iterator();
+		Vector vec_sequences = new Vector( (Collection) tm.getSequences());
+		int count_columns = tm.getColumns().size();
+		Iterator i = tm.getColumns().iterator();
 
 		int count = 0;
 		while(i.hasNext()) {
@@ -113,13 +113,13 @@ public class Exporter implements SequencesHandler {
 
 			String colName = (String) i.next();
 
-			int colLength = store.getColumnLength(colName);
+			int colLength = tm.getColumnLength(colName);
 			SequenceList sl = new SequenceList();
 
 			Iterator i2 = vec_sequences.iterator();	
 			while(i2.hasNext()) {
 				String seqName = (String) i2.next();
-				Sequence seq = store.getSequence(colName, seqName);
+				Sequence seq = tm.getSequence(colName, seqName);
 	
 				if(seq == null) {
 					if(writeNASequences) {
@@ -177,9 +177,9 @@ public class Exporter implements SequencesHandler {
 	 */
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
-		DataStore dataStore = matrix.getTableManager().getDataStore();
-		List columns = new Vector(dataStore.getColumns());
-		List sequences = new Vector(dataStore.getSequences());
+		TableManager tm = matrix.getTableManager();
+		List columns = tm.getColumns();
+		List sequences = tm.getSequences();
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
@@ -196,7 +196,7 @@ public class Exporter implements SequencesHandler {
 			// now figure out a list of all taxa with atleast 'length' total length
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x); 
-				int myLength = matrix.getTableManager().getDataStore().getCombinedSequenceLength(seqName);
+				int myLength = tm.getSequenceLength(seqName);
 
 				if(myLength >= length)
 					buff.append((x + offset) + " ");
@@ -209,7 +209,7 @@ public class Exporter implements SequencesHandler {
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
 
-				if(matrix.getTableManager().getDataStore().getSequence(name, seqName) != null)
+				if(tm.getSequence(name, seqName) != null)
 					buff.append((x + offset) + " ");
 			}
 
@@ -228,7 +228,7 @@ public class Exporter implements SequencesHandler {
 			// now figure out a list of all taxa with atleast 'charsets' number of charsets
 			for(int x = 0; x < sequences.size(); x++) {
 				String seqName = (String) sequences.get(x);
-				int myCharsetCount = matrix.getTableManager().getDataStore().getCharsetsCount(seqName);
+				int myCharsetCount = tm.getCharsetsCount(seqName);
 
 				if(myCharsetCount >= charsets)
 					buff.append((x + offset) + " ");
@@ -247,6 +247,8 @@ public class Exporter implements SequencesHandler {
 	 * say that's because the output format is so incredibly well done :P.
 	 */
 	public void exportAsSequences(File f, DelayCallback delay) throws IOException, DelayAbortedException {
+		TableManager tm = matrix.getTableManager();
+
 		if(delay != null)
 			delay.begin();
 
@@ -254,8 +256,8 @@ public class Exporter implements SequencesHandler {
 		writer.println("#sequences (nucleotide sequencematrix)");
 		writer.println();
 
-		List colNames = new Vector(matrix.getTableManager().getDataStore().getColumns());
-		List seqNames = new Vector(matrix.getTableManager().getDataStore().getSequences());
+		List colNames = tm.getColumns();
+		List seqNames = tm.getSequences();
 
 		Iterator i_cols = colNames.iterator();
 		while(i_cols.hasNext()) {
@@ -265,11 +267,11 @@ public class Exporter implements SequencesHandler {
 			while(i_seqs.hasNext()) {
 				String seqName = (String) i_seqs.next();
 
-				Sequence seq = matrix.getTableManager().getDataStore().getSequence(colName, seqName);
+				Sequence seq = tm.getSequence(colName, seqName);
 				boolean cancelled = false;
 				if(seq == null) {
-					if(matrix.getTableManager().getDataStore().isSequenceCancelled(colName, seqName)) {
-						seq = matrix.getTableManager().getDataStore().getCancelledSequence(colName, seqName);
+					if(tm.isSequenceCancelled(colName, seqName)) {
+						seq = tm.getCancelledSequence(colName, seqName);
 						cancelled = true;
 					} else 
 						continue;
@@ -374,7 +376,7 @@ public class Exporter implements SequencesHandler {
 	 * @throws IOException if there was a problem writing this file
 	 */
 	public void exportAsNexus(File f, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
-		DataStore dataStore = matrix.getTableManager().getDataStore();
+		TableManager tm = matrix.getTableManager();
 		int countThisLoop = 0;
 
 		// how do we have to do this?
@@ -416,19 +418,19 @@ public class Exporter implements SequencesHandler {
 
 		// Calculate the SETS blocks, with suitable widths etc.	
 		int widthThusFar = 0;
-		Iterator i = dataStore.getColumns().iterator();
+		Iterator i = tm.getColumns().iterator();
 
 		countThisLoop = 0;
 		while(i.hasNext()) {
 			countThisLoop++;
 			if(delay != null)
-				delay.delay(countThisLoop, dataStore.getColumns().size());
+				delay.delay(countThisLoop, tm.getColumns().size());
 
 			String columnName = (String)i.next();
 
 			// write out a CharSet for this column, and adjust the widths
-			buff_sets.append("\tCHARSET " + fixColumnName(columnName) + " = " + (widthThusFar + 1) + "-" + (widthThusFar + dataStore.getColumnLength(columnName)) + ";\n");
-			widthThusFar += dataStore.getColumnLength(columnName);
+			buff_sets.append("\tCHARSET " + fixColumnName(columnName) + " = " + (widthThusFar + 1) + "-" + (widthThusFar + tm.getColumnLength(columnName)) + ";\n");
+			widthThusFar += tm.getColumnLength(columnName);
 		}
 
 		// end and write the SETS block
@@ -449,7 +451,7 @@ public class Exporter implements SequencesHandler {
 			writer.println("");
 
 			writer.println("BEGIN DATA;");
-			writer.println("\tDIMENSIONS NTAX=" + dataStore.getSequencesCount() + " NCHAR=" + dataStore.getCompleteSequenceLength() + ";");
+			writer.println("\tDIMENSIONS NTAX=" + tm.getSequencesCount() + " NCHAR=" + tm.getSequenceLength() + ";");
 
 			writer.print("\tFORMAT DATATYPE=DNA GAP=- MISSING=? ");
 			if(how == Preferences.PREF_NEXUS_BLOCKS)
@@ -468,25 +470,25 @@ public class Exporter implements SequencesHandler {
 		//
 		if(how == Preferences.PREF_NEXUS_BLOCKS) {
 			// loop over column names
-			Iterator i_cols = dataStore.getColumns().iterator();
+			Iterator i_cols = tm.getColumns().iterator();
 
 			countThisLoop = 0;
 			while(i_cols.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, dataStore.getColumns().size());
+					delay.delay(countThisLoop, tm.getColumns().size());
 				countThisLoop++;
 
 				String colName = (String) i_cols.next();
-				int colLength = dataStore.getColumnLength(colName);
+				int colLength = tm.getColumnLength(colName);
 				
 				// first of all, write the column name in as a comment (if in block mode)
 				writer.println("[beginning " + fixColumnName(colName) + "]");
 
 				// then loop over all the sequences
-				Iterator i_seqs = dataStore.getSequences().iterator();
+				Iterator i_seqs = tm.getSequences().iterator();
 				while(i_seqs.hasNext()) {
 					String seqName = (String) i_seqs.next();
-					Sequence seq = dataStore.getSequence(colName, seqName); 
+					Sequence seq = tm.getSequence(colName, seqName); 
 
 					if(seq == null)
 						seq = Sequence.makeEmptySequence(seqName, colLength);
@@ -501,11 +503,11 @@ public class Exporter implements SequencesHandler {
 		} else if(how == Preferences.PREF_NEXUS_SINGLE_LINE || how == Preferences.PREF_NEXUS_INTERLEAVED) {
 			// loop over sequence names
 
-			Iterator i_rows = dataStore.getSequences().iterator();
+			Iterator i_rows = tm.getSequences().iterator();
 			countThisLoop = 0;
 			while(i_rows.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, dataStore.getSequences().size());
+					delay.delay(countThisLoop, tm.getSequences().size());
 				countThisLoop++;
 
 				String seqName = (String) i_rows.next();
@@ -517,13 +519,13 @@ public class Exporter implements SequencesHandler {
 				else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
 					seq_interleaved = new Sequence();
 
-				Iterator i_cols = dataStore.getColumns().iterator();
+				Iterator i_cols = tm.getColumns().iterator();
 				while(i_cols.hasNext()) {
 					String colName = (String) i_cols.next();
-					Sequence seq = dataStore.getSequence(colName, seqName);
+					Sequence seq = tm.getSequence(colName, seqName);
 
 					if(seq == null)
-						seq = Sequence.makeEmptySequence(colName, dataStore.getColumnLength(colName));
+						seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
 
 					length += seq.getLength();
 
@@ -589,7 +591,8 @@ public class Exporter implements SequencesHandler {
 	 * @throws IOException if there was a problem writing this file
 	 */
 	public void exportAsTNT(File f, DelayCallback delay) throws IOException, DelayAbortedException {
-		DataStore dataStore = matrix.getTableManager().getDataStore();
+		// who's the TableManager?
+		TableManager tm = matrix.getTableManager();
 
 		// We want to put some stuff into the title
 		StringBuffer buff_title = new StringBuffer();
@@ -634,18 +637,19 @@ public class Exporter implements SequencesHandler {
 		}
 		
 		// set up the 'sets' buffer
-		if(dataStore.getColumns().size() >= 32) {
+		List cols = tm.getColumns();
+		if(cols.size() >= 32) {
 			new MessageBox(
 					matrix.getFrame(),
 					"Too many character sets!",
-					"According to the manual, TNT can only handle 32 character sets. You have " + dataStore.getColumns().size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
+					"According to the manual, TNT can only handle 32 character sets. You have " + tm.getColumns().size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
 
 		}
 		
 		StringBuffer buff_sets = new StringBuffer();
 		buff_sets.append("xgroup\n");
 
-		Iterator i = dataStore.getColumns().iterator();	
+		Iterator i = cols.iterator();	
 		int at = 0;
 		int colid = 0;
 		while(i.hasNext()) {
@@ -659,7 +663,7 @@ public class Exporter implements SequencesHandler {
 			else
 				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
 
-			for(int x = 0; x < dataStore.getColumnLength(colName); x++) {
+			for(int x = 0; x < tm.getColumnLength(colName); x++) {
 				if(colid <= 31)
 					buff_sets.append(at + " ");
 				else
@@ -695,13 +699,13 @@ public class Exporter implements SequencesHandler {
 			writer.println("Additional taxonsets and character sets end here.");
 		}
 		writer.println("'");
-		writer.println(dataStore.getCompleteSequenceLength() + " " + dataStore.getSequencesCount());
+		writer.println(tm.getSequenceLength() + " " + tm.getSequencesCount());
 
-		Iterator i_rows = dataStore.getSequences().iterator();
+		Iterator i_rows = tm.getSequences().iterator();
 		int count_rows = 0;
 		while(i_rows.hasNext()) {
 			if(delay != null)
-				delay.delay(count_rows, dataStore.getSequencesCount());
+				delay.delay(count_rows, tm.getSequencesCount());
 
 			count_rows++;
 
@@ -711,13 +715,13 @@ public class Exporter implements SequencesHandler {
 
 			writer.print(getNexusName(seqName) + " ");
 
-			Iterator i_cols = dataStore.getColumns().iterator();
+			Iterator i_cols = cols.iterator();
 			while(i_cols.hasNext()) {
 				String colName = (String) i_cols.next();
-				Sequence seq = dataStore.getSequence(colName, seqName); 
+				Sequence seq = tm.getSequence(colName, seqName); 
 				
 				if(seq == null)
-					seq = Sequence.makeEmptySequence(colName, dataStore.getColumnLength(colName));
+					seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
 
 				length += seq.getLength();
 

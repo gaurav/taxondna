@@ -151,11 +151,11 @@ public class FindDistances implements WindowListener, ActionListener {
 			pdColumns = new Vector();
 
 			// get a SequenceList for each column
-			DataStore ds = matrix.getTableManager().getDataStore();
-			Iterator i = ds.getColumns().iterator();
+			TableManager tm = matrix.getTableManager();
+			Iterator i = tm.getColumns().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
-				SequenceList sl = ds.getSequenceListByColumn(colName);
+				SequenceList sl = tm.getSequenceListByColumn(colName);
 			
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
 							new ProgressDialog(

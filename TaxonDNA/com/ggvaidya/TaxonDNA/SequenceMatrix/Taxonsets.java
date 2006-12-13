@@ -353,7 +353,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 		// give him Geneset taxonsets
 		if(check_generateGeneSets.getState()) {
-			i = matrix.getTableManager().getDataStore().getColumns().iterator();
+			i = matrix.getTableManager().getColumns().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
 				result.add(Taxonsets.prefix_TaxonsHaving + colName);

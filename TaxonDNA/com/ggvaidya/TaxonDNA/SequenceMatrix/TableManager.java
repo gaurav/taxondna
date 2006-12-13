@@ -216,6 +216,10 @@ public class TableManager {
 		return dataStore.getSequence(colName, seqName);
 	}
 
+	public Sequence getCancelledSequence(String colName, String seqName) {
+		return dataStore.getCancelledSequence(colName, seqName);
+	}
+
 	public void addSequenceList(SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(sl, complaints, delay);
 		updateDisplay();
@@ -255,6 +259,52 @@ public class TableManager {
 	public int getSequenceLength(String seqName) {
 		return dataStore.getCombinedSequenceLength(seqName);
 	}
+
+	public int getColumnLength(String colName) {
+		return dataStore.getColumnLength(colName);
+	}
+
+	public int getSequencesCount() {
+		return sortedSequences.size();
+	}
+	
+	public java.util.List getColumns() {
+	       return (java.util.List) sortedColumns;
+	}
+
+	public java.util.List getSequences() {
+	       return (java.util.List) sortedSequences;
+	}
+
+	public java.util.List getSequenceNamesByColumn(String colName) {
+		Vector v = new Vector();
+
+		Iterator i = sortedSequences.iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+			
+			if(dataStore.getCancelledSequence(colName, seqName) != null)
+				v.add(colName);
+		}
+
+		return (java.util.List) v;
+	}
+
+	public SequenceList getSequenceListByColumn(String colName) {
+		SequenceList sl = new SequenceList();
+
+		Iterator i = sortedSequences.iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+			
+			Sequence seq = dataStore.getSequence(colName, seqName);
+			if(seq != null)
+				sl.add(seq);
+		}
+
+		return sl;
+	}
+	
 
 	/**
 	 * Renames a sequence
@@ -368,6 +418,7 @@ public class TableManager {
 		return dataStore.getCancelledSequencesCount();
 	}
 
+	/** @deprecated Out, fie, fie! */
 	public DataStore getDataStore() {
 		return dataStore;
 	}
