@@ -86,6 +86,9 @@ public class TableManager {
 
 	// Our 'state'
 	private String		referenceTaxon = 	null; 
+
+	// The menu item we've inserted into the main menu for the main frame
+	private Menu		last_displayModeMenu =	null;
 	
 
 //
@@ -362,10 +365,24 @@ public class TableManager {
 			currentDisplayMode.deactivateDisplay();
 		}
 
+		// now, deactivate the last menu!
+		if(last_displayModeMenu != null) {
+			matrix.getFrame().getMenuBar().remove(last_displayModeMenu);
+			last_displayModeMenu = null;
+		}
+
 		currentDisplayMode = getDisplayMode(mode);
 
 		currentDisplayMode.activateDisplay(table, argument);
 		currentMode = mode;
+
+		// turn on the new menu!
+		Menu menu = currentDisplayMode.getDisplayModeMenu();
+		if(menu != null) {
+			// ugh
+			matrix.getFrame().getMenuBar().add(menu);
+			last_displayModeMenu = menu;
+		}
 		
 		if(currentDisplayMode != null && widths != null)
 			currentDisplayMode.restoreWidths(widths);

@@ -39,6 +39,7 @@ package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.util.*;	// Vectors, Lists and the like
 
+import java.awt.Menu;
 import java.awt.event.*;
 
 import javax.swing.*;
@@ -272,6 +273,22 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 	}
 
 	public void doubleClick(MouseEvent e, int columnIndex, int rowIndex) {
+	}
+
+	/**
+	 * You can set a menu to be displayed in the main menubar when this
+	 * display mode is selected. Don't worry about the details: the
+	 * tableManager will query this either just after or just before 
+	 * activating the display mode. You are responsible for adding any
+	 * actionListeners which need adding. If you return 'null', no
+	 * menu will be created or anything.
+	 *
+	 * Temporary note: Note that we expect a MENU, with a NAME. This
+	 * behavior might change in the future. Apologies.
+	 * 
+	 */
+	public Menu getDisplayModeMenu() {
+		return null;
 	}
 
 // MOUSELISTENER. Don't touch this, or rightClick()/leftClick() mightn't work
