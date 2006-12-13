@@ -202,6 +202,7 @@ public class TableManager {
 	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(colName, sl, complaints, delay);	
 		updateDisplay();
+		resizeColumnToFit(colName);
 	}
 
 	/** 
@@ -218,6 +219,10 @@ public class TableManager {
 	public void addSequenceList(SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(sl, complaints, delay);
 		updateDisplay();
+		// If you really want to resize the new column to fit,
+		// you should rewrite this as a call to addSequencelist(colName, ...).
+		// Which means figuring out a column name, which is something I
+		// really just don't have the patience for right now.
 	}
 
 	public void deleteColumn(String colName) {
