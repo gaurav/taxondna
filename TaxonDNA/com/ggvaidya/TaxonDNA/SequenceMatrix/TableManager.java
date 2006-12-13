@@ -301,13 +301,19 @@ public class TableManager {
 		if(mode == currentMode)
 			return;
 
-		if(currentDisplayMode != null)
+		Hashtable widths = null;
+		if(currentDisplayMode != null) {
+			widths = currentDisplayMode.saveWidths();			
 			currentDisplayMode.deactivateDisplay();
+		}
 
 		currentDisplayMode = getDisplayMode(mode);
 
 		currentDisplayMode.activateDisplay(table, argument);
 		currentMode = mode;
+		
+		if(currentDisplayMode != null && widths != null)
+			currentDisplayMode.restoreWidths(widths);
 	}
 
 	/**
