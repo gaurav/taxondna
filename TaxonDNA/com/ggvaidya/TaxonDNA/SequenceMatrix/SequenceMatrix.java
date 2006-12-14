@@ -446,6 +446,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		tableManager = new TableManager(this, mainTable);
 		mainTable.setModel(tableManager.getTableModel());
+		tableManager.updateDisplay();
 
 		// put the maintable into a scroll pane
 		JScrollPane scrollPane = new JScrollPane(mainTable);
@@ -515,32 +516,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		chmi = new CheckboxMenuItem("As correlations", false);
 		chmi.addItemListener(this);
 		view.add(chmi);
-
-		// Sort sub-menu
-		/*
-		Menu 	sort		=	new Menu("Sort all sequences ");
-
-		chmi = new CheckboxMenuItem("By name", true);
-		chmi.addItemListener(this);
-		sort.add(chmi);
-		last_chmi = chmi;		// primes the clear-the-last-box option
-		chmi = new CheckboxMenuItem("By species epithet", false);
-		chmi.addItemListener(this);
-		sort.add(chmi);
-		chmi = new CheckboxMenuItem("By number of character sets", false);
-		chmi.addItemListener(this);
-		sort.add(chmi);
-		chmi = new CheckboxMenuItem("By total length", false);
-		chmi.addItemListener(this);
-		sort.add(chmi);
-
-		sort.addActionListener(this);
-		view.add(sort);
-
-		chmi = new CheckboxMenuItem("Display pairwise distances", false);
-		chmi.addItemListener(this);
-		view.add(chmi);
-		*/
 
 		view.addActionListener(this);
 		menubar.add(view);
