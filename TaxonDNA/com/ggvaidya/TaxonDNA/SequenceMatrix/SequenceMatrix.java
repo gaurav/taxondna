@@ -440,9 +440,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
 
-		toolBar.setFloatable(false);
-		mainFrame.add(toolBar, BorderLayout.NORTH);
-
 		// main table
 		mainTable = new JTable();
 		mainTable.setColumnSelectionAllowed(true);		// why doesn't this work?
@@ -452,6 +449,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		tableManager = new TableManager(this, mainTable);
 		mainTable.setModel(tableManager.getTableModel());
 		tableManager.updateDisplay();
+		
+		// jtoolbar
+		toolBar.setFloatable(false);
+		tableManager.setJToolBar(toolBar);
+		mainFrame.add(toolBar, BorderLayout.NORTH);
 
 		// put the maintable into a scroll pane
 		JScrollPane scrollPane = new JScrollPane(mainTable);
