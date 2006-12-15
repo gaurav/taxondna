@@ -307,16 +307,16 @@ public class Exporter implements SequencesHandler {
 
 			if(key.equalsIgnoreCase("sequencematrix.colname")) {
 				// ooooooooooh kay .. so how ah?
-				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName", val);
+				seq.setProperty(DataStore.INITIAL_COLNAME_PROPERTY, val);
 
 				return true;
 			} else if(key.equalsIgnoreCase("sequencematrix.seqname")) {
-				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName", val);
+				seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, val);
 
 				return true;
 			} else if(key.equalsIgnoreCase("sequencematrix.cancelled")) {
 				// it's an ugly hack, but it'll do for now
-				seq.setProperty("com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.cancelled", new Object());
+				seq.setProperty(DataStore.CANCELLED_PROPERTY, new Object());
 
 				return true;
 			}
