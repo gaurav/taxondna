@@ -270,9 +270,11 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 //	MouseListener code ... it's not worth the effort, really.
 //
 	public void rightClick(MouseEvent e, int columnIndex, int rowIndex) {
+		tableManager.defaultRightClick(e, columnIndex, rowIndex);
 	}
 
 	public void doubleClick(MouseEvent e, int columnIndex, int rowIndex) {
+		tableManager.defaultDoubleClick(e, columnIndex, rowIndex);
 	}
 
 	/**
