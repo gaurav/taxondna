@@ -244,6 +244,9 @@ public class FileManager implements FormatListener {
 			Sequence seq = (Sequence) i.next();
 			String seqName = seq.getFullName();
 
+			if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
+				continue;
+
 			if(pref_useWhichName == PREF_USE_SPECIES_NAME)
 				seqName = seq.getSpeciesName();
 
