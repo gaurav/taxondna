@@ -407,16 +407,6 @@ public class DisplayDistancesMode extends DisplayMode {
 		return null;
 	}
 
-	/**
-	 * Event: somebody double clicked in the mainTable somewhere
-	 */
-	public void doubleClick(MouseEvent e, int col, int row) {
-		if(row > 0 && col != -1 && col >= additionalColumns) {
-			// it's, like, valid, dude.
-			tableManager.toggleCancelled(getColumnName(col), getRowName(row));
-		}
-	}
-
 	/** For convenience */
 	public boolean identical(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
