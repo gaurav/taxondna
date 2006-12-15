@@ -69,6 +69,11 @@ public class TableManager implements ActionListener {
 	private SequenceMatrix 	matrix	=	null;
 	private JTable		table	=	null;
 
+	// toolbar
+	private JToolBar	toolbar =	null;
+	private JTextField	tf_colName = 	new JTextField(20);
+	private JTextField	tf_seqName = 	new JTextField(20);
+
 	// The DataStore stores information about the sequences. That's it.
 	private DataStore	dataStore =	new DataStore();
 
@@ -272,7 +277,14 @@ public class TableManager implements ActionListener {
 	}
 	
 	public java.util.List getColumns() {
-	       return (java.util.List) sortedColumns;
+		java.util.List list = new Vector(sortedColumns);
+
+		for(int x = 0; x < currentDisplayMode.additionalColumns; x++) {
+			System.err.println("Removing " + list.get(0));
+			list.remove(0);
+		}
+
+	       return (java.util.List) list;
 	}
 
 	public java.util.List getSequences() {
@@ -442,6 +454,58 @@ public class TableManager implements ActionListener {
 //
 // USER INTERFACE CODE
 //
+	public void setJToolBar(JToolBar toolBar) {
+		this.toolbar = toolBar;
+
+		// now, we set up the fields and a button
+		// we have a single function which sets the whole scheboodle,
+		// and we use setActionCommand() to make sure these
+		// buttons generate the same events, etc.
+		tf_colName.setEditable(false);
+		toolbar.add(tf_colName);
+
+		JButton btn = null;
+
+		btn = new JButton("Delete column");
+		btn.addActionListener(this);
+		//////////////////////////////////////////////////////
+		toolbar.add(btn);
+
+		toolbar.add(new JButton("Do PDM"));
+		
+		tf_seqName.setEditable(false);
+		toolbar.add(tf_seqName);
+
+		toolbar.add(new JButton("Delete taxon"));
+		toolbar.add(new JButton("Cancel entire taxon"));
+		setToolbarStatus("", "");
+
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				int colIndex = table.columnAtPoint(e.getPoint());
+				int rowIndex = table.rowAtPoint(e.getPoint());
+
+				String colName = (String) table.getColumnName(colIndex);
+				String seqName = (String) table.getValueAt(rowIndex, 0);
+
+				if(colName == null)	colName = "";
+				if(seqName == null)	seqName = "";
+
+				setToolbarStatus(colName, seqName);
+			}	
+		});
+	}
+
+	public void setToolbarStatus(String colName, String seqName) {
+		if(colName != null) {
+			tf_colName.setText(colName);
+		}
+
+		if(seqName != null) {
+			tf_seqName.setText(seqName);
+		}
+	}
+
 	public void defaultRightClick(MouseEvent e, int col, int row) {
 //		popupMenu.show((Component)e.getSource(), e.getX(), e.getY());
 		String colName = currentDisplayMode.getColumnName(col);
@@ -499,6 +563,7 @@ public class TableManager implements ActionListener {
 	public void defaultDoubleClick(MouseEvent e, int col, int row) {
 		if(row > 0 && col != -1 && col >= currentDisplayMode.additionalColumns) {
 			// it's, like, valid, dude.
+			System.err.println("Toggling " + col + ":" + row);
 			toggleCancelled(currentDisplayMode.getColumnName(col), currentDisplayMode.getRowName(row));
 		}
 	}
