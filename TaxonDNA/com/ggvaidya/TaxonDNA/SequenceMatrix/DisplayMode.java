@@ -312,10 +312,6 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 			if(e.getSource().equals(table.getTableHeader()))
 				popup = true;
 			
-			// hack: a triple click becomes a right click
-			if(e.getClickCount() == 3)
-				popup = true;
-
 			// check for right clicks
 			if(popup)
 				rightClick(e, colIndex, rowIndex);
