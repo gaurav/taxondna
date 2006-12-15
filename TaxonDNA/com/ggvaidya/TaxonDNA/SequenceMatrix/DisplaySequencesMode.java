@@ -282,7 +282,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	 * Event: somebody double clicked in the mainTable somewhere
 	 */
 	public void doubleClick(MouseEvent e, int col, int row) {
-		super.rightClick(e, col, row);
+		super.doubleClick(e, col, row);
 	}	
 
 	public Menu getDisplayModeMenu() {
