@@ -78,6 +78,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// analyses
 	private FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
+	private JToolBar	toolBar			= new JToolBar();
+
 //
 //	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
 //		As usual, you can just create a new SequenceMatrix to 'do everything'.
@@ -88,7 +90,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 *
 	 */
 	public static void main(String[] args) {
-		Sequence.setMinOverlap(1);	// even a single overlap is okay
 		new SequenceMatrix( Arrays.asList(args) );
 	}
 	
@@ -105,6 +106,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * @param files A vector of files to load in.
 	 */
 	public SequenceMatrix(Collection files) {
+		Sequence.setMinOverlap(1);	// even a single overlap is okay
 		createUI();			// create our user interface
 
 		// now load up all the files
@@ -437,6 +439,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		mainFrame.setLayout(new BorderLayout());
 		mainFrame.setMenuBar(createMenuBar());
 		mainFrame.setBackground(SystemColor.control);
+
+		toolBar.setFloatable(false);
+		mainFrame.add(toolBar, BorderLayout.NORTH);
 
 		// main table
 		mainTable = new JTable();
