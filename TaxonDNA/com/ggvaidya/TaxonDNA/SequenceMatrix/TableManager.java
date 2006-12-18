@@ -147,14 +147,22 @@ public class TableManager implements ActionListener {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
-			resizeColumnToFit(colName);
+			resizeColumnToFit(colName, false);
 		}
+	}
+
+	/**
+	 * Resizes column 'x' to fit the widest entry, allowing shrinking to
+	 * occur. Java, meet default arguments. Default arguments, meet Java.
+	 */
+	public void resizeColumnToFit(String x) {
+		resizeColumnToFit(x, true);
 	}
 
 	/**
 	 * Resizes column 'x' to fit the widest entry.
 	 */
-	public void resizeColumnToFit(String x) {
+	public void resizeColumnToFit(String x, boolean shrinkAllowed) {
 		TableColumnModel tcm = table.getColumnModel();
 		if(tcm == null)
 			return;		// it could happen
@@ -195,6 +203,11 @@ public class TableManager implements ActionListener {
 				maxLength = length;
 		}
 
+		if(!shrinkAllowed) {
+			if(maxLength < tc.getPreferredWidth())
+				return;				// dont shrink it!
+		}
+
 		if(maxLength > 0)
 			tc.setPreferredWidth(maxLength + 10);	// The '10' is for the margins
 	}
@@ -210,7 +223,7 @@ public class TableManager implements ActionListener {
 	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(colName, sl, complaints, delay);	
 		updateDisplay();
-		resizeColumnToFit(colName);
+		resizeColumns();
 	}
 
 	/** 
@@ -277,6 +290,10 @@ public class TableManager implements ActionListener {
 	}
 	
 	public java.util.List getColumns() {
+		return (java.util.List) sortedColumns;
+	}
+
+	public java.util.List getCharsets() {
 		java.util.List list = new Vector(sortedColumns);
 
 		for(int x = 0; x < currentDisplayMode.additionalColumns; x++) {
@@ -561,6 +578,7 @@ public class TableManager implements ActionListener {
 	}
 
 	public void defaultDoubleClick(MouseEvent e, int col, int row) {
+		System.err.println("doubleClick: " + e);
 		if(row > 0 && col != -1 && col >= currentDisplayMode.additionalColumns) {
 			// it's, like, valid, dude.
 			System.err.println("Toggling " + col + ":" + row);
