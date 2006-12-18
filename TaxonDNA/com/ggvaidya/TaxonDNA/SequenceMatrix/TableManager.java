@@ -70,9 +70,7 @@ public class TableManager implements ActionListener {
 	private JTable		table	=	null;
 
 	// toolbar
-	private JToolBar	toolbar =	null;
-	private JTextField	tf_colName = 	new JTextField(20);
-	private JTextField	tf_seqName = 	new JTextField(20);
+	ToolbarManager		toolbarManager =	new ToolbarManager(this);
 
 	// The DataStore stores information about the sequences. That's it.
 	private DataStore	dataStore =	new DataStore();
@@ -84,7 +82,6 @@ public class TableManager implements ActionListener {
 										// stores instances of the DisplayModes 
 										// so we don't have to keep creating
 										// them
-
 	// Our sequences
 	private java.util.List	sortedColumns = 	null;
 	private java.util.List	sortedSequences =	null;
@@ -250,14 +247,49 @@ public class TableManager implements ActionListener {
 		// really just don't have the patience for right now.
 	}
 
+	public boolean warned(String title, String msg) {
+		MessageBox mb = new MessageBox(
+				matrix.getFrame(),
+				title,
+				msg,
+				MessageBox.MB_YESNOTOALL |
+				MessageBox.MB_TITLE_IS_UNIQUE);
+
+		if(mb.showMessageBox() == MessageBox.MB_YES)
+			return true;
+
+		return false;
+	}
+
 	public void deleteColumn(String colName) {
-		dataStore.deleteColumn(colName);
-		updateDisplay();
+		if(warned("Delete this column?", "Are you sure you wish to delete column '" + colName + "'?")) {
+			dataStore.deleteColumn(colName);
+			updateDisplay();
+		}
 	}
 
 	public void deleteRow(String seqName) {
-		dataStore.deleteRow(seqName);
-		updateDisplay();
+		if(warned("Delete this row?", "Are you sure you wish to delete sequence '" + seqName + "'?")) {
+			dataStore.deleteRow(seqName);
+			updateDisplay();
+		}
+	}
+
+	public void cancelRow(String seqName) {
+		boolean changed = false;
+		
+		Iterator i = getCharsets().iterator();	
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+
+			if(!dataStore.isSequenceCancelled(colName, seqName)) {
+				dataStore.toggleCancelled(colName, seqName);
+				changed = true;
+			}
+		}
+
+		if(changed)
+			updateDisplay();
 	}
 
 	public void toggleCancelled(String colName, String seqName) {
@@ -474,55 +506,7 @@ public class TableManager implements ActionListener {
 // USER INTERFACE CODE
 //
 	public void setJToolBar(JToolBar toolBar) {
-		this.toolbar = toolBar;
-
-		// now, we set up the fields and a button
-		// we have a single function which sets the whole scheboodle,
-		// and we use setActionCommand() to make sure these
-		// buttons generate the same events, etc.
-		tf_colName.setEditable(false);
-		toolbar.add(tf_colName);
-
-		JButton btn = null;
-
-		btn = new JButton("Delete column");
-		btn.addActionListener(this);
-		//////////////////////////////////////////////////////
-		toolbar.add(btn);
-
-		toolbar.add(new JButton("Do PDM"));
-		
-		tf_seqName.setEditable(false);
-		toolbar.add(tf_seqName);
-
-		toolbar.add(new JButton("Delete taxon"));
-		toolbar.add(new JButton("Cancel entire taxon"));
-		setToolbarStatus("", "");
-
-		table.addMouseListener(new MouseAdapter() {
-			public void mouseClicked(MouseEvent e) {
-				int colIndex = table.columnAtPoint(e.getPoint());
-				int rowIndex = table.rowAtPoint(e.getPoint());
-
-				String colName = (String) table.getColumnName(colIndex);
-				String seqName = (String) table.getValueAt(rowIndex, 0);
-
-				if(colName == null)	colName = "";
-				if(seqName == null)	seqName = "";
-
-				setToolbarStatus(colName, seqName);
-			}	
-		});
-	}
-
-	public void setToolbarStatus(String colName, String seqName) {
-		if(colName != null) {
-			tf_colName.setText(colName);
-		}
-
-		if(seqName != null) {
-			tf_seqName.setText(seqName);
-		}
+		toolbarManager.setToolbar(toolBar, table);
 	}
 
 	public void defaultRightClick(MouseEvent e, int col, int row) {
@@ -580,10 +564,8 @@ public class TableManager implements ActionListener {
 	}
 
 	public void defaultDoubleClick(MouseEvent e, int col, int row) {
-		System.err.println("doubleClick: " + e);
 		if(row > 0 && col != -1 && col >= currentDisplayMode.additionalColumns) {
 			// it's, like, valid, dude.
-			System.err.println("Toggling " + col + ":" + row);
 			toggleCancelled(currentDisplayMode.getColumnName(col), currentDisplayMode.getRowName(row));
 		}
 	}
@@ -622,8 +604,6 @@ public class TableManager implements ActionListener {
 		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
 			String colName = cmd.substring(7);
 
-			System.err.println("DO_PDM activated: " + colName);
-
 			changeDisplayMode(TableManager.DISPLAY_DISTANCES, colName);
 		}
 
@@ -645,4 +625,124 @@ public class TableManager implements ActionListener {
 				setReferenceSequence(seqName);
 		}
 	}	
+}
+
+class ToolbarManager implements ActionListener {
+	private TableManager	tm 	=	null;
+	private JTable		table 	=	null;
+		
+	private JToolBar	toolbar    =	null;
+	private JTextField	tf_colName = 	new JTextField(20);
+	private JTextField	tf_seqName = 	new JTextField(20);
+
+	public ToolbarManager(TableManager tm) {
+		this.tm = tm;
+	}
+
+	public void setToolbar(JToolBar toolBar, JTable table) {
+		toolbar = toolBar;
+		this.table = table;
+		initToolbar();
+	}
+
+	public void initToolbar() {
+		// now, we set up the fields and a button
+		// we have a single function which sets the whole scheboodle,
+		// and we use setActionCommand() to make sure these
+		// buttons generate the same events, etc.
+		tf_colName.setEditable(false);
+		toolbar.add(tf_colName);
+
+		JButton btn = null;
+
+		btn = new JButton("Delete column");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+
+		btn = new JButton("Do PDM");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+		
+		tf_seqName.setEditable(false);
+		toolbar.add(tf_seqName);
+
+		btn = new JButton("Delete taxon");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+
+		btn = new JButton("Cancel entire taxon");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+		setToolbarStatus("", "");
+
+		table.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				int colIndex = table.columnAtPoint(e.getPoint());
+				int rowIndex = table.rowAtPoint(e.getPoint());
+
+				String colName = (String) table.getColumnName(colIndex);
+				String seqName = (String) table.getValueAt(rowIndex, 0);
+
+				if(colName == null)	colName = "";
+				if(seqName == null)	seqName = "";
+
+				setToolbarStatus(colName, seqName);
+			}	
+		});
+	}
+
+	private String	currentColName =	null;
+	private String	currentCharsetName =	null;
+	private String	currentSeqName =	null;
+
+	public void setToolbarStatus(String colName, String seqName) {
+		if(colName != null && !colName.equals("")) {
+			tf_colName.setText(colName);
+
+			currentColName = colName;	
+			if(tm.getCharsets().contains(colName)) {
+				// it's a character set
+				currentCharsetName = colName;		
+			} else {
+				// it's an 'additional column'
+				currentCharsetName = null;
+			}
+		} else {
+			currentCharsetName = null;
+			currentColName = null;
+		}
+
+		if(seqName != null && !seqName.equals("")) {
+			tf_seqName.setText(seqName);
+			currentSeqName = seqName;
+		} else {
+			currentSeqName = null;
+		}
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		String cmd = e.getActionCommand();
+
+		if(cmd.equals("Delete column")) {
+			if(currentCharsetName != null)
+				tm.deleteColumn(currentCharsetName);
+		}
+
+		if(cmd.equals("Do PDM")) {
+			if(currentCharsetName != null)
+				tm.changeDisplayMode(TableManager.DISPLAY_DISTANCES, currentCharsetName);
+		}
+
+		if(cmd.equals("Delete taxon")) {
+			if(currentSeqName != null)
+				tm.deleteRow(currentSeqName);
+			
+			// TODO: Use table.changeSelection() to move to the next row
+		}
+
+		if(cmd.equals("Cancel entire taxon")) {
+			if(currentSeqName != null)
+				tm.cancelRow(currentSeqName);
+		}
+	}
 }
