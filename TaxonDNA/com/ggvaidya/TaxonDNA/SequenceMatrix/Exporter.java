@@ -102,8 +102,8 @@ public class Exporter implements SequencesHandler {
 			delay.begin();
 
 		Vector vec_sequences = new Vector( (Collection) tm.getSequences());
-		int count_columns = tm.getColumns().size();
-		Iterator i = tm.getColumns().iterator();
+		int count_columns = tm.getCharsets().size();
+		Iterator i = tm.getCharsets().iterator();
 
 		int count = 0;
 		while(i.hasNext()) {
@@ -178,7 +178,7 @@ public class Exporter implements SequencesHandler {
 	public String getTaxonset(String name, int offset) {
 		StringBuffer buff = new StringBuffer();
 		TableManager tm = matrix.getTableManager();
-		List columns = tm.getColumns();
+		List columns = tm.getCharsets();
 		List sequences = tm.getSequences();
 
 		// 1. Figure out what is being talked about here
@@ -256,7 +256,7 @@ public class Exporter implements SequencesHandler {
 		writer.println("#sequences (nucleotide sequencematrix)");
 		writer.println();
 
-		List colNames = tm.getColumns();
+		List colNames = tm.getCharsets();
 		List seqNames = tm.getSequences();
 
 		Iterator i_cols = colNames.iterator();
@@ -418,13 +418,13 @@ public class Exporter implements SequencesHandler {
 
 		// Calculate the SETS blocks, with suitable widths etc.	
 		int widthThusFar = 0;
-		Iterator i = tm.getColumns().iterator();
+		Iterator i = tm.getCharsets().iterator();
 
 		countThisLoop = 0;
 		while(i.hasNext()) {
 			countThisLoop++;
 			if(delay != null)
-				delay.delay(countThisLoop, tm.getColumns().size());
+				delay.delay(countThisLoop, tm.getCharsets().size());
 
 			String columnName = (String)i.next();
 
@@ -470,12 +470,12 @@ public class Exporter implements SequencesHandler {
 		//
 		if(how == Preferences.PREF_NEXUS_BLOCKS) {
 			// loop over column names
-			Iterator i_cols = tm.getColumns().iterator();
+			Iterator i_cols = tm.getCharsets().iterator();
 
 			countThisLoop = 0;
 			while(i_cols.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, tm.getColumns().size());
+					delay.delay(countThisLoop, tm.getCharsets().size());
 				countThisLoop++;
 
 				String colName = (String) i_cols.next();
@@ -519,7 +519,7 @@ public class Exporter implements SequencesHandler {
 				else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
 					seq_interleaved = new Sequence();
 
-				Iterator i_cols = tm.getColumns().iterator();
+				Iterator i_cols = tm.getCharsets().iterator();
 				while(i_cols.hasNext()) {
 					String colName = (String) i_cols.next();
 					Sequence seq = tm.getSequence(colName, seqName);
@@ -637,12 +637,12 @@ public class Exporter implements SequencesHandler {
 		}
 		
 		// set up the 'sets' buffer
-		List cols = tm.getColumns();
+		List cols = tm.getCharsets();
 		if(cols.size() >= 32) {
 			new MessageBox(
 					matrix.getFrame(),
 					"Too many character sets!",
-					"According to the manual, TNT can only handle 32 character sets. You have " + tm.getColumns().size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
+					"According to the manual, TNT can only handle 32 character sets. You have " + cols.size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
 
 		}
 		
