@@ -105,7 +105,6 @@ public class TableManager implements ActionListener {
 		this.table = jTable;
 
 		changeDisplayMode(DISPLAY_SEQUENCES, null);
-		resizeColumns();
 	}
 
 //
@@ -161,6 +160,8 @@ public class TableManager implements ActionListener {
 
 	/**
 	 * Resizes column 'x' to fit the widest entry.
+	 *
+	 * @param shrinkAllowed Is shrinking of columns allowed?
 	 */
 	public void resizeColumnToFit(String x, boolean shrinkAllowed) {
 		TableColumnModel tcm = table.getColumnModel();
@@ -223,7 +224,6 @@ public class TableManager implements ActionListener {
 	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) {
 		dataStore.addSequenceList(colName, sl, complaints, delay);	
 		updateDisplay();
-		resizeColumns();
 	}
 
 	/** 
@@ -385,9 +385,9 @@ public class TableManager implements ActionListener {
 	 * straight on to the display mode object.
 	 */
 	public void changeDisplayMode(int mode, Object argument) {
-		Hashtable widths = null;
+//		Hashtable widths = null;
 		if(currentDisplayMode != null) {
-			widths = currentDisplayMode.saveWidths();			
+//			widths = currentDisplayMode.saveWidths();			
 			currentDisplayMode.deactivateDisplay();
 		}
 
@@ -412,8 +412,8 @@ public class TableManager implements ActionListener {
 
 		updateDisplay();	// fire!
 		
-		if(currentDisplayMode != null && widths != null)
-			currentDisplayMode.restoreWidths(widths);
+//		if(currentDisplayMode != null && widths != null)
+//			currentDisplayMode.restoreWidths(widths);
 	}
 
 	/**
@@ -455,6 +455,8 @@ public class TableManager implements ActionListener {
 		Hashtable widths = currentDisplayMode.saveWidths();
 		currentDisplayMode.updateDisplay();
 		currentDisplayMode.restoreWidths(widths);
+
+		resizeColumns();
 	}
 
 //
