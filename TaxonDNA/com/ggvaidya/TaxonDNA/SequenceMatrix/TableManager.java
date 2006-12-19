@@ -68,6 +68,7 @@ public class TableManager implements ActionListener {
 	// also: the table we are managing
 	private SequenceMatrix 	matrix	=	null;
 	private JTable		table	=	null;
+	private JTextField	tf_statusBar = 	new JTextField();
 
 	// toolbar
 	ToolbarManager		toolbarManager =	new ToolbarManager(this);
@@ -84,6 +85,7 @@ public class TableManager implements ActionListener {
 										// them
 	// Our sequences
 	private java.util.List	sortedColumns = 	null;
+	private java.util.List	sortedCharsets =	null;
 	private java.util.List	sortedSequences =	null;
 
 	// Our 'state'
@@ -326,14 +328,14 @@ public class TableManager implements ActionListener {
 	}
 
 	public java.util.List getCharsets() {
-		java.util.List list = new Vector(sortedColumns);
+		if(sortedCharsets == null) {
+			sortedCharsets = new Vector(sortedColumns);
 
-		for(int x = 0; x < currentDisplayMode.additionalColumns; x++) {
-			System.err.println("Removing " + list.get(0));
-			list.remove(0);
+			for(int x = 0; x < currentDisplayMode.additionalColumns; x++) {
+				sortedCharsets.remove(0);
+			}
 		}
-
-	       return (java.util.List) list;
+		return sortedCharsets;
 	}
 
 	public java.util.List getSequences() {
@@ -472,6 +474,7 @@ public class TableManager implements ActionListener {
 		}
 
 		sortedColumns = dm.getSortedColumns(dataStore.getColumns());
+		sortedCharsets = null;
 		sortedSequences = dm.getSortedSequences(dataStore.getSequences());
 
 		return dm;
@@ -482,6 +485,7 @@ public class TableManager implements ActionListener {
 	 */ 
 	public void updateDisplay() {
 		sortedColumns = currentDisplayMode.getSortedColumns(dataStore.getColumns());
+		sortedCharsets = null;
 		sortedSequences = currentDisplayMode.getSortedSequences(dataStore.getSequences());
 
 		Hashtable widths = currentDisplayMode.saveWidths();
@@ -489,12 +493,13 @@ public class TableManager implements ActionListener {
 		currentDisplayMode.restoreWidths(widths);
 
 		resizeColumns();
+		updateStatusBar();
 	}
 
 //
 // X.	HACKS. These might have to go eventually
 //
-	public int getCancelledSequencesCount() {
+	public int countCancelledSequences() {
 		return dataStore.getCancelledSequencesCount();
 	}
 
@@ -505,8 +510,38 @@ public class TableManager implements ActionListener {
 //
 // USER INTERFACE CODE
 //
-	public void setJToolBar(JToolBar toolBar) {
+	public JToolBar getToolbar() {
+		JToolBar toolBar = new JToolBar();
+		toolBar.setFloatable(false);
 		toolbarManager.setToolbar(toolBar, table);
+		return toolBar;
+	}
+
+	public JPanel getStatusBar() {
+		JPanel statusbar = new JPanel();
+
+		statusbar.setLayout(new BorderLayout());
+		statusbar.add(tf_statusBar);
+
+		tf_statusBar.setFont(new Font("SansSerif", Font.PLAIN, 12));
+
+		return statusbar;
+	}
+
+	public void updateStatusBar() {
+		StringBuffer buff = new StringBuffer("  ");	// start with a bit of space
+
+		int charsets = getCharsets().size();
+		if(charsets == 0) {
+			buff.append("No sequences loaded.");
+		} else {
+			buff.append(sortedSequences.size() + " sequences across " + charsets + " character sets. " + countCancelledSequences() + " cancelled sequences.");
+		}
+
+		buff.append(' ');
+		if(currentDisplayMode != null)
+			currentDisplayMode.setStatusBar(buff);
+		tf_statusBar.setText(buff.toString());
 	}
 
 	public void defaultRightClick(MouseEvent e, int col, int row) {
@@ -547,11 +582,11 @@ public class TableManager implements ActionListener {
 			String outgroupName = getReferenceSequence();
 
 			if(outgroupName != null && rowName.equals(outgroupName)) {
-				MenuItem makeOutgroup = new MenuItem("Unset this row as the outgroup");
+				MenuItem makeOutgroup = new MenuItem("Unset this row as the reference taxon");
 				makeOutgroup.setActionCommand("MAKE_OUTGROUP:");
 				pm.add(makeOutgroup);
 			} else {
-				MenuItem makeOutgroup = new MenuItem("Make this row the outgroup");
+				MenuItem makeOutgroup = new MenuItem("Make this row the reference taxon");
 				makeOutgroup.setActionCommand("MAKE_OUTGROUP:" + rowName);
 				pm.add(makeOutgroup);
 			}
@@ -627,6 +662,12 @@ public class TableManager implements ActionListener {
 	}	
 }
 
+/**
+ * Manages the Toolbar.
+ *
+ * TODO: Wire this into the Table's selection interfaces rather than
+ * into the MouseListener.			
+ */
 class ToolbarManager implements ActionListener {
 	private TableManager	tm 	=	null;
 	private JTable		table 	=	null;
@@ -694,6 +735,10 @@ class ToolbarManager implements ActionListener {
 	private String	currentColName =	null;
 	private String	currentCharsetName =	null;
 	private String	currentSeqName =	null;
+
+	public void clearToolbarStatus() {
+		setToolbarStatus("", "");
+	}
 
 	public void setToolbarStatus(String colName, String seqName) {
 		if(colName != null && !colName.equals("")) {
