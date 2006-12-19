@@ -374,9 +374,9 @@ public class DisplayDistancesMode extends DisplayMode {
 		if(dist >= 0) {
 			return ndist + "% #" + rank+ " (" + percentage(dist, 1.0) + "%)";
 		} else if(dist == DIST_ILLEGAL) {
-			return "(N/A - SUPERbug)";
-		} else if(dist == DIST_NO_COMPARE_SEQ) {
 			return "(N/A - bug)";
+		} else if(dist == DIST_NO_COMPARE_SEQ) {
+			return "(N/A - charset missing)";
 		} else if(dist == DIST_SEQ_NA) {
 			return "(N/A)";
 		} else if(dist == DIST_NO_OVERLAP) {
