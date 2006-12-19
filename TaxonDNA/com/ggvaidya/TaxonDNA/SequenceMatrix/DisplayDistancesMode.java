@@ -407,6 +407,144 @@ public class DisplayDistancesMode extends DisplayMode {
 		return null;
 	}
 
+	public void setStatusBar(StringBuffer buff) {
+		double r2 = getAverageR();
+		if(r2 > -1) {
+			buff.append("Average intercolumn correlation coefficient = " + r2 + ".");
+		}
+	}
+
+//
+// MATHEMATICS BACKING THE CORRELATION CALCULATIONS
+//
+	double[][] correlations = null;
+	/**
+	 * Calculates and returns the correlation between two columns;
+	 * in this case indicated by indices into the arrays used by
+	 * us.
+	 */
+	public double getCorrelation(int x, int y) {
+		// only do a half-rectangle (a triangle)
+		if(x == y)
+			return 1.0;		// identical columns are perfectly correlated
+
+		if(x > y)
+			return getCorrelation(y, x);		// only do a triangle
+
+		if(correlations == null) {
+			int N = sortedColumns.size() - additionalColumns;
+
+			correlations = new double[N][N];
+
+			for(int c = 0; c < N; c++)
+				Arrays.fill(correlations[c], -1.0);
+		}
+
+		//
+		// 1.	walk pairwise along the column. 
+		//
+		// 	For every valid match:
+		// 	1.	increment N
+		// 	2.	sum += x
+		// 	3.	sum_2 += (x * x)
+		// 	etc.
+		// ?
+		//
+		if(distances == null)
+			return -1.0;
+
+		int n = 0;
+
+		double sum_x = 0;
+		double sum_y = 0;
+
+		double sum_x2 = 0;
+		double sum_y2 = 0;
+
+		double sum_xy = 0;
+
+		if(distances[x][0] != DIST_SEQ_ON_TOP || distances[y][0] != DIST_SEQ_ON_TOP)
+			return -2;	// error
+
+		for(int c = 1; c < sortedSequences.size(); c++) {
+			double d_x = distances[x][c];
+			double d_y = distances[y][c];
+
+			if(d_x < 0 || d_y < 0)
+				continue;
+
+			// valid!
+			n++;
+
+			sum_x += d_x;
+			sum_x2 += (d_x * d_x);
+
+			sum_y += d_y;
+			sum_y2 += (d_y * d_y);
+
+			sum_xy += (d_x * d_y);
+		}
+
+		double variable_x = (n * sum_x2) - (sum_x * sum_x);
+		double variable_y = (n * sum_y2) - (sum_y * sum_y);		
+
+		// since these cases mean that there is inadequate information
+		// for a match (too many N/A sequences, basically) this is
+		// logically the same as there being no correlation between
+		// this pair of numbers
+		if(variable_x <= 0)
+			return 0.0;
+
+		if(variable_y <= 0)
+			return 0.0;
+
+		double r = (
+				((double)n * sum_xy) - (sum_x * sum_y)
+			) 
+			/ 
+			(
+			 	Math.sqrt(
+					variable_x
+				) 
+				*
+				Math.sqrt(
+					variable_y
+				)
+			);
+
+		correlations[x][y] = r;
+
+		return r;
+	}
+
+	public double getAverageR() {
+		int N = sortedColumns.size() - additionalColumns;
+
+		double dist[][] = dist = (double[][]) distances.clone();
+		double R_iy[] = new double[N - 1];
+		double R_ii[][] = new double[N - 1][N - 1];
+		double total = 0;
+		long n = 0;
+
+		for(int y = 0; y < N; y++) {
+			for(int x = 0; x < N; x++) {
+				if(y < x)
+					continue;
+
+				double c = getCorrelation(y, x);
+				if(c < -1)		// error
+					continue;
+				total += c;
+				n++;
+			}
+		}
+
+		if(n == 0)
+			return -1;
+
+		return (total / (double)n);
+	}
+
 	/** For convenience */
 	public boolean identical(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
