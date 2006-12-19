@@ -78,7 +78,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// analyses
 	private FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
-	private JToolBar	toolBar			= new JToolBar();
+	private JToolBar	toolBar			= null;
+	private JPanel		statusBar		= null;
 
 //
 //	1.	ENTRYPOINT. The entrypoint is where the entire SequenceMatrix system starts up.
@@ -451,9 +452,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		tableManager.updateDisplay();
 		
 		// jtoolbar
-		toolBar.setFloatable(false);
-		tableManager.setJToolBar(toolBar);
+		toolBar = tableManager.getToolbar();
 		mainFrame.add(toolBar, BorderLayout.NORTH);
+
+		// status bar
+		statusBar = tableManager.getStatusBar();
+		mainFrame.add(statusBar, BorderLayout.SOUTH);
 
 		// put the maintable into a scroll pane
 		JScrollPane scrollPane = new JScrollPane(mainTable);
