@@ -277,6 +277,13 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 		tableManager.defaultDoubleClick(e, columnIndex, rowIndex);
 	}
 
+//
+// 	USER INTERFACE: STATUS BAR. 
+//
+	public void setStatusBar(StringBuffer buff) {
+		buff.append("Currently in " + this.getClass());
+	}
+
 	/**
 	 * You can set a menu to be displayed in the main menubar when this
 	 * display mode is selected. Don't worry about the details: the
