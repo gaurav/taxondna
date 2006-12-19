@@ -535,7 +535,10 @@ public class TableManager implements ActionListener {
 		if(charsets == 0) {
 			buff.append("No sequences loaded.");
 		} else {
-			buff.append(sortedSequences.size() + " sequences across " + charsets + " character sets. " + countCancelledSequences() + " cancelled sequences.");
+			buff.append(sortedSequences.size() + " sequences across " + charsets + " character sets.");
+			int cancelled = countCancelledSequences();
+			if(cancelled > 0)
+				buff.append(" " + cancelled + " cancelled sequences.");
 		}
 
 		buff.append(' ');

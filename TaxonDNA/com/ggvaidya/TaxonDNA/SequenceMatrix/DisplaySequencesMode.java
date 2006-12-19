@@ -56,6 +56,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	private CheckboxMenuItem	chmi_length = null;
 
 	private Comparator 		currentComparator = new SortByName();
+	private String			sortBy = "name";
 
 //
 // INNER CLASSES
@@ -329,14 +330,28 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 
 		// just in case
 		currentComparator = new SortByName();
-		if(chmi.equals(chmi_species))
+		sortBy = "name";
+		if(chmi.equals(chmi_species)) {
 			currentComparator = new SortBySecondName();
-		if(chmi.equals(chmi_charsets))
+			sortBy = "species epithet";
+		}
+		if(chmi.equals(chmi_charsets)) {
 			currentComparator = new SortByCharsets(tableManager);
-		if(chmi.equals(chmi_length))
+			sortBy = "number of charsets";
+		}
+		if(chmi.equals(chmi_length)) {
 			currentComparator = new SortByTotalActualLength(tableManager);
+			sortBy = "total length";
+		}
 
 		tableManager.updateDisplay();
+	}
+
+	public void setStatusBar(StringBuffer buff) {
+		if(sortBy == null)
+			return;
+
+		buff.append("Sorted by " + sortBy + ".");
 	}
 
 
