@@ -444,6 +444,14 @@ public class TableManager implements ActionListener {
 			last_displayModeMenu = menu;
 		}
 
+		JPanel p = currentDisplayMode.getAdditionalPanel();
+		if(p != null) {
+			JFrame frame = new JFrame("Additional panel");
+			frame.add(p);
+			frame.pack();
+			frame.setVisible(true);
+		}
+
 		updateDisplay();	// fire!
 		
 //		if(currentDisplayMode != null && widths != null)

@@ -1,8 +1,7 @@
 /**
  * This is a DisplayMode which displays the sequences (as returned by dataStore) by
- * their pairwise distances. This is actually pretty complicated, so we'll be
- * talking to Prefs and to the use to figure out how to work this. Atleast now
- * we're in a class by ourselves, so it should be a bit easier to work with.
+ * their correlations. This is VERY complicated to display, so here's to hoping
+ * we Get It Right.
  */
 
 /*
@@ -48,7 +47,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayCorrelationsMode extends DisplayMode { 
+public class DisplayCorrelationsMode extends DisplayMode implements ListSelectionListener { 
 	public static final int	SELECTED_COLUMN		=	3;		// change this if the no of additionalColumns increase!
 	private String		selected_colName	=	null;		// the colName who is leftmost
 
@@ -142,6 +141,9 @@ public class DisplayCorrelationsMode extends DisplayMode {
 	public List getSortedColumns(Set colNames) {
 		Vector v = new Vector(colNames);
 		Collections.sort(v);
+
+		// set list_genes to be a list of all the genes we've got
+		list_genes.setListData(v);
 
 		v.add(0, "Sequence name");
 		v.add(1, "Total score");
@@ -426,6 +428,53 @@ public class DisplayCorrelationsMode extends DisplayMode {
 			testCorrelation();
 		}
 	}
+	
+//
+// CORRELATION-SPECIFIC UI
+//
+	private JList		list_genes =		new JList();
+	private JList		list_sequences =	new JList();
+	private Hashtable	ht_matches =		new Hashtable();	// Hash String(geneName) -> Vector[String](descriptions)
+
+	public JPanel getAdditionalPanel() {
+		JPanel p = new JPanel();
+		p.setLayout(new java.awt.BorderLayout());
+
+		list_genes.addListSelectionListener(this);
+		list_sequences.addListSelectionListener(this);
+
+		p.add(new JScrollPane(list_genes), java.awt.BorderLayout.WEST);
+		p.add(new JScrollPane(list_sequences));
+
+		return p;
+	}
+
+	public void setStatusBar(StringBuffer buff) {
+		double r2 = getAverageR();
+		if(r2 > -1) {
+			buff.append("Average intercolumn correlation coefficient = " + r2 + ".");
+		}
+	}
+	
+	/** 
+	 * This (if you'll believe it!) is the callback used by the
+	 * lists to let us know what was selected.
+	 */
+	public void valueChanged(ListSelectionEvent e) {
+		if(e.getSource().equals(list_genes)) {
+			// genes changed - update list_sequences 
+			int index = e.getFirstIndex();
+
+			if(index < 0)
+				return;
+
+			String colName = getColumnName(index + additionalColumns);
+
+			if(ht_matches.get(colName) != null) {
+				list_sequences.setListData((Vector) ht_matches.get(colName));
+			}
+		}
+	}
 
 //
 // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
@@ -565,7 +614,7 @@ public class DisplayCorrelationsMode extends DisplayMode {
 		return r;
 	}
 
-	public double getRSquared() {
+	public double getAverageR() {
 		int N = sortedColumns.size() - additionalColumns;
 
 		double dist[][] = dist = (double[][]) distances.clone();
@@ -599,7 +648,7 @@ public class DisplayCorrelationsMode extends DisplayMode {
 		// 1. 	cancel every single sequence, one by one (note that this actually means
 		// 	we UNCANCEL sequences which are already cancelled, which does kinda sorta
 		// 	make something of a logical sense to me).
-		// 2.	we calculate the getRSquared() for the entire dataset as a whole, storing
+		// 2.	we calculate the getAverageR() for the entire dataset as a whole, storing
 		// 	the initial, final and difference.
 		// 3.	we sort them by difference (we can actually use Score to do this!)
 
@@ -628,7 +677,7 @@ public class DisplayCorrelationsMode extends DisplayMode {
 			override_reference_sequence = seqName_z;
 			getSortedSequences(sequencesSet);	// we don't need it, just the tables
 		
-			r2_initial = 	getRSquared();
+			r2_initial = 	getAverageR();
 
 			for(int y = additionalColumns; y < sortedColumns.size(); y++) {
 				String colName = (String) sortedColumns.get(y);
@@ -641,11 +690,11 @@ public class DisplayCorrelationsMode extends DisplayMode {
 					ignore_row = x;
 
 					// what's the R_squared now?
-					double r2_final =	getRSquared();
+					double r2_final =	getAverageR();
 					double diff = 		r2_final - r2_initial;
 
 //					String name = seqName_z + ":" + seqName + ":" + colName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
-					String name = seqName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
+					String name = seqName_z + ":" + seqName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
 
 					((Vector)ht_scoresPerGene.get(colName)).add(new Score(name, r2_final, -1));
 //					vec_scores.add(new Score(name, diff, -1));
@@ -660,17 +709,17 @@ public class DisplayCorrelationsMode extends DisplayMode {
 		override_reference_sequence = null;
 		ignore_col = -1;
 		ignore_row = -1;
-		r2_initial = getRSquared();
+		r2_initial = getAverageR();
 
 		// sort 'em!
-		StringBuffer buff = new StringBuffer();
+		ht_matches = new Hashtable();
 
 		i = ht_scoresPerGene.keySet().iterator();
 		while(i.hasNext()) {
 			String gene = (String) i.next();
+			Vector matches = new Vector();
 
 			int NO_SEQUENCES = 10;
-			buff.append("Top " + NO_SEQUENCES + " most improving sequences for gene " + gene  + "\n");
 
 			Vector v = (Vector) ht_scoresPerGene.get(gene);
 
@@ -689,11 +738,11 @@ public class DisplayCorrelationsMode extends DisplayMode {
 					break;
 				x++;
 
-				buff.append("\t" + x + ".\t" + s.getName() + "\n");
+				matches.add("\t" + x + ".\t" + s.getName());
 			}
-		}
 
-		System.err.println("Current R2 = " + r2_initial + "\n\n" + buff.toString());
+			ht_matches.put(gene, matches);
+		}
 		
 		//MessageBox mb = new MessageBox(
 		//		matrix.getFrame(),

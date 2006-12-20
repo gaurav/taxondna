@@ -284,6 +284,14 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 		buff.append("Currently in " + this.getClass());
 	}
 
+//
+// 	USER INTERFACE: ADDITIONAL PANEL.
+// 	Yrch!
+//
+	public JPanel getAdditionalPanel() {
+		return null;
+	}
+
 	/**
 	 * You can set a menu to be displayed in the main menubar when this
 	 * display mode is selected. Don't worry about the details: the
