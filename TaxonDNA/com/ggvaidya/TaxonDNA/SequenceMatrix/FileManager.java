@@ -826,7 +826,7 @@ public class FileManager implements FormatListener {
 	 * will be completely LOST on export.
 	 */
 	public boolean checkCancelledBeforeExport() {
-		int cancelled = matrix.getTableManager().getCancelledSequencesCount();
+		int cancelled = matrix.getTableManager().countCancelledSequences();
 
 		if(cancelled == 0)
 			return true;
