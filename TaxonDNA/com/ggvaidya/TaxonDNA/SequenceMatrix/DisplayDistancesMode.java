@@ -141,7 +141,7 @@ public class DisplayDistancesMode extends DisplayMode {
 		v.add(1, "Total score");
 		v.add(2, "No of charsets");
 
-		if(selected_colName != null) {
+		if(selected_colName != null && tableManager.doesColumnExist(selected_colName)) {
 			v.remove(selected_colName);
 			v.add(3, selected_colName);
 		} else {
