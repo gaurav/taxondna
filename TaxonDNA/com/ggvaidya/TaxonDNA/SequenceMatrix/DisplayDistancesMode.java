@@ -431,9 +431,8 @@ public class DisplayDistancesMode extends DisplayMode {
 		if(x > y)
 			return getCorrelation(y, x);		// only do a triangle
 
-		if(correlations == null) {
-			int N = sortedColumns.size() - additionalColumns;
-
+		int N = sortedColumns.size() - additionalColumns;	
+		if(correlations == null || correlations[0].length < N) {
 			correlations = new double[N][N];
 
 			for(int c = 0; c < N; c++)
@@ -519,6 +518,9 @@ public class DisplayDistancesMode extends DisplayMode {
 
 	public double getAverageR() {
 		int N = sortedColumns.size() - additionalColumns;
+
+		if(N == 0 || distances == null)
+			return -2.0;			// no! no! a thousand times, no!
 
 		double dist[][] = dist = (double[][]) distances.clone();
 		double R_iy[] = new double[N - 1];
