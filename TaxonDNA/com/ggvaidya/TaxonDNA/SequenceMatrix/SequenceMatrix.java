@@ -520,13 +520,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		view.add(chmi);
 		last_chmi = chmi;
 
-		chmi = new CheckboxMenuItem("As pairwise distances", false);
-		chmi.addItemListener(this);
-		view.add(chmi);
-
-		chmi = new CheckboxMenuItem("As correlations", false);
-		chmi.addItemListener(this);
-		view.add(chmi);
 
 		view.addActionListener(this);
 		menubar.add(view);
@@ -534,6 +527,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Analysis menu
 		Menu	analyses	= 	new Menu("Analyses");
 		analyses.add(new MenuItem("Find all zero percent distances"));
+
+		chmi = new CheckboxMenuItem("As pairwise distances", false);
+		chmi.addItemListener(this);
+		analyses.add(chmi);
+
+		chmi = new CheckboxMenuItem("As correlations", false);
+		chmi.addItemListener(this);
+		analyses.add(chmi);
+
 		analyses.addActionListener(this);
 		menubar.add(analyses);
 
