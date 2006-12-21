@@ -543,10 +543,12 @@ public class TableManager implements ActionListener {
 		if(charsets == 0) {
 			buff.append("No sequences loaded.");
 		} else {
-			buff.append(sortedSequences.size() + " sequences across " + charsets + " character sets.");
+			buff.append(sortedSequences.size() + " taxa, " + charsets + " sets");
 			int cancelled = countCancelledSequences();
 			if(cancelled > 0)
-				buff.append(" " + cancelled + " cancelled sequences.");
+				buff.append(", " + cancelled + " cancelled sequences");
+			// TODO: Specify currently selected set:taxa here.
+			buff.append('.');
 		}
 
 		buff.append(' ');
@@ -703,7 +705,7 @@ class ToolbarManager implements ActionListener {
 		// and we use setActionCommand() to make sure these
 		// buttons generate the same events, etc.
 		tf_colName.setEditable(false);
-		toolbar.add(tf_colName);
+//		toolbar.add(tf_colName);
 
 		JButton btn = null;
 
@@ -716,7 +718,7 @@ class ToolbarManager implements ActionListener {
 		toolbar.add(btn);
 		
 		tf_seqName.setEditable(false);
-		toolbar.add(tf_seqName);
+//		toolbar.add(tf_seqName);
 
 		btn = new JButton("Delete taxon");
 		btn.addActionListener(this);
