@@ -2,6 +2,12 @@
  * This is a DisplayMode which displays the sequences (as returned by dataStore) by
  * their correlations. This is VERY complicated to display, so here's to hoping
  * we Get It Right.
+ *
+ * CDM is a whole lot like PDM, except that they're nothing at all alike. At all.
+ * I can hardly stress this enough. So, CDM was initially forked straight off the
+ * PDM code, but we've since gone in and cut a lot of the PDM bits out - except
+ * that we'd still like to do PDM-like calculations and all, so it's pretty odd.
+ * Oh well, pish. It's just another great Friday evening now.
  */
 
 /*
@@ -47,7 +53,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayCorrelationsMode extends DisplayMode implements ListSelectionListener { 
+public class DisplayCorrelationsMode extends DisplayMode implements MouseListener { 
 	public static final int	SELECTED_COLUMN		=	3;		// change this if the no of additionalColumns increase!
 	private String		selected_colName	=	null;		// the colName who is leftmost
 
@@ -131,6 +137,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		static_oldRenderer = table.getDefaultRenderer(String.class);
 		table.setDefaultRenderer(String.class, new CorrelationsColorRenderer(this));
 
+		testCorrelation();	// go!
 	}
 
 	public void deactivateDisplay() {
@@ -143,13 +150,13 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		Collections.sort(v);
 
 		// set list_genes to be a list of all the genes we've got
-		list_genes.setListData(v);
+		list_genes.setListData(new Vector(v));
 
 		v.add(0, "Sequence name");
 		v.add(1, "Total score");
 		v.add(2, "No of charsets");
 
-		if(selected_colName != null) {
+		if(selected_colName != null && tableManager.doesColumnExist(selected_colName)) {
 			v.remove(selected_colName);
 			v.add(3, selected_colName);
 		} else {
@@ -160,6 +167,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		}
 
 		sortedColumns = v;
+
+		testCorrelation();
 
 		return (java.util.List ) v;
 	}
@@ -336,6 +345,9 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		}
 
 		sortedSequences = sequencesList;
+
+		//testCorrelation();		
+
 		return sequencesList;
 	}
 
@@ -387,7 +399,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		} else if(dist == DIST_ILLEGAL) {
 			return "(N/A - SUPERbug)";
 		} else if(dist == DIST_NO_COMPARE_SEQ) {
-			return "(N/A - bug)";
+			return "(No seq to compare)";
 		} else if(dist == DIST_SEQ_NA) {
 			return "(N/A)";
 		} else if(dist == DIST_NO_OVERLAP) {
@@ -440,8 +452,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		JPanel p = new JPanel();
 		p.setLayout(new java.awt.BorderLayout());
 
-		list_genes.addListSelectionListener(this);
-		list_sequences.addListSelectionListener(this);
+		Vector v = new Vector();
+		v.add("Please select a gene to view the most improving sequences for that gene");
+		list_sequences.setListData(v);
+
+		list_genes.addMouseListener(this);
+		list_sequences.addMouseListener(this);
 
 		p.add(new JScrollPane(list_genes), java.awt.BorderLayout.WEST);
 		p.add(new JScrollPane(list_sequences));
@@ -460,10 +476,13 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 	 * This (if you'll believe it!) is the callback used by the
 	 * lists to let us know what was selected.
 	 */
-	public void valueChanged(ListSelectionEvent e) {
+	public void mouseClicked(MouseEvent e) {
+		// SIGH
+		super.mouseClicked(e);
+
 		if(e.getSource().equals(list_genes)) {
 			// genes changed - update list_sequences 
-			int index = e.getFirstIndex();
+			int index = list_genes.locationToIndex(e.getPoint());	// freak.
 
 			if(index < 0)
 				return;
@@ -473,8 +492,20 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 			if(ht_matches.get(colName) != null) {
 				list_sequences.setListData((Vector) ht_matches.get(colName));
 			}
+		} else if(e.getSource().equals(list_sequences)) {
+			if(e.getClickCount() == 2) {
+				// double click! HOP to it! (snarf)
+				// TODO
+			}
 		}
 	}
+	public void mouseEntered(MouseEvent e) {}
+ 	public void mouseExited(MouseEvent e) {}
+ 	public void mousePressed(MouseEvent e) {}
+	public void mouseReleased(MouseEvent e) {
+		super.mouseReleased(e);
+	}
+	
 
 //
 // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
@@ -510,8 +541,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 		//
 		// See below for the actual (non-pre-calculated algorithm)
 		//
-		if(ignore_col == -1 || correlations == null) {
-			int N = sortedColumns.size() - additionalColumns;
+		int N = sortedColumns.size() - additionalColumns;
+		if(ignore_col == -1 || correlations == null || correlations[0].length < N) {
 
 			correlations = new double[N][N];
 
@@ -617,6 +648,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 	public double getAverageR() {
 		int N = sortedColumns.size() - additionalColumns;
 
+		if(N == 0 || distances == null)
+			return -2.0;		// don't try this unless you've got atleast one column
+
+		if(N == 1)
+			return -1.0;		// don't try this unless you've got atleast two columns
+
 		double dist[][] = dist = (double[][]) distances.clone();
 		double R_iy[] = new double[N - 1];
 		double R_ii[][] = new double[N - 1][N - 1];
@@ -654,6 +691,17 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 
 		// what's the initial R2?
 		double r2_initial = -1;
+
+		if(sortedSequences == null || sortedSequences.size() == 0)
+			return;				// can't do without sequences to test
+
+		if(sortedColumns == null || sortedColumns.size() == 0)
+			return;				// can't do without columns to test
+
+		// okay, we're committed!
+		Vector v_list = new Vector();
+		v_list.add("Please select a gene to view the most improving sequences for that gene");
+		list_sequences.setListData(v_list);
 
 		String colNameOfInterest = selected_colName;
 		String initial_seqName = (String) sortedSequences.get(0);
@@ -694,7 +742,17 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 					double diff = 		r2_final - r2_initial;
 
 //					String name = seqName_z + ":" + seqName + ":" + colName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
-					String name = seqName_z + ":" + seqName + "\t" + (float)r2_initial + "\t" + (float)r2_final + "\t(" + (float) diff + ")";
+//					TODO: we will need a way to 'fall back', in case the system's font doesn't
+//					support Unicode characters 2191-94.
+//
+					String str_direction = "\u2191";	// up_arrow
+					if(diff < 0) {
+						str_direction = "\u2193";
+						diff = -diff;			// make the different positive
+					}
+					if(identical(diff, 0.0))
+						str_direction = "\u2194";
+					String name = seqName_z + ":" + seqName + " " + (float)r2_final + " (" + (float)r2_initial + "" + str_direction + "" + (float) diff + ")";
 
 					((Vector)ht_scoresPerGene.get(colName)).add(new Score(name, r2_final, -1));
 //					vec_scores.add(new Score(name, diff, -1));
@@ -722,7 +780,6 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 			int NO_SEQUENCES = 10;
 
 			Vector v = (Vector) ht_scoresPerGene.get(gene);
-
 			Collections.sort(v);
 			
 			Iterator i2 = v.iterator();
@@ -730,7 +787,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 			while(i2.hasNext()) {
 				Score s = (Score) i2.next();
 
-				if(s.getName().indexOf("(0.0)") != -1) {	// FIXME: TODO
+				if(s.getName().indexOf("0.0)") != -1) {	// FIXME: TODO
 					continue;
 				}
 
@@ -738,7 +795,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements ListSelectio
 					break;
 				x++;
 
-				matches.add("\t" + x + ".\t" + s.getName());
+				matches.add(x + ". " + s.getName()) ;
 			}
 
 			ht_matches.put(gene, matches);
@@ -823,8 +880,8 @@ class CorrelationsColorRenderer extends DefaultTableCellRenderer
 	}
 
 	Color basicColor = Color.BLACK;
-	if(col == DisplayCorrelationsMode.SELECTED_COLUMN)
-		basicColor = Color.RED;
+//	if(col == DisplayCorrelationsMode.SELECTED_COLUMN)
+//		basicColor = Color.RED;
 	
 	String val = (String) value;
 
