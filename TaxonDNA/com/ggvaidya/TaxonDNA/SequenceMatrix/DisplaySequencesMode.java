@@ -200,14 +200,19 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		// model business.
 	}
 
-	public java.util.List getSortedColumns(Set colNames) {
-		Vector v = new Vector(colNames);	
-		Collections.sort(v);
+	public java.util.List getAdditionalColumns() {
+		Vector v = new Vector();
 
 		v.add(0, "Sequence name");
 		v.add(1, "Total length");
 		v.add(2, "No of charsets");
 
+		return v;
+	}
+
+	public java.util.List getSortedColumns(Set colNames) {
+		Vector v = new Vector(colNames);	
+		Collections.sort(v);
 		sortedColumns = v;
 
 		return (java.util.List ) v;
