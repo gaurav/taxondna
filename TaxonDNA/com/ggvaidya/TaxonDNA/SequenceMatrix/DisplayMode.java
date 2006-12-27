@@ -79,6 +79,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 	protected List 	sortedSequences = null;
 	protected int	additionalColumns = 0;
 
+	public abstract List getAdditionalColumns();
 	public abstract List getSortedColumns(Set colNames);
 	public abstract List getSortedSequences(Set seqNames);
 	public abstract String getValueAt(String colName, String seqName, Sequence seq);
@@ -93,11 +94,22 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 	}
 
 	public int getColumnCount() {
-		return sortedColumns.size();	// which includes the additionalColumns, etc.
+		return 
+			sortedColumns.size()		// the number of sorted columns
+			+ additionalColumns;		// the number of additional columns
+	
 	}
 
+	/**
+	 * Note that this function will return the *absolute* index (it must,
+	 * it IS in the interface). So do remember that when you use this
+	 * function, alright children?
+	 */
 	public String getColumnName(int columnIndex) {
-		return (String) sortedColumns.get(columnIndex);
+		if(columnIndex < additionalColumns)
+			return (String) getAdditionalColumns().get(columnIndex);
+
+		return (String) sortedColumns.get(columnIndex - additionalColumns);
 	}
 
 	// not in interface: just very convenient :)
