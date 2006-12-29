@@ -52,13 +52,12 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class TableManager implements ActionListener {
-
 //
 //	CONSTANTS
 //
 	public static final int		DISPLAY_SEQUENCES	=	0;	// our new name for the normal mode
 	public static final int		DISPLAY_DISTANCES	=	1;	// our new name for PDM mode
-	public static final int		DISPLAY_CORRELATIONS		=	2;	// our new name for the 'other' mode
+	public static final int		DISPLAY_CORRELATIONS	=	2;	// our new name for the 'other' mode
 	public static final int		DISPLAY_LAST		=	2;	// the last DISPLAY_* value (used in init)
 
 //
@@ -66,34 +65,51 @@ public class TableManager implements ActionListener {
 //
 	// The SequenceMatrix is the Big Guy, and we report up to him (value set in constructor)
 	// also: the table we are managing
-	private SequenceMatrix 	matrix	=	null;
-	private JTable		table	=	null;
-	private JTextField	tf_statusBar = 	new JTextField();
+	private SequenceMatrix 	matrix	=	null;			// the Application
+	private JTable		table	=	null;			// the JTable we're managing
+	private JTextField	tf_statusBar = 	new JTextField();	// the statusbar of the window we're managing
+	private ToolbarManager	toolbarManager = new ToolbarManager(this);
+									// the toolbarmanager of the window we're managing
 
-	// toolbar
-	ToolbarManager		toolbarManager =	new ToolbarManager(this);
-
-	// The DataStore stores information about the sequences. That's it.
+	// The DataStore stores information about the sequences, keeping track of things in
+	// column-row pairs.
 	private DataStore	dataStore =	new DataStore();
 
-	// We need to track the DisplayModes
+	// We need to track the DisplayMode: which one is currently working, which modes do we have, etc.
 	private DisplayMode	currentDisplayMode =	null;
 	private int		currentMode =		-1;
 	private DisplayMode[]	displayModes = 		new DisplayMode[DISPLAY_LAST + 1];		
 										// stores instances of the DisplayModes 
 										// so we don't have to keep creating
 										// them
-	// Our sequences
-	private java.util.List	sortedColumns = 	null;
-	private java.util.List	sortedCharsets =	null;
-	private java.util.List	sortedSequences =	null;
 
-	// Our 'state'
-	private String		referenceTaxon = 	null; 
+	// Our sequences
+	private java.util.List	sortedColumns = 	null;		// a list of ALL columns, including charsets
+									// given column 'x', sortedColumns.get(x) will
+									// give you the column name.
+
+	private java.util.List	sortedCharsets =	null;		// a list of ONLY the character sets, sorted
+									// correctly. For column 'x', 
+									// sortedCharsets.get(x + additionalColumns) will
+									// give you the right answer
+
+	private java.util.List	sortedSequences =	null;		// a list of all sequences, in whatever order the
+									// DisplayMode would like the sequences to be
+									// OUTPUT. This MAY NOT be the on-screen order,
+									// i.e. sortedSequences.get(x) is NOT guaranteed
+									// to be JTable row 'x'.
+
+	private String		referenceTaxon = 	null; 		// the reference taxon/outgroup. We cannot know
+									// what this will be used for, or even if it
+									// will be the sequence at the top of the list.
 
 	// The menu item we've inserted into the main menu for the main frame
-	private Menu		last_displayModeMenu =	null;
-	
+	private Menu		last_displayModeMenu =	null;		// tricky, this: we insert a 'display mode menu'
+									// in the JFrame's main menu. This is so we know
+									// what to remove when we switch modes.
+									//
+	private JFrame		lastAdditionalFrame = null;		// last additional frame, the additional panel
+									// is put onto this thing.
 
 //
 // 0.	CONSTRUCTOR. Creates the TableManager.
@@ -103,6 +119,7 @@ public class TableManager implements ActionListener {
 		this.matrix = matrix;
 		this.table = jTable;
 
+		// initialize the display mode to DISPLAY_SEQUENCES
 		changeDisplayMode(DISPLAY_SEQUENCES, null);
 	}
 
@@ -119,33 +136,27 @@ public class TableManager implements ActionListener {
 //
 	public void setReferenceSequence(String x) {
 		if(referenceTaxon != null && referenceTaxon.equals(x))
-			return;			// don't change anything
+			return;			// don't change anything if the reference sequence is the same
 
 		referenceTaxon = x;
 		updateDisplay();
 	}
 
 //
-// 3.	FUNCTIONAL CODE. Does something.
+// 3.	JTable interfacing code: resizes columns, etc.
 //
-	/** 
-	 * Clears all entries from the underlying datastore, and cleans
-	 * up the JTable.
-	 */
-	public void clear() {
-		dataStore.clear();
-		updateDisplay();
-	}
-
 	/**
 	 * Resizes ALL columns to fit their widest entry.
+	 * By default, resizeColumns() will ONLY widen columns, 
+	 * not shrink them. This method can therefore be called
+	 * with minimum user disturbance (I think).
 	 */
 	public void resizeColumns() {
 		Iterator i = sortedColumns.iterator();
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
-			resizeColumnToFit(colName, false);
+			resizeColumnToFit_noShrink(colName);
 		}
 	}
 
@@ -158,9 +169,18 @@ public class TableManager implements ActionListener {
 	}
 
 	/**
+	 * Resizes column 'x' to fit the widest entry, WITHOUT allowing
+	 * shrinking to happen. Java, meet default arguments. Default 
+	 * arguments, Java.
+	 */
+	public void resizeColumnToFit_noShrink(String x) {
+		resizeColumnToFit(x, false);
+	}
+
+	/**
 	 * Resizes column 'x' to fit the widest entry.
 	 *
-	 * @param shrinkAllowed Is shrinking of columns allowed?
+	 * @param shrinkAllowed Is shrinking of columns allowed? 'S or No.
 	 */
 	public void resizeColumnToFit(String x, boolean shrinkAllowed) {
 		TableColumnModel tcm = table.getColumnModel();
@@ -175,53 +195,61 @@ public class TableManager implements ActionListener {
 		if(tc == null)
 			return;		// it could happen
 	
-		// now, we need to manually figure out who needs the most space
+		// now, we need to manually figure out which cell needs the most space (width-wise)
 		int maxLength = 0;
 
 		// do the header
 		TableCellRenderer r = tc.getHeaderRenderer();
 		if(r == null) {
-			r = table.getTableHeader().getDefaultRenderer();
+			r = table.getTableHeader().getDefaultRenderer();	// this should _always_ work
 		}
 
+		// get the renderer component for the header
 		Component comp = r.getTableCellRendererComponent(table, tc.getHeaderValue(), true, true, -1, col);
-
 		if(comp != null)
 			maxLength = (int) comp.getPreferredSize().getWidth();
-		
 
-		// do all the entries in the column
+		// get the renderer component for each row in the column
 		for(int row = 0; row < sortedSequences.size(); row++) {
 			TableCellRenderer renderer = table.getCellRenderer(row, col);
 			Component c = renderer.getTableCellRendererComponent(table, table.getValueAt(row, col), true, true, row, col);
 
+			// get the length
 			int length = -1;
 			if(c != null)
 				length = (int) c.getPreferredSize().getWidth();
 
+			// is it larger than the maximum?
 			if(length > maxLength)
 				maxLength = length;
 		}
 
+		// don't shrink this column unless shrinking is allowed
 		if(!shrinkAllowed) {
 			if(maxLength < tc.getPreferredWidth())
-				return;				// dont shrink it!
+				return;	
 		}
 
+		// if we have a maximum length, set it
 		if(maxLength > 0)
 			tc.setPreferredWidth(maxLength + 10);	// The '10' is for the margins
 	}
 
 //
-// X.	FILE HANDLING CODE. This is where we deal with file handling.
+// 4.	DATASTORE INTERFACING CODE. Code to talk to the DataStore, and have it talk back, and
+// 	see what it says.
 //
+	/** 
+	 * Clears all entries from the underlying datastore, and cleans
+	 * up the JTable.
+	 */
+	public void clear() {
+		dataStore.clear();	// clean out the store 
+		updateDisplay();	// update the slate
+	}
 
-//
-// X.	SEQUENCE HANDLING CODE. This is the bit where we talk to the DataStore, and
-// 	back to anybody who would like to have a word. 
-//
 	public void addSequenceList(String colName, SequenceList sl, StringBuffer complaints, DelayCallback delay) {
-		dataStore.addSequenceList(colName, sl, complaints, delay);	
+		dataStore.addSequenceList(colName, sl, complaints, delay);
 		updateDisplay();
 	}
 
@@ -232,6 +260,11 @@ public class TableManager implements ActionListener {
 		return dataStore.isColumn(colName);
 	}	
 
+	/**
+	 * Note that unlike getCancelledSequence(), getSequence() will
+	 * return 'null' when (colName, seqName) is cancelled. Just a
+	 * reminder, like.
+	 */
 	public Sequence getSequence(String colName, String seqName) {
 		return dataStore.getSequence(colName, seqName);
 	}
@@ -247,20 +280,6 @@ public class TableManager implements ActionListener {
 		// you should rewrite this as a call to addSequencelist(colName, ...).
 		// Which means figuring out a column name, which is something I
 		// really just don't have the patience for right now.
-	}
-
-	public boolean warned(String title, String msg) {
-		MessageBox mb = new MessageBox(
-				matrix.getFrame(),
-				title,
-				msg,
-				MessageBox.MB_YESNOTOALL |
-				MessageBox.MB_TITLE_IS_UNIQUE);
-
-		if(mb.showMessageBox() == MessageBox.MB_YES)
-			return true;
-
-		return false;
 	}
 
 	public void deleteColumn(String colName) {
@@ -280,7 +299,7 @@ public class TableManager implements ActionListener {
 	public void cancelRow(String seqName) {
 		boolean changed = false;
 		
-		Iterator i = getCharsets().iterator();	
+		Iterator i = sortedCharsets.iterator();	
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
@@ -328,14 +347,7 @@ public class TableManager implements ActionListener {
 	}
 
 	public java.util.List getCharsets() {
-		if(sortedCharsets == null) {
-			sortedCharsets = new Vector(sortedColumns);
-
-			for(int x = 0; x < currentDisplayMode.additionalColumns; x++) {
-				sortedCharsets.remove(0);
-			}
-		}
-		return sortedCharsets;
+		return (java.util.List) sortedCharsets;
 	}
 
 	public java.util.List getSequences() {
@@ -371,7 +383,6 @@ public class TableManager implements ActionListener {
 		return sl;
 	}
 	
-
 	/**
 	 * Renames a sequence
 	 */
@@ -444,12 +455,21 @@ public class TableManager implements ActionListener {
 			last_displayModeMenu = menu;
 		}
 
+		if(lastAdditionalFrame != null) {
+			// do we have one? let's close it.
+			lastAdditionalFrame.setVisible(false);
+			lastAdditionalFrame.dispose();		// bye, bye, bye
+			lastAdditionalFrame = null;		// clean me up, scotty
+		}
+
 		JPanel p = currentDisplayMode.getAdditionalPanel();
 		if(p != null) {
 			JFrame frame = new JFrame("Additional panel");
 			frame.add(p);
 			frame.pack();
 			frame.setVisible(true);
+
+			lastAdditionalFrame = frame;
 		}
 
 		updateDisplay();	// fire!
@@ -481,8 +501,9 @@ public class TableManager implements ActionListener {
 			displayModes[mode] = dm;
 		}
 
-		sortedColumns = dm.getSortedColumns(dataStore.getColumns());
-		sortedCharsets = null;
+		sortedColumns = dm.getAdditionalColumns();
+		sortedCharsets = dm.getSortedColumns(dataStore.getColumns());
+		sortedColumns.addAll(sortedCharsets);
 		sortedSequences = dm.getSortedSequences(dataStore.getSequences());
 
 		return dm;
@@ -492,8 +513,9 @@ public class TableManager implements ActionListener {
 	 * UpdateDisplay calls on current DisplayMode to do its duty.
 	 */ 
 	public void updateDisplay() {
-		sortedColumns = currentDisplayMode.getSortedColumns(dataStore.getColumns());
-		sortedCharsets = null;
+		sortedColumns = currentDisplayMode.getAdditionalColumns();
+		sortedCharsets = currentDisplayMode.getSortedColumns(dataStore.getColumns());
+		sortedColumns.addAll(sortedCharsets);
 		sortedSequences = currentDisplayMode.getSortedSequences(dataStore.getSequences());
 
 		Hashtable widths = currentDisplayMode.saveWidths();
@@ -518,6 +540,20 @@ public class TableManager implements ActionListener {
 //
 // USER INTERFACE CODE
 //
+	public boolean warned(String title, String msg) {
+		MessageBox mb = new MessageBox(
+				matrix.getFrame(),
+				title,
+				msg,
+				MessageBox.MB_YESNOTOALL |
+				MessageBox.MB_TITLE_IS_UNIQUE);
+
+		if(mb.showMessageBox() == MessageBox.MB_YES)
+			return true;
+
+		return false;
+	}
+
 	public JToolBar getToolbar() {
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
@@ -606,6 +642,8 @@ public class TableManager implements ActionListener {
 		}
 
 		pm.addActionListener(this);
+
+//		System.err.println("Menu attached to: " + e.getSource());
 
 		((JComponent)e.getSource()).add(pm);			// yrch!
 		pm.show((JComponent)e.getSource(), e.getX(), e.getY());
@@ -733,6 +771,9 @@ class ToolbarManager implements ActionListener {
 			public void mouseClicked(MouseEvent e) {
 				int colIndex = table.columnAtPoint(e.getPoint());
 				int rowIndex = table.rowAtPoint(e.getPoint());
+
+				if(colIndex == -1 || rowIndex == -1)
+					return;					// can't deal with this!
 
 				String colName = (String) table.getColumnName(colIndex);
 				String seqName = (String) table.getValueAt(rowIndex, 0);

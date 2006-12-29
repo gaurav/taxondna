@@ -75,7 +75,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 // 	will do all the work for you. In brief: the only functions you NEED to overload
 // 	are the following two. All else will be defaulted for you.
 //
-	protected List 	sortedColumns = null;		// note that this INCLUDES the additionalColumns
+	protected List 	sortedColumns = null;		// note that this DOES NOT INCLUDE the additionalColumns
 	protected List 	sortedSequences = null;
 	protected int	additionalColumns = 0;
 
@@ -115,7 +115,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 	// not in interface: just very convenient :)
 	public String getRowName(int rowIndex) {
 		return (String) sortedSequences.get(rowIndex);
-	}	
+	}
 
 	public int getRowCount() {
 		return sortedSequences.size();

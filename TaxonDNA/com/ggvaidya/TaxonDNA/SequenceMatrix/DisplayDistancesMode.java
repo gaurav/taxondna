@@ -132,23 +132,29 @@ public class DisplayDistancesMode extends DisplayMode {
 //		table.setModel(null);		-- CANNOT - you better pick it up on the next activateDisplay()!
 		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
 	}
-
-	public List getSortedColumns(Set colNames) {
-		Vector v = new Vector(colNames);
-		Collections.sort(v);
+	
+	public List getAdditionalColumns() {
+		Vector v = new Vector();
 
 		v.add(0, "Sequence name");
 		v.add(1, "Total score");
 		v.add(2, "No of charsets");
 
+		return v;
+	}
+
+	public List getSortedColumns(Set colNames) {
+		Vector v = new Vector(colNames);
+		Collections.sort(v);
+
 		if(selected_colName != null && tableManager.doesColumnExist(selected_colName)) {
 			v.remove(selected_colName);
-			v.add(3, selected_colName);
+			v.add(0, selected_colName);
 		} else {
 			// no selected colname!
 			// pick sequence #3
-			if(v.size() > 3)
-				selected_colName = (String) v.get(3);
+			if(v.size() > 0)
+				selected_colName = (String) v.get(0);
 		}
 
 		sortedColumns = v;
@@ -163,10 +169,6 @@ public class DisplayDistancesMode extends DisplayMode {
 		// step 2: copy out a basic sequencesList 
 		List sequencesList = new Vector(sequences);
 		List columnList = new Vector(sortedColumns);
-		columnList.remove(0);		// get rid of "Sequence name"
-		columnList.remove(0);		// get rid of "Total score"
-		columnList.remove(0);		// get rid of "No of charsets"
-
 		if(seqName_top == null) {
 			if(sequencesList.size() > 0)
 				seqName_top = (String) sequencesList.get(0);	
@@ -431,7 +433,7 @@ public class DisplayDistancesMode extends DisplayMode {
 		if(x > y)
 			return getCorrelation(y, x);		// only do a triangle
 
-		int N = sortedColumns.size() - additionalColumns;	
+		int N = sortedColumns.size();
 		if(correlations == null || correlations[0].length < N) {
 			correlations = new double[N][N];
 
@@ -517,7 +519,7 @@ public class DisplayDistancesMode extends DisplayMode {
 	}
 
 	public double getAverageR() {
-		int N = sortedColumns.size() - additionalColumns;
+		int N = sortedColumns.size();
 
 		if(N == 0 || distances == null)
 			return -2.0;			// no! no! a thousand times, no!

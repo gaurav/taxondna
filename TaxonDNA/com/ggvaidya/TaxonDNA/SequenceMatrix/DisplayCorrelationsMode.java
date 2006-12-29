@@ -8,6 +8,7 @@
  * PDM code, but we've since gone in and cut a lot of the PDM bits out - except
  * that we'd still like to do PDM-like calculations and all, so it's pretty odd.
  * Oh well, pish. It's just another great Friday evening now.
+ *
  */
 
 /*
@@ -54,21 +55,21 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DisplayCorrelationsMode extends DisplayMode implements MouseListener { 
-	public static final int	SELECTED_COLUMN		=	3;		// change this if the no of additionalColumns increase!
-	private String		selected_colName	=	null;		// the colName who is leftmost
+	private String		seqName_top		=	null;	// the 'reference' sequence, the sequence ON_TOP
 
-	private double		distances[][]		=	null;
-	private double		norm_distances[][]	=	null;
-	private int		ranks[][]		=	null;
+	private double		distances[][]		=	null;	// the distances from the seq ON_TOP
+	private double		norm_distances[][]	=	null;	// the normalised distances from the seq ON_TOP
+	private int		ranks[][]		=	null;	// the ranks from the seq ON_TOP
 
-	public static double	DIST_ILLEGAL		=	-32.0;
-	public static double	DIST_NO_COMPARE_SEQ 	=	-64.0;
-	public static double	DIST_SEQ_NA		=	-128.0;
-	public static double	DIST_NO_OVERLAP		=	-256.0;	
-	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
-	public static double 	DIST_CANCELLED		=	-2048.0;
+	public static double	DIST_ILLEGAL		=	-32.0;	// error in program (the distance wasn't set)
+	public static double	DIST_NO_COMPARE_SEQ 	=	-64.0;	// no ON_TOP sequence
+	public static double	DIST_SEQ_NA		=	-128.0;	// the sequence here is genuinely 'N/A'
+	public static double	DIST_NO_OVERLAP		=	-256.0;	// inadequate overlap to the ON_TOP seq
+	public static double	DIST_SEQ_ON_TOP		=	-1024.0;// This sequence IS the ON_TOP seq
+	public static double 	DIST_CANCELLED		=	-2048.0;// the sequence exists, but is CANCELLED
 
-	private List		scores			=	null;
+	private List		scores			=	null;	// A List of scores for the entire row; we 
+									// need this to display column #2
 
 	private int		ignore_col		=	-1;	// the column component of the sequence to ignore while calculating correlation
 	private int		ignore_row		=	-1;	// the row component of the sequence to ignore while calculating correlation
@@ -78,26 +79,40 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 									// the reference sequence.
 
 	private class Score implements Comparable {
-			private String seqName_top = "";
-			private String seqName = "";
+			private String seqName_top = "";	// TODO: What the fudge is this here for?
+			private String name = "";
 			private double pairwise = 0.0;
-			private int constant = +1;
+			private int constant = +1;		// a multiplier; set the constant to '-1'
+								// to sort in opposite-to-natural order
 
-			public Score(String seqName, double pairwise) {
-				this.seqName = seqName;
+		
+			/** 
+			 * Full on constructor; sets the constant as well as the name
+			 * of this 'score' and its pairwise distance.
+			 */
+			public Score(String name, double pairwise, int constant) {
+				this(name, pairwise);
+				this.constant = constant;
+			}
+
+			/**
+			 * This is the constructor everybody uses because they don't
+			 * _want_ to play around with the constant.
+			 */
+			public Score(String name, double pairwise) {
+				this.name = name;
 				this.pairwise = pairwise;
 
 				seqName_top = tableManager.getReferenceSequence();
 			}
 			
-			public Score(String seqName, double pairwise, int constant) {
-				this(seqName, pairwise);
-				this.constant = constant;
-			}
+			/** Returns the 'name' we use. */
+			private String getName()	{	return name;		}
 
-			private String getName()	{	return seqName;		}
+			/** Returns the pairwise distance we use */
 			private double getPairwise() 	{	return pairwise;	}
 
+			/** The comparator. The one and onlyiest reason we wrote this class to begin with. */
 			public int compareTo(Object o) {
 				Score s = (Score) o;
 
@@ -107,8 +122,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 				if(s.getName().equals(seqName_top))
 					return +1;
 
-				return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
+				// I can't believe it's an expression!
+				return constant * (
+					(int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
+					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise()))
+				);
+
 			}
 		};
 
@@ -122,80 +141,83 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	 */
 	public DisplayCorrelationsMode(TableManager tm) {
 		tableManager = tm;
-		additionalColumns = 3;	// Sequence name, total length, and # of charsets
+		additionalColumns = 3;	// Sequence name, total score, and # of charsets
 	}
 
 //
 // 2.	INITIALIZATION CODE
 //
+	/** "Activates" this display on the JTable */
 	private TableCellRenderer static_oldRenderer = null;
 	public void activateDisplay(JTable table, Object argument) {
 		super.activateDisplay(table, argument);
 
-		selected_colName = (String) argument; 
-
 		static_oldRenderer = table.getDefaultRenderer(String.class);
 		table.setDefaultRenderer(String.class, new CorrelationsColorRenderer(this));
 
+		// TODO: Do we really need to fire a correlation sort here?
 		testCorrelation();	// go!
 	}
 
+	/** "Deactivates" this display on the JTable */
 	public void deactivateDisplay() {
 //		table.setModel(null);		-- CANNOT - you better pick it up on the next activateDisplay()!
 		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
 	}
 
+	public List getAdditionalColumns() {
+		Vector v = new Vector();
+	
+		v.add(0, "Sequence name");
+		v.add(1, "Total score");
+		v.add(2, "No of charsets");
+
+		return v;
+	}
+
+	/** Our standard get-a-list-of-columns function. We don't really have much to do here. */
 	public List getSortedColumns(Set colNames) {
 		Vector v = new Vector(colNames);
 		Collections.sort(v);
 
 		// set list_genes to be a list of all the genes we've got
 		list_genes.setListData(new Vector(v));
-
-		v.add(0, "Sequence name");
-		v.add(1, "Total score");
-		v.add(2, "No of charsets");
-
-		if(selected_colName != null && tableManager.doesColumnExist(selected_colName)) {
-			v.remove(selected_colName);
-			v.add(3, selected_colName);
-		} else {
-			// no selected colname!
-			// pick sequence #3
-			if(v.size() > 3)
-				selected_colName = (String) v.get(3);
-		}
-
 		sortedColumns = v;
-
-		testCorrelation();
 
 		return (java.util.List ) v;
 	}
 
+	/** Our standard get-a-list-of-sequences function. */
 	public List getSortedSequences(Set sequences) {
-		// step 1: copy whichever sequence we've been told to put on top
-		String seqName_top = tableManager.getReferenceSequence();
+		sortedSequences = new Vector(sequences);
 
-		// step 2: copy out a basic sequencesList 
-		List sequencesList = new Vector(sequences);
-		List columnList = new Vector(sortedColumns);
-		columnList.remove(0);		// get rid of "Sequence name"
-		columnList.remove(0);		// get rid of "Total score"
-		columnList.remove(0);		// get rid of "No of charsets"
+		// step 1: copy whichever sequence we've been told to put on top
+		seqName_top = tableManager.getReferenceSequence();
 
 		if(seqName_top == null) {
-			if(sequencesList.size() > 0)
-				seqName_top = (String) sequencesList.get(0);	
+			if(sortedSequences.size() > 0)
+				seqName_top = (String) sortedSequences.get(0);
+		} else {
+			// we have a seqName, move it to the top
+			if(sortedSequences.contains(seqName_top)) {
+				sortedSequences.remove(seqName_top);
+				sortedSequences.add(0, seqName_top);
+			}
 		}
 
-		if(columnList == null || selected_colName == null || seqName_top == null) {
+		java.util.List columnList = sortedColumns;
+		java.util.List sequencesList = sortedSequences;
+
+		if(columnList == null || sequencesList == null || seqName_top == null) {
 			// something's not right; bail out
-			sortedSequences = sequencesList;
-
-			return sequencesList;
+			//throw new RuntimeException("Cannot updateDisplay() - essential variables have not been set!");
+			//
+			// something is probably wrong because we're shutting down/etc.
+			// So nothing to throw a big fuss over.
+			return new Vector();		// return an empty 'list'
 		}
 
+		String seqName_top = this.seqName_top;		// make a local copy
 		if(override_reference_sequence != null)
 			seqName_top = override_reference_sequence;
 		
@@ -220,6 +242,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 				double dist = DIST_ILLEGAL;
 				if(seq_compare == null) {
 					dist = DIST_NO_COMPARE_SEQ;
+					//System.err.println("No compare seq for (" + colName + ", " + seqName + "); seqName_top = " + seqName_top);
 				}
 				else if(seqName_top.equals(seqName)) {
 					dist = DIST_SEQ_ON_TOP;
@@ -271,9 +294,6 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			for(int x = 0; x < columnList.size(); x++) {
 				String colName = (String) columnList.get(x);
-
-				if(colName.equals(selected_colName))
-					continue;
 
 				if(distances[x][y] >= 0) {
 					totalScore += norm_distances[x][y];
@@ -344,12 +364,24 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			}
 		}
 
-		sortedSequences = sequencesList;
-
-		//testCorrelation();		
-
-		return sequencesList;
+		return sortedSequences;
 	}
+
+	/*
+	 * We use updateDisplay() to let us know when it's time to update the orderings.
+	 * Note that the parent updateDisplay() can - and does! - do funky stuff by itself,
+	 * so right at the end we just call it instead of bothering with stuff.
+	 *
+	 * Once we're here, we have two things:
+	 * 1.	a list of sortedSequences
+	 * 2.	a list of sortedColumns
+	 *
+	 * This is a bit simpler than the previous system, since getSortedSequences() has
+	 * been reduced to doing darn near nothing. It's more logical. That's pretty much
+	 * about it, since TableManager's updateDisplay() calls both functions, in this
+	 * specific order, anyways.
+	 *
+	 */
 
 //
 // 2. THE TABLE MODEL SYSTEM. This is how the JTable talks to us ... and we talk back.
@@ -487,7 +519,10 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			if(index < 0)
 				return;
 
-			String colName = getColumnName(index + additionalColumns);
+			String colName = (String) sortedColumns.get(index);
+
+			if(colName == null)
+				return;
 
 			if(ht_matches.get(colName) != null) {
 				list_sequences.setListData((Vector) ht_matches.get(colName));
@@ -541,7 +576,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		//
 		// See below for the actual (non-pre-calculated algorithm)
 		//
-		int N = sortedColumns.size() - additionalColumns;
+		int N = sortedColumns.size();
 		if(ignore_col == -1 || correlations == null || correlations[0].length < N) {
 
 			correlations = new double[N][N];
@@ -646,7 +681,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	}
 
 	public double getAverageR() {
-		int N = sortedColumns.size() - additionalColumns;
+		int N = sortedColumns.size();
 
 		if(N == 0 || distances == null)
 			return -2.0;		// don't try this unless you've got atleast one column
@@ -703,7 +738,6 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		v_list.add("Please select a gene to view the most improving sequences for that gene");
 		list_sequences.setListData(v_list);
 
-		String colNameOfInterest = selected_colName;
 		String initial_seqName = (String) sortedSequences.get(0);
 
 		ignore_col = -1;
@@ -724,17 +758,18 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			override_reference_sequence = seqName_z;
 			getSortedSequences(sequencesSet);	// we don't need it, just the tables
+			//updateDisplay();
 		
 			r2_initial = 	getAverageR();
 
-			for(int y = additionalColumns; y < sortedColumns.size(); y++) {
+			for(int y = 0; y < sortedColumns.size(); y++) {
 				String colName = (String) sortedColumns.get(y);
 
 				for(int x = 1; x < sortedSequences.size(); x++) {
 					String seqName = (String) sortedSequences.get(x);
 
 					// cancel (or uncancel) this sequence
-					ignore_col = y - additionalColumns;
+					ignore_col = y;
 					ignore_row = x;
 
 					// what's the R_squared now?
@@ -765,6 +800,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		}
 
 		override_reference_sequence = null;
+		getSortedSequences(sequencesSet);	// we don't need it, just re-initialize to
+							// what we're displaying
 		ignore_col = -1;
 		ignore_row = -1;
 		r2_initial = getAverageR();
@@ -815,10 +852,10 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 class CorrelationsColorRenderer extends DefaultTableCellRenderer
 {
-	DisplayCorrelationsMode dpm = null;
+	DisplayCorrelationsMode dcm = null;
 
-	public CorrelationsColorRenderer(DisplayCorrelationsMode dpm) {
-		this.dpm = dpm;
+	public CorrelationsColorRenderer(DisplayCorrelationsMode dcm) {
+		this.dcm = dcm;
 	}	
 
 	/**
@@ -875,14 +912,12 @@ class CorrelationsColorRenderer extends DefaultTableCellRenderer
 	comp.setForeground(Color.BLACK);
 	comp.setBackground(Color.WHITE);
 
-	if(row < 1 || col < DisplayCorrelationsMode.SELECTED_COLUMN) {
+	if(row < 1 || col < dcm.additionalColumns) {
+		// if the row is invalid, or the column is not one of the sequence columns
 		return comp;
 	}
 
 	Color basicColor = Color.BLACK;
-//	if(col == DisplayCorrelationsMode.SELECTED_COLUMN)
-//		basicColor = Color.RED;
-	
 	String val = (String) value;
 
 	if(val.equals("(N/A)"))
