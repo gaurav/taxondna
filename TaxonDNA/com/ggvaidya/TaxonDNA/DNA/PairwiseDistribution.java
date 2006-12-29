@@ -295,7 +295,7 @@ public class PairwiseDistribution {
 		}
 
 		// and the final distance 
-		f_from = getBetweenIncl((float)d_to, (float)1.0);
+		f_from = getBetweenIncl((float)(d_to + 0.000001), (float)1.0);
 		if(cumul_forward)
 			cumul += ((float)f_from/count);
 		else
