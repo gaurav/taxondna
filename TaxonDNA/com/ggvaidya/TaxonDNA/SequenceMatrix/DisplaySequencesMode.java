@@ -188,8 +188,12 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 //
 // 1. ACTIVATION/DEACTIVATION.
 //
-	public void activateDisplay(JTable table) {
-		super.activateDisplay(table);
+	private TableCellRenderer static_oldRenderer = null;
+	public void activateDisplay(JTable table, Object argument) {
+		super.activateDisplay(table, argument);
+
+		static_oldRenderer = table.getDefaultRenderer(String.class);
+		table.setDefaultRenderer(String.class, new SequencesColorRenderer(this));
 
 		table.setModel(this);
 	}
@@ -198,6 +202,11 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		// unfortunately, we can't *unset* ourselves as model.
 		// Hopefully, somebody else will pick up on this whole
 		// model business.
+		
+		// reset the default renderer
+		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
+
+		super.deactivateDisplay();
 	}
 
 	public java.util.List getAdditionalColumns() {
@@ -358,10 +367,43 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 
 		buff.append("Sorted by " + sortBy + ".");
 	}
+}
 
+class SequencesColorRenderer extends DefaultTableCellRenderer
+{
+	DisplaySequencesMode dsm = null;
 
-//
-// OUR MORE IMPORTANT FUNCTIONS
-//
+	public SequencesColorRenderer(DisplaySequencesMode dsm) {
+		this.dsm = dsm;
+	}	
 
+	public Component getTableCellRendererComponent(JTable table,
+                                                   Object value,
+                                                   boolean isSelected,
+                                                   boolean hasFocus,
+                                                   int row,
+                                                   int col)
+    	{
+		// what would defaulttablecellrenderer do?
+        	JComponent comp = (JComponent) super.getTableCellRendererComponent(table,value,isSelected,hasFocus,row,col);
+
+		// omfg it reuses the same JComponent!
+		comp.setOpaque(true);
+		comp.setForeground(Color.BLACK);
+		comp.setBackground(Color.WHITE);
+
+		if(row < 1 || col < dsm.additionalColumns) {
+			// if the row is invalid, or the column is not one of the sequence columns
+			return comp;
+		}
+
+		// okay, our mission here is ridiculously simple
+		// we make all 'cancelled' cells slightly gray
+//		System.err.println("Wokay: '" + value + "', isSelected = " + isSelected + ", hasFocus = " + hasFocus);
+		if(((String)value).equalsIgnoreCase("(CANCELLED)")) {
+			comp.setBackground(Color.GRAY);
+		}
+
+        	return comp;
+    }
 }
