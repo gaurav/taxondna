@@ -575,6 +575,12 @@ public class TableManager implements ActionListener {
 	public void updateStatusBar() {
 		StringBuffer buff = new StringBuffer("  ");	// start with a bit of space
 
+		if(toolbarManager.getCurrentSequence() != null) {
+			buff.append(
+				toolbarManager.getCurrentColumn() + ": " +
+				toolbarManager.getCurrentSequence() + ". ");
+		}
+
 		int charsets = getCharsets().size();
 		if(charsets == 0) {
 			buff.append("No sequences loaded.");
@@ -817,6 +823,11 @@ class ToolbarManager implements ActionListener {
 		} else {
 			currentSeqName = null;
 		}
+
+		// now, who needs to know?
+		//
+		// ah yes, the status bar!
+		tm.updateStatusBar();
 	}
 
 	public void actionPerformed(ActionEvent e) {
@@ -843,5 +854,13 @@ class ToolbarManager implements ActionListener {
 			if(currentSeqName != null)
 				tm.cancelRow(currentSeqName);
 		}
+	}
+
+	public String getCurrentColumn() {
+		return currentCharsetName;
+	}
+
+	public String getCurrentSequence() {
+		return currentSeqName;
 	}
 }
