@@ -364,24 +364,9 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			}
 		}
 
+		sortedSequences = sequencesList;
 		return sortedSequences;
 	}
-
-	/*
-	 * We use updateDisplay() to let us know when it's time to update the orderings.
-	 * Note that the parent updateDisplay() can - and does! - do funky stuff by itself,
-	 * so right at the end we just call it instead of bothering with stuff.
-	 *
-	 * Once we're here, we have two things:
-	 * 1.	a list of sortedSequences
-	 * 2.	a list of sortedColumns
-	 *
-	 * This is a bit simpler than the previous system, since getSortedSequences() has
-	 * been reduced to doing darn near nothing. It's more logical. That's pretty much
-	 * about it, since TableManager's updateDisplay() calls both functions, in this
-	 * specific order, anyways.
-	 *
-	 */
 
 //
 // 2. THE TABLE MODEL SYSTEM. This is how the JTable talks to us ... and we talk back.
@@ -468,6 +453,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	public void doubleClick(MouseEvent e, int col, int row) {
 		if(row > 0 && col != -1 && col >= additionalColumns) {
 			// it's, like, valid, dude.
+			System.err.println("Toggling cancelled: " + getRowName(row));
 			tableManager.toggleCancelled(getColumnName(col), getRowName(row));
 			testCorrelation();
 		}
