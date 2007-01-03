@@ -785,6 +785,11 @@ class ToolbarManager implements ActionListener {
 		tf_seqName.setEditable(false);
 //		toolbar.add(tf_seqName);
 
+		
+		btn = new JButton("Make reference taxon");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+
 		btn = new JButton("Delete taxon");
 		btn.addActionListener(this);
 		toolbar.add(btn);
@@ -874,6 +879,11 @@ class ToolbarManager implements ActionListener {
 		if(cmd.equals("Cancel entire taxon")) {
 			if(currentSeqName != null)
 				tm.cancelRow(currentSeqName);
+		}
+
+		if(cmd.equals("Make reference taxon")) {
+			if(currentSeqName != null)
+				tm.setReferenceSequence(currentSeqName);
 		}
 	}
 
