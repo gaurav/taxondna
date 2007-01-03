@@ -717,6 +717,27 @@ public class TableManager implements ActionListener {
 				setReferenceSequence(seqName);
 		}
 	}	
+
+	/**
+	 * Selects the specified sequence.
+	 * Warning: the legitimacy of this function is disputed.
+	 */
+	public void selectSequence(String colName, String seqName) {
+		// highlight, or otherwise indicate this row and column
+
+		// 'find' this row and column (make sure it is in focus)
+		int col = sortedColumns.indexOf(colName);
+		int row = sortedSequences.indexOf(seqName);
+
+		if(col >= 0 && row >= 0) {	// both valid?
+			table.changeSelection(row, col, false, false);
+			table.invalidate();		// hah! it works!
+		}
+
+		// set the toolbar status
+		if(toolbarManager != null)
+			toolbarManager.setToolbarStatus(colName, seqName);
+	}
 }
 
 /**
