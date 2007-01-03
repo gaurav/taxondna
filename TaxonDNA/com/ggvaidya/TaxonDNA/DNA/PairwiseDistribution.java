@@ -341,6 +341,11 @@ public class PairwiseDistribution {
 	 * Smart enough to use '...' if anything is cut off, etc.
 	 */
 	private void appendFixedLength(StringBuffer buff, String str, int len) {
+		if(1 == 1) {
+			buff.append(str + "\t");
+			return;
+		}
+
 		if(str.length() < len) {
 			// add spaces to make it add up
 			buff.append(str);
