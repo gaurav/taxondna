@@ -453,9 +453,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	public void doubleClick(MouseEvent e, int col, int row) {
 		if(row > 0 && col != -1 && col >= additionalColumns) {
 			// it's, like, valid, dude.
-			System.err.println("Toggling cancelled: " + getRowName(row));
-			tableManager.toggleCancelled(getColumnName(col), getRowName(row));
+			String colName = getColumnName(col);
+			String rowName = getRowName(row);
+
+			tableManager.toggleCancelled(colName, rowName);
 			testCorrelation();
+			tableManager.selectSequence(colName, rowName);
 		}
 	}
 	
@@ -515,8 +518,32 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			}
 		} else if(e.getSource().equals(list_sequences)) {
 			if(e.getClickCount() == 2) {
-				// double click! HOP to it! (snarf)
-				// TODO
+				// double click!
+				//
+				// okay, what we've got to do now is to:
+				// 1.	figure out the colName/seqName
+				// 2.	select it on the main table
+				// 3.	change it's nature somehow. Flashing yellow is
+				// 	actually a very nice UI gimmick for this, but
+				// 	I'm not sure how easy that would be to pull
+				// 	off :)
+				//
+				String colName = (String) list_genes.getSelectedValue(); 
+				if(colName == null)
+					return;
+
+				String entry = (String) list_sequences.getSelectedValue();
+				if(entry == null)
+					return;	
+
+				int from = entry.indexOf(':') + 1;	// don't count the ':'
+				int to = entry.indexOf('~');
+
+				if(from < 0 || to < 0 || to < from)
+					return;
+				String seqName = entry.substring(from, to).trim();
+
+				tableManager.selectSequence(colName, seqName);
 			}
 		}
 	}
@@ -768,12 +795,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 //
 					String str_direction = "\u2191";	// up_arrow
 					if(diff < 0) {
-						str_direction = "\u2193";
+						str_direction = "\u2193";	// down_arrow
 						diff = -diff;			// make the different positive
 					}
 					if(identical(diff, 0.0))
-						str_direction = "\u2194";
-					String name = seqName_z + ":" + seqName + " " + (float)r2_final + " (" + (float)r2_initial + "" + str_direction + "" + (float) diff + ")";
+						str_direction = "\u2194";	// '<->' symbol
+					String name = seqName_z + ":" + seqName + " ~ " + (float)r2_final + " (" + (float)r2_initial + "" + str_direction + "" + (float) diff + ")";
 
 					((Vector)ht_scoresPerGene.get(colName)).add(new Score(name, r2_final, -1));
 //					vec_scores.add(new Score(name, diff, -1));
@@ -905,6 +932,9 @@ class CorrelationsColorRenderer extends DefaultTableCellRenderer
 
 	Color basicColor = Color.BLACK;
 	String val = (String) value;
+
+	if(isSelected == true)
+		basicColor = Color.RED;
 
 	if(val.equals("(N/A)"))
 		return comp;
