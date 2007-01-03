@@ -155,10 +155,10 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 			Pattern p_version =	Pattern.compile("^VERSION\\s+(\\w{2}(?:[_])*\\d{6}\\.\\d+)\\s+GI:(\\d+)\\s*$");
 			Pattern p_gi =		Pattern.compile("^VERSION\\s+.+\\s+GI:(\\d+)\\s*$");
 
-			Pattern p_organism = 	Pattern.compile("^\\s*ORGANISM\\s+(.+)\\s*$");
-			Pattern p_CDS =		Pattern.compile("^\\s*CDS\\s+(complement\\()*([<\\d]+)\\.\\.([\\d>]+)\\)*\\s*$", Pattern.CASE_INSENSITIVE);
-			Pattern p_CDS_gene =	Pattern.compile("^\\s*/gene=\"(.*)\"\\s*$");
-			Pattern p_CDS_product =	Pattern.compile("^\\s*/product=\"(.*)\"\\s*$");
+			Pattern p_organism = 	Pattern.compile("^(?i)\\s*ORGANISM\\s+(.+)\\s*$");
+			Pattern p_CDS =		Pattern.compile("^(?i)\\s*(CDS|gene|trna|d-loop)\\s+(complement\\()*([<\\d]+)\\.\\.([\\d>]+)\\)*\\s*$", Pattern.CASE_INSENSITIVE);
+			Pattern p_CDS_gene =	Pattern.compile("^(?i)\\s*/gene=\"(.*)\"\\s*$");
+			Pattern p_CDS_product =	Pattern.compile("^(?i)\\s*/product=\"(.*)\"\\s*$");
 
 			String currentName = "";
 			StringBuffer currentSequence = new StringBuffer();
@@ -171,7 +171,6 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 				// little formatting stuff
 				if(line == null)
 					break;
-
 
 				// handle 'delay'
 				if(delay != null)
@@ -261,15 +260,17 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 					// I spy with my little eye ... a CDS entry!
 					m = p_CDS.matcher(line);
 					if(m.matches()) {
-						String complement = m.group(1);
-						String from = m.group(2);
-						String to = m.group(3);
+						String command = m.group(1);
+						String complement = m.group(2);
+						String from = m.group(3);
+						String to = m.group(4);
 						String my_line = "";
 						boolean open_quotes = false;
 
-						while((my_line = reader.readLine().trim()) != null) {
-							String gene = null; 
+						String gene = null; 
 
+						reader.mark(1024);
+						while((my_line = reader.readLine().trim()) != null) {
 							if(open_quotes) {
 								// if open_quotes, we have an unclosed '"' running
 								// around. So we ignore EVERYTHING until we close
@@ -296,6 +297,7 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 								// It should be noted that a GOTO would be
 								// *brilliant* right about now.
 								line = my_line;
+								reader.reset();	// reset back to before this line 
 								break;
 							}
 
@@ -330,6 +332,15 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 								gene = m.group(1);
 							}
 
+							// Mark for future use
+							reader.mark(1024);	// don't use lines longer than 1,024 characters!
+						}
+
+						if(gene == null)
+							gene = command;
+						else
+							gene = command + "_" + gene;
+
 							// if we have EITHER a /gene or a /product
 							// on this line, we can do our 
 							// adding-the-entry magick. 
@@ -360,7 +371,6 @@ public class GenBankFile extends BaseFormatHandler implements Testable {
 								// This will be transfered to hash_cds once we hit the end of this sequence.
 								currentCDSs.put(gene, cdsString);
 							}
-						}
 
 						if(open_quotes)
 							throw new FormatException("Double quotes not closed properly in file!");
