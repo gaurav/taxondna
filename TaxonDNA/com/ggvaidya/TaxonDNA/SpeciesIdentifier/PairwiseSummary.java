@@ -36,8 +36,6 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class PairwiseSummary extends Panel implements UIExtension, ActionListener, Runnable {	
-	private static final long serialVersionUID = 4986465198540567487L;
-	
 	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 
@@ -267,11 +265,17 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		println(str, "\nDISTRIBUTION FOR ALL INTRASPECIFIC DISTANCES (FROM 0.0 TO 0.20)");
 		println(str, intra.getDistributionAsString(0.0, 0.20, 0.005, PairwiseDistribution.CUMUL_BACKWARD));	
 
+		println(str, "\nDISTRIBUTION FOR ALL INTRASPECIFIC DISTANCES (FROM 0.0 TO 0.30) AT 1% intervals");
+		println(str, intra.getDistributionAsString(0.0, 0.30, 0.01, PairwiseDistribution.CUMUL_BACKWARD));	
+
 		println(str, "\nDISTRIBUTION FOR ALL INTRASPECIFIC DISTANCES");
 		println(str, intra.getDistributionAsString(0.0, 1.0, 0.05, PairwiseDistribution.CUMUL_BACKWARD));	
 
 		println(str, "\nDISTRIBUTION FOR ALL INTERSPECIFIC DISTANCES WITHIN A GENUS (FROM 0.0 to 0.20)");
 		println(str, inter.getDistributionAsString(0.0, 0.20, 0.005, PairwiseDistribution.CUMUL_FORWARD));
+		
+		println(str, "\nDISTRIBUTION FOR ALL INTERSPECIFIC DISTANCES WITHIN A GENUS (FROM 0.0 TO 0.30) AT 1% intervals");
+		println(str, inter.getDistributionAsString(0.0, 0.30, 0.01, PairwiseDistribution.CUMUL_FORWARD));	
 		
 		println(str, "\nDISTRIBUTION FOR ALL INTERSPECIFIC DISTANCES WITHIN A GENUS");
 		println(str, inter.getDistributionAsString(0.0, 1.0, 0.05, PairwiseDistribution.CUMUL_FORWARD));
