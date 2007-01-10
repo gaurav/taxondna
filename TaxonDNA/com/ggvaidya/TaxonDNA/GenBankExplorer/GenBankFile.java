@@ -85,10 +85,10 @@ public class GenBankFile {
 			return (Section) v_sections.get(x);
 		}
 
-		public Vector getSections(String s) {
+		public List getSections(String s) {
 			Vector v = new Vector();
 
-			Iterator i = getSections();
+			Iterator i = getSections().iterator();
 			while(i.hasNext()) {
 				Section sec = (Section) i.next();
 
@@ -101,7 +101,7 @@ public class GenBankFile {
 
 		public String getSection(String s) {
 			StringBuffer buff = new StringBuffer();
-			Vector v = getSections(s);
+			List v = getSections(s);
 			
 			Iterator i = v.iterator();
 			while(i.hasNext()) {
@@ -320,7 +320,7 @@ public class GenBankFile {
 		while(i_loci.hasNext()) {
 			Locus l = (Locus) i_loci.next();
 
-			Iterator i_sections = l.getSections();
+			Iterator i_sections = l.getSections().iterator();
 			while(i_sections.hasNext()) {
 				Section s = (Section) i_sections.next();
 

@@ -43,15 +43,19 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class ViewManager implements TreeModel {
+public class ViewManager {
 	private GenBankExplorer explorer = 	null;			// the GenBankExplorer object
 
+	// public information
+	// DisplayModes
+	public static final int	DM_LOCI =	1;
+
 	// Internal information
-	private Vector	treeListeners =		new Vector();
+	private DisplayMode	currentDisplayMode =	null;
 
 	// UI objects
 	private JPanel		panel =		null;			// the 'view' itself
-	private JTree		tree =		new JTree(this);	// the tree
+	private JTree		tree =		new JTree();		// the tree
 	private JTextArea	ta_file =	new JTextArea();	// the text area for file information
 	private JTextArea	ta_selected =	new JTextArea();	// the text area for selection information
 
@@ -65,6 +69,10 @@ public class ViewManager implements TreeModel {
 	public ViewManager(GenBankExplorer explorer) {
 		// set up the GenBankExplorer
 		this.explorer = explorer;
+
+		initDisplayModes();
+		switchDisplayMode(DM_LOCI);
+
 		createUI();
 	}
 
@@ -123,7 +131,7 @@ public class ViewManager implements TreeModel {
 		}
 
 		// update the entire tree
-		fireTreeEvent(new TreeModelEvent(tree, new TreePath(getRoot())));
+		updateTree();
 	}
 
 	/**
@@ -158,64 +166,42 @@ public class ViewManager implements TreeModel {
 			message,
 			MessageBox.MB_ERROR).go();
 	}
-	
-// 	DATA MODEL INTERFACE CODE
+
+// UI GET/SETs AND SO ON
 //
+	public JTree getTree() {
+	       return tree;
+	}	       
 
-// 	TREE MODEL CODE
+
+// 	DISPLAY MODE SWITCHING/HANDLING CODE
 //
+	private Vector	vec_displayModes = new Vector();
 
-	public void addTreeModelListener(TreeModelListener l) {
-		treeListeners.add(l);
+	public void initDisplayModes() {
+		vec_displayModes.add(new LociDisplayMode(this));
 	}
-	public void removeTreeModelListener(TreeModelListener l) {
-		treeListeners.remove(l);
-	}
-	/**
-	 * Fires a tree event at all listening TreeModelListeners. 
-	 * Warning: this will ONLY fire the event as a treeStructureChanged(TreeModelEvent).
-	 * If you need a less powerful event to be fired, err ... update this code?
-	 */
-	private void fireTreeEvent(TreeModelEvent e) {
-		Iterator i = treeListeners.iterator();
-		while(i.hasNext()) {
-			TreeModelListener l = (TreeModelListener) i.next();
 
-			l.treeStructureChanged(e);
+	public void switchDisplayMode(int mode) {
+		if(currentDisplayMode != null)
+			currentDisplayMode.deactivateMode();
+
+		switch(mode) {
+			case DM_LOCI:
+				currentDisplayMode = (DisplayMode) vec_displayModes.get(0); 
 		}
+
+		currentDisplayMode.activateMode();
+		updateTree();
 	}
 
-	public Object getChild(Object parent, int index) {
-		if(parent.equals(getRoot())) {
-			return genBankFile.getLocus(index);
-		} else 
-			return null;
+	public void updateTree() {
+		currentDisplayMode.setGenBankFile(genBankFile);
+		currentDisplayMode.updateTree();
 	}
-	public int getChildCount(Object parent) {
-		if(genBankFile == null)
-			return 0;
 
-		if(parent.equals(getRoot()))
-			return genBankFile.getLocusCount();
-
-		return 0;
-	}
-	public int getIndexOfChild(Object parent, Object child) {
-		return -1;
-	}
-	public Object getRoot() {
-		if(genBankFile != null)
-			return new String(genBankFile.getFile().getAbsolutePath());
-		else
-			return new String("No file loaded");
-	}
-	public boolean isLeaf(Object node) {
-		if(node.equals(getRoot()))
-			return false;
-		else
-			return true;
-	}
-	public void valueForPathChanged(TreePath path, Object newValue) {
-		// hmmm!	
+	public void updateNode(TreePath path) {
+		currentDisplayMode.setGenBankFile(genBankFile);
+		currentDisplayMode.updateNode(path);
 	}
 }
