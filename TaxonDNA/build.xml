@@ -22,7 +22,7 @@
 		<jar  
 			destfile="Release/SpeciesIdentifier.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**,GenBankExplorer/**" 
 			includes="**/*.class" 
 		>
 			<manifest>
@@ -37,11 +37,26 @@
 		<jar  
 			destfile="Release/SequenceMatrix.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**,GenBankExplorer/**" 
 			includes="**/*.class" 
 		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
+			</manifest>
+		</jar>
+		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+	</target>
+
+	<!-- GenBankExplorer:		Builds the Jar file for GenBankExplorer -->
+	<target name="GenBankExplorer" depends="compile">
+		<jar  
+			destfile="Release/GenBankExplorer.jar" 
+			basedir="${build.dir}/classes" 
+			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**,SequenceMatrix/**" 
+			includes="**/*.class" 
+		>
+			<manifest>
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
 			</manifest>
 		</jar>
 		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
@@ -53,7 +68,7 @@
 
 					Does NOT make a final zip. 'release' does this.
 	-->
-	<target name="build" depends="SpeciesIdentifier,SequenceMatrix">
+	<target name="build" depends="SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
 		<!--		<copy file="CHANGELOG.txt" todir="Release" />
 		<copy file="README.txt" todir="Release" overwrite="yes" />
 		-->
@@ -103,5 +118,14 @@
 			comment="(c) Gaurav Vaidya, 2006"
 			update="false"
 		/>
+	</target>
+
+	<!-- 	
+		Dummy target to just build the GBE file (and ONLY the GBE file). 
+		Unless you're *sure* you didn't modify code outside GenBankExplorer.*,
+		you'll need to ant 'clean' and 'release' to make sure everything gets
+		recompiled.
+	-->
+	<target name="gbx" depends="GenBankExplorer">
 	</target>
 </project>
