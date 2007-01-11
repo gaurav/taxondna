@@ -42,8 +42,8 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public abstract class DisplayMode implements TreeModel {
-	private ViewManager viewManager =	null;			// the ViewManager object
+public abstract class DisplayMode implements TreeModel, TreeSelectionListener {
+	protected ViewManager viewManager =	null;			// the ViewManager object
 	protected GenBankFile genBankFile = 	null;			// the GenBankFile object
 
 	// Internal information
@@ -61,10 +61,12 @@ public abstract class DisplayMode implements TreeModel {
 
 	public void activateMode() {
 		viewManager.getTree().setModel(this);
+		viewManager.getTree().addTreeSelectionListener(this);
 	}
 
 	public void deactivateMode() {
 		// can't just get rid of tree model like that
+		viewManager.getTree().removeTreeSelectionListener(this);
 	}
 
 // 	TREE MODEL CODE
@@ -139,6 +141,7 @@ public abstract class DisplayMode implements TreeModel {
 			Object o = (Object) i.next();
 
 			v.add(o);
+			subNodes.put(node, v);	// replacing the previous 'v'
 			addAllSubnodes(o);
 		}
 
@@ -188,6 +191,7 @@ public abstract class DisplayMode implements TreeModel {
 		// hmmm!
 	}
 
+	// UPDATEs
 	public void updateTree() {
 		updateHashtable();
 		fireTreeEvent(new TreeModelEvent(viewManager.getTree(), new TreePath(getRoot())));
@@ -198,5 +202,22 @@ public abstract class DisplayMode implements TreeModel {
 		fireTreeEvent(new TreeModelEvent(viewManager.getTree(), path));
 	}		
 
+	// TREE SELECTION LISTENER
+	// The tree selection listener handles the nitty gritty of a TreeSelectionEvent.
+	// If you don't need nitty-gritty-handling, you can directly overload:
+	public void valueChanged(TreeSelectionEvent e) {
+		TreePath[] treePaths = e.getPaths();	
 
+		for(int x = 0; x < treePaths.length; x++) {
+			TreePath t = treePaths[x];	
+
+			if(e.isAddedPath(x))
+				pathSelected(t);
+			else
+				pathRemoved(t);
+		}
+	}
+
+	public void pathSelected(TreePath t) {}
+	public void pathRemoved(TreePath t) {}
 }
