@@ -47,6 +47,16 @@ public class LociDisplayMode extends DisplayMode {
 		super(man);
 	}
 
+	public void setGenBankFile(GenBankFile genBankFile) {
+		super.setGenBankFile(genBankFile);
+
+		if(genBankFile != null) {
+			viewManager.setFileText("Current file: " + genBankFile.getFile().getAbsolutePath() + "\nNumber of loci in file: " + genBankFile.getLocusCount());
+		} else {
+			viewManager.setFileText("No file loaded.");
+		}
+	}
+
 	public Object getRoot() {
 		if(genBankFile == null)
 			return "No file loaded";
@@ -63,14 +73,43 @@ public class LociDisplayMode extends DisplayMode {
 		}
 
 		int index = getIndexOfChild(getRoot(), node);
-		if(index == -1)
-			throw new RuntimeException("node not found: " + node);
-
-		GenBankFile.Locus l = genBankFile.getLocus(index);
-		if(l != null) {
-			return l.getSections();
+		if(index == -1) 
+			// means that we're probably looking for a sub-sub-node
+			;
+		else {
+			GenBankFile.Locus l = genBankFile.getLocus(index);
+			if(l != null) {
+				return l.getSections();
+			}
 		}
 
 		return null;
+	}
+
+	public void pathSelected(TreePath p) {
+		Object obj = p.getLastPathComponent();
+		Class cls = obj.getClass();
+
+		if(cls.equals(String.class)) {
+			viewManager.setSelectionText("");
+
+		} else if(cls.equals(GenBankFile.Locus.class)) {
+			GenBankFile.Locus l = (GenBankFile.Locus) obj;
+
+			StringBuffer buff = new StringBuffer();
+			Iterator i_sec = l.getSections().iterator();
+			while(i_sec.hasNext()) {
+				GenBankFile.Section sec = (GenBankFile.Section) i_sec.next();
+
+				buff.append(sec.getName() + ": " + sec.getValue() + "\n");
+			}
+
+			viewManager.setSelectionText("Currently selected: locus " + l.toString() + "\n" + buff);
+
+		} else if(cls.equals(GenBankFile.Section.class)) {
+			GenBankFile.Section sec = (GenBankFile.Section) obj;
+
+			viewManager.setSelectionText("Currently selected: section " + sec.getName() + " of locus " + sec.getLocus() + "\nValue: " + sec.getValue());	
+		}
 	}
 }
