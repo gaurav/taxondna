@@ -132,11 +132,17 @@ public class GenBankFile {
 	 * A section 
 	 */
 	public class Section {
+		private Locus locus = null;
 		private String name = "";
 		private StringBuffer buff = null;
 
-		public Section(String secName) {
+		public Section(Locus l, String secName) {
+			locus = l;
 			name = secName;
+		}
+
+		public Locus getLocus() {
+			return locus;
 		}
 
 		public void setValue(String val) {
@@ -151,6 +157,14 @@ public class GenBankFile {
 
 		public String name() { return name; }
 		public String value() { return buff.toString().trim(); }
+
+		// TIMTOWTDI
+		public String getName() { return name; }
+		public String getValue() { return buff.toString().trim(); }
+
+		public String toString() {
+			return name();
+		}
 	}
 
 	/** You can't do that! */
@@ -229,7 +243,7 @@ public class GenBankFile {
 								throw new FormatException("Error on line " + r.getLineNumber() + ": Expecting keyword, found '" + line + "'");
 
 							String keyword = line.substring(0, until).trim();
-							s = new Section(keyword);
+							s = new Section(l, keyword);
 
 							String x = line.substring(until).trim();
 								// we pick up the ' ', then trim it out, so in case the string ends at (until + 1), we won't throw an exception.
