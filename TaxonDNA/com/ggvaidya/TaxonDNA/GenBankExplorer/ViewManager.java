@@ -33,10 +33,12 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import java.util.prefs.*;
+import java.awt.dnd.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
 import javax.swing.event.*;
 import javax.swing.tree.*;
+import javax.swing.text.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -93,12 +95,19 @@ public class ViewManager {
 		ta_selected.setEditable(false);
 
 		// layout time!
-		JSplitPane p_textareas = new JSplitPane(JSplitPane.VERTICAL_SPLIT, ta_file, ta_selected);
+		JSplitPane p_textareas = new JSplitPane(JSplitPane.VERTICAL_SPLIT, new JScrollPane(ta_file), new JScrollPane(ta_selected));
 		p_textareas.setResizeWeight(0.5);	// half way (by default)
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), p_textareas);
-		split.setResizeWeight(0);		// bit more right by default
+		split.setResizeWeight(0.3);		// bit more right by default
 
 		split.setPreferredSize(new Dimension(400, 500));
+
+		// err ... I don't think this is the best way to do this
+		// but it's certainly the quickest, so.
+		new DropTarget(panel, explorer).setActive(true);
+		new DropTarget(tree, explorer).setActive(true);
+		new DropTarget(ta_file, explorer).setActive(true);
+		new DropTarget(ta_selected, explorer).setActive(true);
 
 		panel.add(split);
 	}
@@ -173,6 +182,20 @@ public class ViewManager {
 	       return tree;
 	}	       
 
+	public void setFileText(String text) {
+		Caret c = ta_file.getCaret();
+		ta_file.setCaret(null);
+		ta_file.setText(text);
+		ta_file.setCaret(c);
+	}
+
+	public void setSelectionText(String text) {
+		// Thank you, Sun bug #4227520!
+		Caret c = ta_selected.getCaret();
+		ta_selected.setCaret(null);
+		ta_selected.setText(text);
+		ta_selected.setCaret(c);
+	}
 
 // 	DISPLAY MODE SWITCHING/HANDLING CODE
 //
