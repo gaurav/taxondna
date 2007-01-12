@@ -167,7 +167,10 @@ public class PairwiseDistances {
 				// identical genera
 				if(!query.getSpeciesNameOnly().equals(seq.getSpeciesNameOnly())) {
 					// but non identical species
-					distances_push(query, seq);	
+					//
+					// however, only do it one way (half-table only)
+					if(query.getSpeciesNameOnly().compareTo(seq.getSpeciesNameOnly()) < 0)
+						distances_push(query, seq);	
 				}
 			}
 		}

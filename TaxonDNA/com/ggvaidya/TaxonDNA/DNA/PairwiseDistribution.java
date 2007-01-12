@@ -200,7 +200,10 @@ public class PairwiseDistribution {
 				// identical genera
 				if(!query.getSpeciesNameOnly().equals(seq.getSpeciesNameOnly())) {
 					// but non identical species
-					distances_push((float)query.getPairwise(seq));	
+					//
+					// however, only do it one way (half-table only)
+					if(query.getSpeciesNameOnly().compareTo(seq.getSpeciesNameOnly()) < 0)
+						distances_push((float)query.getPairwise(seq));	
 //					System.err.println("DEBUG - Inter: " + query + " with " + seq);
 				}
 			}
