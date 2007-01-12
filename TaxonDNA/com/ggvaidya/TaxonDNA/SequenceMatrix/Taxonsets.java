@@ -49,7 +49,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	//
 	public static final String	prefix_Length		=	"LENGTH_ATLEAST_";	// I hope the BP is understood =/
 	public static final String	prefix_CharSets		=	"CHARSETS_ATLEAST_";	// I hope this is understandable =/
-	public static final String 	prefix_TaxonsHaving		=	"TAXONS_HAVING_";	// For gene-based taxonsets
+	public static final String 	prefix_TaxonsHaving	=	"TAXONS_HAVING_";	// For gene-based taxonsets
 
 	// Our variables
 	// keeping track of values, etc.
@@ -353,9 +353,12 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 
 		// give him Geneset taxonsets
 		if(check_generateGeneSets.getState()) {
-			i = matrix.getTableManager().getColumns().iterator();
+			i = matrix.getTableManager().getCharsets().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
+				
+				colName = colName.replaceAll("[^\\w]", "_");
+
 				result.add(Taxonsets.prefix_TaxonsHaving + colName);
 			}
 		}
