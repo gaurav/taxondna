@@ -43,7 +43,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class FindDistances implements WindowListener, ActionListener {
 	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object
-	private Dialog 			dialog 	= null;			// the Dialog which we need to display
+	private Frame 			fr_findDistances 	= null;			// the Frame which we need to display
 
 	private TextArea		text_main = new TextArea(12, 60);
 
@@ -69,9 +69,10 @@ public class FindDistances implements WindowListener, ActionListener {
 		// datastructures.
 //		matrix.getTableManager().getTableModel().addTableModelListener(this);
 
-		// set up 'dialog'
-		dialog = new Dialog(matrix.getFrame(), "Find Distances", false);
-		dialog.setLayout(new BorderLayout());
+		// set up 'fr_findDistances'
+		fr_findDistances = new Frame("Find Distances");
+		fr_findDistances.setBackground(SystemColor.control);
+		fr_findDistances.setLayout(new BorderLayout());
 
 		// set up the optioons panel. These control how the output (into, of course, text_main)
 		// is handled.
@@ -86,11 +87,11 @@ public class FindDistances implements WindowListener, ActionListener {
 		rl.add(new Label("% (inclusive)"), RightLayout.BESIDE);
 		btn_Go.addActionListener(this);
 		rl.add(btn_Go, RightLayout.NEXTLINE | RightLayout.STRETCH_X | RightLayout.FILL_2);
-		dialog.add(options, BorderLayout.NORTH);
+		fr_findDistances.add(options, BorderLayout.NORTH);
 
 		// Text_main. All results are printed out here for the purview of the customer.
 		text_main.setEditable(false);
-		dialog.add(text_main);
+		fr_findDistances.add(text_main);
 
 		// set up the 'buttons' bar ... which is 'Copy to clipboard' and 'Export as text', our old friends
 		Panel buttons = new Panel();
@@ -99,19 +100,18 @@ public class FindDistances implements WindowListener, ActionListener {
 		buttons.add(btn_Copy);
 		btn_Export.addActionListener(this);
 		buttons.add(btn_Export);
-		dialog.add(buttons, BorderLayout.SOUTH);
+		fr_findDistances.add(buttons, BorderLayout.SOUTH);
 
 		// register us as a 'listener'
-		dialog.addWindowListener(this);
+		fr_findDistances.addWindowListener(this);
 	}
 
 	public void go() {
-		dialog.pack();
-		dialog.setVisible(true);
+		fr_findDistances.pack();
+		fr_findDistances.setVisible(true);
 	}
 
 	public void displayResults() throws DelayAbortedException {
-
 		// 
 		// Step 1. Figure out what we're really (kinda, sorta) looking for.
 		//
@@ -157,16 +157,17 @@ public class FindDistances implements WindowListener, ActionListener {
 				String colName = (String)i.next();
 				SequenceList sl = tm.getSequenceListByColumn(colName);
 			
+				colNames.add(colName);
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
 							new ProgressDialog(
-								matrix.getFrame(),
+								fr_findDistances,	
 								"Please wait, calculating pairwise distances ...",
 								"Calculating intraspecific pairwise distances for " + colName)
 							));
 
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTER, 
 							new ProgressDialog(
-								matrix.getFrame(),
+								fr_findDistances,
 								"Please wait, calculating pairwise distances ...",
 								"Calculating interspecific, congeneric pairwise distances for " + colName)
 							)
@@ -179,12 +180,12 @@ public class FindDistances implements WindowListener, ActionListener {
 		//
 		Vector results = new Vector();
 		ProgressDialog delay = new ProgressDialog(
-				matrix.getFrame(),
+				fr_findDistances,
 				"Please wait, finalizing results ...",
 				"Searching for pairwise distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%. Sorry for the delay!");
 		delay.begin();
 		int count = 0;
-		Iterator i = pdColumns.iterator();		
+		Iterator i = pdColumns.iterator();
 
 		while(i.hasNext()) {
 			delay.delay(count, pdColumns.size());
@@ -213,6 +214,7 @@ public class FindDistances implements WindowListener, ActionListener {
 
 		}
 		text_main.setText(count + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
+
 		delay.end();
 	}
 
@@ -247,7 +249,7 @@ public class FindDistances implements WindowListener, ActionListener {
 	public void windowActivated(WindowEvent e) {}
 	public void windowClosed(WindowEvent e) {}
 	public void windowClosing(WindowEvent e) {
-		dialog.setVisible(false);
+		fr_findDistances.setVisible(false);
 	}
 	public void windowDeactivated(WindowEvent e) {}
 	public void windowDeiconified(WindowEvent e) {}
