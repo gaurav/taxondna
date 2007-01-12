@@ -189,6 +189,22 @@ public class GenBankFile {
 		if(d != null)
 			d.begin();
 
+		// count lines
+		int count_lines = 0;
+
+		try {
+			BufferedReader r = new BufferedReader(new FileReader(f));
+			while(true) {
+				if(r.readLine() == null)
+					break;
+				if(d != null)
+					d.delay(count_lines, Integer.MAX_VALUE);	// reasonable amount of possible file lines
+				count_lines++;
+			}
+		} catch(Exception e) {
+			// ignore; we'll catch it propery in a second
+		}
+
 		LineNumberReader r = null;
 		try {
 			r = new LineNumberReader(new FileReader(f));
@@ -200,6 +216,9 @@ public class GenBankFile {
 			String line = null;
 			while(true) {
 				line = r.readLine();
+
+				if(d != null)
+					d.delay(r.getLineNumber() - 1, count_lines);
 
 				if(line == null) {
 					// EOF!
@@ -296,15 +315,18 @@ public class GenBankFile {
 		} finally {
 			if(r != null)
 				r.close();
+		
+			if(d != null)
+				d.end();
 		}
-				
-
-		if(d != null)
-			d.end();
 	}
 
 	public File getFile() {
 		return file;
+	}
+
+	public void setFile(File f) {
+		file = f;
 	}
 
 	public void addLocus(Locus l) {
@@ -326,13 +348,28 @@ public class GenBankFile {
 	public String toString() {
 		return super.toString() + ": contains " + getLocusCount() + " loci";
 	}
+	
+	public String getAsGenBank(DelayCallback delay) throws DelayAbortedException {
+		StringWriter writer = new StringWriter();
+		writeAsGenBank(writer, delay);
+		return writer.toString();
+	}
 
-	public String getAsGenBank() {
-		StringBuffer buff = new StringBuffer();
-		
+	public void writeAsGenBank(Writer writer, DelayCallback delay) throws DelayAbortedException {
+		PrintWriter pw = new PrintWriter(writer);
+
+		if(delay != null)
+			delay.begin();
+
+		int count = 0;
+		int loci_count = getLocusCount();
 		Iterator i_loci = getLoci().iterator();
 		while(i_loci.hasNext()) {
 			Locus l = (Locus) i_loci.next();
+
+			if(delay != null)
+				delay.delay(count, loci_count);
+			count++;
 
 			Iterator i_sections = l.getSections().iterator();
 			while(i_sections.hasNext()) {
@@ -346,23 +383,23 @@ public class GenBankFile {
 				// for everything else, we fill up the keyword to
 				// 12 spaces.
 				if(s.name().equals("ORIGIN")) {
-					buff.append("ORIGIN      \n        " + s.value() + "\n");
+					pw.print("ORIGIN      \n        " + s.value() + "\n");
 				} else if(s.name().equals("FEATURES")) {
-					buff.append("FEATURES             " + s.value() + "\n");
+					pw.print("FEATURES             " + s.value() + "\n");
 				} else {
 					StringBuffer tmp = new StringBuffer();
 					for(int x = 0; x < 12 - (s.name().length()); x++)
 						tmp.append(' ');
 
-					buff.append(s.name() + tmp.toString() + s.value() + "\n");
+					pw.print(s.name() + tmp.toString() + s.value() + "\n");
 				}
-
 			}
 
-			buff.append("//\n\n");
+			pw.print("//\n\n");
 		}
 
-		return buff.toString();
+		if(delay != null)
+			delay.end();
 	}
 
 }

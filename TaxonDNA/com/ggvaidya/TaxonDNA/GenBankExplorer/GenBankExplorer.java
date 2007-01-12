@@ -47,6 +47,9 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class GenBankExplorer implements ActionListener, ItemListener, DropTargetListener {
+	// Shared between all GBXs
+	private static int	count_genBankExplorers = 0;
+
 	// Subcomponents
 	private Preferences	prefs			= new Preferences(this);
 	private ViewManager	viewManager		= new ViewManager(this);
@@ -83,6 +86,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	 * Creates a new GenBankExplorer object, without any initial file.
 	 */
 	public GenBankExplorer() {
+		count_genBankExplorers++;
 		createUI();
 		resetFrameTitle();
 	}
@@ -97,6 +101,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	 * @param files A vector of files to load in.
 	 */
 	public GenBankExplorer(File file) {
+		count_genBankExplorers++;
 		createUI();			// create our user interface
 
 		// now load up this file 
@@ -141,6 +146,85 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 // 		This involves menu, window and drop listening.
 //
 	/**
+	 * Helper function; retrieves a file name from the user and displays it.
+	 */
+	public File getFileToLoad(String title) {
+		FileDialog fd = new FileDialog(mainFrame, title, FileDialog.LOAD);
+		fd.setVisible(true);	// go!
+
+		File f = null;
+		if(fd.getFile() != null) {
+			String fileName = fd.getFile();
+			if(fd.getDirectory() != null) {
+				fileName = fd.getDirectory() + fileName;
+			}
+			f = new File(fileName);
+		}
+	
+		return f;
+	}
+
+	/**
+	 * Helper function; retrieves a file name from the user and displays it.
+	 */
+	public File getFileToSave(String title) {
+		FileDialog fd = new FileDialog(mainFrame, title, FileDialog.SAVE);
+		fd.setVisible(true);	// go!
+
+		File f = null;
+		if(fd.getFile() != null) {
+			String fileName = fd.getFile();
+			if(fd.getDirectory() != null) {
+				fileName = fd.getDirectory() + fileName;
+			}
+			f = new File(fileName);
+		}
+	
+		return f;
+	}
+
+	public boolean save() {
+		GenBankFile gbf = viewManager.getGenBankFile();
+		if(gbf != null) {
+			File f = gbf.getFile();
+				
+			try {
+				PrintWriter pw = new PrintWriter(new FileWriter(f));
+
+				ProgressDialog pd = new ProgressDialog(
+						mainFrame,
+						"Please wait, exporting file ...",
+						"I'm exporting the current file to '" + f.getAbsolutePath() + "'. Sorry for making you wait!");
+				gbf.writeAsGenBank(pw, pd);
+				pw.close();
+
+				MessageBox mb = new MessageBox(
+						mainFrame,
+						"File written successfully!",
+						"The file '" + f.getAbsolutePath() + "' was written successfully!");
+				mb.go();
+
+				return true;
+
+			} catch(DelayAbortedException e) {
+				return false;
+
+			} catch(IOException e) {
+				MessageBox mb = new MessageBox(
+						mainFrame,
+						"Sorry, couldn't write file!",
+						"I couldn't write to '" + f.getAbsolutePath() + "'. Are you sure you have the necessary permissions, and that the disk isn't full?",
+						MessageBox.MB_ERROR);
+				mb.go();
+
+				return false;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Handles ActionEvents for the file menu and help menu.
 	 */
 	public void actionPerformed(ActionEvent evt) {
@@ -156,19 +240,28 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		// File -> Open. Clears the current file,
 		// then tries to open a new one.
 		if(cmd.equals("Open")) {
-			FileDialog fd = new FileDialog(mainFrame, "Please choose a GenBank file to explore ...", FileDialog.LOAD);
-			fd.setVisible(true);	// go!
-
-			if(fd.getFile() != null) {
-				String fileName = fd.getFile();
-				if(fd.getDirectory() != null) {
-					fileName = fd.getDirectory() + fileName;
-				}
-				
-				viewManager.loadFile(new File(fileName));
-			}
-
+			File f = getFileToLoad("Please select a GenBank file to load ...");	
+			viewManager.loadFile(f);
 			return;	
+		}
+
+		// File -> Save. Saves the current file
+		// under its pre-existing name.
+		if(cmd.equals("Save")) {
+			save();
+		}
+
+		if(cmd.equals("Save As")) {
+			File f_old = viewManager.getGenBankFile().getFile();
+			File f = getFileToSave("Where would you like to save this file?");
+			if(f != null) {
+				GenBankFile gbf = viewManager.getGenBankFile();
+				gbf.setFile(f);
+				if(save())
+					viewManager.updateFileInfo();
+				else
+					gbf.setFile(f_old);
+			}
 		}
 
 		// Help -> About. We should put something
@@ -304,9 +397,12 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	}
 
 	public void exit() {
-		viewManager.clear();
-		mainFrame.dispose();
-		System.exit(0);
+		count_genBankExplorers--;
+		if(count_genBankExplorers <= 0) {
+			viewManager.clear();
+			mainFrame.dispose();
+			System.exit(0);
+		}
 	}
 
 //

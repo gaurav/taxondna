@@ -118,6 +118,7 @@ public class ViewManager {
 	public void clear() {
 		if(genBankFile != null) {
 			genBankFile = null;
+			updateTree();
 		}
 	}
 
@@ -128,7 +129,11 @@ public class ViewManager {
 		clear();
 
 		try {
-			genBankFile = new GenBankFile(f, null);
+			ProgressDialog pd = new ProgressDialog(
+					explorer.getFrame(),
+					"Please wait, loading file ...",
+					"Loading GenBank file " + f.getAbsolutePath() + ". Sorry for the delay!");
+			genBankFile = new GenBankFile(f, pd);
 		} catch(IOException e) {
 			displayIOExceptionWhileWriting(e, f);
 			return;
@@ -148,6 +153,10 @@ public class ViewManager {
 	 */
 	public JPanel getPanel() {
 		return panel;
+	}
+
+	public GenBankFile getGenBankFile() {
+		return genBankFile;
 	}
 
 // 	ERROR HANDLING AND DISPLAY CODE
@@ -226,5 +235,10 @@ public class ViewManager {
 	public void updateNode(TreePath path) {
 		currentDisplayMode.setGenBankFile(genBankFile);
 		currentDisplayMode.updateNode(path);
+	}
+
+	public void updateFileInfo() {
+		// the file information changed (more sequences, file name change, etc.)
+		currentDisplayMode.setGenBankFile(genBankFile);
 	}
 }
