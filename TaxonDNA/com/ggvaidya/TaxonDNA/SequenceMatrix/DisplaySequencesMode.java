@@ -392,7 +392,7 @@ class SequencesColorRenderer extends DefaultTableCellRenderer
 		comp.setForeground(Color.BLACK);
 		comp.setBackground(Color.WHITE);
 
-		if(row < 1 || col < dsm.additionalColumns) {
+		if(row < 0 || col < dsm.additionalColumns) {
 			// if the row is invalid, or the column is not one of the sequence columns
 			return comp;
 		}

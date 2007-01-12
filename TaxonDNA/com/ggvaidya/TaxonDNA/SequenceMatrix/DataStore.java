@@ -801,10 +801,10 @@ public class DataStore {
 		Iterator i_cols = getColumns().iterator();
 		while(i_cols.hasNext()) {
 			String colName = (String) i_cols.next();	
-			Sequence seq = getSequence(colName, seqOld);
+			Sequence seq = getCancelledSequence(colName, seqOld);
 
-			if(getSequence(colName, seqOld) != null) {
-				Sequence replacing = getSequence(colName, seqNew);
+			if(seq != null) {
+				Sequence replacing = getCancelledSequence(colName, seqNew);
 				
 				if(replacing != null) {
 					// the new name already exists!
@@ -840,12 +840,12 @@ public class DataStore {
 		while(i_cols.hasNext()) {
 			String colName = (String) i_cols.next();	
 
-			if(getSequence(colName, seqOld) != null) {
+			if(getCancelledSequence(colName, seqOld) != null) {
 				// replace
-				Sequence seq = getSequence(colName, seqOld);
+				Sequence seq = getCancelledSequence(colName, seqOld);
 				deleteSequence(colName, seqOld);
 
-				Sequence replacing = getSequence(colName, seqNew);
+				Sequence replacing = getCancelledSequence(colName, seqNew);
 				
 				if(replacing != null) {
 					// the new name already exists!

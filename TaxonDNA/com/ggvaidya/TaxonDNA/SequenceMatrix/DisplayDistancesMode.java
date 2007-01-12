@@ -617,7 +617,7 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 	comp.setForeground(Color.BLACK);
 	comp.setBackground(Color.WHITE);
 
-	if(row < 1 || col < DisplayDistancesMode.SELECTED_COLUMN) {
+	if(row < 0 || col < DisplayDistancesMode.SELECTED_COLUMN) {
 		return comp;
 	}
 

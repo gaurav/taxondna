@@ -925,7 +925,7 @@ class CorrelationsColorRenderer extends DefaultTableCellRenderer
 	comp.setForeground(Color.BLACK);
 	comp.setBackground(Color.WHITE);
 
-	if(row < 1 || col < dcm.additionalColumns) {
+	if(row < 0 || col < dcm.additionalColumns) {
 		// if the row is invalid, or the column is not one of the sequence columns
 		return comp;
 	}

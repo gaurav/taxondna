@@ -389,6 +389,9 @@ public class TableManager implements ActionListener {
 	public void renameSequence(String oldName, String newName) {
 		if(oldName.equals(newName))
 			return;			// don't do same name transforms
+						// neither shalt thou rename to nothingness
+		if(newName == null || newName.equals(""))
+			return;
 
 		String complaints = dataStore.testRenameSequence(oldName, newName);
 		if(	
@@ -656,7 +659,7 @@ public class TableManager implements ActionListener {
 	}
 
 	public void defaultDoubleClick(MouseEvent e, int col, int row) {
-		if(row > 0 && col != -1 && col >= currentDisplayMode.additionalColumns) {
+		if(row >= 0 && col != -1 && col >= currentDisplayMode.additionalColumns) {
 			// it's, like, valid, dude.
 			toggleCancelled(currentDisplayMode.getColumnName(col), currentDisplayMode.getRowName(row));
 		}
