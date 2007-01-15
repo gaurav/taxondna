@@ -619,7 +619,7 @@ public class SequenceList implements List, Testable {
 			return null;
 		}
 
-		Iterator i = conspecificIterator(seq);
+		Iterator i = new ConspecificIterator(this, seq, index);
 
 		unlock();
 		return i;
@@ -636,22 +636,22 @@ public class SequenceList implements List, Testable {
 	 * around with a conspecificIterator! Otherwise, the
 	 * sequence might get resorted under your thumb, which
 	 * could cause you lots and lots of angst.
-	 */
 	public Iterator conspecificIterator(Sequence seq) {
 		lock();
 		resort(SORT_BYNAME);	// so we're going by name	
 		
-		int index = indexOf(seq);	
+		int index = indexOf(seq);
 		if(index == -1) {
 			// this sequence does not exist
 			return null;
 		}
 
-		ConspecificIterator i = new ConspecificIterator(this, seq, index);
+		ConspecificIterator i = ;
 		unlock();
 
 		return i;
 	}
+	*/
 	/**
 	 * Returns an Array version of this list
 	 */
@@ -974,7 +974,7 @@ public class SequenceList implements List, Testable {
 		sl.add(seq);
 
 		testMaster.beginTest("Is ConspecificIterator actually returning all the sequences?");
-		Iterator i = sl.conspecificIterator(seq1);
+		Iterator i = sl.conspecificIterator(seq1.getSpeciesName());
 		int x = 0;
 		while(i.hasNext()) {
 			Sequence s = (Sequence) i.next();
