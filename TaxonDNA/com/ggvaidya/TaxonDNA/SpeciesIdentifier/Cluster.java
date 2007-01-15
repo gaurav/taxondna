@@ -533,10 +533,14 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					while(i2.hasNext()) {
 						Sequence seq = (Sequence)i2.next();
 						
-						countChars += seq.getSpeciesName().length();
+						String seqName = seq.getDisplayName();
+						if(seqName == null || seqName.length() == 0)
+							seqName = "{No name}";
+
+						countChars += seqName.length();
 
 						if(countChars > CHAR_LIMIT_ON_CLUSTER_NAMES) { // if the count of the names is more than 40 chars, stop it and say "and more")
-							if(seq.getSpeciesName().length() > CHAR_LIMIT_ON_CLUSTER_NAMES)
+							if(seqName.length() > CHAR_LIMIT_ON_CLUSTER_NAMES)
 								name.append(numSequences + " sequences");
 							else
 								name.append("and " + numSequences + " more");
@@ -544,7 +548,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 						}
 						numSequences--;
 
-						name.append(seq.getSpeciesName());
+						name.append(seqName);
 						if(i2.hasNext())
 							name.append(", ");
 					}
