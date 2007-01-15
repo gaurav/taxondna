@@ -89,7 +89,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 
 		// set up the PairwiseDistancess
 		StringBuffer results = new StringBuffer();
-		results.append("Sequence name\tLargest conspecific match\tDistance\tOverlap\tClosest interspecific match\tDistance\tOverlap\n"); 
+		results.append("Sequence name\tLargest conspecific match\tDistance\tOverlap\tClosest congeneric, interspecific match\tDistance\tOverlap\n"); 
 		try {
 			ProgressDialog pd = new ProgressDialog(
 					identifier.getFrame(),
@@ -125,8 +125,15 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 					if(seq2.getSpeciesName() == null)
 						continue;
 
-					if(!seq.getSpeciesName().equals(seq2.getSpeciesName())) {
-						// interspecific!
+					String genus1 = seq.getGenusName();
+					String genus2 = seq2.getGenusName();
+
+					if(	genus1 != null && genus1.length() > 0 &&
+						genus2 != null && genus2.length() > 0 &&
+						genus1.equals(genus2) &&	// congeneric!
+						!seq.getSpeciesName().equals(seq2.getSpeciesName())
+										// but allospecific!
+					) {
 						if(seq_smallestInter == null) {
 							if(seq2.getPairwise(seq) != -1) {
 								// the first inter will also (by definition) be the SMALLEST
@@ -165,7 +172,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 				}
 
 				if(seq_smallestInter == null) {
-					results.append("No matching interspecific sequence\tN/A\tN/A\t");
+					results.append("No matching congeneric, interspecific sequence\tN/A\tN/A\t");
 				} else {
 					results.append(seq_smallestInter.getDisplayName() + "\t" + percentage(seq_smallestInter.getPairwise(seq), 1) + "\t" + seq_smallestInter.getOverlap(seq) + "\t");
 //					System.err.println(seq + "\tINTER\t" + seq_smallestInter.getDisplayName() + "\t" + seq_smallestInter.getPairwise(seq) + "\t" + seq_smallestInter.getOverlap(seq) + "\n");
@@ -210,7 +217,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 	// UIExtension stuff
 	public String getShortName() { return "Extreme Pairwise"; }
 	
-	public String getDescription() { return "Determines the extreme pairwise distance - the largest intraspecific and smallest interspecific distance - for each sequence."; }
+	public String getDescription() { return "Determines the extreme pairwise distance - the largest intraspecific and smallest congeneric, interspecific distance - for each sequence."; }
 	
 	public Frame getFrame() { return null; }
 }
