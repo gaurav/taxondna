@@ -66,6 +66,7 @@ public class PairwiseDistances {
 
 	// statistics we might need to report to the user
 	private int		count_sequences		= 	0;
+	private Hashtable	ht_averages	=	new Hashtable();	// String(speciesName) => Double(average distance)
 
 	private void distances_push(Sequence seqA, Sequence seqB) {
 		if(seqA.getPairwise(seqB) < 0)
@@ -138,7 +139,12 @@ public class PairwiseDistances {
 	 * in SequenceList 'list', and add it to this pairwise distrib.
 	 */
 	private void _addIntra(SequenceList list, Sequence query) {
-		Iterator i = list.conspecificIterator(query);
+		if(query.getSpeciesName() == null)
+			return;
+
+		Iterator i = list.conspecificIterator(query.getSpeciesName());
+		double total = 0.0;
+		int count = 0;
 
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
@@ -147,7 +153,14 @@ public class PairwiseDistances {
 				continue;
 
 			distances_push(query, seq);
+			double d = query.getPairwise(seq);
+			if(d > -1) {
+				total += d;
+				count++;
+			}
 		}
+
+		ht_averages.put(query.getFullName(), new Double(total / count));
 	}
 
 	/**
@@ -156,6 +169,8 @@ public class PairwiseDistances {
 	 */
 	private void _addInter(SequenceList list, Sequence query) {
 		Iterator i = list.iterator();
+		double total = 0.0;
+		int count = 0;
 
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
@@ -169,11 +184,20 @@ public class PairwiseDistances {
 					// but non identical species
 					//
 					// however, only do it one way (half-table only)
-					if(query.getSpeciesNameOnly().compareTo(seq.getSpeciesNameOnly()) < 0)
-						distances_push(query, seq);	
+//					if(query.getSpeciesNameOnly().compareTo(seq.getSpeciesNameOnly()) < 0) {
+						distances_push(query, seq);
+
+						double d = query.getPairwise(seq);
+						if(d > -1) {
+							total += d;
+							count++;
+						}
+//					}
 				}
 			}
 		}
+
+		ht_averages.put(query.getFullName(), new Double(total / count));
 	}
 	
 	/** Number of sequences in this pairwise distribution. */ 
@@ -301,6 +325,23 @@ public class PairwiseDistances {
 	 */
 	private double percentage(int x, int y) {
 		return percentage((double)x, (double)y); 
+	}
+
+	/**
+	 * Get the average pairwise distance for sequence 'X'
+	 */
+	public double getAverageDistance(String seqName) {
+		Double d = (Double)ht_averages.get(seqName);
+		if(d == null)
+			return -1.0;
+		return d.doubleValue();
+	}
+
+	/**
+	 * Get the list of names we have average PDs for
+	 */
+	public Set getAveragedSequences() {
+		return ht_averages.keySet();
 	}
 }
 
