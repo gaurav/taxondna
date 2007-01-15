@@ -44,6 +44,7 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 
 	private PairwiseDistances intra = null;	
 	private PairwiseDistances inter = null;
+	private int		  mode  = 0;		// 0 == intra, 1 == inter
 
 	private Hashtable hash_distances = null;
 
@@ -176,6 +177,8 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 				hash_distances.put(key, distances);
 			}				
 		}
+
+		list_distances.add("Averages");
 
 		text_matches.setText("Please select a distance category to examine.");
 
@@ -363,10 +366,12 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 	public void actionPerformed(ActionEvent evt) {
 		if(evt.getSource().equals(btn_Intra)) {
 			new Thread(this, "IntraPairwiseExplorer").start();
+			mode = 0;
 			return;
 		}
 		if(evt.getSource().equals(btn_Inter)) {
 			new Thread(this, "InterPairwiseExplorer").start();
+			mode = 1;
 			return;
 		}
 	}		
@@ -376,28 +381,63 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 			if(hash_distances != null && e.getStateChange() == ItemEvent.SELECTED ) {
 				Integer item = (Integer) e.getItem();
 				String key = list_distances.getItem(item.intValue());
+				StringBuffer buff = new StringBuffer();
 
-				StringBuffer buff = new StringBuffer("The following matches occured " + key + "\n");
+				if(key.equals("Averages")) {
+					String type = "";
+					PairwiseDistances distances = null;
+					if(mode == 0) {
+						type = "intraspecific";
+						distances = intra;
+					} else {
+						type = "congeneric, interspecific";
+						distances = inter;
+					}
 
-				Vector vec = (Vector) hash_distances.get(key);	// ignore the returns-null case
-				Iterator i = vec.iterator();
-				while(i.hasNext()) {
-					PairwiseDistance pd = (PairwiseDistance) i.next();
+					buff = new StringBuffer("The following are the average " + type + " distances for the following sequences:\n");
+					buff.append("Sequence name\t\tAverage distance\n");
+					Vector v = new Vector();
+					v.addAll(distances.getAveragedSequences());
+					Collections.sort(v);
+					Iterator i = v.iterator();
+					while(i.hasNext()) {
+						String spName = (String) i.next();
+						double d = distances.getAverageDistance(spName);
 
-					double distance = pd.getDistance();
-					// now, we are accurate to six decimal places
-					// so lets round down EXACTLY to six decimal places
-					// note that that means:
-					// 	0.000001 is the smallest significant distance
-					// but, since we have to convert it to 'percentages',
-					// when we print our numbers out,
-					// 	0.0001% is the smallest significant distance
-					distance *= 100;
-					distance *= 10000;
-					distance = (double)Math.round(distance); // round it off to 4 digits
-					distance /= 10000;			// back into %ages
-					
-					buff.append("\t" + pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + distance + "%\n");
+						if(Double.isNaN(d))
+							buff.append(spName + "\t\tNo valid comparisons\n");
+						else {
+							d *= 100;
+							d *= 10000;
+							d = (double)Math.round(d); 	// round it off to 4 digits
+							d /= 10000;			// back into %ages
+							buff.append(spName + "\t\t" + d + "%\n");
+						}
+					}
+
+				} else {
+					buff = new StringBuffer("The following matches occured " + key + "\n");
+
+					Vector vec = (Vector) hash_distances.get(key);	// ignore the returns-null case
+					Iterator i = vec.iterator();
+					while(i.hasNext()) {
+						PairwiseDistance pd = (PairwiseDistance) i.next();
+
+						double distance = pd.getDistance();
+						// now, we are accurate to six decimal places
+						// so lets round down EXACTLY to six decimal places
+						// note that that means:
+						// 	0.000001 is the smallest significant distance
+						// but, since we have to convert it to 'percentages',
+						// when we print our numbers out,
+						// 	0.0001% is the smallest significant distance
+						distance *= 100;
+						distance *= 10000;
+						distance = (double)Math.round(distance); // round it off to 4 digits
+						distance /= 10000;			// back into %ages
+						
+						buff.append("\t" + pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + distance + "%\n");
+					}
 				}
 
 				text_matches.setText(buff.toString());
