@@ -99,7 +99,18 @@ public class GenBankFile {
 			return v;
 		}
 
-		public String getSection(String s) {
+		public Section getSection(String s) {
+			List v = getSections(s);
+
+			if(v.size() == 0)
+				return null;
+			if(v.size() == 1)
+				return (Section) v.get(0);
+
+			throw new RuntimeException("There are multiple sections named '" + s + "' in Locus " + this + "!");
+		}
+
+		public String getSectionsAsString(String s) {
 			StringBuffer buff = new StringBuffer();
 			List v = getSections(s);
 			
@@ -110,21 +121,25 @@ public class GenBankFile {
 				buff.append(sec.value() + "\n");
 			}
 
-			return buff.toString();
+			return buff.toString().trim();
 		}
 
 		public List getSections() {
 			return (List) v_sections;
 		}
 
-		public String toString() {
+		public String getName() {
 			if(getSection("DEFINITION") != null) {
-				return getSection("DEFINITION");
+				return getSection("DEFINITION").entry();
 			} else if(getSection("ACCESSION") != null) {
-				return getSection("ACCESSION");
+				return getSection("ACCESSION").entry();
 			} else {
 				return "Unnamed GenBank locus";
 			}
+		}	
+
+		public String toString() {
+			return getName();
 		}
 	}
 
@@ -132,9 +147,9 @@ public class GenBankFile {
 	 * A section 
 	 */
 	public class Section {
-		private Locus locus = null;
-		private String name = "";
-		private StringBuffer buff = null;
+		protected Locus locus = null;
+		protected String name = "";
+		protected StringBuffer buff = null;
 
 		public Section(Locus l, String secName) {
 			locus = l;
@@ -145,7 +160,7 @@ public class GenBankFile {
 			return locus;
 		}
 
-		public void setValue(String val) {
+		public void setValue(String val)  {
 			buff = new StringBuffer(val);	
 		}
 
@@ -155,16 +170,306 @@ public class GenBankFile {
 			buff.append("\n" + val);
 		}
 
+		public void parseSection() throws FormatException {
+			// *we* don't do any parsing, humpf
+		}
+
 		public String name() { return name; }
-		public String value() { return buff.toString().trim(); }
+
+		/*
+		 * Okay, listen carefully, this is important.
+		 */
+		/**
+		 * The value() of an entry is the EXACT STRING which needs to be
+		 * placed into the GenBank file after the appropriate space for
+		 * the name(). For instance, for REFERENCE:
+		 * 	value() = "2  (bases 1 to 5028)
+				  AUTHORS   Roemer,T., Madden,K., Chang,J. and Snyder,M.
+				  TITLE     Selection of axial growth sites in yeast requires Axl2p, a novel
+				            plasma membrane glycoprotein
+				  JOURNAL   Genes Dev. 10 (7), 777-793 (1996)
+				  PUBMED    8846915"
+		 * The section will be written back to file as new String(name() + appropriate_spaces + value()),
+		 * so the format had better be <em>exactly</em> right.
+		 */
+		public String value()  { 
+			return buff.toString().trim(); 
+		}
+
+		/**
+		 * The entry() of a Section is the value(), reformatted to be 'human-readable'. This is
+		 * ignored when writing back to the file, but is the ONLY value used in the program itself
+		 * and in all user-facing surfaces (unless it's some sort of what-will-this-output question).
+		 * The individual Section classes are responsible for ensuring that the entry() and value()
+		 * methods are suitably synchronized. Section itself will return a spaceless version of the
+		 * value().
+		 *
+		 */
+		public String entry() { 
+//			String no_newlines = buff.toString().replace('\n', ' '); -- REDUNDANT
+			String compress_spaces = value().replaceAll("\\s+", " ");
+			return compress_spaces;
+		}
 
 		// TIMTOWTDI
-		public String getName() { return name; }
-		public String getValue() { return buff.toString().trim(); }
+		public String getName() { return name(); }
+		public String getValue() { return value(); }
+		public String getEntry() { return entry(); }
 
 		public String toString() {
 			return name();
 		}
+	}
+
+	/**
+	 * The OriginSection allows you to read origins off-a loci.
+	 */
+	public class OriginSection extends Section {
+		public OriginSection(Locus l, String name) {
+			super(l, name);
+		}
+
+		public String entry() {
+			return value().replaceAll("\\d+", "").replaceAll("\\s+", "");
+		}
+
+		public Sequence getSequence() throws SequenceException {
+			return new Sequence(getLocus().getName(), entry());
+		}
+	}
+
+	/**
+	 * A class for a Feature.
+	 */
+	public class Feature {
+		private String name = null;
+		private Hashtable ht_keys = new Hashtable();	// String(key_name) => Vector[String(value)]
+
+		public Feature(String name) {
+			this.name = name;
+		}
+
+		/*
+		 * Note that 'additional' are NOT actually keys - each
+		 * key is not guaranteed to yield a unique value.
+		 */
+		public void addKey(String key, String value) {
+			if(ht_keys.get(key) != null)
+				((Vector)ht_keys.get(key)).add(value);
+			else {
+				Vector v = new Vector();
+				v.add(value);
+				ht_keys.put(key, v);
+			}
+		}
+
+		public Set getKeys() {
+			return ht_keys.keySet();
+		}
+
+		public List getValues(String key) {
+			return (List) ht_keys.get(key);
+		}
+
+		public String getName() {
+			return name;
+		}
+	}
+
+	/**
+	 * FeaturesSection. We 'parse' the features. At the moment, we are read-only; this
+	 * allows us to just write quick parse-and-remember code, keeping the original in
+	 * place to write back out to the file.
+	 */
+	public class FeaturesSection extends Section {
+		public FeaturesSection(Locus l, String name) {
+			super(l, name);
+		}
+
+		// Now, we just let <strong>everything work just like it does already</strong>,
+		// except for some minor modification we slip in when nobody's looking.
+		private Vector features = new Vector();
+
+		public void addFeature(Feature f) {
+			features.add(f);
+		}
+
+		public void parseSection() throws FormatException {
+			// okay, here's what a Feature section looks like;
+			// spaces are insignificant (INCLUDING between '"'es),
+			// and  
+			// FEATURES Location/Qualifiers (<id> <location> (/<key>=<value>)*)*
+			//
+			// I'd use a StreamTokenizer if it wasn't such a pain to use :(
+			String[] tokens = value().split("\\s+"); // split by whitespace
+
+			String current_key = null;
+			String current_value = null;
+			Feature f = null;
+			int state = 0;
+			// 0: 	waiting for Location/Qualifiers
+			// 1:	waiting for id
+			// 2:	waiting for location
+			// 3:	waiting for key-value pair OR id
+			for(int x = 0; x < tokens.length; x++) {
+				String tok = tokens[x];	
+
+				switch(state) {
+					case 0:	// waiting for Location/Qualifiers
+					       if(tok.equalsIgnoreCase("Location/Qualifiers"))	       
+						       state = 1;
+					       break;
+					case 1:	// waiting for id
+					       // so this must be the ID then!
+					       f = new Feature(tok);	// tok == name of feature
+					       state = 2;
+					       break;
+					case 2: // waiting for location
+					       // so this must be the location!
+					       f.addKey("@location", tok);
+					       state = 3;
+					       break;
+					case 3: // waiting for key-value pair OR id 
+					       if(tok.charAt(0) == '/') {
+							int index_eq = tok.indexOf('=');
+							if(index_eq == -1)
+								throw new FormatException("In sequence " + name() + ": feature '" + tok + "' is invalid or incomplete (it ought to be /something=something else, but I can't find an '=')");
+
+							current_key = tok.substring(0, index_eq);
+							current_value = tok.substring(index_eq + 1);
+
+							if(countChar(tok, '"') % 2 != 0) {
+								state = 4;
+							} else {
+								f.addKey(current_key, current_value);
+								current_key = null;	// consumed
+								current_value = null;
+							}
+
+					       } else {
+						       addFeature(f);
+						       f = new Feature(tok);	// tok == name of feature
+						       state = 2;
+					       }
+					       break;
+					     
+					case 4:	// waiting for the end of the " 
+					       current_value += " " + tok;	// sorry, world.
+					       if(countChar(tok, '"') % 2 != 0) {
+						       // okay, we're done here
+						       f.addKey(current_key, current_value);
+						       current_key = null;
+						       current_value = null;
+						       state = 3;
+					       }
+					       break;
+				}
+			}
+		}
+
+		public String entry() {
+			StringBuffer buff = new StringBuffer();
+			Iterator i = features.iterator();
+			
+			while(i.hasNext()) {
+				Feature f = (Feature) i.next();	
+
+				buff.append("Feature " + f.getName() + " has the following information:\n");
+				Iterator i_keys = f.getKeys().iterator();
+				while(i_keys.hasNext()) {
+					String key = (String) i_keys.next();
+
+					buff.append("\t" + key + ":\t");
+
+					Iterator i_values = f.getValues(key).iterator();
+					while(i_values.hasNext()) {
+						String val = (String) i_values.next();
+
+						buff.append(val + "\t");
+					}
+					buff.append("\n");
+				}
+			}
+
+			return buff.toString();
+		}
+	}
+
+	// TODO: Optimize (or replace, then bury underground)
+	private int countChar(String str, char ch) {
+		int count = 0;
+
+		for(int x = 0; x < str.length(); x++) {
+			if(str.charAt(x) == ch)
+				count++;
+		}
+
+		return count;
+	}
+
+	/**
+	 * LocusSection. The 'Locus' entry is generally right at the top of the list.
+	 * TO BE WRITTEN (TBD)(TODO)(FIXME)
+	 */
+	/*
+	public class LocusSection extends Section {
+		public LocusSection(Locus l, String name) {
+			super(l, name);
+		}
+
+		// Comments for the following fields are from GenBank release 157.0, Dec 2006
+		// Note that they are LINE offsets (the 'LOCUS' is at positions 01-05). We will
+		// need to subtract 12 to get coordinates relative to 'name'
+		//
+		private String 	locusName = "";		// 13-28
+		private int 	seqLength = 0;		// 30-40, right justified
+		private String 	type = "";		// 45-47 'ss-', 'ds-' or 'ms-' (mixed stranded)
+							// 48-53 'NA', 'DNA', 'tRNA', etc.
+		private String	linear = "";		// 56-63 'linear' or 'circular'
+		private String	divisionCode = "";	// 65-67 division code, see http://www.ncbi.nlm.nih.gov/Sitemap/samplerecord.html#GenBankDivisionB or Section 3.3
+		private String	date = "";		// 69-79 
+
+		private boolean appendedAlready = false;
+
+		// NCBI recommends we do NOT use the variable types to get our job done, but it's just
+		// easier this way. I'm sorry. We'll re-write if the format changes, I guess.
+		public void append(String x) {
+			if(appendedAlready)
+				throw new RuntimeException("LocusSection " + this + " in locus " + locus + " has a duplicate append!");
+			appendedAlready = true;
+			setValue(x);
+		}
+
+		public void setValue(String x) {
+			// parse 'x' and store its value in our fields
+			if(x.getLength() < 79) {
+				
+			}	
+		}
+
+		public String entry() {
+			
+		}
+
+		public String value() {
+
+		}
+	}
+	*/
+
+	/**
+	 * Returns a Section object of the right type (i.e, if section name is 'LOCUS',
+	 * it'll return a LocusSection instead of a Section.
+	 */
+	public Section sectionFactory(Locus l, String name) {
+		if(name.equalsIgnoreCase("FEATURES"))
+			return new GenBankFile.FeaturesSection(l, name);
+		else if(name.equalsIgnoreCase("ORIGIN"))
+			return new GenBankFile.OriginSection(l, name);
+//		else if(name.equalsIgnoreCase("LOCUS"))
+//			return new GenBankFile.LocusSection(l, name);
+		else
+			return new GenBankFile.Section(l, name);
 	}
 
 	/** You can't do that! */
@@ -222,10 +527,12 @@ public class GenBankFile {
 
 				if(line == null) {
 					// EOF!
-					if(s != null)
+					if(s != null) {
+						s.parseSection();
 						l.addSection(s);
+					}
 
-					if(l != null)
+					if(l != null && l.getSections().size() > 0)
 						addLocus(l);
 
 					break;
@@ -247,14 +554,20 @@ public class GenBankFile {
 						// SECTION or '//'
 						if(line.charAt(0) == '/' && line.charAt(1) == '/') {
 							// '//'
-							l.addSection(s);
+							if(s != null) {
+								s.parseSection();
+								l.addSection(s);
+							}
 							addLocus(l);
 							l = new Locus();
 							s = null;
 						} else {
 							// SECTION
 							// save old section
-							l.addSection(s);
+							if(s != null) {
+								s.parseSection();
+								l.addSection(s);
+							}
 
 							// start new section
 							int until = line.indexOf(' ');
@@ -262,7 +575,7 @@ public class GenBankFile {
 								throw new FormatException("Error on line " + r.getLineNumber() + ": Expecting keyword, found '" + line + "'");
 
 							String keyword = line.substring(0, until).trim();
-							s = new Section(l, keyword);
+							s = sectionFactory(l, keyword);
 
 							String x = line.substring(until).trim();
 								// we pick up the ' ', then trim it out, so in case the string ends at (until + 1), we won't throw an exception.
