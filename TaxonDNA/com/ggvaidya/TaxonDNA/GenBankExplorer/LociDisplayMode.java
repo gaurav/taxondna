@@ -101,15 +101,31 @@ public class LociDisplayMode extends DisplayMode {
 			while(i_sec.hasNext()) {
 				GenBankFile.Section sec = (GenBankFile.Section) i_sec.next();
 
-				buff.append(sec.getName() + ": " + sec.getValue() + "\n");
+				buff.append(sec.getName() + ": " + sec.entry() + "\n");
 			}
 
 			viewManager.setSelectionText("Currently selected: locus " + l.toString() + "\n" + buff);
 
-		} else if(cls.equals(GenBankFile.Section.class)) {
+		} else if(GenBankFile.Section.class.isAssignableFrom(cls)) {
 			GenBankFile.Section sec = (GenBankFile.Section) obj;
 
-			viewManager.setSelectionText("Currently selected: section " + sec.getName() + " of locus " + sec.getLocus() + "\nValue: " + sec.getValue());	
+			String additionalText = "";
+			
+			if(GenBankFile.OriginSection.class.isAssignableFrom(cls)) {
+				GenBankFile.OriginSection ori = (GenBankFile.OriginSection) obj;
+				Sequence seq = null;
+
+				try {
+					seq = ori.getSequence();
+					additionalText = "Sequence:\n" + seq.getSequenceWrapped(70);
+
+				} catch(SequenceException e) {
+					additionalText = "Sequence: Could not be extracted.\nThe following error occured while parsing sequence: " + e.getMessage();
+				}
+
+			}
+
+			viewManager.setSelectionText("Currently selected: section " + sec.getName() + " of locus " + sec.getLocus() + "\nValue: " + sec.entry() + "\n" + additionalText);
 		}
 	}
 }
