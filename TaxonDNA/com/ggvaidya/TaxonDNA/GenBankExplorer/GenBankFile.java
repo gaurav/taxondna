@@ -239,13 +239,148 @@ public class GenBankFile {
 	}
 
 	/**
+	 * A class for a Location. These are locations as defined in section 3.4.12.2 of
+	 * release 157.0 of NCBI-GenBank. To simplify, there are seven types of valid
+	 * locations in a GenBank file.
+	 */
+
+	 /*
+	 * TYPE 1.1 Site between two residues: 				[Z:]X^Y
+	 * * NOT SUPPORTED
+	 * TYPE 1.2 Single residue chosen from a range of residues: 	[Z:][<]X.[>]Y
+	 * * NOT SUPPORTED
+	 * TYPE 2.1 Contiguous span of bases:				[Z:][<]X..[>]Y
+	 * 	Z above indicates an accession number, to refer to another sequence
+	 * * supported
+	 *
+	 * TYPE 3.1 Operator complement():				complement(location)
+	 * * supported
+	 * TYPE 3.2 Operator join():					join(location, location, .. location)
+	 * * supported
+	 * TYPE 3.3 Operator order():					order(location, location, .. location)
+	 *	Note that join() implies that the locations must be joined end-to-end, but
+	 *	order() doesn't.
+	 * * supported
+	 */
+	public class Location {
+		public class SingleLocation extends Location {
+			private boolean complemented = false;	// complement?
+			private boolean	from_extended = false;	// did the user use '<'?
+			private int 	from = -1;
+			private int 	to = -1;
+			private boolean to_extended = false;	// did the user use '>'?
+
+			private SingleLocation() {}
+
+			public SingleLocation(String str) throws FormatException {
+				if(str.regionMatches(true, 0, "complement", 0, 10)) {
+					complemented = true;
+					str = str.substring(str.indexOf('(') + 1, str.indexOf(')'));
+				}
+
+				if(str.charAt(0) == '<') {
+					from_extended = true;
+					str = str.substring(1);
+				}
+
+				int index_to_extender = str.indexOf('>');
+				if(index_to_extender != -1) {
+					to_extended = true;
+					str = str.substring(0, index_to_extender) + str.substring(index_to_extender + 1);
+				}
+
+				if(str.matches("^\\d+\\.\\.\\d+$")) {
+					// simple and easy
+					String[] tokens = str.split("\\.+");
+
+					try {
+						from = Integer.parseInt(tokens[0]);
+						to = Integer.parseInt(tokens[1]);
+					} catch(NumberFormatException e) {
+						throw new FormatException("Something really bad just happened. Really, really bad. I might have to go in and fix this code ... again =(.");
+					}
+				} else {
+					System.err.println("format not understood: " + str);
+				}
+			}
+
+			public String toString() {
+				StringBuffer buff = new StringBuffer();
+
+				if(complemented)
+					buff.append("complement of ");
+
+				buff.append("from " + from + " to " + to + " ");
+
+				if(from_extended)
+					buff.append("extending from ");
+				if(to_extended)
+					buff.append("extending to ");
+
+				return buff.toString();
+			}
+		}
+
+		private Vector locations = new Vector();
+		private boolean join = false;
+		private boolean order = false;
+
+		private Location() {}
+
+		public Location(String loc) throws FormatException {
+			String[] tokens = loc.split("[\\(\\),]+");
+			if(tokens[0].regionMatches(true, 0, "join", 0, 4)) {
+				join = true;
+			} else if(tokens[0].regionMatches(true, 0, "order", 0, 4)) {
+				order = true;
+			} else {
+				// no preamble? hmm. maybe we've only got one location
+				locations.add(new SingleLocation(loc));
+				return;
+			}
+
+			for(int x = 1; x < tokens.length; x++) {
+				if(tokens[x].regionMatches(true, 0, "complement", 0, 10)) {
+					locations.add(new SingleLocation("complement(" + tokens[x + 1] + ")"));
+					x++;
+					continue;
+				}
+				locations.add(new SingleLocation(tokens[x]));
+			}
+		}
+
+		public String toString() {
+			StringBuffer buff = new StringBuffer();
+
+			if(join)
+				buff.append("Join of (");
+			if(order)
+				buff.append("Order of (");
+
+			Iterator i = locations.iterator();
+			while(i.hasNext()) {
+				buff.append(i.next().toString());
+				if(i.hasNext())
+					buff.append(", ");
+			}
+
+			if(join || order)
+				buff.append(")");
+			
+			return buff.toString();
+		}
+	}
+
+	/**
 	 * A class for a Feature.
 	 */
 	public class Feature {
+		private FeaturesSection section = null;
 		private String name = null;
 		private Hashtable ht_keys = new Hashtable();	// String(key_name) => Vector[String(value)]
 
-		public Feature(String name) {
+		public Feature(FeaturesSection sec, String name) {
+			section = sec;
 			this.name = name;
 		}
 
@@ -253,7 +388,21 @@ public class GenBankFile {
 		 * Note that 'additional' are NOT actually keys - each
 		 * key is not guaranteed to yield a unique value.
 		 */
-		public void addKey(String key, String value) {
+		public void addKey(String key, String value) {			
+			// trim starting/ending '"'s
+			if(value.length() > 0) {
+				if(value.charAt(0) == '"')
+					value = value.substring(1);
+
+				if(value.charAt(value.length() - 1) == '"')
+					value = value.substring(0, value.length() - 1);
+			}
+
+			addKey(key, (Object) value);
+		}
+
+		public void addKey(String key, Object value) {
+			// get on with it
 			if(ht_keys.get(key) != null)
 				((Vector)ht_keys.get(key)).add(value);
 			else {
@@ -261,6 +410,17 @@ public class GenBankFile {
 				v.add(value);
 				ht_keys.put(key, v);
 			}
+		}
+
+		public Location getLocation() {
+			List l = getValues("@location"); 
+			if(l == null || l.size() == 0)
+				return null;
+			return (Location) l.get(0);
+		}
+
+		public Locus getLocus() {
+			return section.getLocus();
 		}
 
 		public Set getKeys() {
@@ -273,6 +433,20 @@ public class GenBankFile {
 
 		public String getName() {
 			return name;
+		}
+
+		public String toString() {
+			List list = getValues("/gene");
+			if(list != null && list.size() > 0) {
+				return list.get(0) + " (" + getLocus() + ")";
+			} 
+
+			list = getValues("/organism");
+			if(list != null && list.size() > 0) {
+				return list.get(0) + " (" + getLocus() + ")";
+			}
+
+			return getName();
 		}
 	}
 
@@ -292,6 +466,10 @@ public class GenBankFile {
 
 		public void addFeature(Feature f) {
 			features.add(f);
+		}
+
+		public List getFeatures() {
+			return features;
 		}
 
 		public void parseSection() throws FormatException {
@@ -321,22 +499,25 @@ public class GenBankFile {
 					       break;
 					case 1:	// waiting for id
 					       // so this must be the ID then!
-					       f = new Feature(tok);	// tok == name of feature
+					       f = new Feature(this, tok);	// tok == name of feature
 					       state = 2;
 					       break;
 					case 2: // waiting for location
 					       // so this must be the location!
-					       f.addKey("@location", tok);
+					       f.addKey("@location", new Location(tok));
 					       state = 3;
 					       break;
 					case 3: // waiting for key-value pair OR id 
 					       if(tok.charAt(0) == '/') {
 							int index_eq = tok.indexOf('=');
-							if(index_eq == -1)
-								throw new FormatException("In sequence " + name() + ": feature '" + tok + "' is invalid or incomplete (it ought to be /something=something else, but I can't find an '=')");
-
-							current_key = tok.substring(0, index_eq);
-							current_value = tok.substring(index_eq + 1);
+							if(index_eq == -1) {
+// 								throw new FormatException("In locus " + getLocus().getName() + ": feature '" + tok + "' is invalid or incomplete (it ought to be /something=something else, but I can't find an '=')");
+								current_key = tok;
+								current_value = "";	
+ 							} else {
+								current_key = tok.substring(0, index_eq);
+								current_value = tok.substring(index_eq + 1);
+							}
 
 							if(countChar(tok, '"') % 2 != 0) {
 								state = 4;
@@ -348,7 +529,7 @@ public class GenBankFile {
 
 					       } else {
 						       addFeature(f);
-						       f = new Feature(tok);	// tok == name of feature
+						       f = new Feature(this, tok);	// tok == name of feature
 						       state = 2;
 					       }
 					       break;
@@ -365,6 +546,10 @@ public class GenBankFile {
 					       break;
 				}
 			}
+
+			if(f != null)
+				addFeature(f);
+			f = null;
 		}
 
 		public String entry() {
@@ -383,9 +568,7 @@ public class GenBankFile {
 
 					Iterator i_values = f.getValues(key).iterator();
 					while(i_values.hasNext()) {
-						String val = (String) i_values.next();
-
-						buff.append(val + "\t");
+						buff.append(i_values.next().toString() + "\t");
 					}
 					buff.append("\n");
 				}
