@@ -347,15 +347,16 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		if(chmi.getLabel().equals("Display pairwise distances")) {
 			// note: this is actually the NEW state
 			if(chmi.getState() == true) {
-				tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+				tableManager.changeDisplayMode(ViewManager.DISPLAY_DISTANCES);
 				chmi.setState(true);
 			} else {
-				tableManager.changeDisplayMode(TableManager.DISPLAY_SEQUENCES);
+				tableManager.changeDisplayMode(ViewManager.DISPLAY_SEQUENCES);
 				chmi.setState(false);
 			}
 
 			return;
 		}
+		*/
 
 		// 
 		// HANDLER CODE FOR THE "SORT BY ..." MENU
@@ -368,14 +369,14 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 			last_chmi.setState(false);
 
 		String label = chmi.getLabel();
-		if(label.equals("As sequences"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_SEQUENCES);
+		if(label.equals("By loci"))
+			viewManager.switchDisplayMode(ViewManager.DM_LOCI);
 
-		if(label.equals("As pairwise distances"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+		if(label.equals("By features"))
+			viewManager.switchDisplayMode(ViewManager.DM_FEATURES);
 
-		if(label.equals("As correlations"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_CORRELATIONS);
+		chmi.setState(true);
+		last_chmi = chmi;
 
 		/*
 		String label = chmi.getLabel();
@@ -390,9 +391,6 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 		if(label.equals("By total length"))
 			tableManager.resort(DataStore.SORT_BYTOTALLENGTH);
-
-		chmi.setState(true);
-		last_chmi = chmi;
 		*/
 	}
 
@@ -488,19 +486,23 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		file.addActionListener(this);
 		menubar.add(file);
 		
-		/*
 		// View menu
 		Menu	view		=	new Menu("View");
 
 		// New view menu
-		CheckboxMenuItem chmi = new CheckboxMenuItem("As sequences", true);
+		CheckboxMenuItem chmi = new CheckboxMenuItem("By loci", true);
 		chmi.addItemListener(this);
 		view.add(chmi);
 		last_chmi = chmi;
 
+		chmi = new CheckboxMenuItem("By features", false);
+		chmi.addItemListener(this);
+		view.add(chmi);
+
 		view.addActionListener(this);
 		menubar.add(view);
 
+		/*
 		// Analysis menu
 		Menu	analyses	= 	new Menu("Analyses");
 		analyses.add(new MenuItem("Find all zero percent distances"));

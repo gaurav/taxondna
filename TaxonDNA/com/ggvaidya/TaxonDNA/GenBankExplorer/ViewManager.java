@@ -51,6 +51,7 @@ public class ViewManager {
 	// public information
 	// DisplayModes
 	public static final int	DM_LOCI =	1;
+	public static final int	DM_FEATURES =	2;
 
 	// Internal information
 	private DisplayMode	currentDisplayMode =	null;
@@ -212,6 +213,7 @@ public class ViewManager {
 
 	public void initDisplayModes() {
 		vec_displayModes.add(new LociDisplayMode(this));
+		vec_displayModes.add(new FeaturesDisplayMode(this));		
 	}
 
 	public void switchDisplayMode(int mode) {
@@ -221,6 +223,11 @@ public class ViewManager {
 		switch(mode) {
 			case DM_LOCI:
 				currentDisplayMode = (DisplayMode) vec_displayModes.get(0); 
+				break;
+
+			case DM_FEATURES:
+				currentDisplayMode = (DisplayMode) vec_displayModes.get(1);
+				break;
 		}
 
 		currentDisplayMode.activateMode();
