@@ -170,12 +170,19 @@ public class PairwiseDistribution {
 	 * in SequenceList 'list', and add it to this pairwise distrib.
 	 */
 	private void _addIntra(SequenceList list, Sequence query) {
-		Iterator i = list.conspecificIterator(query);
+		if(query.getSpeciesName() == null)
+			return;
+
+		Iterator i = list.conspecificIterator(query.getSpeciesName());
 
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
 			if(seq.equals(query))
+				continue;
+
+			// only half table
+			if(seq.getFullName().compareTo(query.getFullName()) < 0)
 				continue;
 
 			distances_push((float)query.getPairwise(seq));
