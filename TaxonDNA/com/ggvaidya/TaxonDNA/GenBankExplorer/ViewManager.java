@@ -318,7 +318,7 @@ public class ViewManager {
 		slm.update();
 	}
 
-	public java.util.List getSelectedObjects() {
+	public java.util.List getSelectedContainers() {
 		return list_selected;
 	}
 

@@ -137,7 +137,6 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 			return (java.util.List) node;
 		}
 
-
 		return null;
 	}
 
@@ -197,13 +196,34 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 	}
 
 	// 'SELECTION' tracking
+	HashSet hs_featureListsSected = new HashSet();
 	public void selectOrUnselectObject(Object obj) {
 		if(SequenceContainer.class.isAssignableFrom(obj.getClass())) {
-			viewManager.selectOrUnselectContainer((SequenceContainer)obj);
+			if(FeatureBin.FeatureList.class.isAssignableFrom(obj.getClass())) {
+				// FeatureSet!
+				// *Don'T* add the featureset, but add
+				// all 'related' sequences
+				//
+				Iterator i = ((FeatureBin.FeatureList)obj).alsoContains().iterator();
+				while(i.hasNext()) {
+					if(hs_featureListsSected.contains(obj))
+						viewManager.unselectContainer((SequenceContainer)i.next());
+					else
+						viewManager.selectContainer((SequenceContainer)i.next());
+				}
+
+				if(hs_featureListsSected.contains(obj))
+					hs_featureListsSected.remove(obj);
+				else
+					hs_featureListsSected.add(obj);
+			} else
+				viewManager.selectOrUnselectContainer((SequenceContainer)obj);
 		}
 	}
 
 	public boolean isSelected(Object obj) {
+		if(hs_featureListsSected.contains(obj))
+			return true;
 		if(SequenceContainer.class.isAssignableFrom(obj.getClass()))
 			return viewManager.isContainerSelected((SequenceContainer)obj);
 		return false;

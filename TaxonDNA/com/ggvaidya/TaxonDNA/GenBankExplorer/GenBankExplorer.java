@@ -53,6 +53,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	// Subcomponents
 	private Preferences	prefs			= new Preferences(this);
 	private ViewManager	viewManager		= new ViewManager(this);
+	private Exporter	exporter		= new Exporter(this);
 
 	// The following variables create and track our user interface
 	private JFrame		mainFrame 		= new JFrame();		// A frame
@@ -260,6 +261,12 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 				else
 					gbf.setFile(f_old);
 			}
+		}
+
+		// Export -> Export selected features as FASTA.
+		//
+		if(cmd.equals("Export selected features as FASTA")) {
+			exporter.exportAsFasta(viewManager.getSelectedContainers());
 		}
 
 		// Help -> About. We should put something
@@ -515,16 +522,15 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 		analyses.addActionListener(this);
 		menubar.add(analyses);
+		*/
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
-		export.add(new MenuItem("Export table as tab-delimited"));
-		export.add(new MenuItem("Export table as sequences (one file per column)"));
-		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
-		export.add(new MenuItem("Export sequences as TNT"));
+		export.add(new MenuItem("Export selected features as FASTA", new MenuShortcut(KeyEvent.VK_F)));
 		export.addActionListener(this);
 		menubar.add(export);
 
+		/*
 		// Settings menu
 		Menu 	settings	=	new Menu("Settings");
 		settings.add(new MenuItem("Taxonsets"));

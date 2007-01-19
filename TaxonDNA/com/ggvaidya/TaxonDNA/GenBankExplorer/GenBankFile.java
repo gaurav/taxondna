@@ -319,6 +319,27 @@ public class GenBankFile {
 
 				return buff.toString();
 			}
+
+			/** 
+			 * Cut the current location (in biological units, natch)
+			 * out of Sequence.
+			 */
+			public Sequence getSubsequence(Sequence seq) throws SequenceException {
+				// now, since we're a SingleLocation, we've got it *easy*!
+				int my_from = from;
+				int my_to = to;
+
+				if(complemented) {
+					int temp = my_to;
+					my_to = my_from;
+					my_from = temp;
+				}
+
+				// TODO: this drops 'extended' information. are we sure we
+				// want to do this? On the other hand, there's not an awful
+				// lot you *can* do with that information.
+				return seq.getSubsequence(my_from, my_to);
+			}
 		}
 
 		private Vector locations = new Vector();
@@ -368,6 +389,20 @@ public class GenBankFile {
 				buff.append(")");
 			
 			return buff.toString();
+		}
+			
+		/** 
+		 * Cut the current location (in biological units, natch)
+		 * out of Sequence.
+		 */
+		public Sequence getSubsequence(Sequence seq) throws SequenceException {
+			Sequence sequence = Sequence.makeEmptySequence(toString(), 0);
+			// are we a join or order?
+			for(int x = 0; x < locations.size(); x++) {
+				sequence.appendSequence(((Location)locations.get(x)).getSubsequence(seq));
+			}
+
+			return sequence;
 		}
 	}
 
@@ -435,6 +470,28 @@ public class GenBankFile {
 			return name;
 		}
 
+		public String getGeneName() {
+			List list = getValues("/gene");
+			if(list != null) {
+				if(list.size() > 1) {
+					StringBuffer buff = new StringBuffer();
+					Iterator i = list.iterator();
+					while(i.hasNext()) {
+						buff.append(i.next());
+						if(i.hasNext())
+							buff.append(" | ");
+					}
+					return "( " + buff.toString() + " )";
+
+				} else if(list.size() == 1) { 	
+					return (String) list.get(0);
+
+				} else
+					return "";
+			} else
+				return "";
+		}
+
 		public String toString() {
 			List list = getValues("/gene");
 			if(list != null && list.size() > 0) {
@@ -448,8 +505,42 @@ public class GenBankFile {
 			return toString().compareTo(((Feature) o).toString());
 		}
 
-		public SequenceList getAsSequenceList() {
-			return new SequenceList();
+		public SequenceList getAsSequenceList() throws SequenceException {
+			// do we have a origin in our enclosing locus?
+			Locus locus = getLocus();
+
+			List list = locus.getSections("ORIGIN");
+			if(list == null || list.size() == 0)
+				return new SequenceList();		// no origin
+
+			// okay, we have *ATLEAST* one origin
+			// what if we have more than one?
+			//
+			// ... loop?
+			SequenceList sl = new SequenceList();
+			for(int x = 0; x < list.size(); x++) {
+				OriginSection origin = (OriginSection) list.get(x);
+
+				// do we have a @location?
+				List list_values = getValues("@location");
+
+				if(list_values != null && list_values.size() > 0) {
+					for(int y = 0; y < list_values.size(); y++) {
+						Location location = (Location) list_values.get(y);
+
+						String gene_name = getGeneName();
+						if(gene_name.length() != 0)
+							gene_name += ", ";
+
+						Sequence seq = location.getSubsequence(origin.getSequence());
+						seq.changeName(getLocus().getName() + ": " + gene_name + location.toString());
+						if(seq != null)
+							sl.add(seq);
+					}
+				} 	
+			}
+
+			return sl;
 		}
 
 		public List alsoContains() {
