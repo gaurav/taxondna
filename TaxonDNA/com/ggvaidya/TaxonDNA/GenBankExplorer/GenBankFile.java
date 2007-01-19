@@ -374,7 +374,7 @@ public class GenBankFile {
 	/**
 	 * A class for a Feature.
 	 */
-	public class Feature {
+	public class Feature implements Comparable, SequenceContainer {
 		private FeaturesSection section = null;
 		private String name = null;
 		private Hashtable ht_keys = new Hashtable();	// String(key_name) => Vector[String(value)]
@@ -438,15 +438,22 @@ public class GenBankFile {
 		public String toString() {
 			List list = getValues("/gene");
 			if(list != null && list.size() > 0) {
-				return list.get(0) + " (" + getLocus() + ")";
+				return getName() + " (" + list.get(0) + ", " + getLocus() + ")";
 			} 
 
-			list = getValues("/organism");
-			if(list != null && list.size() > 0) {
-				return list.get(0) + " (" + getLocus() + ")";
-			}
+			return getName() + " (" + getLocus() + ")";
+		}
 
-			return getName();
+		public int compareTo(Object o) {
+			return toString().compareTo(((Feature) o).toString());
+		}
+
+		public SequenceList getAsSequenceList() {
+			return new SequenceList();
+		}
+
+		public List alsoContains() {
+			return new LinkedList();
 		}
 	}
 

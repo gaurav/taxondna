@@ -69,6 +69,7 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 	
 	// DATA HANDLING
 	Hashtable ht_features = new Hashtable();
+	FeatureBin featureBin = new FeatureBin();
 
 	public void setGenBankFile(GenBankFile genBankFile) {
 		super.setGenBankFile(genBankFile);
@@ -100,6 +101,11 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 					}
 				}
 			}
+
+			// err ... i don't know what the code above does
+			// but now we do things differently
+			featureBin = new FeatureBin(genBankFile);
+
 		} else {
 			viewManager.setFileText("No file loaded.");
 		}
@@ -117,29 +123,18 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 			return null;
 
 		if(node.equals(getRoot())) {
-			Vector v = new Vector(ht_features.keySet());
-			Collections.sort(v);
-			return v;
+			return featureBin.getGenes();
 		}
 
 		if(GenBankFile.Feature.class.isAssignableFrom(node.getClass())) {
 			GenBankFile.Feature f = (GenBankFile.Feature) node;
 
-			Vector v = new Vector(f.getKeys());
-			Collections.sort(v);
-			return v;
+			return null;
 		}
 		
-		if(String.class.isAssignableFrom(node.getClass())) {
-			Object o = ht_features.get((String) node);
-			if(o == null) {
-				// okay, it's not a FEATURE
-				// it's probably a Feature.key
-				// 
-				// err ... ignore for now?
-				return null;
-			} else
-				return (Vector) o;
+		if(FeatureBin.FeatureList.class.isAssignableFrom(node.getClass())) {
+			// okay, this is a FeatureBin
+			return (java.util.List) node;
 		}
 
 
@@ -153,10 +148,22 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 		if(cls.equals(String.class)) {
 			viewManager.setSelectionText("");
 
-		} else if(cls.equals(GenBankFile.Locus.class)) {
-			GenBankFile.Locus l = (GenBankFile.Locus) obj;
+		} else if(cls.equals(GenBankFile.Feature.class)) {
+			GenBankFile.Feature f = (GenBankFile.Feature) obj;
+			GenBankFile.Locus l = f.getLocus();
 
 			StringBuffer buff = new StringBuffer();
+			// Feature info
+			buff.append("Feature " + f.getName() + " in locus " + l.getName() + " has the following information:\n");
+			Iterator i = f.getKeys().iterator();
+			while(i.hasNext()) {
+				String key = i.next().toString();
+
+				buff.append("\t" + key + ":\t" + f.getValues(key).toString()  + "\n");
+			}
+			buff.append("\n");
+
+			// Locus info
 			Iterator i_sec = l.getSections().iterator();
 			while(i_sec.hasNext()) {
 				GenBankFile.Section sec = (GenBankFile.Section) i_sec.next();
@@ -164,7 +171,7 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 				buff.append(sec.getName() + ": " + sec.entry() + "\n");
 			}
 
-			viewManager.setSelectionText("Currently selected: locus " + l.toString() + "\n" + buff);
+			viewManager.setSelectionText(buff.toString());
 
 		} else if(GenBankFile.Section.class.isAssignableFrom(cls)) {
 			GenBankFile.Section sec = (GenBankFile.Section) obj;
@@ -190,20 +197,16 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 	}
 
 	// 'SELECTION' tracking
-	Hashtable ht_selected = new Hashtable();
-
-	// TODO FIXME
 	public void selectOrUnselectObject(Object obj) {
-		if(ht_selected.get(obj) == null) {
-			// not selected
-			ht_selected.put(obj, new Object());
-		} else {
-			ht_selected.remove(obj);
+		if(SequenceContainer.class.isAssignableFrom(obj.getClass())) {
+			viewManager.selectOrUnselectContainer((SequenceContainer)obj);
 		}
 	}
 
 	public boolean isSelected(Object obj) {
-		return (ht_selected.get(obj) != null);
+		if(SequenceContainer.class.isAssignableFrom(obj.getClass()))
+			return viewManager.isContainerSelected((SequenceContainer)obj);
+		return false;
 	}
 
 	// MOUSE LISTENER
@@ -239,9 +242,9 @@ class FeaturesCellRenderer extends DefaultTreeCellRenderer {
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value, boolean selected, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-		if(leaf) {
-			return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
-		} else {
+//		if(leaf) {
+//			return super.getTreeCellRendererComponent(tree, value, selected, expanded, leaf, row, hasFocus);
+//		} else {
 			JCheckBox checkBox = new JCheckBox(value.toString());
 
 			checkBox.setBorderPaintedFlat(true);
@@ -255,6 +258,6 @@ class FeaturesCellRenderer extends DefaultTreeCellRenderer {
 				checkBox.setSelected(true);
 
 			return checkBox;
-		}
+//		}
 	}
 }

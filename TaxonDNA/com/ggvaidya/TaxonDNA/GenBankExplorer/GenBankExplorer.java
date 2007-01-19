@@ -97,8 +97,6 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	 * to create a GenBankExplorer for whatever reason, it will have
 	 * to do this IN a thread - otherwise when TaxonDNA exits,
 	 * we will automatically exit as well.
-	 *
-	 * @param files A vector of files to load in.
 	 */
 	public GenBankExplorer(File file) {
 		count_genBankExplorers++;
@@ -372,7 +370,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		if(label.equals("By loci"))
 			viewManager.switchDisplayMode(ViewManager.DM_LOCI);
 
-		if(label.equals("By features"))
+		if(label.equals("By gene"))
 			viewManager.switchDisplayMode(ViewManager.DM_FEATURES);
 
 		chmi.setState(true);
@@ -495,7 +493,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		view.add(chmi);
 		last_chmi = chmi;
 
-		chmi = new CheckboxMenuItem("By features", false);
+		chmi = new CheckboxMenuItem("By gene", false);
 		chmi.addItemListener(this);
 		view.add(chmi);
 

@@ -55,12 +55,15 @@ public class ViewManager {
 
 	// Internal information
 	private DisplayMode	currentDisplayMode =	null;
+	private java.util.List	list_selected 	= new LinkedList();
+	SelectionListModel 	slm 		= new SelectionListModel();	// inner class
 
 	// UI objects
 	private JPanel		panel =		null;			// the 'view' itself
 	private JTree		tree =		new JTree();		// the tree
 	private JTextArea	ta_file =	new JTextArea();	// the text area for file information
-	private JTextArea	ta_selected =	new JTextArea();	// the text area for selection information
+	private JTextArea	ta_selected =	new JTextArea();	// the text area for info on currently selected
+	private JList		ls_selection =	new JList(slm);		// the list area for selection info
 
 	// Data objects
 	private GenBankFile	genBankFile =	null;			// the currently loaded file
@@ -101,7 +104,10 @@ public class ViewManager {
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), p_textareas);
 		split.setResizeWeight(0.3);		// bit more right by default
 
-		split.setPreferredSize(new Dimension(400, 500));
+		JSplitPane full = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, new JScrollPane(ls_selection));
+		full.setResizeWeight(0.6);
+
+		full.setPreferredSize(new Dimension(400, 500));
 
 		// err ... I don't think this is the best way to do this
 		// but it's certainly the quickest, so.
@@ -109,14 +115,17 @@ public class ViewManager {
 		new DropTarget(tree, explorer).setActive(true);
 		new DropTarget(ta_file, explorer).setActive(true);
 		new DropTarget(ta_selected, explorer).setActive(true);
+		new DropTarget(ls_selection, explorer).setActive(true);
 
-		panel.add(split);
+		panel.add(full);
 	}
 
 	/**
 	 * Clear the currently loaded file.
 	 */
 	public void clear() {
+		clearSelection();	
+
 		if(genBankFile != null) {
 			genBankFile = null;
 			updateTree();
@@ -247,5 +256,105 @@ public class ViewManager {
 	public void updateFileInfo() {
 		// the file information changed (more sequences, file name change, etc.)
 		currentDisplayMode.setGenBankFile(genBankFile);
+	}
+
+	// Selection system
+	//
+	// The selection system is fairly simple at this stage: all actual
+	// work needs to be handled 'underground' (i.e. in the DisplayModes).
+	// For us, it's really simple in three ways:
+	// 1.	Somebody notifies us when an Object gets selected
+	// 2.	Somebody notifies us when an Object gets unselected
+	// 3.	Somebody notifies us when we need to clear the entire selection
+	// 	list.
+	// 4.	We display all selected Objects on a List on the display.
+	// 	If not, we use Object.toString() to figure out what to call it.
+	// 5.	We will return a List of all selected Objects to anybody
+	// 	anytime.
+	// 6.	As a bonus, we will collage all SequenceContainers into one
+	// 	huge SequenceList, and return that if you want! Wouldn't you
+	// 	like that? Yes, you would, yes, you would!
+
+	public void selectContainer(SequenceContainer o) {
+		if(list_selected.contains(o))
+			return;
+		list_selected.add(o);
+		Iterator i = o.alsoContains().iterator();
+		while(i.hasNext()) {
+			selectContainer((SequenceContainer)i.next());
+		}
+		updateSelectionList();
+	}
+
+	public void unselectContainer(SequenceContainer o) {
+		if(!list_selected.contains(o))
+			return;
+
+		list_selected.remove(o);
+		Iterator i = o.alsoContains().iterator();
+		while(i.hasNext()) {
+			unselectContainer((SequenceContainer)i.next());
+		}
+		updateSelectionList();
+	}
+
+	public void selectOrUnselectContainer(SequenceContainer o) {
+		if(isContainerSelected(o))
+			unselectContainer(o);
+		else
+			selectContainer(o);
+	}
+
+	public boolean isContainerSelected(SequenceContainer o) {
+		return list_selected.contains(o);
+	}
+
+	public void clearSelection() {
+		list_selected = new LinkedList();
+		updateSelectionList();
+	}
+
+	public void updateSelectionList() {
+		slm.update();
+	}
+
+	public java.util.List getSelectedObjects() {
+		return list_selected;
+	}
+
+	// LISTMODEL
+	// For managing list_selected.
+	//
+	private class SelectionListModel implements ListModel {
+		private Vector v_listener = new Vector();
+
+		public SelectionListModel() {
+		}
+
+		public Object getElementAt(int index) {
+			return list_selected.get(index);
+		}
+ 
+		public int getSize() {
+			return list_selected.size();
+		}
+
+		public void addListDataListener(ListDataListener l) {
+			v_listener.add(l);
+		}
+
+		public void removeListDataListener(ListDataListener l) {
+			v_listener.remove(l);
+		}
+
+		public void update() {
+			Iterator i = v_listener.iterator();
+			while(i.hasNext()) {
+				ListDataListener l = (ListDataListener) i.next();
+	
+				l.contentsChanged(new ListDataEvent(ls_selection, ListDataEvent.CONTENTS_CHANGED, -1, -1));
+			}
+	
+		}
 	}
 }

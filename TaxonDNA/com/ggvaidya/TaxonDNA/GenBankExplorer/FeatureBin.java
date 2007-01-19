@@ -41,6 +41,38 @@ import com.ggvaidya.TaxonDNA.UI.*;
 public class FeatureBin {
 	private List features = 	new LinkedList();
 
+	public class FeatureList extends LinkedList implements SequenceContainer {
+		String name = null;
+
+		public FeatureList(String name) {
+			this.name = name;
+		}
+
+		public void addFeature(GenBankFile.Feature f) {
+			add(f);
+		}
+
+		public void addFeatures(Collection c) {
+			addAll(c);
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		public SequenceList getAsSequenceList() {
+			return null;
+		}
+
+		public List alsoContains() {
+			return this;	// we contain ourselves
+		}
+
+		public String toString() {
+			return getName();
+		}
+	}
+
 	public FeatureBin() {
 	}
 
@@ -105,15 +137,27 @@ public class FeatureBin {
 		Collections.sort(v);
 		if(misc_genes)
 			v.add("No gene specified");
-		return v;
+
+		// TODO: Stop the insanity
+		LinkedList ll = new LinkedList();
+		i = v.iterator();
+		while(i.hasNext()) {
+			String gene = (String) i.next();	
+
+			ll.add(getByGene(gene));
+		}
+
+		return ll;
 	}
 
-	public List getByGene(String gene) {
+	public FeatureList getByGene(String gene) {
 		boolean nullSearch = false;
-		Vector v = new Vector();
+		FeatureList fs = new FeatureList("Features containing gene " + gene);
 
-		if(gene.equals("No gene specified"))
+		if(gene.equals("No gene specified")) {
 			nullSearch = true;
+			fs = new FeatureList("No gene specified");
+		}
 
 		Iterator i = features.iterator();
 		while(i.hasNext()) {
@@ -122,13 +166,13 @@ public class FeatureBin {
 			List s = f.getValues("/gene");
 			if(s != null) {
 				if(s.contains(gene))
-					v.add(f);
+					fs.addFeature(f);
 			} else if(nullSearch) {
-				v.add(f);
+				fs.addFeature(f);
 			}
 		}
 
-		Collections.sort(v);
-		return v;
+		Collections.sort(fs);
+		return fs;
 	}
 }
