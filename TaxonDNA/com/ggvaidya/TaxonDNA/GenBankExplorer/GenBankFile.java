@@ -297,10 +297,18 @@ public class GenBankFile {
 						from = Integer.parseInt(tokens[0]);
 						to = Integer.parseInt(tokens[1]);
 					} catch(NumberFormatException e) {
-						throw new FormatException("Something really bad just happened. Really, really bad. I might have to go in and fix this code ... again =(.");
+						throw new FormatException("Could not interpret location '" + str + "': " + e.getMessage());
+					}
+				} else if(str.matches("^\\d+$")) {
+					// single number
+					try {
+						from = Integer.parseInt(str);
+						to = from;
+					} catch(NumberFormatException e) {
+						throw new FormatException("Could not interpret location '" + str + "': " + e.getMessage());
 					}
 				} else {
-					System.err.println("format not understood: " + str);
+					throw new FormatException("Could not interpret location '" + str + "': not a format I can handle at the moment (Sorry!)");
 				}
 			}
 
