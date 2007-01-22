@@ -216,6 +216,10 @@ public class ViewManager {
 		ta_selected.setCaret(c);
 	}
 
+	public ProgressDialog makeProgressDialog(String title, String message) {
+		return new ProgressDialog(explorer.getFrame(), title, message);
+	}
+
 // 	DISPLAY MODE SWITCHING/HANDLING CODE
 //
 	private Vector	vec_displayModes = new Vector();
