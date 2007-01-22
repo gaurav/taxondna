@@ -198,7 +198,8 @@ public abstract class DisplayMode implements TreeModel, TreeSelectionListener {
 	}
 
 	public void updateNode(TreePath path) {
-		updateHashtable();
+		if(path.getLastPathComponent().equals(getRoot()))
+			updateHashtable();
 		fireTreeEvent(new TreeModelEvent(viewManager.getTree(), path));
 	}		
 
