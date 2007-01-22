@@ -123,7 +123,11 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 			return null;
 
 		if(node.equals(getRoot())) {
-			return featureBin.getGenes();
+			try {
+				return featureBin.getGenes(viewManager.makeProgressDialog("Please wait, resorting genes ...", "I am processing this file to determine the genes it contains. Sorry for the delay!"));
+			} catch(DelayAbortedException e) {
+				return null;
+			}
 		}
 
 		if(GenBankFile.Feature.class.isAssignableFrom(node.getClass())) {

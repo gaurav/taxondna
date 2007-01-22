@@ -114,12 +114,20 @@ public class FeatureBin {
 		features.add(f);
 	}
 
-	public List getGenes() {
+	public List getGenes(DelayCallback delay) throws DelayAbortedException {
 		Hashtable ht_genes = new Hashtable();
 		boolean misc_genes = false;
 
+		if(delay != null)
+			delay.begin();
+
 		Iterator i = features.iterator();
+		int x = 0;
 		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(x, features.size());
+			x++;
+
 			GenBankFile.Feature f = (GenBankFile.Feature) i.next();
 
 			List s = f.getValues("/gene");
@@ -141,11 +149,18 @@ public class FeatureBin {
 		// TODO: Stop the insanity
 		LinkedList ll = new LinkedList();
 		i = v.iterator();
+		x = 0;
 		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(x, v.size());
+			x++;
 			String gene = (String) i.next();	
 
 			ll.add(getByGene(gene));
 		}
+
+		if(delay != null)
+			delay.end();
 
 		return ll;
 	}
