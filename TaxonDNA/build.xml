@@ -59,7 +59,7 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+		<signjar jar="Release/GenBankExplorer.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
 	<!-- build:			Prepares ChangeLog and Readme files. 
