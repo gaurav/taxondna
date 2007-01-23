@@ -157,7 +157,7 @@ public class FindDistances implements WindowListener, ActionListener {
 				String colName = (String)i.next();
 				SequenceList sl = tm.getSequenceListByColumn(colName);
 			
-				colNames.add(colName);
+				//colNames.add(colName);
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
 							new ProgressDialog(
 								fr_findDistances,	
