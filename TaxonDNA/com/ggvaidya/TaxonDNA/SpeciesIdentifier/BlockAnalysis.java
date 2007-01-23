@@ -128,13 +128,13 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 				PairwiseSummary ps = (PairwiseSummary) seqId.getExtension("Pairwise Summary");
 				double cutoff = ps.getFivePercentCutoff();
 	
-				if(cutoff > 0)
+				if(cutoff > -1)
 					text_threshold.setText(String.valueOf(cutoff));
 				else {
 					// invalid cutoff?! how can??
 					ps.run();
 					cutoff = ps.getFivePercentCutoff();
-					if(cutoff > 0)
+					if(cutoff > -1)
 						text_threshold.setText(String.valueOf(cutoff));
 				}	
 			}
@@ -205,6 +205,11 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		// get the sequence set, and figure out its stats
 		set = seqId.lockSequenceList();
+		if(set == null) {
+			text_main.setText("No sequences loaded!");
+			seqId.unlockSequenceList();
+			return;
+		}
 		count_sequences = set.count();
 		SortedSequenceList sset = new SortedSequenceList(set); 
 
