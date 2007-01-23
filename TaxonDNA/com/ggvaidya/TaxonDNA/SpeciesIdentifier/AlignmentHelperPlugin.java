@@ -352,7 +352,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			Sequence seq = (Sequence) i.next();
 
 			String id = seq.getGI();
-			if(id.equals("")) {
+			if(id == null || id.equals("")) {
 				// no id? no problem! we 'get' the id from the seq
 				// assuming we've given it a uniqueId before ...
 				Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
@@ -363,7 +363,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			}
 
 			// now, let's see what this here id is *really* made of
-			if(id.equals("")) {
+			if(id == null || id.equals("")) {
 				// there is no GI
 				if(!warned) {
 					mb = new MessageBox(seqId.getFrame(), "Sequences without GI numbers detected!", "Some of the sequences in this dataset do not have GI numbers. To create Clustal input files, I'm going to have to allocate unique identifiers to these sequences. Doing so will not cause problems with this dataset, but it WILL rewrite the original file. THE CURRENT FILE WILL BE OVERWRITTEN, AND ANY CHANGES YOU'VE MADE WILL BE SAVED PERMANENTLY TO DISK. Are you sure you want to do this?", MessageBox.MB_YESNO);
@@ -375,7 +375,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 						mb = new MessageBox(seqId.getFrame(), "Clustal export failed.", "I can't export files for Clustal without assigning unique identifiers to each sequence. Please re-run if you would like to export files for Clustal.");
 						mb.go();
 
-						throw new RuntimeException();
+						throw new RuntimeException("Duplicate:notified");
 					}
 				}
 				// if we're here, we have warned the user, and he's okay with rewriting files. So ...
@@ -388,7 +388,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				mb = new MessageBox(seqId.getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
 				mb.go();
 
-				throw new RuntimeException();
+				throw new RuntimeException("Duplicate:notified");
 			} else {
 				// we have a GI, and it looks okay ...
 				// so ... do nothing!
@@ -415,7 +415,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		// our output writers
 		PrintWriter	output = null;
 		Hashtable 	uniques = new Hashtable();
-		
+
 		if(set == null)		// nothing to do!
 			return;
 
@@ -426,7 +426,12 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		} catch(RuntimeException e) {
 			// something went wrong with createUniqueIds() 
 			// but it's already been reported to the reader
-			return; 
+			if(e.getMessage() != null && e.getMessage().equals("Duplicate:notified"))
+				return;
+			// err ... no? A *real* RuntimeException?
+			//
+			// *gulp*
+			throw e;
 		}
 
 		try {
@@ -438,7 +443,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 				Sequence seq = (Sequence) i.next();
 				String id = seq.getGI();
 
-				if(id.equals("")) {
+				if(id == null || id.equals("")) {
 					// since we've run it thru createUniqueIds(), this is guaranteed to work ...
 					Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
 					Matcher m = p.matcher(seq.getFullName());
