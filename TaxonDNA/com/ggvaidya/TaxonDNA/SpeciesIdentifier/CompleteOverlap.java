@@ -476,16 +476,21 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 				//	DECREMENT the singleton count. very hairy, but as a
 				//	five line hack, I'll leave it in (atleast until tomorrow :p)
 				//
-				if(ht.get(seq.getSpeciesName()) == null) {
-					// not already in list
-					no_species++;
-					ht.put(seq.getSpeciesName(), new Integer(0));
-					no_singletons++;
-				} else {
-					// already in list
-					if(ht.get(seq.getSpeciesName()).getClass().equals(Integer.class)) {
-						no_singletons--;
-						ht.put(seq.getSpeciesName(), new Object());
+				//	only for sequences with species names, obviously. Non-species name
+				//	sequences are not counted.
+				//
+				if(seq.getSpeciesName() != null) {
+					if(ht.get(seq.getSpeciesName()) == null) {
+						// not already in list
+						no_species++;
+						ht.put(seq.getSpeciesName(), new Integer(0));
+						no_singletons++;
+					} else {
+						// already in list
+						if(ht.get(seq.getSpeciesName()).getClass().equals(Integer.class)) {
+							no_singletons--;
+							ht.put(seq.getSpeciesName(), new Object());
+						}
 					}
 				}
 			}
