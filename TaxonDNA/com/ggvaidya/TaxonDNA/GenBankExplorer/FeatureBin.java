@@ -41,7 +41,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 public class FeatureBin {
 	private List features = 	new LinkedList();
 
-	public class FeatureList extends LinkedList implements SequenceContainer {
+	public class FeatureList extends LinkedList implements SequenceContainer, Comparable {
 		String name = null;
 
 		public FeatureList(String name) {
@@ -70,6 +70,10 @@ public class FeatureBin {
 
 		public String toString() {
 			return getName();
+		}
+
+		public int compareTo(Object o) {
+			return getName().compareTo(((FeatureList)o).getName());
 		}
 	}
 
@@ -114,9 +118,21 @@ public class FeatureBin {
 		features.add(f);
 	}
 
+	private void addFeatureToHashtable(Hashtable ht, String name, GenBankFile.Feature f) {
+		if(ht.get(name) != null) {
+			FeatureList list = (FeatureList) ht.get(name);
+			list.addFeature(f);
+		} else {
+			FeatureList list = new FeatureList("Features containing " + name);
+			list.addFeature(f);
+
+			ht.put(name, list);
+		}
+	}
+
 	public List getGenes(DelayCallback delay) throws DelayAbortedException {
 		Hashtable ht_genes = new Hashtable();
-		boolean misc_genes = false;
+		FeatureList misc_genes = new FeatureList("Features without gene/product");
 
 		if(delay != null)
 			delay.begin();
@@ -134,17 +150,25 @@ public class FeatureBin {
 			if(s != null) {
 				Iterator i2 = s.iterator();
 				while(i2.hasNext()) {
-					ht_genes.put(i2.next(), new Object());
+					addFeatureToHashtable(ht_genes, "gene " + ((String)i2.next()) + "-" + f.getName(), f);
 				}
 			} else {
-				misc_genes = true;
+				// no 'gene'? what about product?
+				//
+				s = f.getValues("/product");
+				if(s != null) {
+					Iterator i2 = s.iterator();
+					while(i2.hasNext()) {
+						addFeatureToHashtable(ht_genes, "product " + ((String)i2.next()) + "-" + f.getName(), f);
+					}
+				} else {
+					misc_genes.addFeature(f);
+				}
 			}
 		}
 
 		Vector v = new Vector(ht_genes.keySet());
 		Collections.sort(v);
-		if(misc_genes)
-			v.add("No gene specified");
 
 		// TODO: Stop the insanity
 		LinkedList ll = new LinkedList();
@@ -154,10 +178,13 @@ public class FeatureBin {
 			if(delay != null)
 				delay.delay(x, v.size());
 			x++;
-			String gene = (String) i.next();	
+			String gene = (String) i.next();
 
-			ll.add(getByGene(gene));
+			ll.add(ht_genes.get(gene));
 		}
+
+		Collections.sort(ll);
+		ll.add(misc_genes);
 
 		if(delay != null)
 			delay.end();
@@ -167,7 +194,7 @@ public class FeatureBin {
 
 	public FeatureList getByGene(String gene) {
 		boolean nullSearch = false;
-		FeatureList fs = new FeatureList("Features containing gene " + gene);
+		FeatureList fs = new FeatureList("Features containing " + gene);
 
 		if(gene.equals("No gene specified")) {
 			nullSearch = true;
