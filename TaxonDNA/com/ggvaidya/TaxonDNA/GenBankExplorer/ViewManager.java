@@ -45,7 +45,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class ViewManager {
+public class ViewManager implements MouseListener {
 	private GenBankExplorer explorer = 	null;			// the GenBankExplorer object
 
 	// public information
@@ -104,6 +104,7 @@ public class ViewManager {
 		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, new JScrollPane(tree), p_textareas);
 		split.setResizeWeight(0.3);		// bit more right by default
 
+		ls_selection.addMouseListener(this);
 		JSplitPane full = new JSplitPane(JSplitPane.VERTICAL_SPLIT, split, new JScrollPane(ls_selection));
 		full.setResizeWeight(0.6);
 
@@ -320,6 +321,11 @@ public class ViewManager {
 
 	public void updateSelectionList() {
 		slm.update();
+		int count = list_selected.size();
+		if(count == 0)
+			explorer.updateStatusBar("No features selected for export.");
+		else
+			explorer.updateStatusBar("Currently selected " + count + " features for export.");
 	}
 
 	public java.util.List getSelectedContainers() {
@@ -358,7 +364,24 @@ public class ViewManager {
 	
 				l.contentsChanged(new ListDataEvent(ls_selection, ListDataEvent.CONTENTS_CHANGED, -1, -1));
 			}
-	
 		}
 	}
+
+	//
+	// MouseListener
+	// Mostly for listening in on ls_selection
+	public void	mouseClicked(MouseEvent e) {}
+	public void	mouseEntered(MouseEvent e) {}
+	public void	mouseExited(MouseEvent e) {}
+	public void	mousePressed(MouseEvent e) {
+		if(e.getSource().equals(ls_selection) && e.getClickCount() >= 2) {
+			int index = ls_selection.locationToIndex(e.getPoint());
+
+			if(index != -1) {
+				list_selected.remove(index);	// get rid of it
+				updateSelectionList();
+			}
+		}
+	}
+	public void	mouseReleased(MouseEvent e) {}
 }
