@@ -1,6 +1,9 @@
 <project default="compile">
 	<property name="build.dir" location="build"/>
 	<property resource="version.txt" />
+
+	<!-- compile-time options -->
+	<property name="files.common" value="**/Common/**,**/DNA/**,**/Others/**,**/UI/**" />
 	
 	<!-- compile:			Compile will recompile all our Java code in one shot -->
 	<target name="compile">
@@ -22,8 +25,7 @@
 		<jar  
 			destfile="Release/SpeciesIdentifier.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/SequenceMatrix/**,GenBankExplorer/**" 
-			includes="**/*.class" 
+			includes="${files.common},**/SpeciesIdentifier/**"
 		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
@@ -37,8 +39,7 @@
 		<jar  
 			destfile="Release/SequenceMatrix.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**,GenBankExplorer/**" 
-			includes="**/*.class" 
+			includes="${files.common},**/SequenceMatrix/**" 
 		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
@@ -52,8 +53,7 @@
 		<jar  
 			destfile="Release/GenBankExplorer.jar" 
 			basedir="${build.dir}/classes" 
-			excludes="Tests/**,Backup/**,HeapInspector/**,**/Modules/**,**/SpeciesIdentifier/**,SequenceMatrix/**" 
-			includes="**/*.class" 
+			includes="${files.common},**/GenBankExplorer/**" 
 		>
 			<manifest>
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
@@ -62,13 +62,28 @@
 		<signjar jar="Release/GenBankExplorer.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
+	<!-- moleculomorph:		Builds the Jar file for MoleculoMorph -->
+	<target name="MoleculoMorph" depends="compile">
+		<jar  
+			destfile="Release/MoleculoMorph.jar" 
+			basedir="${build.dir}/classes" 
+			includes="${files.common},**/MoleculoMorph/**" 
+		>
+			<manifest>
+				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.MoleculoMorph.MoleculoMorph" />
+			</manifest>
+		</jar>
+		<signjar jar="Release/MoleculoMorph.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+	</target>
+	
+
 	<!-- build:			Prepares ChangeLog and Readme files. 
 					This is also the most convenient way to
 					ensure that all Jars are built
 
 					Does NOT make a final zip. 'release' does this.
 	-->
-	<target name="build" depends="SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
+	<target name="build" depends="SpeciesIdentifier,SequenceMatrix,GenBankExplorer,MoleculoMorph">
 		<!--		<copy file="CHANGELOG.txt" todir="Release" />
 		<copy file="README.txt" todir="Release" overwrite="yes" />
 		-->
