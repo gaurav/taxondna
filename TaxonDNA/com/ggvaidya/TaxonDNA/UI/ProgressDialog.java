@@ -60,6 +60,10 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	public static final int FLAG_NOCANCEL	=	2;
 	private TextArea	textarea;
 	private String		message;
+	private StringBuffer	buff_warnings 	= 	new StringBuffer();
+
+	private Frame		frame		=	null;
+	private String		title		=	null;
 
 	private boolean		abort = false;
 
@@ -71,6 +75,9 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	 */
 	public ProgressDialog(Frame f, String title, String message, int flags) {
 		super(f, title, ((flags & FLAG_NOMODAL) == 0));
+
+		frame = f;
+		this.title = title;
 
 		setSize(220, 190);
 		setResizable(false);
@@ -108,6 +115,13 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	public ProgressDialog(Frame f, String title, String message) {
 		this(f, title, message, 0);
 	}
+
+	/**
+	 * Add a warning. All warnings are concatenated and displayed just after end().
+	 */
+	public void addWarning(String x) {
+		buff_warnings.append(" - " + x + "\n");
+	}
 	
 	/**
 	 * Our begin() creates a new thread for the ProgressDialog to run in.
@@ -137,6 +151,12 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 			;
 		setVisible(false);
 		dispose();
+
+		MessageBox mb = new MessageBox(frame,
+				"Warnings: " + title,
+				"The following warnings were generated:\n" + buff_warnings.toString(),
+				MessageBox.MB_OK | MessageBox.MB_TITLE_IS_UNIQUE);
+		mb.go();
 	}
 
 	private float lastPercentage = 0;

@@ -51,4 +51,12 @@ public interface DelayCallback {
 	 * @throws DelayAbortedException if the delay was interrupted (presumably by the user)
 	 */
 	public void delay(int done, int total) throws DelayAbortedException;
+
+	/**
+	 * This func-err, method - can be called by the delaying component
+	 * to indicate a *warning* which isn't serious enough to stop the
+	 * process, but the user should be informed. The DelayCallback
+	 * should inform the user after end() gets called.
+	 */
+	public void addWarning(String warning);
 }

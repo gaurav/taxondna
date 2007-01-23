@@ -115,4 +115,7 @@ public class ProgressBar extends Canvas implements DelayCallback {
 		changeIndicator(100, 100);
 	}
 	
+	public void addWarning(String x) {
+		throw new RuntimeException("ProgressBars cannot indicate warnings to users, sorry!");
+	}
 }
