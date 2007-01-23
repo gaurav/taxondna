@@ -121,7 +121,7 @@ public class Exporter {
 		if(!verifyExport(containers))
 			return;
 
-		File f = getSaveFile("Select FASTA file to export to ...");
+		File f = getSaveFile("Select " + fh.getShortName() + " file to export to ...");
 		if(f == null)
 			return;		// cancelled
 
@@ -135,6 +135,13 @@ public class Exporter {
 				"I am exporting " + count + " features to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format. Sorry for the wait!");
 			
 			fh.writeFile(f, sl, pd);
+
+			MessageBox mb = new MessageBox(
+					explorer.getFrame(),
+					"Export successful!",
+					count + " features were successfully exported to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format.");
+			mb.go();
+
 		} catch(SequenceException e) {
 			reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
 		} catch(IOException e) {
