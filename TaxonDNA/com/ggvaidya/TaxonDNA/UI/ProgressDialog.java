@@ -61,6 +61,7 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	private TextArea	textarea;
 	private String		message;
 	private StringBuffer	buff_warnings 	= 	new StringBuffer();
+	private boolean		warnings_added	=	false;
 
 	private Frame		frame		=	null;
 	private String		title		=	null;
@@ -120,6 +121,7 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	 * Add a warning. All warnings are concatenated and displayed just after end().
 	 */
 	public void addWarning(String x) {
+		warnings_added = true;
 		buff_warnings.append(" - " + x + "\n");
 	}
 	
@@ -152,11 +154,13 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 		setVisible(false);
 		dispose();
 
-		MessageBox mb = new MessageBox(frame,
+		if(warnings_added) {
+			MessageBox mb = new MessageBox(frame,
 				"Warnings: " + title,
 				"The following warnings were generated:\n" + buff_warnings.toString(),
 				MessageBox.MB_OK | MessageBox.MB_TITLE_IS_UNIQUE);
-		mb.go();
+			mb.go();
+		}
 	}
 
 	private float lastPercentage = 0;
