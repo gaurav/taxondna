@@ -280,7 +280,9 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 		} else if(evt.getSource().equals(button_gi)) {
 			// go to the GI number!
 			int gi = 0;
-			if((gi = Integer.parseInt(text_gi.getText())) != 0) {
+			
+			String gi_number = text_gi.getText();
+			if(gi_number != null && gi_number.length() > 0 && ((gi = Integer.parseInt(gi_number)) != 0)) {
 				String url = new String("http://www.ncbi.nlm.nih.gov/entrez/viewer.fcgi?db=nucleotide&val=" + gi);
 				try {
 					BrowserLauncher.openURL(url);
