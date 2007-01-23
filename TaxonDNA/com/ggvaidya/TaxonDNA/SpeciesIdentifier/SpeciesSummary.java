@@ -279,6 +279,11 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	 */
 	public void run() {
 		SequenceList list = seqId.lockSequenceList();
+		if(list == null) {
+			text_main.setText("No sequences loaded!");
+			seqId.unlockSequenceList();
+			return;
+		}
 		SpeciesDetails species = null;
 
 		try {
