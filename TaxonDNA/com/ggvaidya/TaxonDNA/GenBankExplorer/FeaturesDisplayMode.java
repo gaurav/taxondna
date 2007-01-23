@@ -274,7 +274,7 @@ class FeaturesCellRenderer extends DefaultTreeCellRenderer {
 			checkBox.setBorderPaintedFlat(true);
 
 			if(selected)
-				checkBox.setBackground(SystemColor.textHighlight);
+				checkBox.setBackground(new Color(135, 206, 250)); /* thanks http://www.pitt.edu/~nisg/cis/web/cgi/rgb.html ! */
 			else
 				checkBox.setBackground(tree.getBackground());
 
