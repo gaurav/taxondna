@@ -588,7 +588,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 					// uh oh ...
 					// so we're going to have to rather painfully shrink it
 					name = potential.substring(0, potential.length() - 3) + "_" + identifier;
-					status = "I had to truncate some names to ensure uniqueness";
+					status = "I had to truncate and number some names to ensure uniqueness";
 					names.put(name, new Integer(x));	
 				}
 			} else {
