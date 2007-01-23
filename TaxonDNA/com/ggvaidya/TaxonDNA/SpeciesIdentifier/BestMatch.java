@@ -112,13 +112,13 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 				PairwiseSummary ps = (PairwiseSummary) seqId.getExtension("Pairwise Summary");
 				double cutoff = ps.getFivePercentCutoff();
 	
-				if(cutoff > 0)
+				if(cutoff > -1)
 					text_threshold.setText(String.valueOf(cutoff));
 				else {
 					// invalid cutoff?! how can??
 					ps.run();
 					cutoff = ps.getFivePercentCutoff();
-					if(cutoff > 0)
+					if(cutoff > -1)
 						text_threshold.setText(String.valueOf(cutoff));
 				}	
 			}
@@ -201,6 +201,11 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 		// get the sequence set, and figure out its stats
 		SequenceList set = seqId.lockSequenceList();
+		if(set == null) {
+			text_main.setText("No sequences loaded!");
+			seqId.unlockSequenceList();
+			return;
+		}
 		SortedSequenceList sset = new SortedSequenceList(set);
 
 		total_count_sequences = set.count();
@@ -364,7 +369,10 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			}	
 
 			// is it conspecific or allospecific?
-			boolean conspecific = bestMatch.getSpeciesName().equals(query.getSpeciesName());
+			boolean conspecific = false;
+			
+			if(bestMatch.getSpeciesName() != null && bestMatch.getSpeciesName().equals(query.getSpeciesName()))
+					conspecific = true;
 
 			// so: what's the block situation?
 			if(!clean_block && !mixed_block) {
