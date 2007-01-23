@@ -55,6 +55,7 @@ package com.ggvaidya.TaxonDNA.GenBankExplorer;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -136,7 +137,22 @@ public class GenBankFile {
 			} else {
 				return "Unnamed GenBank locus";
 			}
-		}	
+		}
+
+		public String getGI() {
+			if(getSection("VERSION") != null) {
+				// TODO: Move this code into, err, VersionSection - when there is one.
+				Pattern p = Pattern.compile("GI:(\\d+)\\s*$");
+				System.err.println("seq: '" + getSection("VERSION").value());
+				Matcher m = p.matcher(getSection("VERSION").value());
+
+				if(m.find()) {
+					return m.group(1);
+				}
+			}
+
+			return "";
+		}
 
 		public String toString() {
 			return getName();
@@ -170,7 +186,7 @@ public class GenBankFile {
 			buff.append("\n" + val);
 		}
 
-		public void parseSection() throws FormatException {
+		public void parseSection(DelayCallback d) throws FormatException {
 			// *we* don't do any parsing, humpf
 		}
 
@@ -541,7 +557,7 @@ public class GenBankFile {
 							gene_name += ", ";
 
 						Sequence seq = location.getSubsequence(origin.getSequence());
-						seq.changeName(getLocus().getName() + ": " + gene_name + location.toString());
+						seq.changeName(getLocus().getName() + " gi|" + getLocus().getGI() + "| " + gene_name + location.toString());
 						if(seq != null)
 							sl.add(seq);
 					}
@@ -578,7 +594,7 @@ public class GenBankFile {
 			return features;
 		}
 
-		public void parseSection() throws FormatException {
+		public void parseSection(DelayCallback delay) throws FormatException {
 			// okay, here's what a Feature section looks like;
 			// spaces are insignificant (INCLUDING between '"'es),
 			// and  
@@ -610,7 +626,13 @@ public class GenBankFile {
 					       break;
 					case 2: // waiting for location
 					       // so this must be the location!
-					       f.addKey("@location", new Location(tok));
+					       try {
+							f.addKey("@location", new Location(tok));
+					       } catch(FormatException e) {
+							// invalid exceptions are, eh, okayish right now
+							delay.addWarning(e.getMessage());
+					       }
+
 					       state = 3;
 					       break;
 					case 3: // waiting for key-value pair OR id 
@@ -817,7 +839,7 @@ public class GenBankFile {
 				if(line == null) {
 					// EOF!
 					if(s != null) {
-						s.parseSection();
+						s.parseSection(d);
 						l.addSection(s);
 					}
 
@@ -844,7 +866,7 @@ public class GenBankFile {
 						if(line.charAt(0) == '/' && line.charAt(1) == '/') {
 							// '//'
 							if(s != null) {
-								s.parseSection();
+								s.parseSection(d);
 								l.addSection(s);
 							}
 							addLocus(l);
@@ -854,7 +876,7 @@ public class GenBankFile {
 							// SECTION
 							// save old section
 							if(s != null) {
-								s.parseSection();
+								s.parseSection(d);
 								l.addSection(s);
 							}
 
