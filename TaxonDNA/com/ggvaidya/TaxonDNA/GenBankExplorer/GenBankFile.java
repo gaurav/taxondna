@@ -289,6 +289,11 @@ public class GenBankFile {
 			private SingleLocation() {}
 
 			public SingleLocation(String str) throws FormatException {
+				if(str.indexOf("join") != -1) {
+					// we do NOT support joins inside SingleLocations. Sorry.
+					throw new FormatException("Currently, 'join's inside other operators (such as 'complement') are not supported at present. Sorry!");
+				}
+
 				if(str.regionMatches(true, 0, "complement", 0, 10)) {
 					complemented = true;
 					str = str.substring(str.indexOf('(') + 1, str.indexOf(')'));
