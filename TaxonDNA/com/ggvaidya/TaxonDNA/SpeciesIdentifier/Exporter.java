@@ -340,8 +340,6 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			
 		}
 
-		seqId.unlockSequenceList();
-
 		ProgressDialog pd = new ProgressDialog(
 				seqId.getFrame(),
 				"Please wait, writing sequences ...",
