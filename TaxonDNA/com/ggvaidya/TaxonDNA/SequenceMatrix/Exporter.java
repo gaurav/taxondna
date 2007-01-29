@@ -252,7 +252,7 @@ public class Exporter implements SequencesHandler {
 		if(delay != null)
 			delay.begin();
 
-		PrintWriter writer = new PrintWriter(f);
+		PrintWriter writer = new PrintWriter(new FileWriter(f));
 		writer.println("#sequences (nucleotide sequencematrix)");
 		writer.println();
 
