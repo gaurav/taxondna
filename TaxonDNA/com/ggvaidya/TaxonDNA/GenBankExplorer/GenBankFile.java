@@ -143,7 +143,6 @@ public class GenBankFile {
 			if(getSection("VERSION") != null) {
 				// TODO: Move this code into, err, VersionSection - when there is one.
 				Pattern p = Pattern.compile("GI:(\\d+)\\s*$");
-				System.err.println("seq: '" + getSection("VERSION").value());
 				Matcher m = p.matcher(getSection("VERSION").value());
 
 				if(m.find()) {
@@ -563,6 +562,19 @@ public class GenBankFile {
 
 						Sequence seq = location.getSubsequence(origin.getSequence());
 						seq.changeName(getLocus().getName() + " gi|" + getLocus().getGI() + "| " + gene_name + location.toString());
+
+						// DAMBE hack
+						if(seq.getSpeciesName() != null) {
+							String seqName = seq.getSpeciesName();
+
+							if(seq.getSubspeciesName() != null)
+								seqName += " " + seq.getSubspeciesName();
+
+							if(seq.getGI() != null)
+								seqName += " " + seq.getGI();
+
+							seq.changeName(seqName.replace(' ', '_') + " " + seq.getFullName());
+						}
 						if(seq != null)
 							sl.add(seq);
 					}
