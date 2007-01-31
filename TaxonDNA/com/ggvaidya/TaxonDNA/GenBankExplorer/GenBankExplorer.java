@@ -54,6 +54,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	private Preferences	prefs			= new Preferences(this);
 	private ViewManager	viewManager		= new ViewManager(this);
 	private Exporter	exporter		= new Exporter(this);
+	private ClustalMapping	clustalMapping		= new ClustalMapping(this);
 
 	// The following variables create and track our user interface
 	private JFrame		mainFrame 		= new JFrame();		// A frame
@@ -89,6 +90,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 	public GenBankExplorer() {
 		count_genBankExplorers++;
 		createUI();
+
 		resetFrameTitle();
 	}
 
@@ -267,6 +269,11 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		//
 		if(cmd.equals("Export selected features as FASTA")) {
 			exporter.exportAsFasta(viewManager.getSelectedContainers());
+		}
+
+		// Export -> Export selected features as Clustal-compatible FASTA.
+		if(cmd.equals("Export selected features as Clustal-compatible FASTA")) {
+			clustalMapping.go();
 		}
 
 		// Help -> About. We should put something
@@ -527,6 +534,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export selected features as FASTA", new MenuShortcut(KeyEvent.VK_F)));
+//		export.add(new MenuItem("Export selected features as Clustal-compatible FASTA", new MenuShortcut(KeyEvent.VK_C)));
 		export.addActionListener(this);
 		menubar.add(export);
 
