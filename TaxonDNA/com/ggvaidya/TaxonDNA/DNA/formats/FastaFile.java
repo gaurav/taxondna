@@ -195,7 +195,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 				// add the previous entry
 				if(!name.equals("")) {
 					try {
-						Sequence x = new Sequence(name, seq);
+						Sequence x = makeSequence(delay, name, seq);
 						list.add(x);
 					} catch(SequenceException e) {
 						if(delay != null)
@@ -222,7 +222,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 				// add the previous entry
 				if(!name.equals("")) {
 					try {
-						Sequence x = new Sequence(name, seq);
+						Sequence x = makeSequence(delay, name, seq);
 						list.add(x);
 					} catch(SequenceException e) {
 						if(delay != null)
@@ -265,7 +265,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		// is there anything in the buffers?
 		if(!name.equals("")) {
 			try {
-				Sequence x = new Sequence(name, seq);
+				Sequence x = makeSequence(delay, name, seq);
 				list.add(x);
 			} catch(SequenceException e) {
 				if(delay != null)
@@ -276,6 +276,28 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		list.setFile(file);
 		list.setFormatHandler(this);	
 		list.unlock();
+	}
+
+	/**
+	 * Returns a new Sequence() object. Automatically converts 'U's into 'T's, warning the user
+	 * through the DelayCallback (if there is one).
+	 *
+	 * This method is a hack entirely placed here to make working with Dambe easier.
+	 */
+	private Sequence makeSequence(DelayCallback delay, String name, String seq) throws SequenceException {
+		// I know I'm going to regret this
+		name = name.replace('_', ' ');
+
+		// convert U to T
+		if(seq.indexOf('U') != -1 || seq.indexOf('u') != -1) {
+			// Uracil!
+			if(delay != null)
+				delay.addWarning("Sequence '" + name + "' contains one or more uracil bases. TaxonDNA can only handle DNA sequences at the moment. I'm converting all uracil (U) bases into thymine (T) bases.");
+
+			seq = seq.replace('U', 'T').replace('u', 't');
+		}
+
+		return new Sequence(name, seq);		
 	}
 
 	/**
