@@ -64,31 +64,70 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class ClustalMapping {
+public class ClustalMapping implements ActionListener {
 	private GenBankExplorer	explorer	=	null;	
+	private SequenceList	list_initial	=	null;
 	private SequenceList	list_final	=	null;
 	private SequenceList	list_missing	=	null;
 
+	private File		file_initial	=	null;
+
+	// Dialog for UI
 	private JDialog		dialog		=	null;
+	// UI objects
+	private JPanel p_exportClustalMapped = new JPanel();
+	private JPanel p_exportFinal = new JPanel();
+	private JPanel p_bottom = new JPanel();
+
+	private FileInputPanel	finp_clustalMapped 	= 	null;	
+	private FileInputPanel	finp_finalOutput	=	null;
+	private FileInputPanel	finp_finalMissing	=	null;
+	private JButton		btn_exportClustalMapped = 	null;
+	private JButton		btn_exportFinal 	= 	null;
+	private JButton		btn_close		=	null;
 
 	public ClustalMapping(GenBankExplorer exp) {
 		explorer = exp;
+
+		createUI();
 	}
 
 	public void createUI() {
 		dialog = new JDialog(explorer.getFrame(), "Clustal Mapping exports ...", true);		// modal
-		JPanel p = new JPanel(); 
+		dialog.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				closeDialog();
+			}
+		});
+	
+		finp_clustalMapped = new FileInputPanel("Clustal-mapped Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
+		btn_exportClustalMapped = new JButton("Export to Clustal-mapped Fasta file");
+		finp_finalOutput = new FileInputPanel("Final Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
+		finp_finalMissing = new FileInputPanel("Fasta file containing sequences which were missing in the clustal-mapped Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
+		btn_exportFinal = new JButton("Export to final Fasta file");
+		btn_exportFinal.addActionListener(this);
 
-		RightLayout rl = new RightLayout(p);
-		p.setLayout(rl);
+		RightLayout rl = new RightLayout(p_exportClustalMapped);
+		p_exportClustalMapped.setLayout(rl);
 
-		rl.add(new Button("list 1"), RightLayout.NONE);
-		rl.add(new Button("infor text"), RightLayout.BESIDE | RightLayout.STRETCH_X);
-		rl.add(new Button("list 2"), RightLayout.BESIDE);
-		rl.add(new Button("list 3"), RightLayout.BESIDE);
+		rl.add(new Label("1. Please select a new file to export these sequences to:"), RightLayout.NONE);
+		rl.add(finp_clustalMapped, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		rl.add(btn_exportClustalMapped, RightLayout.NEXTLINE);
+		btn_exportClustalMapped.addActionListener(this);
 
-		dialog.getContentPane().setLayout(new BorderLayout());
-		dialog.getContentPane().add(p);
+		rl = new RightLayout(p_exportFinal);
+		p_exportFinal.setLayout(rl);
+
+		rl.add(new Label("2. Please select a file to export the clustal-mapped sequences to:"), RightLayout.NEXTLINE);
+		rl.add(finp_finalOutput, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		rl.add(finp_finalMissing, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		rl.add(btn_exportFinal, RightLayout.NEXTLINE);	
+
+		p_bottom = new JPanel();
+		p_bottom.setLayout(new BorderLayout());
+		btn_close = new JButton("Close this dialog");
+		btn_close.addActionListener(this);
+		p_bottom.add(btn_close);
 	}
 
 	private Frame getFrame() {
@@ -100,11 +139,102 @@ public class ClustalMapping {
 		return null;
 	}
 
-	public void go() {
-		createUI();
+	public void actionPerformed(ActionEvent e) {
+		if(e.getSource().equals(btn_exportClustalMapped)) {
+			// Export ClustalMapped!
+			File f = finp_clustalMapped.getFile();
+			if(exportSequenceSet(list_initial, f)) {
+				showDialog(true);
+				file_initial = f;		// save the file_initial, we'll need it for step two
+			}
+		} else if(e.getSource().equals(btn_exportFinal)) {
+			File f_final = finp_finalOutput.getFile();
+			File f_missing = finp_finalMissing.getFile();
+			importSequenceSet(list_initial, file_initial);
+			// now, the results are in list_final and list_missing
+			// we need to export it to 'f_final' and 'f_missing'
+			// respectively.
+			File file_being_processed = null;
+			try {
+				String desc_final = list_final.size() + " final sequences to '" + f_final + "'";
+				file_being_processed = f_final;
+				new FastaFile().writeFile(f_final, list_final, 
+						new ProgressDialog(explorer.getFrame(),
+							"Please wait, exporting final Fasta file ...",
+							"The final Fasta file is being exported. Sorry for the wait!"));
 
+
+				String desc_missing = "";
+				if(list_missing != null && list_missing.size() > 0) {
+					desc_missing = " and " + list_missing.size() + " missing sequences to '" + f_missing + "'";
+					file_being_processed = f_missing;
+					new FastaFile().writeFile(f_missing, list_missing,
+						new ProgressDialog(explorer.getFrame(),
+							"Please wait, exporting missing sequences to a separate Fasta file ...",
+							"The Fasta file containing missing seuqences is being written out now. Please wait a moment!")
+						);
+				}
+			
+				new MessageBox(explorer.getFrame(),
+						"All done!",
+						"Successfully exported " + desc_final + desc_missing + ".").go();
+			} catch(IOException exp) {
+				new MessageBox(explorer.getFrame(),
+						"Could not write file " + file_being_processed + "!",
+						"There was an error writing to '" + file_being_processed + "'. Try again, and ensure you have adequate permissions to the files you are trying to write to. The error which occured is: " + exp.getMessage());
+			} catch(DelayAbortedException exp) {
+				return;		// don't close dialog, don't do NOTHING.
+			}
+		} else if(e.getSource().equals(btn_close)) {
+			closeDialog();
+		}
+	}
+
+	public void closeDialog() {
+		list_initial = null;
+		dialog.setVisible(false);
+	}
+
+	private void loadSequenceList() {
+		try {
+			list_initial = explorer.getSelectedSequenceList(new ProgressDialog(
+					explorer.getFrame(),
+					"Please wait, assembling sequences ...",
+					"I am assembling all selected sequences preparatory to writing them into a file. Sorry for the delay!")
+				);
+		} catch(DelayAbortedException e) {
+			list_initial = null;
+			return;
+		} catch(SequenceException e) {
+			new MessageBox(
+				explorer.getFrame(),
+				"Could not load sequence!",
+				"The following sequence could not be created:\n" + e.getMessage()).go();
+		}
+	}
+
+	public void showDialog(boolean showPartDeux) {
+		dialog.getContentPane().setLayout(new BorderLayout());
+		JPanel p = new JPanel();
+		p.setLayout(new BorderLayout());
+		p.add(p_exportClustalMapped, BorderLayout.NORTH);
+		if(showPartDeux)
+			p.add(p_exportFinal, BorderLayout.SOUTH);
+		dialog.getContentPane().add(p);
+		dialog.getContentPane().add(p_bottom, BorderLayout.SOUTH);
 		dialog.pack();
 		dialog.setVisible(true);
+	}
+
+	public void go() {
+		// step 1: let's get an initial sequence list out of the Fasta file.
+		// 
+		// note: is this a bad idea? it looks very nice, but perhaps we 
+		// ought to delay this until the user picks a file to export to.
+		// Ah well.
+		loadSequenceList();
+
+		showDialog(false);
 	}
 
 	//
@@ -322,13 +452,13 @@ public class ClustalMapping {
 	 * format (good for passing into AlignmentHelper). See docs for this class on 
 	 * how this works.
 	 */
-	public void exportSequenceSet(SequenceList set, File outputFile) {
+	public boolean exportSequenceSet(SequenceList set, File outputFile) {
 		// our output writers
 		PrintWriter	output = null;
 		Hashtable 	uniques = new Hashtable();
 
 		if(set == null)		// nothing to do!
-			return;
+			return false;
 
 		try {
 			createUniqueIds(set);
@@ -336,7 +466,7 @@ public class ClustalMapping {
 			// something went wrong with createUniqueIds() 
 			// but it's already been reported to the reader
 			if(e.getMessage() != null && e.getMessage().equals("Duplicate:notified"))
-				return;
+				return false;
 			// err ... no? A *real* RuntimeException?
 			//
 			// *gulp*
@@ -372,7 +502,7 @@ public class ClustalMapping {
 					MessageBox mb = new MessageBox(getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
 					mb.go();
 				
-					return;	
+					return false;	
 				}
 				uniques.put(id, new Boolean(true));
 				
@@ -387,14 +517,15 @@ public class ClustalMapping {
 			MessageBox mb = new MessageBox(getFrame(), "Success!", no + " sequences were exported successfully. You may now run Clustal on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
 			mb.go();
 
+			return true;
+
 		} catch(IOException e) {
 			MessageBox mb = new MessageBox(getFrame(), "Error while writing to file", "There was an error writing to '" + outputFile + "'. Are you sure you have write permissions to both the Clustal input and the map file? The technical description of this error is: " + e);
 			mb.go();
-			return;
+			return false;
 		} finally {
 			if(output != null)
 				output.close();
 		}
-
 	}
 }
