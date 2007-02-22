@@ -126,7 +126,12 @@ public class Exporter {
 			return;		// cancelled
 
 		try {
-			SequenceList sl = combineContainers(containers);
+			SequenceList sl = combineContainers(containers, new ProgressDialog(
+							explorer.getFrame(),
+							"Please wait, assembling sequences for export ...",
+							"I am assembling all selected sequences in preparation for export. Please give me a second!"
+						)
+					);
 			int count = sl.count();
 
 			ProgressDialog pd = new ProgressDialog(
@@ -151,18 +156,29 @@ public class Exporter {
 		}
 	}
 
-	public SequenceList combineContainers(java.util.List list) throws SequenceException {
+	public SequenceList combineContainers(java.util.List list, DelayCallback delay) throws SequenceException, DelayAbortedException {
 		SequenceList sl = new SequenceList();
 		Iterator i = list.iterator();
 
+		if(delay != null)
+			delay.begin();
+
+		int x = 0;
 		while(i.hasNext()) {
+			if(delay != null)
+				delay.delay(x, list.size());
+			x++;
+
 			SequenceContainer container = (SequenceContainer) i.next();
 
 			sl.addAll(container.getAsSequenceList());
 
 			if(container.alsoContains().size() > 0)
-				sl.addAll(combineContainers(container.alsoContains()));
+				sl.addAll(combineContainers(container.alsoContains(), null));
 		}
+
+		if(delay != null)
+			delay.end();
 
 		return sl;
 	}

@@ -534,7 +534,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export selected features as FASTA", new MenuShortcut(KeyEvent.VK_F)));
-//		export.add(new MenuItem("Export selected features as Clustal-compatible FASTA", new MenuShortcut(KeyEvent.VK_C)));
+		export.add(new MenuItem("Export selected features as Clustal-compatible FASTA", new MenuShortcut(KeyEvent.VK_C)));
 		export.addActionListener(this);
 		menubar.add(export);
 
@@ -566,5 +566,16 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 	public void updateStatusBar(String x) {
 		tf_status.setText(x);
+	}
+
+	/**
+	 * Returns a sequence list containing the current selection.
+	 */
+	public SequenceList getSelectedSequenceList(DelayCallback delay) throws SequenceException, DelayAbortedException {
+		java.util.List list = viewManager.getSelectedContainers();
+		if(list == null || list.size() == 0)
+			return null;
+
+		return exporter.combineContainers(list, delay);
 	}
 }
