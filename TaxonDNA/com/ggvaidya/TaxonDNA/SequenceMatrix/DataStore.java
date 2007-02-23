@@ -44,16 +44,28 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DataStore {
 	// The property value we use for Sequence.getProperty(...)
-	/** If this property is set to ANY non-null value (we use a new Object()), it means that particular sequence has been cancelled. You can uncancel it by setting this property to null. */
+	/** 
+	 * CANCELLED_PROPERTY:
+	 * If this property is set to ANY non-null value (we use a new Object()), it means that 
+	 * particular sequence has been cancelled. You can uncancel it by setting this property 
+	 * to null. 
+	 */
 	public static final String CANCELLED_PROPERTY =	"com.ggvaidya.TaxonDNA.SequenceMatrix.DataStore.cancelled";
 
-	/** If this property is set during an addSequenceList(), then the name specified is used as the column name instead of the column specified to the addSequenceList() call. */
+	/** INITIAL_COLNAME_PROPERTY: If this property is set during an addSequenceList(), then 
+	 * the name specified is used as the column name instead of the column specified to the 
+	 * addSequenceList() call. 
+	 */
 	public static final String INITIAL_COLNAME_PROPERTY = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialColName";
-	/** If this property is set during an addSequenceList(), then the name specified is used as the sequence name (the seqName) instead of the full sequence name. This allows us to reimplement [[Use Species Name/Use Sequence Name]] options without actually pissing anybody off.
+
+	/** INITIAL_SEQNAME_PROPERTY: If this property is set during an addSequenceList(), then 
+	 * the name specified is used as the sequence name (the seqName) instead of the full 
+	 * sequence name. This allows us to reimplement [[Use Species Name/Use Sequence Name]] 
+	 * options without actually pissing anybody off.
 	 */
 	public static final String INITIAL_SEQNAME_PROPERTY = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceGrid.initialSeqName";
 
-	// The Data.
+	/** The actual data itself. */
 	private Hashtable hash_master = new Hashtable();	// the master hash:
 								// Hashtable[colName] = Hashtable[seqName] = Sequence
 								// Hashtable[colName] = Hashtable[""] = Integer(max_length)
@@ -71,7 +83,6 @@ public class DataStore {
 // 0.	INTERNAL ACCESS FUNCTIONS. hash_columns does a lot of pretty strange shit in a very small space.
 // 	To sort this out, please do NOT use hash_columns directly; use the functions defined here.
 //
-
 	/**
 	 * Checks whether 'colName' MIGHT BE a valid column name. Note that we don't actually check
 	 * whether colName *is* a valid column name. Mainly, this is to enforce the rule that colName
@@ -166,11 +177,11 @@ public class DataStore {
 	/**
 	 * Returns a set of all sequence names in column 'colName'. No order guaranteed,
 	 * although you WILL get all the cancelled sequences as well (i.e. ALL sequence
-	 * names). Is that smart? Is that wise? Does it ring true?
-	 * 
-	 * Yeah. Why not?
+	 * names). 
 	 *
-	 * TODO: Confirm random dialog in comment. Does it? Really?
+	 * This is required, to avoid a situation where a column with NO sequences
+	 * exists - as it cannot actually exist; such a column ought to have been deleted
+	 * automatically once the last column was deleted.
 	 */
 	public Set getSequenceNamesByColumn(String colName) {
 		Set set = (Set) new HashSet();
