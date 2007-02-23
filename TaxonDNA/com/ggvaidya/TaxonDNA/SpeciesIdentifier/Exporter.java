@@ -467,7 +467,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			tf_status.setText("I had to change some things. For instance: " + status);
 
 		// forget all the new names we have found
-		names = null;
+		names = new Hashtable();
 
 		pd.end();
 
