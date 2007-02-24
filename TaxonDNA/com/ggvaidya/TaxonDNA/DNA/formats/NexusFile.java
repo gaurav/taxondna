@@ -157,7 +157,7 @@ public class NexusFile extends BaseFormatHandler {
 
 			// let's go!
 			reader = new BufferedReader(new FileReader(fileFrom));
-			StreamTokenizer tok = new StreamTokenizer(reader);
+			NexusTokenizer tok = new NexusTokenizer(reader);
 			// let's pre-read the #NEXUS line
 			if(tok.nextToken() != '#')
 				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#')! Are you sure it's a Nexus file?");
@@ -168,25 +168,6 @@ public class NexusFile extends BaseFormatHandler {
 				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#nexus')! Are you sure it's a Nexus file?");
 			}
 
-			tok.ordinaryChar('/');	// this is the default StringTokenizer comment char, so we need to set it back to nothingness
-
-			// turn off parseNumbers()
-		        tok.ordinaryChar('.');
-		        tok.ordinaryChar('-');
-		        tok.ordinaryChars('0','9');
-		        tok.wordChars('.','.');
-		        tok.wordChars('-','-');
-		        tok.wordChars('0','9');
-
-		        tok.wordChars('|','|');		// this is officially allowed in Nexus, and pretty convenient for us
-			tok.wordChars('_', '_');
-					// we need to replace this manually. they form one 'word' in NEXUS.
-			tok.wordChars('(','(');		// sequences which use '(ACTG)' = 'N' will now be read in in one shot.
-			tok.wordChars(')',')');
-
-			tok.ordinaryChar('[');	// We need this to be an 'ordinary' so that we can use it to discriminate comments
-			tok.ordinaryChar(']');	// We need this to be a 'word' so that we can use it to discriminate comments
-			tok.ordinaryChar(';');	// We need this to be a 'word' so that we can use it to distinguish commands 
 		
 			// states
 			int 		commentLevel = 		0;
@@ -205,7 +186,7 @@ public class NexusFile extends BaseFormatHandler {
 				int type = tok.nextToken();
 				
 				// break at end of file
-				if(type == StreamTokenizer.TT_EOF)
+				if(type == NexusTokenizer.TT_EOF)
 					break;
 				
 				// is it a comment?
@@ -226,7 +207,7 @@ public class NexusFile extends BaseFormatHandler {
 				}
 
 				// Look out for END
-				if(type == StreamTokenizer.TT_WORD) {
+				if(type == NexusTokenizer.TT_WORD) {
 					String str = tok.sval;
 
 					if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
@@ -243,7 +224,7 @@ public class NexusFile extends BaseFormatHandler {
 					// the BEGIN command
 					else if(str.equalsIgnoreCase("BEGIN")) {
 						// begin what?
-						if(tok.nextToken() == StreamTokenizer.TT_WORD) {
+						if(tok.nextToken() == NexusTokenizer.TT_WORD) {
 							String beginWhat = tok.sval;	
 							int nextChar = tok.nextToken();
 
@@ -287,11 +268,21 @@ public class NexusFile extends BaseFormatHandler {
 		appendTo.setFormatHandler(this);
 	}
 
-	public FormatException formatException(StreamTokenizer tok, String message) {
+	public FormatException formatException(NexusTokenizer tok, String message) {
 		return new FormatException("Error on line " + tok.lineno() + ": " + message);
 	}
 
-	public void blockData(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	/**
+	 * Processing the DATA block of NexusFile.
+	 *
+	 * Things to do:
+	 * 1.	Change the definition of ' such that:
+	 * 	'x y z' == x_y_z
+	 * 	'Test''s testing' == Test''s_testing == [Test's testing]
+	 * 2.	
+	 *
+	 */
+	public void blockData(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
 		throws FormatException, DelayAbortedException, IOException
 	{
 		boolean isDatasetInterleaved = false;
@@ -304,9 +295,6 @@ public class NexusFile extends BaseFormatHandler {
 							// default for us. NEXUS says there is NO default,
 							// but we're going to have one anyway, because
 							// we're Radical and all.
-
-		tok.wordChars(gapChar,gapChar);
-	        tok.wordChars(missingChar,missingChar);
 
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
@@ -321,7 +309,7 @@ public class NexusFile extends BaseFormatHandler {
 			if(delay != null)
 				delay.delay(tok.lineno(), count_lines);
 
-			if(type == StreamTokenizer.TT_EOF) {
+			if(type == NexusTokenizer.TT_EOF) {
 				// wtf?!
 				throw formatException(tok, "I've reached the end of the file, and the DATA/CHARACTERS block has *still* not been closed! Please make sure the block is closed.");
 			}
@@ -354,7 +342,7 @@ public class NexusFile extends BaseFormatHandler {
 					continue;
 				}
 
-				if(type == StreamTokenizer.TT_WORD) {
+				if(type == NexusTokenizer.TT_WORD) {
 					str = tok.sval;
 
 					if(str.equalsIgnoreCase("INTERLEAVE")) {
@@ -393,9 +381,7 @@ public class NexusFile extends BaseFormatHandler {
 						if(str.length() > 1)
 							throw formatException(tok, "I can't use more than one character as the GAP character. The file specifies: '" + str + "'");
 
-						tok.ordinaryChar(gapChar);
 						gapChar = str.charAt(0); 
-						tok.wordChars(gapChar, gapChar);
 					}
 						
 					else if(str.equalsIgnoreCase("MISSING")) {
@@ -406,9 +392,7 @@ public class NexusFile extends BaseFormatHandler {
 						if(str.length() > 1)
 							throw formatException(tok, "I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
 
-						tok.ordinaryChar(missingChar);
 						missingChar = str.charAt(0); 
-						tok.wordChars(missingChar, missingChar);
 					} else {
 						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
 					}
@@ -427,7 +411,7 @@ public class NexusFile extends BaseFormatHandler {
 					continue;
 				}
 
-				else if(type == StreamTokenizer.TT_WORD) {
+				else if(type == NexusTokenizer.TT_WORD) {
 					if(name == null) {
 						// put spaces back
 						name = str.replace('_', ' ');		// we do NOT support '. Pfft.
@@ -459,7 +443,7 @@ public class NexusFile extends BaseFormatHandler {
 					throw formatException(tok, "Unexpected '" + (char) type + "' in matrix.");
 				}
 			} else {
-				if(type == StreamTokenizer.TT_WORD) {
+				if(type == NexusTokenizer.TT_WORD) {
 
 					if(str.equalsIgnoreCase("FORMAT")) {
 						inFormatCommand = true;	
@@ -502,16 +486,12 @@ public class NexusFile extends BaseFormatHandler {
 			
 			newCommand = false;
 		}
-
-		// only important in the DATA block
-	        tok.ordinaryChar(gapChar);
-	        tok.ordinaryChar(missingChar);
 	}
 
 	/**
 	 * Processes the 'SETS' block.
 	 */
-	public void blockSets(SequenceList appendTo, StreamTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	public void blockSets(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
 		throws FormatException, DelayAbortedException, IOException
 	{
 		int commentLevel = 0;
@@ -526,7 +506,7 @@ public class NexusFile extends BaseFormatHandler {
 			if(delay != null)
 				delay.delay(tok.lineno(), count_lines);
 
-			if(type == StreamTokenizer.TT_EOF) {
+			if(type == NexusTokenizer.TT_EOF) {
 				// wtf?!
 				throw formatException(tok, "I've reached the end of the file, and the SETS block has *still* not been closed! Please make sure the block is closed.");
 			}
@@ -553,7 +533,7 @@ public class NexusFile extends BaseFormatHandler {
 					inIgnoredCommand = false;
 					continue;
 				}
-			} else if(type == StreamTokenizer.TT_WORD) {
+			} else if(type == NexusTokenizer.TT_WORD) {
 				//System.err.println("New command: " + str);
 
 				// is it over?
@@ -567,7 +547,7 @@ public class NexusFile extends BaseFormatHandler {
 //						throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
 //					}
 				} else if(str.equalsIgnoreCase("CHARSET")) {
-					if((type = tok.nextToken()) != StreamTokenizer.TT_WORD) 
+					if((type = tok.nextToken()) != NexusTokenizer.TT_WORD) 
 						throw formatException(tok, "Unexpected symbol '" + (char)type + "' found after 'CHARSET'. This doesn't look like the name of a CHARSET to me!");
 
 					String name = tok.sval;
@@ -579,7 +559,7 @@ public class NexusFile extends BaseFormatHandler {
 						// it might be STANDARD or VECTOR
 						// god bless my anal soul
 
-						if(type != StreamTokenizer.TT_WORD)
+						if(type != NexusTokenizer.TT_WORD)
 							throw formatException(tok, "Unexpected '" + (char) type + "' after the '=' in CHARSET " + name + ".");
 
 						str = tok.sval;
@@ -614,7 +594,7 @@ public class NexusFile extends BaseFormatHandler {
 						} else if((char) type == '-') {
 							expectingATo = true;
 							continue;
-						} else if(type == StreamTokenizer.TT_WORD) {
+						} else if(type == NexusTokenizer.TT_WORD) {
 							str = tok.sval;
 							int num = 0;
 					
@@ -671,7 +651,7 @@ public class NexusFile extends BaseFormatHandler {
 	}
 
 	/**
-	 * Gets the String 'value' of the key=value pair from the StreamTokenizer.
+	 * Gets the String 'value' of the key=value pair from the NexusTokenizer.
 	 * I assume you've already got the 'key', so I'll get the '=' token,
 	 * followed by a TT_WORD, and return the Integer.parseInt of that word.
 	 *
@@ -679,11 +659,11 @@ public class NexusFile extends BaseFormatHandler {
 	 *
 	 * @throws IOException if the tokenizer gets IO issues.
 	 */
-	private String getValueOfKey(StreamTokenizer tok) throws FormatException, IOException {
+	private String getValueOfKey(NexusTokenizer tok) throws FormatException, IOException {
 		if(tok.nextToken() == '=') {
 			int type = tok.nextToken();
 			// all good so far
-			if(type == StreamTokenizer.TT_WORD) {
+			if(type == NexusTokenizer.TT_WORD) {
 				// yay! we got a word
 				return tok.sval;
 			} else if(
