@@ -36,6 +36,8 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Cluster extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
+	private static final boolean	FLAG_SKIP_INDIVIDUAL_ENTRIES = true;
+
 	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 
@@ -314,7 +316,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		item_strings[0] = str_final.toString();
 
 		delay_count++;
-		for(int i = 1; i <= clusters.size(); i++) {
+		for(int i = 1; !FLAG_SKIP_INDIVIDUAL_ENTRIES && i <= clusters.size(); i++) {
 		// information on that particular clusters
 			Vector bin = (Vector)clusters.get(i - 1); // 
 			str = new StringBuffer();
