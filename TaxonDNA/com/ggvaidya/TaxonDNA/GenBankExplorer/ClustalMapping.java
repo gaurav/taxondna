@@ -81,7 +81,6 @@ public class ClustalMapping implements ActionListener {
 
 	private FileInputPanel	finp_clustalMapped 	= 	null;	
 	private FileInputPanel	finp_finalOutput	=	null;
-	private FileInputPanel	finp_finalMissing	=	null;
 	private JButton		btn_exportClustalMapped = 	null;
 	private JButton		btn_exportFinal 	= 	null;
 	private JButton		btn_close		=	null;
@@ -103,7 +102,6 @@ public class ClustalMapping implements ActionListener {
 		finp_clustalMapped = new FileInputPanel("Clustal-mapped Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
 		btn_exportClustalMapped = new JButton("Export to Clustal-mapped Fasta file");
 		finp_finalOutput = new FileInputPanel("Final Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
-		finp_finalMissing = new FileInputPanel("Fasta file containing sequences which were missing in the clustal-mapped Fasta file: ", FileInputPanel.MODE_FILE_WRITE, dialog);
 		btn_exportFinal = new JButton("Export to final Fasta file");
 		btn_exportFinal.addActionListener(this);
 
@@ -120,7 +118,7 @@ public class ClustalMapping implements ActionListener {
 
 		rl.add(new Label("2. Please select a file to export the clustal-mapped sequences to:"), RightLayout.NEXTLINE);
 		rl.add(finp_finalOutput, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
-		rl.add(finp_finalMissing, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		rl.add(new Label("Any sequences not present in the Clustal-mapped Fasta file will be written to 'missing.txt' in the same directory as the final export file specified above."), RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 		rl.add(btn_exportFinal, RightLayout.NEXTLINE);	
 
 		p_bottom = new JPanel();
@@ -149,7 +147,6 @@ public class ClustalMapping implements ActionListener {
 			}
 		} else if(e.getSource().equals(btn_exportFinal)) {
 			File f_final = finp_finalOutput.getFile();
-			File f_missing = finp_finalMissing.getFile();
 			importSequenceSet(list_initial, file_initial);
 			// now, the results are in list_final and list_missing
 			// we need to export it to 'f_final' and 'f_missing'
@@ -166,13 +163,29 @@ public class ClustalMapping implements ActionListener {
 
 				String desc_missing = "";
 				if(list_missing != null && list_missing.size() > 0) {
-					desc_missing = " and " + list_missing.size() + " missing sequences to '" + f_missing + "'";
-					file_being_processed = f_missing;
-					new FastaFile().writeFile(f_missing, list_missing,
-						new ProgressDialog(explorer.getFrame(),
-							"Please wait, exporting missing sequences to a separate Fasta file ...",
-							"The Fasta file containing missing seuqences is being written out now. Please wait a moment!")
-						);
+					File f_missing = new File(f_final.getParent(), "missing.txt");
+
+					if(f_missing.exists()) {
+						MessageBox mb = new MessageBox(
+								explorer.getFrame(),
+								"Overwrite file?",
+								"The file '" + f_missing + "' already exists! Would you like to overwrite it?\n\nIf you say 'Yes' here, the file '" + f_missing + "' will be deleted.\nIf you say 'No' here, the file '" + f_missing + "' will not be altered. No missing file will be saved.", MessageBox.MB_YESNO);
+
+						if(mb.showMessageBox() == MessageBox.MB_NO)
+							f_missing = null;
+					}
+					
+					if(f_missing != null) {
+						desc_missing = " and " + list_missing.size() + " missing sequences to '" + f_missing + "'";
+
+
+						file_being_processed = f_missing;
+						new FastaFile().writeFile(f_missing, list_missing,
+							new ProgressDialog(explorer.getFrame(),
+								"Please wait, exporting missing sequences to a separate Fasta file ...",
+								"The Fasta file containing missing seuqences is being written out now. Please wait a moment!")
+							);
+					}
 				}
 			
 				new MessageBox(explorer.getFrame(),
@@ -391,6 +404,9 @@ public class ClustalMapping implements ActionListener {
 	public boolean createUniqueIds (SequenceList list)  {
 		boolean warned = false;
 		MessageBox mb = null;
+
+		Vector vec_nonIdentical = new Vector();
+
 		Hashtable unique = new Hashtable();
 		Iterator i = list.iterator();
 
@@ -424,22 +440,29 @@ public class ClustalMapping implements ActionListener {
 //					}
 //				}
 				// if we're here, we have warned the user, and he's okay with rewriting files. So ...
+
+				// make up a new ID for Sequence. We use Sequence.getId() to return a UUID for this
+				// Sequence.
 				seq.changeName(seq.getFullName() + " [uniqueid:" + seq.getId().toString() + "]");
 
 				unique.put(seq.getId(), new Boolean(true));
 			} else if(unique.get(id) != null) {
 				// there is a GI, but it's non identical
 				// barf biggly and noisily
-				mb = new MessageBox(getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
-				mb.go();
-
-				return false;
+				vec_nonIdentical.add(seq.getFullName());
 			} else {
 				// we have a GI, and it looks okay ...
 				// so ... do nothing!
-				unique.put(seq.getId(), new Boolean(true)); 
+				unique.put(id, new Boolean(true)); 
 			}
 //			System.err.println("Sequence: " + seq);
+		}
+
+		if(vec_nonIdentical.size() > 0) {
+			new MessageBox(
+				explorer.getFrame(),
+				"ERROR: Some sequences were not exported!",
+				"The following sequences could not be exported, since they share GI numbers with other sequences in your dataset. They will be exported to a Fasta file entitled 'duplicates.txt' in the same directory as the Clustal-mapped Fasta file.\n" + Pearls.repeat(" - ", vec_nonIdentical, "\n")).go();
 		}
 
 		return true;
@@ -456,6 +479,8 @@ public class ClustalMapping implements ActionListener {
 		// our output writers
 		PrintWriter	output = null;
 		Hashtable 	uniques = new Hashtable();
+
+		SequenceList	sl_duplicateSequences = new SequenceList();
 
 		if(set == null)		// nothing to do!
 			return false;
@@ -498,11 +523,19 @@ public class ClustalMapping implements ActionListener {
 				// note that id might be GI (number) or non-GI (preceded by 'U')
 				if(uniques.get(id) != null) {
 					// our ID is non unique? Die with extreme prejudice!
+					//
+					// EXCEPT that we've already warned the user what we're going to do:
+					// these sequences just get shoved into a separate file 
+					// ($SAME_PATH_AS_CLUSTAL_MAPPED/duplicates.txt).
+					//
+					// So: create a new SequenceList, chuck it in right at the end.
+					// Bob's your uncle, etc.
 
-					MessageBox mb = new MessageBox(getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
-					mb.go();
+//					MessageBox mb = new MessageBox(getFrame(), "You have duplicate sequences!", "Two sequences in this dataset have identical GI numbers. I can't use this for a mapfile. Please delete one of the duplicate pair of sequences. The duplicate pair which caused this error was:\n\t" + seq.getFullName() +"\nand\nGI:\t" + id);
+//					mb.go();
 				
-					return false;	
+					sl_duplicateSequences.add(seq);
+					continue;
 				}
 				uniques.put(id, new Boolean(true));
 				
@@ -512,6 +545,20 @@ public class ClustalMapping implements ActionListener {
 				
 				// next!
 				no++;
+			}
+
+			if(sl_duplicateSequences.count() > 0) {
+				try {
+					File f = new File(outputFile.getParent(), "duplicates.txt");
+					new FastaFile().writeFile(f, sl_duplicateSequences, new ProgressDialog(
+								explorer.getFrame(),
+								"Please wait, exporting duplicate sequences ...",
+								"All duplicate sequences are now being exported to '" + f + "'. Please be patient!"));
+				} catch(IOException e) {
+					// TBD TODO XXX
+				} catch(DelayAbortedException e) {
+					// TBD TODO XXX
+				}
 			}
 		
 			MessageBox mb = new MessageBox(getFrame(), "Success!", no + " sequences were exported successfully. You may now run Clustal on the sequences you specified. Once that is done, please follow step 2 to retrieve the original sequences.");
