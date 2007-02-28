@@ -295,6 +295,9 @@ public class NexusFile extends BaseFormatHandler {
 							// default for us. NEXUS says there is NO default,
 							// but we're going to have one anyway, because
 							// we're Radical and all.
+		
+		tok.setGapChar(gapChar);
+		tok.setMissingChar(missingChar);
 
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
@@ -381,7 +384,8 @@ public class NexusFile extends BaseFormatHandler {
 						if(str.length() > 1)
 							throw formatException(tok, "I can't use more than one character as the GAP character. The file specifies: '" + str + "'");
 
-						gapChar = str.charAt(0); 
+						gapChar = str.charAt(0);
+						tok.setGapChar(gapChar);
 					}
 						
 					else if(str.equalsIgnoreCase("MISSING")) {
@@ -393,6 +397,7 @@ public class NexusFile extends BaseFormatHandler {
 							throw formatException(tok, "I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
 
 						missingChar = str.charAt(0); 
+						tok.setMissingChar(missingChar);
 					} else {
 						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
 					}
@@ -486,6 +491,9 @@ public class NexusFile extends BaseFormatHandler {
 			
 			newCommand = false;
 		}
+
+		tok.setGapChar((char)0);
+		tok.setMissingChar((char)0);
 	}
 
 	/**
