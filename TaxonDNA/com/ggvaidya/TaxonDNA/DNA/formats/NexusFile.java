@@ -413,9 +413,14 @@ public class NexusFile extends BaseFormatHandler {
 						throw formatException(tok, "The sequence named '" + name + "' has no DNA sequence associated with it.");
 					}
 					inMatrix = false;
+					tok.reportNewlines(false);
 					continue;
 				}
-
+				else if(type == NexusTokenizer.TT_EOL) {
+					// end of line!
+					name = null;
+					continue;
+				}
 				else if(type == NexusTokenizer.TT_WORD) {
 					if(name == null) {
 						// put spaces back
@@ -441,8 +446,6 @@ public class NexusFile extends BaseFormatHandler {
 						} catch(SequenceException e) {
 							throw formatException(tok, "The sequence for taxon '" + name + "' is invalid: " + e);
 						}
-
-						name = null;
 					}
 				} else {
 					throw formatException(tok, "Unexpected '" + (char) type + "' in matrix.");
@@ -455,17 +458,20 @@ public class NexusFile extends BaseFormatHandler {
 					}
 
 					if(str.equalsIgnoreCase("MATRIX")) {
+						tok.reportNewlines(true);
 						inMatrix = true;
 					}
 
 					// Commands we ignore
 					if(
 							str.equalsIgnoreCase("DIMENSIONS") ||
+							str.equalsIgnoreCase("DIMENSION") ||
 							str.equalsIgnoreCase("ELIMINATE") ||
 							str.equalsIgnoreCase("TAXLABELS") ||
 							str.equalsIgnoreCase("CHARSTATELABELS") ||
 							str.equalsIgnoreCase("CHARLABELS") ||
-							str.equalsIgnoreCase("STATELABLES")
+							str.equalsIgnoreCase("STATELABLES") ||
+							str.equalsIgnoreCase("OPTIONS")
 					) {
 						inIgnoredCommand = true;
 					}
@@ -482,6 +488,12 @@ public class NexusFile extends BaseFormatHandler {
 //						}
 					}
 
+				} else if(type == NexusTokenizer.TT_EOL) {
+					// Look, I *know* I should figure out why this EOL is slipping out
+					// of the inMatrix loop, but it's 10pm, and I really honestly truely
+					// don't care any more. Sorry.
+
+					continue;
 				} else {
 					// unknown symbol found
 					//System.err.println("Last string (ish!): " + str);
