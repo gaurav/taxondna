@@ -189,6 +189,9 @@ public class NexusTokenizer {
 		if(ch == '_')		// _ is ALWAYS alphanumeric
 			return true;
 
+		if(ch == '.')		// a LOT of Nexus files seem to think '.' is alphanumeric. What to do. Go with flow, etc.
+			return true;
+
 		if(ch == gapChar)
 			return true;
 		
@@ -234,7 +237,7 @@ public class NexusTokenizer {
 				(ch == 0x000A || ch == 0x000D)
 			) {
 				noOfConseqNewlines++;
-				if(noOfConseqNewlines%2 == 0) {	// skip alternate contiguous newlines
+				if(noOfConseqNewlines%2 == 1) {	// skip alternate contiguous newlines
 					lineno++;
 					if(reportNewlines) {
 						return reportWord(token, TT_EOL);	// yes, report BOTH
@@ -341,9 +344,10 @@ public class NexusTokenizer {
 		//
 		// so we can POP it if we HAVE to
 		if(retVal == TT_WORD) {
-			if(lastResult.status != TT_WORD) {
-				previousResults.push(new Results(this, null, lastResult.status));
-				previousResults.push(new Results(this, sval, TT_WORD));
+			if(lastResult.status != TT_WORD) {				
+				previousResults.push(new Results(this, sval, lastResult.status));
+//				previousResults.push(new Results(this, null, lastResult.status));
+//				previousResults.push(new Results(this, sval, TT_WORD));
 			} else
 				previousResults.push(new Results(this, sval, retVal));					
 		} else
