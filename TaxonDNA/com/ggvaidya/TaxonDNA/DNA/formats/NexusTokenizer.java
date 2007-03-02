@@ -279,6 +279,8 @@ public class NexusTokenizer {
 					return reportWord(token);
 				} else
 					inSingleQuotes = true;
+
+				continue;
 			}
 
 			//System.err.println("character = '" + ch + "', isWhitespace: " + Character.isWhitespace(ch) + ", lastChar.isWhitespace: " + Character.isWhitespace(lastChar) + ", isLetterOrDigit: " + Character.isLetterOrDigit(ch) + ", heck; token = '" + token + "'");
@@ -308,8 +310,8 @@ public class NexusTokenizer {
 				}
 			}
 
-			// 3. BUT - punctuation also ends words!
-			if(!Character.isLetterOrDigit(ch) && !isValidCharacter(ch)) {	// TODO are hyphens always okay?
+			// 3. BUT - punctuation also ends words! (unless we're inSingleQuotes)
+			if(!inSingleQuotes && !Character.isLetterOrDigit(ch) && !isValidCharacter(ch)) {	// TODO are hyphens always okay?
 				return reportChar(token, ch);
 			}
 
@@ -333,18 +335,24 @@ public class NexusTokenizer {
 		//
 		// luckily, there *is* one this OOP is good at
 		int retVal = lastResult.go();
-		if(lastResult.canDelete()) {
-			lastResult = null;
-		}
 
 		// now, we CREATE a Results FROM what we're about to RETURN
 		// and we KEEP a copy in the STACK
 		//
 		// so we can POP it if we HAVE to
-		if(retVal == TT_WORD)
-			previousResults.push(new Results(this, sval, retVal));
-		else
+		if(retVal == TT_WORD) {
+			if(lastResult.status != TT_WORD) {
+				previousResults.push(new Results(this, null, lastResult.status));
+				previousResults.push(new Results(this, sval, TT_WORD));
+			} else
+				previousResults.push(new Results(this, sval, retVal));					
+		} else
 			previousResults.push(new Results(this, null, retVal));
+
+		// Okay, NOW we can delete the current 'lastResult'
+		if(lastResult.canDelete()) {
+			lastResult = null;
+		}
 
 		return retVal;
 	}
