@@ -499,7 +499,7 @@ public class DataStore {
 		
 			Sequence seq = getSequence(colName, seqName);
 			if(seq != null)
-				result.appendSequence(seq);
+				result = result.concatSequence(seq);
 		}
 
 		return result;
@@ -542,9 +542,9 @@ public class DataStore {
 		
 			Sequence seq = getSequence(colName, seqName);
 			if(seq != null)
-				result.appendSequence(seq);
+				result = result.concatSequence(seq);
 			else
-				result.appendSequence(Sequence.makeEmptySequence(seqName, getColumnLength(colName)));
+				result = result.concatSequence(Sequence.makeEmptySequence(seqName, getColumnLength(colName)));
 		}
 
 		return result;
