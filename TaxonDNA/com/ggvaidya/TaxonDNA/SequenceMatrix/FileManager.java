@@ -372,14 +372,15 @@ public class FileManager implements FormatListener {
 
 								try {
 									// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-									seq_out.appendSequence(seq.getSubsequence(from, to));
+									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
+									seq_out = seq_out.concatSequence(s);
 								} catch(SequenceException e) {
 									//pd.end();
 
 									MessageBox mb_2 = new MessageBox(
 											matrix.getFrame(),
 											"Uh-oh: Error forming a set",
-											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e + "\nI'm skipping this file.");
+											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
 									mb_2.go();
 									sequences.unlock();
 									hash_sets.clear();
