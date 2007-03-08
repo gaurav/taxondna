@@ -265,6 +265,12 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 			}
 		}
 
+		// Export -> Export all features as multiple FASTA files
+		//
+		if(cmd.equals("Export all features as multiple FASTA files")) {
+			exporter.exportMultipleFasta();
+		}
+
 		// Export -> Export selected features as FASTA.
 		//
 		if(cmd.equals("Export selected features as FASTA")) {
@@ -533,6 +539,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
+		export.add(new MenuItem("Export all features as multiple FASTA files"));
 		export.add(new MenuItem("Export selected features as FASTA", new MenuShortcut(KeyEvent.VK_F)));
 		export.add(new MenuItem("Export selected features as Clustal-compatible FASTA", new MenuShortcut(KeyEvent.VK_C)));
 		export.addActionListener(this);
