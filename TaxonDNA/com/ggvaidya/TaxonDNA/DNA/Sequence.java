@@ -11,7 +11,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005, 2006	Gaurav Vaidya
+    Copyright (C) 2005-07	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -37,20 +37,20 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.Others.UUID;	// UUIDs
 
 public class Sequence  implements Comparable, Testable {
-	private UUID		id = 	new UUID();	// just call them "UUIDs" and gag me with a spoon ...
-	private String		name;			// the full name of the sequence
-	private char[]		seq;			// the sequence itself (as a char array)
-	private int		len;			// length of the sequence
+	protected UUID		id = 	new UUID();	// just call them "UUIDs" and gag me with a spoon ...
+	protected String	name;			// the full name of the sequence
+	protected char[]	seq;			// the sequence itself (as a char array)
+	protected int		len;			// length of the sequence
 
 							// the "full name" given above is split up
 							// into a set of other variables
-	private String		genus = "";		// - genus
-	private String		species = "";		// - species
-	private String		family = "";		// - family
-	private String		subspecies = "";	// - subspecies
-	private String		gi = "";		// - gi (unique DB code)
-	private	int		ambiguous = 0;		// number of ambiguous bases in this sequence
-	private boolean		warningFlag = false;	// If set, indicates that something is (probably) wrong with the
+	protected String	genus = "";		// - genus
+	protected String	species = "";		// - species
+	protected String	family = "";		// - family
+	protected String	subspecies = "";	// - subspecies
+	protected String	gi = "";		// - gi (unique DB code)
+	protected int		ambiguous = 0;		// number of ambiguous bases in this sequence
+	protected boolean	warningFlag = false;	// If set, indicates that something is (probably) wrong with the
 							// species name.
 	
 
@@ -515,6 +515,9 @@ public class Sequence  implements Comparable, Testable {
 	 *
 	 * IMPORTANT NOTE: Providing backward pointing references, like (200, 100), will return
 	 * the REVERSE COMPLEMENT of (100, 200). Just saying.
+	 *
+	 * IMPORTANT NOTE: This code is *precisely* replicated in BaseSequence. Please move any
+	 * bugs you find into that code!
 	 */
 	public Sequence getSubsequence(int from, int to) throws SequenceException {
 		// make sure we're not being fed garbage
@@ -583,9 +586,21 @@ public class Sequence  implements Comparable, Testable {
 	/**
 	 * Append sequence 'seq' to the end of our sequence.
 	 */
-	public void appendSequence(Sequence seq) {
+	public Sequence concatSequence(Sequence seq) {
 		try {
-			changeSequence(getSequence() + seq.getSequence());	
+			if(	this.getClass().equals(seq.getClass()) &&
+				Sequence.class.equals(seq.getClass())
+			) {
+				changeSequence(getSequence() + seq.getSequence());
+				return this;
+			} else {
+				// one of them is a BaseSequence.
+				BaseSequence bs = new BaseSequence(getFullName(), getSequence() + seq.getSequence());
+				return BaseSequence.promoteSequence(bs);	// why? because the BS might be
+										// misidentified, is why. Plus,
+										// talk is cheap.
+			}
+					
 		} catch(SequenceException e) {
 			// shouldn't happen!
 			throw new RuntimeException("The combination of " + this + " and " + seq + " is not a valid sequence!");
