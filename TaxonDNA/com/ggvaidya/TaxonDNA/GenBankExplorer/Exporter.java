@@ -86,8 +86,8 @@ public class Exporter {
 	}
 
 	public void reportIOException(IOException e, File f) {
-		reportException("Error: Could not read or write file.",
-				"I could not access the file '" + f.getAbsolutePath() + "'! Are you sure you have permissions to read from or write to this file?\n\nThe technical description of the error I got is: " + e.getMessage());
+		reportException("Error: Could not access/write to file.",
+				"I could not access/write to the file '" + f.getAbsolutePath() + "'! Are you sure you have permissions to read from or write to this file?\n\nThe technical description of the error I got is: " + e.getMessage());
 	}
 
 	public void reportException(String title, String message) {
@@ -96,6 +96,92 @@ public class Exporter {
 				title,
 				message);
 		mb.go();
+	}
+
+	/**
+	 * Export to multiple Fasta files. Note that this means we
+	 * don't HAVE a container set. So, instead:
+	 * 1.	We need to ask the user where he wants the file to go.
+	 * 2.	We need to get our hands on the current FeatureBin.
+	 * 3.	Iterate through all the categories, then the subcategories.
+	 * 4.	Come up with valid names ($name_$type.txt) in the directory specified.
+	 * 5.	And, err ... that's it.
+	 *
+	 */
+	public void exportMultipleFasta() {
+		// do we have anything?
+		if(explorer.getViewManager().getGenBankFile() == null) {
+			new MessageBox(explorer.getFrame(),
+					"No file loaded!",
+					"There's no file to export (or a bug in the program). Either way, you need to open a file.").go();
+		}
+
+		JFileChooser jfc = new JFileChooser();
+		jfc.setDialogTitle("Please choose a directory to export to ...");
+		jfc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		jfc.showSaveDialog(explorer.getFrame());
+
+		File f_base = jfc.getSelectedFile();
+		if(f_base == null)
+			return;		// cancelled
+		
+		// I don't like JFCs, so I'm going to ASK.
+		MessageBox mb = new MessageBox(
+				explorer.getFrame(),
+				"Are you sure you want to export multiple files to this directory?",
+				"Are you sure you want to export all files to " + f_base + "? I will refuse to overwrite any files in this directory, but if the export aborts, you might be left with an incomplete set of files.",
+				MessageBox.MB_TITLE_IS_UNIQUE | MessageBox.MB_YESNOTOALL);
+		if(mb.showMessageBox() == MessageBox.MB_YES) {
+			// okay, we have permission.
+			// Go, go, go!
+			//
+			FeatureBin fb = new FeatureBin(explorer.getViewManager().getGenBankFile());
+
+			ProgressDialog pd = new ProgressDialog(explorer.getFrame(),
+					"Please wait, processing features ...",
+					"I'm processing features; I'll start writing them in a bit. Sorry for the wait!");
+
+			java.util.List l = null;
+			try {
+				l = fb.getGenes(pd);
+			} catch(DelayAbortedException e) {
+				return;
+			}
+
+			Iterator i = l.iterator();
+			while(i.hasNext()) {
+				FeatureBin.FeatureList list = (FeatureBin.FeatureList) i.next();
+
+				File f = new File(f_base, file_system_sanitize(list.getName() + ".txt"));
+				int number = 1;
+				while(f.exists())
+					f = new File(f_base, file_system_sanitize(list.getName() + "_" + number + ".txt"));
+
+				try {
+					_export(list, new FastaFile(), f, new ProgressDialog(
+								explorer.getFrame(),
+								"Exporting '" + f + "' ...",
+								"Currently exporting sequences to '" + f + "'"),
+							true	// no_overwrite
+					);
+				} catch(SequenceException e) {
+					reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
+				} catch(IOException e) {
+					reportIOException(e, f);
+					return;
+				} catch(DelayAbortedException e) {
+					return;
+				}
+			}
+		}
+	}
+
+	// given a string, return the same string with all possibly controversial characters replaced with '_'
+	private String file_system_sanitize(String filename) {
+		// Everybody stand back!
+		// I know regular expressions!
+		return filename.replaceAll("[^a-zA-Z0-9_()\\.]", "_");
 	}
 
 	/**
@@ -125,13 +211,37 @@ public class Exporter {
 		if(f == null)
 			return;		// cancelled
 
+		int count = 0;
 		try {
-			SequenceList sl = combineContainers(containers, new ProgressDialog(
+			count = _export(containers, fh, f, new ProgressDialog(
 							explorer.getFrame(),
 							"Please wait, assembling sequences for export ...",
 							"I am assembling all selected sequences in preparation for export. Please give me a second!"
-						)
-					);
+						),
+					false	// no_overwrite; we don't need this, since they've already acknowledged file existance, etc.
+				);
+		} catch(SequenceException e) {
+			reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
+			return;
+		} catch(IOException e) {
+			reportIOException(e, f);
+			return;
+		} catch(DelayAbortedException e) {
+			return;
+		}
+			
+		MessageBox mb = new MessageBox(
+				explorer.getFrame(),
+				"Export successful!",
+				count + " features were successfully exported to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format.");
+		mb.go();
+	}
+
+	public int _export(java.util.List containers, FormatHandler fh, File f, DelayCallback delay, boolean no_overwrite) throws IOException, DelayAbortedException, SequenceException {
+		if(f.exists() && no_overwrite)
+			throw new IOException("The file '" + f + "' exists! I will not overwrite it.");
+
+			SequenceList sl = combineContainers(containers, delay);
 			int count = sl.count();
 
 			ProgressDialog pd = new ProgressDialog(
@@ -140,20 +250,7 @@ public class Exporter {
 				"I am exporting " + count + " features to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format. Sorry for the wait!");
 			
 			fh.writeFile(f, sl, pd);
-
-			MessageBox mb = new MessageBox(
-					explorer.getFrame(),
-					"Export successful!",
-					count + " features were successfully exported to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format.");
-			mb.go();
-
-		} catch(SequenceException e) {
-			reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
-		} catch(IOException e) {
-			reportIOException(e, f);
-		} catch(DelayAbortedException e) {
-			return;
-		}
+			return count;
 	}
 
 	public SequenceList combineContainers(java.util.List list, DelayCallback delay) throws SequenceException, DelayAbortedException {
