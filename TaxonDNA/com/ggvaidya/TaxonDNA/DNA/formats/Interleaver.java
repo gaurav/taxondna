@@ -73,7 +73,7 @@ public class Interleaver {
 		} else {
 			// append it onto the currently existing 'Sequence'
 			Sequence our_seq = (Sequence) seqs.get(name);
-			our_seq.appendSequence(seq);
+			our_seq = our_seq.concatSequence(seq);
 		}
 	}
 
