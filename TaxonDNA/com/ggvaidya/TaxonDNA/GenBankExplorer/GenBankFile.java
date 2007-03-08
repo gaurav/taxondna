@@ -427,7 +427,7 @@ public class GenBankFile {
 			Sequence sequence = Sequence.makeEmptySequence(toString(), 0);
 			// are we a join or order?
 			for(int x = 0; x < locations.size(); x++) {
-				sequence.appendSequence(((Location)locations.get(x)).getSubsequence(seq));
+				sequence = sequence.concatSequence(((Location)locations.get(x)).getSubsequence(seq));
 			}
 
 			return sequence;
