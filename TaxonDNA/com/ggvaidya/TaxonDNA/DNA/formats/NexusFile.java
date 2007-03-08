@@ -435,7 +435,7 @@ public class NexusFile extends BaseFormatHandler {
 							Sequence seq = null;
 							if(!isDatasetInterleaved || hash_names.get(name) == null) {
 								// doesn't exist, just add it
-								seq = new Sequence(name, strseq);
+								seq = new BaseSequence(name, strseq);
 								appendTo.add(seq);
 								hash_names.put(name, seq);
 							} else {
@@ -470,7 +470,7 @@ public class NexusFile extends BaseFormatHandler {
 							str.equalsIgnoreCase("TAXLABELS") ||
 							str.equalsIgnoreCase("CHARSTATELABELS") ||
 							str.equalsIgnoreCase("CHARLABELS") ||
-							str.equalsIgnoreCase("STATELABLES") ||
+							str.equalsIgnoreCase("STATELABELS") ||
 							str.equalsIgnoreCase("OPTIONS")
 					) {
 						inIgnoredCommand = true;
@@ -495,6 +495,9 @@ public class NexusFile extends BaseFormatHandler {
 
 					continue;
 				} else {
+					if(inIgnoredCommand)
+						continue;	// who *KNOWS* what ignored commands do these days?!
+
 					// unknown symbol found
 					//System.err.println("Last string (ish!): " + str);
 					throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the DATA/CHARACTERS block! Are you sure it's supposed to be here?");
@@ -506,6 +509,19 @@ public class NexusFile extends BaseFormatHandler {
 
 		tok.setGapChar((char)0);
 		tok.setMissingChar((char)0);
+
+		// FINALLY, we need to convert any sequences we can into Real Sequences.
+		Iterator i_names = hash_names.keySet().iterator();
+		while(i_names.hasNext()) {
+			String str_name = (String) i_names.next();
+			Sequence sold = (Sequence) hash_names.get(str_name);
+			Sequence snew = BaseSequence.promoteSequence(sold);
+			if(!snew.equals(sold)) {
+				int x = appendTo.indexOf(sold);
+				appendTo.remove(sold);
+				appendTo.add(x, snew);
+			}
+		}
 	}
 
 	/**

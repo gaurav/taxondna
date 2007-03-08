@@ -174,7 +174,7 @@ public class NexusTokenizer {
 
 	private boolean reportNewlines = false;
 	public void reportNewlines(boolean x) {
-		reportNewlines = true;
+		reportNewlines = x;
 	}
 
 	private char gapChar = 0;
