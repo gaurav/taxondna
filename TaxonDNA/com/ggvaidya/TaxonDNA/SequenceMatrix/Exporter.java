@@ -238,7 +238,12 @@ public class Exporter implements SequencesHandler {
 			throw new RuntimeException("Unknown taxonset " + name + " in Exporter.getTaxonset()");
 		}
 
-		return buff.toString();
+		// do we have *anything*?
+		String str_tmp = buff.toString().trim();
+		if(str_tmp.length() == 0)
+			return null;
+
+		return str_tmp;
 	}	
 
 	/**
@@ -532,7 +537,7 @@ public class Exporter implements SequencesHandler {
 					if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
 						writer.print(seq.getSequence());
 					else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
-						seq_interleaved.appendSequence(seq);
+						seq_interleaved = seq_interleaved.concatSequence(seq);
 					else
 						throw new RuntimeException("'how' makes no sense in SequenceGrid.exportAsNexus()! [how = " + how + "]");
 				}
