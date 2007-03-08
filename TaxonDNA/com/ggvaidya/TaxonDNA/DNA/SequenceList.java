@@ -836,7 +836,9 @@ public class SequenceList implements List, Testable {
 
 	
 	public void add(int x, Object o) {
-		throw new UnsupportedOperationException();
+		sequences.add(x, o);
+		sortedBy = SORT_UNSORTED;
+		modified();
 	}
 
 	public Object remove(int x) {
