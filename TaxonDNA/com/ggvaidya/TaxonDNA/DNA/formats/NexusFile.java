@@ -372,7 +372,27 @@ public class NexusFile extends BaseFormatHandler {
 						if(str == null)
 							throw formatException(tok, "'DATATYPE' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
 
-						if(!str.equalsIgnoreCase("DNA"))
+						/* 
+						 * Okay, the Nexus specification defines six 'datatype's:
+						 * 1.	STANDARD (default): 	'discrete character data'. Sounds okay.
+						 * 2.	DNA:			We were BORN for this.
+						 * 3.	RNA:			It'll show up as a Sequence if there's no
+						 * 				Uracil; otherwise, we'll get a BaseSequence.
+						 * 				Dodgy, but, err, doable. I guess.
+						 * 4.	NUCLEOTIDE:		Err ... I guess. It's not properly defined.
+						 * 5.	PROTEIN:		Again, it's *sequence* data, so presumably
+						 * 				BaseSequence should handle it just fine.
+						 * 6.	CONTINUOUS:		Nope. Not happening.
+						 *
+						 * There's a lot of weirdness in STANDARD, which we really don't have the
+						 * time to write complete support for just yet. 
+						 *
+						 * So: for now, EVERYTHING's okay - except CONTINUOUS, because we'll be
+						 * able to handle it, one way or another. But RNA and PROTEIN might not
+						 * do what you except, which is bad.
+						 *
+						 */
+						if(str.equalsIgnoreCase("CONTINUOUS"))
 							throw formatException(tok, "I can't understand DATATYPE '" + str + "'. I can only understand DATATYPE=DNA.");
 					}
 
