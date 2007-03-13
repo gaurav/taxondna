@@ -192,6 +192,9 @@ public class NexusTokenizer {
 		if(ch == '.')		// a LOT of Nexus files seem to think '.' is alphanumeric. What to do. Go with flow, etc.
 			return true;
 
+		if(ch == '|')		// SOME nexus files seem to think '|' is alphanumeric. shrugs.
+			return true;
+
 		if(ch == gapChar)
 			return true;
 		
