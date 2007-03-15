@@ -15,7 +15,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,6 +43,11 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DataStore {
+	// Defines: should we ignore differently sized sequences in the same sequence list?
+	// Note that exports will be severelly retarded!
+	//
+	public static final boolean IGNORE_SIZES = false;
+
 	// The property value we use for Sequence.getProperty(...)
 	/** 
 	 * CANCELLED_PROPERTY:
@@ -340,7 +345,7 @@ public class DataStore {
 			col.put("", new Integer(seq.getLength()));
 		} else {
 			// test the column length
-			if(seq.getLength() != getColumnLength(colName))
+			if(!IGNORE_SIZES && seq.getLength() != getColumnLength(colName))
 				throw new IllegalArgumentException("Column " + colName + " has a length of " + getColumnLength(colName) + ", but you are trying to set a sequence '" + seqName + "' with a length of " + seq.getLength());
 		}
 		col.put(seqName, seq);
@@ -709,15 +714,17 @@ public class DataStore {
 			}
 
 			// Is it the right size?
-			int colLength = getColumnLength(colName);
-			if(colLength == -1) {
-				// not defined yet
-			} else if(seq.getLength() < colLength) { 
-				droppedSequences.append("\t" + seqName + ": It is too short (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
-				continue;
-			} else if(seq.getLength() > colLength) {
-				droppedSequences.append("\t" + seqName + ": It is too long (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
-				continue;
+			if(!IGNORE_SIZES) {
+				int colLength = getColumnLength(colName);
+				if(colLength == -1) {
+					// not defined yet
+				} else if(seq.getLength() < colLength) { 
+					droppedSequences.append("\t" + seqName + ": It is too short (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
+					continue;
+				} else if(seq.getLength() > colLength) {
+					droppedSequences.append("\t" + seqName + ": It is too long (" + seq.getLength() + " bp, while the column is supposed to be " + colLength + " bp)\n");
+					continue;
+				}
 			}
 
 			// All done: lay it on!
