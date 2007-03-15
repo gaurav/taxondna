@@ -909,7 +909,10 @@ public class GenBankFile {
 								// we pick up the ' ', then trim it out, so in case the string ends at (until + 1), we won't throw an exception.
 							if(x.length() == 0)
 								x = " ";
-							s.append(x);
+
+							// tricky, dicky: do NOT appent the end of ORIGIN, since this is crap and useless to us (unless we understand it, but that's another story)
+							if(!keyword.equalsIgnoreCase("ORIGIN"))
+								s.append(x);
 						}
 
 						break;
