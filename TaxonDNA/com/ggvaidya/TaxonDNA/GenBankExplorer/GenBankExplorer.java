@@ -267,8 +267,18 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 		// Export -> Export all features as multiple FASTA files
 		//
-		if(cmd.equals("Export all features as multiple FASTA files")) {
-			exporter.exportMultipleFasta();
+		if(cmd.equals("Export all features as multiple FASTA files (no minimum)")) {
+			exporter.exportMultipleFasta(0);
+		}
+		
+		// Export -> Export all ... multiple ... 5
+		if(cmd.equals("Export all features as multiple FASTA files (minimum 5 species)")) {
+			exporter.exportMultipleFasta(5);
+		}
+
+		// Export -> Export all ... multiple ... 10
+		if(cmd.equals("Export all features as multiple FASTA files (minimum 10 species)")) {
+			exporter.exportMultipleFasta(10);
 		}
 
 		// Export -> Export selected features as FASTA.
@@ -539,7 +549,9 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
-		export.add(new MenuItem("Export all features as multiple FASTA files"));
+		export.add(new MenuItem("Export all features as multiple FASTA files (no minimum)"));
+		export.add(new MenuItem("Export all features as multiple FASTA files (minimum 5 species)"));
+		export.add(new MenuItem("Export all features as multiple FASTA files (minimum 10 species)"));
 		export.add(new MenuItem("Export selected features as FASTA", new MenuShortcut(KeyEvent.VK_F)));
 		export.add(new MenuItem("Export selected features as Clustal-compatible FASTA", new MenuShortcut(KeyEvent.VK_C)));
 		export.addActionListener(this);

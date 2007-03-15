@@ -107,8 +107,9 @@ public class Exporter {
 	 * 4.	Come up with valid names ($name_$type.txt) in the directory specified.
 	 * 5.	And, err ... that's it.
 	 *
+	 * @param min_species the minimum number of species to export. Files with less than min_species species will not be exported at all.
 	 */
-	public void exportMultipleFasta() {
+	public void exportMultipleFasta(int min_species) {
 		// do we have anything?
 		if(explorer.getViewManager().getGenBankFile() == null) {
 			new MessageBox(explorer.getFrame(),
@@ -163,7 +164,8 @@ public class Exporter {
 								explorer.getFrame(),
 								"Exporting '" + f + "' ...",
 								"Currently exporting sequences to '" + f + "'"),
-							true	// no_overwrite
+							true,	// no_overwrite
+							min_species
 					);
 				} catch(SequenceException e) {
 					reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
@@ -218,7 +220,8 @@ public class Exporter {
 							"Please wait, assembling sequences for export ...",
 							"I am assembling all selected sequences in preparation for export. Please give me a second!"
 						),
-					false	// no_overwrite; we don't need this, since they've already acknowledged file existance, etc.
+					false,	// no_overwrite; we don't need this, since they've already acknowledged file existance, etc.
+					0	// there is no min_species.
 				);
 		} catch(SequenceException e) {
 			reportException("Error exporting sequences!", "The following error occured while combining the sequences: " + e.getMessage() + ". This is probably an error in the program itself.");
@@ -237,12 +240,17 @@ public class Exporter {
 		mb.go();
 	}
 
-	public int _export(java.util.List containers, FormatHandler fh, File f, DelayCallback delay, boolean no_overwrite) throws IOException, DelayAbortedException, SequenceException {
+	public int _export(java.util.List containers, FormatHandler fh, File f, DelayCallback delay, boolean no_overwrite, int min_species) throws IOException, DelayAbortedException, SequenceException {
 		if(f.exists() && no_overwrite)
 			throw new IOException("The file '" + f + "' exists! I will not overwrite it.");
 
 			SequenceList sl = combineContainers(containers, delay);
 			int count = sl.count();
+
+			if(min_species > 0) {
+				if(sl.getSpeciesDetails(null).getSpeciesCount() < min_species)
+					return 0;
+			}
 
 			ProgressDialog pd = new ProgressDialog(
 				explorer.getFrame(),
