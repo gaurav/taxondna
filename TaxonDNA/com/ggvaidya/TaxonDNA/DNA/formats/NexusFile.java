@@ -418,6 +418,9 @@ public class NexusFile extends BaseFormatHandler {
 
 						missingChar = str.charAt(0); 
 						tok.setMissingChar(missingChar);
+					} else if(str.equalsIgnoreCase("SYMBOLS")) {
+						// okay, ignore this for now, since we can do ANY symbol.
+						delay.addWarning("Ignoring FORMAT SYMBOLS=... in the DATA/CHARACTERS block; I'm not smart enough to interpret this yet. I cannot guarantee that only valid symbols are being symbols.");
 					} else {
 						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
 					}
