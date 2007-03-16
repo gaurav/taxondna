@@ -14,6 +14,34 @@
  * cheap, and pulling Sequence out from underneath TaxonDNA will be 
  * several different kinds of painful.
  *
+ * ALSO TO BE NOTED that BaseSequence is really a sub-in for 'symbolic' data;
+ * i.e. Any Symbol Will Do. The downside of this is that we, and we alone,
+ * need to handle symbols which represent other symbols.
+ *
+ * The current proposal is to do that the dead-simple way: every incoming 
+ * string will be checked for completeness in bracketing 
+ * (no_closing_brackets === no_opening_brackets). BOTH square and round
+ * brackets are assumed to be bracketing information; you can use angle
+ * brackets if you need to use your own bracketing symbol we'll ignore.
+ * When we're asked for the sequence, we return it with 'TaxonDNA' brackets 
+ * (which are by definition square brackets). 
+ *
+ * The only really tricky thing here is getSubsequence(), which must count
+ * indexes using bracketting information. For now, each and every getSubsequence()
+ * request will traverse the entire sequence, one character at a time, then
+ * traverse the copy region, again, one character at a time.
+ *
+ * If that doesn't work, we can store the sections in chunks, viz:
+ * 	chunk#	string
+ * 	0:	1394919191
+ * 	1:	[124
+ * 	2:	56193381
+ * Any chunch not beginning with '[' can be assumed to have the length
+ * of str.length(), while any chunk beginning with '[' has a length of
+ * 1, unless the 2nd character is [[, in which case it has a lenght of
+ * (str.length() - 1). But you know what they say about premature
+ * optimization.
+ *
  * @author Gaurav Vaidya, gaurav@ggvaidya.com 
  */
 
@@ -63,7 +91,11 @@ public class BaseSequence extends Sequence {
 	 */	
 	public BaseSequence() {
 		changeName("Empty sequence");
-		changeSequence("");
+		try {
+			changeSequence("");
+		} catch(SequenceException e) {
+			throw new RuntimeException("Internal error: changeSequence() doesn't seem to be working properly!");
+		}
 	}
 
 	/**
@@ -72,7 +104,7 @@ public class BaseSequence extends Sequence {
 	 *
 	 * @throws SequenceException if there is a problem with understanding the sequence.
 	 */
-	public BaseSequence(String name, String seq) {
+	public BaseSequence(String name, String seq) throws SequenceException {
 		changeName(name);
 		changeSequence(seq);
 	}
@@ -80,7 +112,7 @@ public class BaseSequence extends Sequence {
 	/**
 	 * The constructor to "bind them all" :P
 	 */
-	public static Sequence createSequence(String name, String seq) {
+	public static Sequence createSequence(String name, String seq) throws SequenceException {
 		try {
 			return new Sequence(name, seq);
 		} catch(SequenceException e) {
@@ -123,54 +155,56 @@ public class BaseSequence extends Sequence {
 		)
 			throw new SequenceException(this.getFullName(), "There is no subsequence at (" + from + ", " + to + ") in sequence " + this);
 
-		boolean complement = false;
 		if(to < from) {
-			complement = true;
-			int tmp = from;
-			from = to;
-			to = tmp;
-		}
-		
-		String seq_str = getSequence();
-		int no_gaps_to_fill = 0;
-		if(seq_str.length() >= to) {
-			seq_str = seq_str.substring(from - 1, to);
-		} else if(seq_str.length() > from) {
-			seq_str.substring(from - 1, seq_str.length());
-			no_gaps_to_fill = (to - from) - seq_str.length() + 1;
-		} else {
-			// seq_str.length() < from
-			no_gaps_to_fill = to - from;	
+			throw new SequenceException(this.getFullName(), "I cannot generate the reverse-complement of this sequence, since I do not understand what sort of data it is.");
 		}
 
-//		System.err.println("to = " + to + ", seq_str.length() = " + seq_str.length() + ", no_gaps_to_fill = " + no_gaps_to_fill);
-/*
-		if(to > seq_str.length()) {
-			no_gaps_to_fill += (to - seq_str.length());
-		}
-		*/
+		// so, now we have a 'from' and a 'to'.
+		// Let's get cracking!
+		java.io.StringReader r = new java.io.StringReader(getSequence());
+		StringBuffer output = new StringBuffer();
 
-//		System.err.println("no_gaps_to_fill = " + no_gaps_to_fill);
-		
-		if(no_gaps_to_fill > 0) {
-			StringBuffer buff = new StringBuffer();
+		boolean writing = false;
+		int char_at = 0;
+		try {
+			while(r.ready()) {
+				int x = r.read();
 
-			for(int c = 0; c < no_gaps_to_fill; c++)
-				buff.append('-');
+				if(char_at == from + 1)		// off by one, here
+					writing = true;
 
-			seq_str += buff.toString();
-		}
+				if(char_at == to + 1)		// off by one, here too, but for a slightly different reason
+					writing = false;
 
-		if(complement) {
-			// RC the resulting string
-			StringBuffer tmp = new StringBuffer(seq_str).reverse();	
+				if(x == '(' || x == '[') {
+					int initial_char = x;
+					int final_char = ' ';
 
-			for(int x = 0; x < seq_str.length(); x++) {
-				tmp.setCharAt(x, complement(tmp.charAt(x)));
+					if(x == '(')
+						final_char = ')';
+					else
+						final_char = ']';
+
+					// convert brackets to the Real Thing
+					output.append('[');
+	
+					while(x != final_char) {
+						x = r.read();
+	
+						if(writing)	output.append(x);
+					}
+					output.append(']');	
+				} else {
+					output.append(x);
+				}				
+				
+				char_at++;
 			}
-
-			seq_str = tmp.toString();
+		} catch(java.io.IOException e) {
+			throw new RuntimeException("Why is reading from a string causing an IOException?! " + e);
 		}
+
+		String seq_str = output.toString();
 
 		try {
 			return new Sequence(getFullName() + "(segment:" + from + "-" + to + ":inclusive)", seq_str);
@@ -189,7 +223,37 @@ public class BaseSequence extends Sequence {
 	 * Changes the sequence itself. BaseSequence doesn't care what sequence
 	 * you try feeding in here.
 	 */
-	public void changeSequence(String seq) {
+	public void changeSequence(String seq) throws SequenceException {
+		StringBuffer buff = new StringBuffer();
+
+		// important step: is this sequence actually 'valid' (are all the brackets closed?)
+		//
+		// Also: convert round brackets into 'system-standard' (i.e. TaxonDNA specific) square brackets.
+		//
+		int count = 0;
+		for(int x = 0; x < seq.length(); x++) {
+			char ch = seq.charAt(x);
+
+			// convert round brackets to square
+			if(ch == '(')
+				ch = '[';
+			else if(ch == ')')
+				ch = ']';
+
+			// count the brackets!
+			if(ch == '[')
+				count++;
+			if(ch == ']')
+				count--;
+
+			buff.append(ch);
+		}
+	
+		if(count != 0)
+			throw new SequenceException(getFullName(), "This sequence cannot be changed to the specified sequence, as the brackets are not properly closed. Please ensure that all brackets are closed, and try again.");
+
+		seq = buff.toString();	// hey, if we _can_ ...
+
 		synchronized(this) { 
 			this.id = new UUID();
 			this.seq = seq.toCharArray();
