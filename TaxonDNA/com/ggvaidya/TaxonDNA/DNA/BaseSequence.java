@@ -142,6 +142,37 @@ public class BaseSequence extends Sequence {
 		else
 			return "DNA.BaseSequence(" + getName() + ", length: " + len + ")";
 	}
+        
+        public int getLength() {
+            // we have to go through to figure this out.
+            // what a pain
+            return len;
+        }
+        
+        public int getActualLength() {
+            // how are we ever really going to handle this?!
+            int actualLength = 0;
+            int bracket_level = 0;
+            
+            for(int x = 0; x < seq.length; x++) {
+                char ch = seq[x];
+                
+                if(ch == '[')
+                    bracket_level++;
+                else if(ch == ']')
+                    bracket_level--;
+                
+                if(bracket_level > 0)
+                    continue;
+                
+                if((isGap(ch) && !isInternalGap(ch)) || isMissing(ch) ) {
+                } else {
+                    actualLength++;
+                }
+            }
+            
+            return actualLength;
+        }
 
 	/**
 	 * Returns a subsequence of this sequence. If the subsequence is completely 'valid',
@@ -231,6 +262,7 @@ public class BaseSequence extends Sequence {
 		// Also: convert round brackets into 'system-standard' (i.e. TaxonDNA specific) square brackets.
 		//
 		int count = 0;
+                int length = 0;
 		for(int x = 0; x < seq.length(); x++) {
 			char ch = seq.charAt(x);
 
@@ -240,11 +272,15 @@ public class BaseSequence extends Sequence {
 			else if(ch == ')')
 				ch = ']';
 
-			// count the brackets!
+                	// count the brackets!
 			if(ch == '[')
 				count++;
 			if(ch == ']')
 				count--;
+                
+                        // this way, we delete this *once*
+                        if(count == 0)
+                            length++;		
 
 			buff.append(ch);
 		}
@@ -257,7 +293,7 @@ public class BaseSequence extends Sequence {
 		synchronized(this) { 
 			this.id = new UUID();
 			this.seq = seq.toCharArray();
-			this.len = seq.length();
+			this.len = length;
 		}
 	}
 

@@ -272,8 +272,8 @@ public class NexusTokenizer {
 
 			// words (but NOT sequences)
 			// 1. look for 's; they're special.
-			if(ch == '\'') {
-				if(lastChar == '\'') {
+			if(ch == '\'' || ch == '"') {
+				if(lastChar == ch) {
 					// two 's; actually insert one into the buffer (as a normal character)
 					token.append(ch);
 				}

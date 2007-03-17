@@ -419,6 +419,7 @@ public class NexusFile extends BaseFormatHandler {
 						missingChar = str.charAt(0); 
 						tok.setMissingChar(missingChar);
 					} else if(str.equalsIgnoreCase("SYMBOLS")) {
+						String throwaway = getValueOfKey(tok);
 						// okay, ignore this for now, since we can do ANY symbol.
 						delay.addWarning("Ignoring FORMAT SYMBOLS=... in the DATA/CHARACTERS block; I'm not smart enough to interpret this yet. I cannot guarantee that only valid symbols are being symbols.");
 					} else {
@@ -443,6 +444,58 @@ public class NexusFile extends BaseFormatHandler {
 					// end of line!
 					name = null;
 					continue;
+				}
+				else if(type == '(') {
+					// Okay, things are about to get
+					// *very* tricky
+					// one thing we _know_ is, we
+					// have to consume until the ')'
+					// or throw a FormatException if
+					// there isn't one.
+					//
+					// we could have
+					// (123)
+					// or
+					// (1,3,4)
+					StringBuffer chars = new StringBuffer();
+					while(type != ')') {
+						type = tok.nextToken();
+
+						if(type == NexusTokenizer.TT_WORD) {
+							chars.append(tok.sval);	// add the current word(s)
+						} else if(type == ')')
+							break;
+						else if(type == ',')
+							continue;	// ignore
+						else if(type == NexusTokenizer.TT_EOF)
+							throw formatException(tok, "Unterminated brackets in sequence '" + name + "'");
+						else
+							throw formatException(tok, "Unexpected '" + (char)type + "' in ambiguous data");
+					}
+					if(name == null) {
+						// wtf name?!
+						throw formatException(tok, "You can't use '(' symbols in names, sorry!");
+					} else {
+						// direct copy from below
+                                                // please translate bugs, too!
+                                                String strseq = "[" + chars.toString() + "]";                                                
+                                                
+						try {
+							Sequence seq = null;
+							if(!isDatasetInterleaved || hash_names.get(name) == null) {
+								// doesn't exist, just add it
+								seq = new BaseSequence(name, strseq);
+								appendTo.add(seq);
+								hash_names.put(name, seq);
+							} else {
+								// it DOES exist, append it
+								seq = (Sequence) hash_names.get(name);
+								seq.changeSequence(seq.getSequence() + strseq);
+							}
+						} catch(SequenceException e) {
+							throw formatException(tok, "The sequence for taxon '" + name + "' is invalid: " + e);
+						}
+					}
 				}
 				else if(type == NexusTokenizer.TT_WORD) {
 					if(name == null) {
