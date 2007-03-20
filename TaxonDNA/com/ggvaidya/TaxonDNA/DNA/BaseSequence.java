@@ -195,11 +195,16 @@ public class BaseSequence extends Sequence {
 		java.io.StringReader r = new java.io.StringReader(getSequence());
 		StringBuffer output = new StringBuffer();
 
+		System.err.println("Base.cut: from: " + from + " to: " + to);
+
 		boolean writing = false;
 		int char_at = 0;
 		try {
 			while(r.ready()) {
 				int x = r.read();
+				
+				if(x == -1)
+					throw new java.io.EOFException();
 
 				if(char_at == from + 1)		// off by one, here
 					writing = true;
@@ -221,27 +226,34 @@ public class BaseSequence extends Sequence {
 	
 					while(x != final_char) {
 						x = r.read();
+
+						if(x == -1)
+							throw new java.io.EOFException();
 	
 						if(writing)	output.append(x);
 					}
 					output.append(']');	
 				} else {
-					output.append(x);
+					if(writing)
+						output.append(x);
 				}				
 				
 				char_at++;
 			}
+		} catch(java.io.EOFException e) {
+			// okay, done.
+			// did you know that 
 		} catch(java.io.IOException e) {
 			throw new RuntimeException("Why is reading from a string causing an IOException?! " + e);
 		}
 
 		String seq_str = output.toString();
-
-		try {
-			return new Sequence(getFullName() + "(segment:" + from + "-" + to + ":inclusive)", seq_str);
-		} catch(SequenceException e) { 
-			return new BaseSequence(getFullName() + "(segment:" + from + "-" + to + ":inclusive)", seq_str);
-		}		
+		Sequence seq = BaseSequence.createSequence(getFullName() + " (segment:" + from + "-" + to + ":inclusive)", seq_str);
+		
+		System.err.println("Ended up with: " + seq);
+		
+		return seq;
+		
 	}
 
 
