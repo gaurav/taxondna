@@ -8,7 +8,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005-07
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -58,6 +58,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 	private Checkbox	check_setSpeciesMatrix =	new Checkbox("Write the species matrix instead.");
 	private Checkbox	check_exportIntoMultiple = 	new Checkbox("Export into multiple by ");
 	private Checkbox	check_insertHeaders =		new Checkbox("Insert headers/footers for ");
+	private Checkbox	check_onePerSpecies =		new Checkbox("Export only one sequence for each sequence.");
 
 	// Multiple exporting etc.
 	private Choice		choice_multipleExport = 	new Choice();
@@ -189,6 +190,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		rl.add(check_spacesToUnderscore, RightLayout.NEXTLINE | RightLayout.FILL_3);
 		rl.add(check_summaryOnTop, RightLayout.BELOW | RightLayout.FILL_3);
 		rl.add(check_setSpeciesMatrix, RightLayout.BELOW | RightLayout.FILL_3);
+		rl.add(check_onePerSpecies, RightLayout.BELOW | RightLayout.FILL_3);
 
 		// Finally, the button!
 		btn_Go.addActionListener(this);
@@ -288,6 +290,54 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		return matrix.toString();
 	}
 
+	private Iterator createOnePerSpeciesIterator(SequenceList list) {
+		list.lock();
+		int oldSort = list.resort(SequenceList.SORT_BYNAME);
+		
+		LinkedList ll = new LinkedList();
+		Sequence best_seq = null;
+		int current_best_length = -1;
+		Iterator i = list.iterator();
+		String lastName = "";
+		while(i.hasNext()) {
+			Sequence seq = (Sequence) i.next();
+			String seqName = seq.getSpeciesName();
+
+			if(seqName == null)	// skip the nameless ones
+				continue;
+
+			if(lastName.equals("")) {
+				// first name, prime it!
+				lastName = seqName;
+				best_seq = seq;
+				current_best_length = best_seq.getActualLength();
+			} else if(seqName.equals(lastName)) {
+				int len = seq.getActualLength();
+				if(len > current_best_length) {
+					best_seq = seq;
+					current_best_length = len;
+				}
+			} else {
+				// NOT lastname? new guy!
+				ll.add(best_seq);
+
+				lastName = seqName;
+				best_seq = seq;
+				current_best_length = seq.getActualLength();
+			}	
+		}
+
+		// anybody left?
+		if(best_seq != null) {
+			ll.add(best_seq);		
+		}
+
+		list.resort(oldSort);
+		list.unlock();
+
+		return ll.iterator();
+	}
+
 	/**
 	 * Does the actual sequence exporting
 	 */
@@ -373,7 +423,13 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		int maxLength = sl.getMaxLength();
 
 		int count = 0;
-		Iterator i = sl.iterator();
+		Iterator i = null;
+		
+		if(check_onePerSpecies.getState())
+			i = createOnePerSpeciesIterator(sl);
+		else
+			i = sl.iterator();
+
 		String lastFamily = "";
 		StringBuffer current_file = new StringBuffer();		// only used in multiple mode
 		int current_file_sequence_count = 0;
