@@ -206,10 +206,10 @@ public class BaseSequence extends Sequence {
 				if(x == -1)
 					throw new java.io.EOFException();
 
-				if(char_at == from + 1)		// off by one, here
+				if(char_at == from - 1)		// off by one, here
 					writing = true;
 
-				if(char_at == to + 1)		// off by one, here too, but for a slightly different reason
+				if(char_at == to)		// off by one, here too, but for a slightly different reason
 					writing = false;
 
 				if(x == '(' || x == '[') {
@@ -230,12 +230,12 @@ public class BaseSequence extends Sequence {
 						if(x == -1)
 							throw new java.io.EOFException();
 	
-						if(writing)	output.append(x);
+						if(writing)	output.append((char)x);
 					}
 					output.append(']');	
 				} else {
 					if(writing)
-						output.append(x);
+						output.append((char)x);
 				}				
 				
 				char_at++;
