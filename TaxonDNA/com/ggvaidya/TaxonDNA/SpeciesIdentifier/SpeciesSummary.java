@@ -149,13 +149,20 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
 					ff.writeFile(file, new SequenceList(result), null);
 				} catch(Exception ex) {
-					// HACK HACK HACK
-					// Will fix this when I have more time
-					ex.printStackTrace();
+					seqId.unlockSequenceList();
+					
+					new MessageBox(seqId.getFrame(),
+							"Error!",
+							"There was a problem while exporting species with multiple sequences. The technical description of the error is: " + ex.getMessage() + "\n\nAre you sure you have adequate permissions to write to that file, and the disk isn't empty? If not, it's probably a programming problem. Please let the developers know!",
+							MessageBox.MB_ERROR).go();
+					return;
 				}
 			}
 
 			seqId.unlockSequenceList();
+			new MessageBox(seqId.getFrame(),
+					"Done!",
+					result.count() + " sequences were successfully exported to " + file + " in the Fasta format.").go();
 		}
 
 		if(e.getSource().equals(btn_Copy)) {
@@ -305,9 +312,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		str.append("Number of species: " + species.count() + "\n\n");			// check
 		str.append("Number of sequences without a species name: " + species.getSequencesWithoutASpeciesNameCount()+ "\n\n");
 												// check
-
 		str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
-
+		
+		str.append("Number of sequences with atleast one valid conspecific sequence: " + species.getSequencesWithValidConspecificsCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getSequencesWithValidConspecificsCount(), list.count()) + "%)\n");
 		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all species)\n");										 
 		// set up list_species
 		//

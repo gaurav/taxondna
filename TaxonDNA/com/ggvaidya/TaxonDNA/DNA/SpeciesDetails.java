@@ -51,6 +51,7 @@ public class SpeciesDetails {
 	private int count_sequences 			= 0;
 	private int count_species 			= 0;
 	private int count_sequences_without_a_name 	= 0;	// sequences which don't have a speciesName
+	private int count_sequences_with_valid_consp	= 0;	// sequences with atleast one valid conspecific sequence
 
 	private int count_sequences_invalid 	= 0;
 	private int count_species_valid 	= 0;
@@ -207,6 +208,10 @@ public class SpeciesDetails {
 			while(i2.hasNext()) {
 				Sequence seq_2 = (Sequence) i2.next();
 
+				// skip comparing against itself
+				if(seq_2.equals(seq_1))
+					continue;
+
 				if(seq_2.getPairwise(seq_1) == -1)
 					invalid_match = true;
 				else
@@ -219,6 +224,11 @@ public class SpeciesDetails {
 			} else {	
 				// anything else must, by definition, be valid
 				count_valid++;
+			}
+
+			if(valid_match) {
+				//System.err.println("One run to " + name + "!");
+				count_sequences_with_valid_consp++;
 			}
 		}
 
@@ -247,6 +257,10 @@ public class SpeciesDetails {
 
 	public 	int 	getSequencesInvalidCount()	{	return count_sequences_invalid;		}
 	public 	int 	getValidSpeciesCount()	{	return count_species_valid;		}
+
+	public int	getSequencesWithValidConspecificsCount() {
+		return count_sequences_with_valid_consp;
+	}
 
 	/**
 	 * Returns an iterator over the list of species names in the dataset.
