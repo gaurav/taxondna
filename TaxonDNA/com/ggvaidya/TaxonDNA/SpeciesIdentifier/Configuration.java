@@ -47,9 +47,15 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	
 	Button			lock_button = new Button("Lock Settings");
 	boolean			locked = false;
+
+	static java.util.Vector	configs = new java.util.Vector();
+	static boolean		lockDown_in_effect = false;
 	
 	public Configuration(SpeciesIdentifier seqId) {
 		this.seqId = seqId;
+
+		// add us to our self-maintained list!
+		configs.add(this);
 
 		// activate the focus listeners
 		//
@@ -109,6 +115,9 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		//
 		setLayout(new BorderLayout());
 		add(settings, BorderLayout.NORTH);
+
+		if(lockDown_in_effect)
+			lockDown(lockDown_in_effect);
 	}
 
 	public void lock() {
@@ -202,6 +211,10 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 			warningLabel.setText("There is a file loaded into this program. You cannot change these settings unless you reload it.");
 			lock_button.setLabel("Unlock Settings");
 		}
+		
+		// despite all this, if it says no ...
+		if(lockDown_in_effect)
+			lockDown(lockDown_in_effect);
 
 		seqId.unlockSequenceList();
 
@@ -275,6 +288,48 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		prefs.putBoolean("ambiguousBasesAllowed", Sequence.areAmbiguousBasesAllowed());
 		prefs.putInt("pairwiseDistanceMethod", Sequence.getPairwiseDistanceMethod());
 	}
+
+	private boolean pre_lockDownState = false;
+	/**
+	 * Starts or stops a 'lockdown'. This puts up a special
+	 * message, and is otherwise identical to lock()/unlock().
+	 */
+	private void lockDown(boolean state) {
+		if(state) {	// lock down!
+			pre_lockDownState = locked;
+			lock();
+
+			// secret lockdown message
+			warningLabel.setText("You cannot modify the Configuration if more than one SpeciesIdentifier windows are open. Please close all but one window if you need to change these settings.");
+			lock_button.setEnabled(false);
+		} else { 	// unlock down!
+			unlock();
+			if(pre_lockDownState) {
+				lock();		// but a normal one, this time.
+			} else {
+				lock_button.setEnabled(true);
+			}
+		}
+	}
+
+	/**
+	 * Set up a 'lockdown'. This is a simple binary, so please don't
+	 * try locking and unlocking multiple times. It's also a static
+	 * method: it will unlock or lockup EVERY SINGLE Configuration
+	 * in existance.
+	 *
+	 * Pretty cool, eh?
+	 */
+	public static void setLockDown(boolean state) {
+		// okay, guys, message EVERYBODY
+		java.util.Iterator i = configs.iterator();
+		while(i.hasNext()) {
+			Configuration c = (Configuration) i.next();
+			c.lockDown(state);
+		}
+		lockDown_in_effect = state;
+	}
+	  
 }
 
 

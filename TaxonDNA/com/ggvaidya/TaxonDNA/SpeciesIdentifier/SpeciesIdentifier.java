@@ -125,6 +125,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		registerUIExtensions();		// register the required UIExtensions
 		createUI();			// create our user interface
 		countTaxonDNAs++;
+		checkTaxonDNAsCount();
 		unlockSequenceList(null);
 	}
 
@@ -599,10 +600,26 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		// issues will have, although it will save
 		// the user *some* angst.
 		countTaxonDNAs--;
+		checkTaxonDNAsCount();
+		System.gc();
+	}
+
+	private void checkTaxonDNAsCount() {
+		if(countTaxonDNAs == 1) {
+			// if there's only one TaxonDNA, that's us!
+			// either way, we can turn off the lockdown
+			Configuration.setLockDown(false);
+		}
+		else 
 		if(countTaxonDNAs == 0) {
 			// all done! we can exit now.
 			System.exit(0);
 		}
+		else {
+			// okay, we need to lockdown the Configuration!
+			Configuration.setLockDown(true);
+		}
+
 		System.gc();
 	}
 
