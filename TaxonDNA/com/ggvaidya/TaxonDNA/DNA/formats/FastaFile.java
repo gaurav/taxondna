@@ -90,7 +90,8 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		try {
 			reader = new BufferedReader(new FileReader(file));
 
-			Pattern 	pSequence =	Pattern.compile("^[A-Za-z\\-\\?\\[\\]\\(\\) ]*$");
+			//Pattern 	pSequence =	Pattern.compile("^[A-Za-z\\-\\?\\[\\]\\(\\) ]*$");
+			Pattern 	pSequence =	Pattern.compile("^.*$");
 			Pattern 	pBlank	=	Pattern.compile("^\\s*$");
 			Pattern 	pComment =	Pattern.compile("^\\s*#.*$");
 			Pattern		pName =		Pattern.compile("^>\\s*(.*)\\s*$");
@@ -160,6 +161,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		Pattern 	pComment =	Pattern.compile("^\\s*#.*$");
 		Pattern		pNameNotEmpty =	Pattern.compile("^>\\s*(.+)\\s*$");
 		Pattern		pName	=	Pattern.compile("^>\\s*(.*)\\s*$");
+		//Pattern		pSequence =	Pattern.compile("^\\s*(.*)\\s*$");
 		Pattern		pSequence =	Pattern.compile("^\\s*(.*)\\s*$");
 
 		String 		name =	"";
@@ -297,7 +299,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 			seq = seq.replace('U', 'T').replace('u', 't');
 		}
 
-		return new Sequence(name, seq);		
+		return BaseSequence.createSequence(name, seq);		
 	}
 
 	/**
