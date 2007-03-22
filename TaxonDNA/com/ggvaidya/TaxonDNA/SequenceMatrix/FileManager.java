@@ -375,7 +375,7 @@ public class FileManager implements FormatListener {
 									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
 									seq_out = seq_out.concatSequence(s);
 								} catch(SequenceException e) {
-									//pd.end();
+									pd.end();
 
 									MessageBox mb_2 = new MessageBox(
 											matrix.getFrame(),
