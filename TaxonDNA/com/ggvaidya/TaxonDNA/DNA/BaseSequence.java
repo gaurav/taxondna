@@ -308,5 +308,27 @@ public class BaseSequence extends Sequence {
 			this.len = length;
 		}
 	}
+	
+	/**
+	  Converts external gaps to missing characters. Basically just a raw replace of '_'s to '?'s.
+	  */
+	public void convertExternalGapsToMissingChars() {
+		// front sweep
+		for(int x = 0; x < seq.length; x++) {
+			if(seq[x] == '-')
+				seq[x] = '?';
+			else
+				break;
+		}
+		
+		// reverse sweep
+		for(int x = seq.length - 1; x >= 0; x--) {
+			if(seq[x] == '-')
+				seq[x] = '?';
+			else
+				break;
+		}
 
+		// done!
+	}
 }
