@@ -59,7 +59,7 @@ public class NexusFile extends BaseFormatHandler {
 	}	
 	
 	/**
-	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name.
+	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name. Note that this function isn't actually being used. Freaky.
 	 */
 	public String getMegaOTU(String name, int len) {
 		// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
@@ -239,8 +239,11 @@ public class NexusFile extends BaseFormatHandler {
 								// you know. to be anal, and all that.
 							else if(beginWhat.equalsIgnoreCase("SETS"))
 								blockSets(appendTo, tok, evt, delay, count_lines);
-							else
+							else {
 								inStrangeBlock = true;
+								// warn the user!
+								delay.addWarning("Block '" + beginWhat + "' cannot be read by TaxonDNA yet! This block will NOT be imported, and therefore cannot be re-exported.");
+							}
 						
 						} else {
 							// something is wrong!
@@ -421,7 +424,7 @@ public class NexusFile extends BaseFormatHandler {
 					} else if(str.equalsIgnoreCase("SYMBOLS")) {
 						String throwaway = getValueOfKey(tok);
 						// okay, ignore this for now, since we can do ANY symbol.
-						delay.addWarning("Ignoring FORMAT SYMBOLS=... in the DATA/CHARACTERS block; I'm not smart enough to interpret this yet. I cannot guarantee that only valid symbols are being symbols.");
+						delay.addWarning("FORMAT SYMBOLS=... in the DATA/CHARACTERS block cannot be read by TaxonDNA yet. There is no guarantee that illegal symbols are not being used in your sequences.");
 					} else {
 						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
 					}
@@ -550,6 +553,7 @@ public class NexusFile extends BaseFormatHandler {
 							str.equalsIgnoreCase("OPTIONS")
 					) {
 						inIgnoredCommand = true;
+						delay.addWarning("Ignoring command '" + str + "' in the CHARACTERS/DATA block; TaxonDNA cannot interpret this at present.");
 					}
 
 					if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
@@ -749,6 +753,7 @@ public class NexusFile extends BaseFormatHandler {
 						str.equalsIgnoreCase("TREEPARTITION")
 				) {
 					inIgnoredCommand = true;
+					delay.addWarning("Command '" + str + "' in the SETS block cannot be read by TaxonDNA, and will be ignored.");
 				} else {
  					throw formatException(tok, "Unknown word/command '" + str + "' found in the SETS block.");
 				}
