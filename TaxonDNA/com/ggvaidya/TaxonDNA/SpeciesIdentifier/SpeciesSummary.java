@@ -44,6 +44,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	private Button		btn_Calculate = new Button("Calculate now!");
 	private Button		btn_Delete = new Button("Remove selected species");
 	private Button		btn_export_multiple = new Button("Export species with multiple sequences");
+	private Button		btn_export_with_cons = new Button("Export sequences with conspecifics");
 	private Button		btn_Copy = new Button("Copy species summary");
 	
 	private Vector		vec_Species =		null;
@@ -83,6 +84,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		btn_export_multiple.addActionListener(this);
 		buttons.add(btn_export_multiple);
 
+		btn_export_with_cons.addActionListener(this);
+		buttons.add(btn_export_with_cons);
+
 		btn_Copy.addActionListener(this);
 		buttons.add(btn_Copy);
 
@@ -97,6 +101,68 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			new Thread(this, "SpeciesSummary").start();
 			return;
 		}
+		if(e.getSource().equals(btn_export_with_cons)) {
+			// export sequences with conspecific sequences
+			SequenceList sl = seqId.lockSequenceList();
+
+			if(sl == null)
+				return;
+				
+			try {
+				SpeciesDetails sd = sl.getSpeciesDetails(new ProgressDialog(
+						seqId.getFrame(),
+						"Please wait, determining sequences with conspecifics ...",
+						"Please wait, I'm looking through the sequences to determine which ones have conspecific sequences. Give me a second!"));
+
+				SequenceList sl_results = sd.getSequencesWithValidConspecifics();
+				if(sl_results == null) // cancelled?
+					return;
+
+				if(sl_results.count() == 0) {
+					new MessageBox(seqId.getFrame(),
+							"No sequences found!",
+							"This dataset does not contain any sequences with valid conspecific matches!").go();
+					return;
+				}
+
+				// okay, done!
+				// export time!
+				FileDialog fd = new FileDialog(seqId.getFrame(), "Export sequences with valid conspecifics as Fasta files to ...", FileDialog.SAVE);
+				
+				fd.setVisible(true);	// go!
+				
+				File f = null;
+				if(fd.getFile() != null) {
+					if(fd.getDirectory() != null)	
+						f = new File(fd.getDirectory(), fd.getFile());
+					else
+						f = new File(fd.getFile());
+
+					// assume that 'f' has already been tested for existance, and overwriting verified by FileDialog.
+
+					try {
+						com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+						ff.writeFile(f, new SequenceList(sl_results), null);
+					} catch(Exception ex) {
+						new MessageBox(seqId.getFrame(),
+							"Error!",
+							"There was a problem while exporting species with multiple sequences. The technical description of the error is: " + ex.getMessage() + "\n\nAre you sure you have adequate permissions to write to that file, and the disk isn't empty? If not, it's probably a programming problem. Please let the developers know!",
+							MessageBox.MB_ERROR).go();
+
+						return;
+					}
+
+					new MessageBox(seqId.getFrame(),
+							"Success!",
+							sl_results.count() + " sequences containing atleast one valid conspecific sequence exported to " + f + " in the FASTA format.").go();
+				}
+
+			} catch(DelayAbortedException ex) {
+				return;
+			} finally {
+				seqId.unlockSequenceList();	
+			}
+		} 
 		if(e.getSource().equals(btn_export_multiple)) {
 			SequenceList list = seqId.lockSequenceList();
 				
