@@ -46,6 +46,7 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 
 public class SpeciesDetails {
 	SequenceList	list			=	null;
+	SequenceList	seqs_with_conspecifics 	=	null;
 
 	// counts
 	private int count_sequences 			= 0;
@@ -75,6 +76,8 @@ public class SpeciesDetails {
 
 		if(list == null)
 			return;
+
+		seqs_with_conspecifics = new SequenceList();
 
 		list.lock();
 
@@ -229,6 +232,7 @@ public class SpeciesDetails {
 			if(valid_match) {
 				//System.err.println("One run to " + name + "!");
 				count_sequences_with_valid_consp++;
+				seqs_with_conspecifics.add(seq_1);
 			}
 		}
 
@@ -260,6 +264,10 @@ public class SpeciesDetails {
 
 	public int	getSequencesWithValidConspecificsCount() {
 		return count_sequences_with_valid_consp;
+	}
+
+	public SequenceList getSequencesWithValidConspecifics() {
+		return seqs_with_conspecifics;
 	}
 
 	/**

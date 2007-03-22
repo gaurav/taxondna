@@ -1884,6 +1884,16 @@ public class Sequence  implements Comparable, Testable {
 
 		return potential;
 	}
+
+	/**
+	  Converts external gaps to missing characters. Basically just a raw replace of '_'s to '?'s.
+	  */
+	public void convertExternalGapsToMissingChars() {
+		for(int x = 0; x < seq.length; x++) {
+			if(seq[x] == '_')
+				seq[x] = '?';
+		}
+	}
 	
 	/**
 	 * test cases for Sequence!

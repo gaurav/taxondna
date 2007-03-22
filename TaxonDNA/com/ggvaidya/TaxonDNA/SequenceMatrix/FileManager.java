@@ -227,6 +227,29 @@ public class FileManager implements FormatListener {
 	}	
 
 	/**
+	 * Checks whether we:
+	 *	(1) leave the gaps as is
+	 *	(2) convert the external gaps to '?'s
+	 */
+	private void checkGappingSituation(String colName, SequenceList sl) {
+		MessageBox mb = new MessageBox(
+			matrix.getFrame(),
+			"Replace external gaps with missing characters in column '" + colName + "'?",
+			"Would you like to recode external gaps as question marks in the column '" + colName + "'?",
+			MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
+		);
+		if(mb.showMessageBox() == MessageBox.MB_YES) {
+			// yes! do it!
+			Iterator i = sl.iterator();
+			while(i.hasNext()) {
+				Sequence seq = (Sequence) i.next();
+
+				seq.convertExternalGapsToMissingChars();
+			}
+		}
+	}
+
+	/**
 	 * Sets up names to use by filling in INITIAL_SEQ_NAME in the
 	 * Sequence preferences, in-place. You ought to call this on 
 	 * a SequenceList before you send it in. Note that this function
@@ -398,8 +421,10 @@ public class FileManager implements FormatListener {
 							if(seq_out.getActualLength() > 0)
 								sl.add(seq_out);
 						}
+						pd.end();
 
 						setupNamesToUse(sl);
+						checkGappingSituation(name, sl);
 
 						StringBuffer buff_complaints = new StringBuffer();
 						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
@@ -423,6 +448,7 @@ public class FileManager implements FormatListener {
 		// so add it!
 		if(!sets_were_added) {
 			setupNamesToUse(sequences);
+			checkGappingSituation(file.toString(), sequences);
 
 			StringBuffer buff_complaints = new StringBuffer();
 			matrix.getTableManager().addSequenceList(sequences,
