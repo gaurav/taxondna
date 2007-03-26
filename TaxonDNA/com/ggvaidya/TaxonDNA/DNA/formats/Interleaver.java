@@ -63,7 +63,7 @@ public class Interleaver {
 	 * @throws SequenceException if there is an error in the combined Sequence
 	 */
 	public void appendSequence(String name, String sequence) throws SequenceException {
-		appendSequence(name, new Sequence(name, sequence));
+		appendSequence(name, BaseSequence.createSequence(name, sequence));
 	}
 
 	public void appendSequence(String name, Sequence seq) {
@@ -74,6 +74,7 @@ public class Interleaver {
 			// append it onto the currently existing 'Sequence'
 			Sequence our_seq = (Sequence) seqs.get(name);
 			our_seq = our_seq.concatSequence(seq);
+			seqs.put(name, our_seq);
 		}
 	}
 
