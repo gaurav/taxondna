@@ -10,6 +10,12 @@
  * of just rewriting Sequence to handle it. Stupid, stupid, stupid,
  * and a great example of why I shouldn't code when sleepy or
  * writer's-blocked.
+ *
+ * TODO: Okay, 'nstates 32' will work out well enough, BUT all
+ * bases will then have to be converted into fully written out
+ * format (which, as an interesting aside, converts it into
+ * BaseSequence ...), i.e. W to [AC] or whatever. Then, everything
+ * will be Just Fine.
  */
 
 /*
@@ -919,16 +925,11 @@ public class TNTFile extends BaseFormatHandler {
 				// 3.	[dna]:		yes, if it's class is Sequence
 				// 4.	[num]:		err, maybe, if it's class is BaseSequence.
 				//
-				// also, if I'm reading this correctly, TNT can handle any letter
-				// except 'Z'.
 				//
-				// 0-9 A-V: the 32 characters in 'nstates 32'
-				// W: [AT]
-				// X: [ACTG]
-				// Y: [CT]
-				// Z: no meaning
-				//
-				// ...
+				// With nstates=32, we can use upto 32 states: 0-9 and A-V.
+				// So we should probably check for W,X,Y,Z, and produce an
+				// error.
+				// TODO
 				writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
 
 				// go over all the taxa 
