@@ -239,7 +239,9 @@ public class TNTFile extends BaseFormatHandler {
 						) {
 							// nstates dna! we can handle this ...
 						} else {
-							throw formatException(tok, "TaxonDNA can currently only load TNT files which contain DNA sequences. This file does not (it uses 'nstates " + tok.sval + "').");
+							// well, okay we can baseSequence it, UNLESS:
+							if(tok.sval.equalsIgnoreCase("cont"))
+								throw formatException(tok, "TaxonDNA can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by 'nstates " + tok.sval + "').");
 						}
 					}
 
@@ -438,14 +440,41 @@ public class TNTFile extends BaseFormatHandler {
 				// word!
 				String word = tok.sval;
 
+				// now, there are some 'special'
+				// words: specifically, [dna], [num]
+				// [prot] and [cont]. We just
+				// ignore those: the BaseSequence
+				// system will figure its own
+				// thing out eventually.
+				if(
+					word.equalsIgnoreCase("[dna]") ||
+					word.equalsIgnoreCase("[prot]") ||
+					word.equalsIgnoreCase("[num]")
+				) {
+					// ignore!
+					continue;	
+				}
+
+				if(word.equalsIgnoreCase("[cont]")) {
+					throw formatException(tok, "TaxonDNA can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by '[cont]').");
+
+				}
+
+				if(word.matches("^\\[.*\\]$")) {
+					throw formatException(tok, "Unrecognized data type: " + word);
+				}
+						
+
 				// get the sequence name
 				String seq_name = new String(word);	// otherwise, technically, both word and seq 
 									// would point to tok.sval.
 				seq_name = seq_name.replace('_', ' ');
 				
 				// get the sequence itself
-				if(tok.nextToken() != StreamTokenizer.TT_WORD) {
-					throw formatException(tok, "I recognize sequence name '" + name + "', but instead of the sequence, I find '" + (char)tok.ttype + "'. What's going on?");
+				int tmp_type = tok.nextToken();
+				if(tmp_type != StreamTokenizer.TT_WORD) {
+					
+					throw formatException(tok, "I recognize sequence name '" + seq_name + "', but instead of the sequence, I find '" + (char)tok.ttype + "'. What's going on?");
 				}
 				String sequence = tok.sval;
 				seq_names_count++;
@@ -458,6 +487,9 @@ public class TNTFile extends BaseFormatHandler {
 					throw formatException(tok, "Sequence '" + name + "' contains invalid characters. The exact error encountered was: " + e);
 				}
 
+			} else if(type == '&') {
+				// indicates TNT interleaving
+				// ignore!
 			} else {
 				throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the xread block! Are you sure it's supposed to be here?");
 			}
