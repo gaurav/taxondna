@@ -14,7 +14,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2006 Gaurav Vaidya
+    Copyright (C) 2006-07 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -820,7 +820,7 @@ public class TNTFile extends BaseFormatHandler {
 		// write out a 'preamble'
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
-		writer.println("nstates dna;");		// it's all DNA information
+		writer.println("nstates 32;");		// give our data the best possible chance
 		writer.println("xread");		// begin sequence output
 		writer.println("'Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "'");
 							// commented string
@@ -911,6 +911,25 @@ public class TNTFile extends BaseFormatHandler {
 						set.unlock();
 						throw e;
 					}
+				
+				// before each segment, we *ought* to enter the type of the next 'chunk'.
+				// as far as i know, we have four 'options':
+				// 1.	[cont]inous:	nope.
+				// 2.	[pro]tein:	we can't distinguish this now, anyway.
+				// 3.	[dna]:		yes, if it's class is Sequence
+				// 4.	[num]:		err, maybe, if it's class is BaseSequence.
+				//
+				// also, if I'm reading this correctly, TNT can handle any letter
+				// except 'Z'.
+				//
+				// 0-9 A-V: the 32 characters in 'nstates 32'
+				// W: [AT]
+				// X: [ACTG]
+				// Y: [CT]
+				// Z: no meaning
+				//
+				// ...
+				writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
 
 				// go over all the taxa 
 				while(i_names.hasNext()) {
@@ -934,10 +953,16 @@ public class TNTFile extends BaseFormatHandler {
 						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error.");
 					}
 
+					if(
+						subseq.getSequence().indexOf('Z') != -1 ||
+						subseq.getSequence().indexOf('z') != -1
+					)
+						delay.addWarning("Sequence '" + subseq.getFullName() + "' contains the letter 'Z'. This letter might not work in TNT.");
+
 					writer.println(pad_string(name, MAX_LENGTH) + " " + subseq.getSequence());
 				}
 
-				writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
+				//writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
 			}
 		}
 
