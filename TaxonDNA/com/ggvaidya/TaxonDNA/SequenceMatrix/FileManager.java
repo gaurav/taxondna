@@ -234,7 +234,7 @@ public class FileManager implements FormatListener {
 	private void checkGappingSituation(String colName, SequenceList sl) {
 		MessageBox mb = new MessageBox(
 			matrix.getFrame(),
-			"Replace external gaps with missing characters in column '" + colName + "'?",
+			"Replace external gaps with missing characters during import?",
 			"Would you like to recode external gaps as question marks in the column '" + colName + "'?",
 			MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
 		);
