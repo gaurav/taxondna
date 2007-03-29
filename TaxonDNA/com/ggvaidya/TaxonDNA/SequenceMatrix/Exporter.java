@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -165,6 +165,78 @@ public class Exporter implements SequencesHandler {
 	private String makeFileName(String name) {
 		return name.replace(' ', '_').replace('.', '_');
 	}
+
+	public void exportColumnsInGroups(int total_randomizations, int per_group, File f_directory_to_export_to, DelayCallback delay) {
+		// Step 1: Get stuff ready
+		TableManager tm = matrix.getTableManager();
+		List list_columns = tm.getCharsets();
+		Random rand = new Random();
+
+		if(list_columns == null) {
+			new MessageBox(matrix.getFrame(),
+					"No columns to export!",
+					"You have no columns to export. Please import some data and try again. If that doesn't help, this is probably a programming problem, and should be reported to the developers.").go();
+		}
+		
+		// Step 2: Go!
+		for(int randomization = 0; randomization < total_randomizations; randomization++) {
+			LinkedList list_to_pick = new LinkedList(); 	// so we get O(1) deletion	
+			list_to_pick.addAll(list_columns);
+
+			while(list_to_pick.size() > 0) {
+				// pick per_group columns
+				LinkedList list_to_add = new LinkedList();
+
+				for(int x = 0; x < per_group; x++) {
+					int max = list_to_pick.size();
+					if(max == 0)		// nobody else to pick!
+						break;
+					int selection = rand.nextInt(max); // random no between 0 and (max - 1);
+
+					// now, move it out of one group, and into the other.
+					Object o = list_to_pick.get(selection);
+					list_to_pick.remove(o);
+					list_to_add.add(o);
+				}
+
+				// okay, we now have a list_to_add. We need to add it.
+				// wait, do we?
+				if(list_to_add.size() == 0)	// the for loop didn't run, because we perfectly picked the size ... or something. In any case, nothing to add, what.
+					break;
+
+				// as a reminder, we need to write the cluster to: $folder/$rand/yeast_$rand_$no.txt
+				DataStore ds = new DataStore();
+				
+				Iterator i = list_to_add.iterator();
+				while(i.hasNext()) {
+					String colName = i.next();
+
+					SequenceList sl = tm.getSequenceListByColumn(colName);
+					if(sl == null) {
+						// TODO
+						continue;
+					}
+
+					ds.addSequenceList(colName, sl);	// omfg wow
+				}
+				
+				// we now have a DataStore we'd like to Write Out.
+				// the easiest way to do that: rewrite the Nexus and TNT
+				// exports to handle DataStores directly.
+				//
+				// Fun.
+				//	
+				// TODO
+			}
+		}
+	}
+
+	////////////////////////////
+	// NOTE
+	///////////////////////////
+	// FUNKY COMBINATION EXPORTS END HERE
+	// WHOLE-TABLE-TO-ONE-FIlE-FORMAT EXPORTS START HERE
+	/////////////////////////
 
 	/**
 	 * Returns a String with the taxonset named 'name'.
