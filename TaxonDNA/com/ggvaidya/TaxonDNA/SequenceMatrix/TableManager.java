@@ -741,6 +741,15 @@ public class TableManager implements ActionListener {
 		if(toolbarManager != null)
 			toolbarManager.setToolbarStatus(colName, seqName);
 	}
+	
+	/**
+	 * Returns the current datastore. DO NOT MODIFY THE DATASTORE DIRECTLY. If you
+	 * want to edit the DataStore, you really really really ought to work through
+	 * TableManager, and not on the DS directly. This is just here for hack's sake.
+	 */
+	public DataStore getDataStore() {
+		return dataStore;
+	}
 }
 
 /**
@@ -897,4 +906,5 @@ class ToolbarManager implements ActionListener {
 	public String getCurrentSequence() {
 		return currentSeqName;
 	}
+
 }

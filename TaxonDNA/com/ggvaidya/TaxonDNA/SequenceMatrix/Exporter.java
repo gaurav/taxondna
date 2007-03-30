@@ -205,19 +205,12 @@ public class Exporter implements SequencesHandler {
 					break;
 
 				// as a reminder, we need to write the cluster to: $folder/$rand/yeast_$rand_$no.txt
-				DataStore ds = new DataStore();
+				SequenceGrid sg = new SequenceGrid();
 				
 				Iterator i = list_to_add.iterator();
 				while(i.hasNext()) {
-					String colName = i.next();
-
-					SequenceList sl = tm.getSequenceListByColumn(colName);
-					if(sl == null) {
-						// TODO
-						continue;
-					}
-
-					ds.addSequenceList(colName, sl);	// omfg wow
+					String colName = (String) i.next();
+					sg.addColumnFromDataStore(tm.getDataStore(), colName);	// add this column to the SequenceGrid.
 				}
 				
 				// we now have a DataStore we'd like to Write Out.
