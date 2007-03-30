@@ -866,6 +866,22 @@ public class SequenceGrid {
 	}
 
 	/**
+	 * Returns a SequenceList of the ENTIRE SequenceGrid. The idea is to run
+	 * getCompleteSequence() on every row of the SequenceGrid.
+	 */
+	public SequenceList getSequenceList() {
+		SequenceList sl = new SequenceList();
+
+		Iterator i = getSequences().iterator();
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+			sl.add(getCompleteSequence(seqName));
+		}
+
+		return sl;
+	}
+
+	/**
 	 * Adds a column directly from a DataStore. This is a very specialized hack,
 	 * and should be retired the *minute* we don't need to do this any more.
 	 * Well, okay, really, this should be replaced by a addSLFromSeqGrid type

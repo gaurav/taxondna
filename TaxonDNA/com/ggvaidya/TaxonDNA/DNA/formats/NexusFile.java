@@ -19,7 +19,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005 Gaurav Vaidya
+    Copyright (C) 2005-07 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,6 +46,10 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class NexusFile extends BaseFormatHandler {
+	public static final int EXPORT_AS_BLOCKS = 		1;
+	public static final int EXPORT_AS_SINGLE_LINE = 	2;
+	public static final int EXPORT_AS_INTERLEAVED =	3;
+	
 		// what is the maximum lengh of taxon names allowed?
 	private int MAX_TAXON_LENGTH = 	32;
 		// when sequences get bigger than INTERLEAVE_AT, we'll
@@ -1053,5 +1057,221 @@ public class NexusFile extends BaseFormatHandler {
 			return false;
 		}
 	}
+
+	/**
+	 * Export an entire SequenceGrid in one shot. We can do this,
+	 * because we are the coolest. One problem: how do we let
+	 * user decide what constants to use?
+	 */
+	public void writeFile(File f, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
+		// TODO
+	}
+	
+	/** 
+	 * A first stab at a Nexus/SequenceGrid writer. Most of the code has been 'borrowed' out of
+	 * SequenceMatrix.
+	 */
+	public void writeNexusFile(File f, SequenceGrid grid, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
+		int countThisLoop = 0;
+
+		// how do we have to do this?
+		int how = exportAs;
+
+		// set up delay 
+		if(delay != null)
+			delay.begin();
+
+		// let's get this party started, etc.
+		// we begin by obtaining the Taxonsets (if any).
+		/* NO TAXONSETS AS YET WE'LL IMPLEMENT THIS LATER WHEN WE FEEL LIKE IT 
+		Taxonsets tx = matrix.getTaxonsets(); 
+		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
+		buff_sets.append("BEGIN SETS;\n");
+		if(tx.getTaxonsetList() != null) {
+			Vector v = tx.getTaxonsetList();
+			Iterator i = v.iterator();
+
+			countThisLoop = 0;
+			while(i.hasNext()) {
+				countThisLoop++;
+				if(delay != null)
+					delay.delay(countThisLoop, v.size());
+
+				String taxonsetName = (String) i.next();
+				// Nexus has offsets from '1'
+				String str = getTaxonset(taxonsetName, 1);
+				if(str != null)
+					buff_sets.append("\tTAXSET " + taxonsetName + " = " + str + ";\n");
+			}
+		}
+		*/
+
+		// we begin by calculating the SETS block,
+		// since:
+		// 1.	we need to coordinate the names right from the get-go
+		// 2.	INTERLEAVED does not have to write the Nexus file
+		// 	at all, but DOES need the SETS block.
+		//
+
+		// Calculate the SETS blocks, with suitable widths etc.	
+		int widthThusFar = 0;
+		Iterator i = sg.getColumns().iterator();
+
+		countThisLoop = 0;
+		while(i.hasNext()) {
+			countThisLoop++;
+			if(delay != null)
+				delay.delay(countThisLoop, tm.getCharsets().size());
+
+			String columnName = (String)i.next();
+
+			// write out a CharSet for this column, and adjust the widths
+			buff_sets.append("\tCHARSET " + fixColumnName(columnName) + " = " + (widthThusFar + 1) + "-" + (widthThusFar + tm.getColumnLength(columnName)) + ";\n");
+			widthThusFar += tm.getColumnLength(columnName);
+		}
+
+		// end and write the SETS block
+		buff_sets.append("END;");
+		
+		// Now that the blocks are set, we can get down to the real work: writing out
+		// all the sequences. This is highly method specific.
+		//
+		// First, we write out the header, unless it's going to use NexusFile to
+		// do the writing.
+		PrintWriter writer = null;
+		if(how == EXPORT_AS_BLOCKS || how == EXPORT_AS_SINGLE_LINE) {
+			writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+
+			writer.println("#NEXUS");
+			writer.println("[Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "]");
+
+			writer.println("");
+
+			writer.println("BEGIN DATA;");
+			writer.println("\tDIMENSIONS NTAX=" + grid.getSequencesCount() + " NCHAR=" + grid.getSequenceLength() + ";");
+
+			writer.print("\tFORMAT DATATYPE=DNA GAP=- MISSING=? ");
+			if(how == EXPORT_AS_BLOCKS)
+				writer.print("INTERLEAVE");
+			writer.println(";");
+
+			writer.println("MATRIX");
+		}
+
+		SequenceList list = null;
+		if(how == EXPORT_AS_INTERLEAVED) {
+			list = new SequenceList();
+		}
+
+		// Now, there's a loop over either the column names or the sequence list
+		//
+		if(how == EXPORT_AS_BLOCKS) {
+			// loop over column names
+			Iterator i_cols = grid.getCharsets().iterator();
+
+			countThisLoop = 0;
+			int total_count = grid.getCharsets().size();
+			while(i_cols.hasNext()) {
+				if(delay != null)
+					delay.delay(countThisLoop, total);
+				countThisLoop++;
+
+				String colName = (String) i_cols.next();
+				int colLength = grid.getColumnLength(colName);
+				
+				// first of all, write the column name in as a comment (if in block mode)
+				writer.println("[beginning " + fixColumnName(colName) + "]");
+
+				// then loop over all the sequences
+				Iterator i_seqs = grid.getSequences().iterator();
+				while(i_seqs.hasNext()) {
+					String seqName = (String) i_seqs.next();
+					Sequence seq = grid.getSequence(colName, seqName); 
+
+					if(seq == null)
+						seq = Sequence.makeEmptySequence(seqName, colLength);
+
+					writer.println(getNexusName(seqName) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
+				}
+				
+				writer.println("[end of " + fixColumnName(colName) + "]");
+				writer.println("");	// leave a blank line
+			}
+
+		} else if(how == EXPORT_AS_SINGLE_LINE || how == EXPORT_AS_INTERLEAVED) {
+			// loop over sequence names
+
+			Iterator i_rows = tm.getSequences().iterator();
+			countThisLoop = 0;
+			while(i_rows.hasNext()) {
+				if(delay != null)
+					delay.delay(countThisLoop, tm.getSequences().size());
+				countThisLoop++;
+
+				String seqName = (String) i_rows.next();
+				Sequence seq_interleaved = null;
+				int length = 0;
+
+				if(how == Preferences.EXPORT_AS_SINGLE_LINE)
+					writer.print(getNexusName(seqName) + " ");
+				else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+					seq_interleaved = new Sequence();
+
+				Iterator i_cols = tm.getCharsets().iterator();
+				while(i_cols.hasNext()) {
+					String colName = (String) i_cols.next();
+					Sequence seq = tm.getSequence(colName, seqName);
+
+					if(seq == null)
+						seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
+
+					length += seq.getLength();
+
+					if(how == Preferences.EXPORT_AS_SINGLE_LINE)
+						writer.print(seq.getSequence());
+					else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+						seq_interleaved = seq_interleaved.concatSequence(seq);
+					else
+						throw new RuntimeException("'how' makes no sense in SequenceGrid.exportAsNexus()! [how = " + how + "]");
+				}
+
+				if(how == EXPORT_AS_INTERLEAVED)
+					seq_interleaved.changeName(seqName);
+
+				if(how == EXPORT_AS_SINGLE_LINE)
+					writer.println(" [" + length + " bp]");
+				else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+					list.add(seq_interleaved);
+			}
+		}
+
+		// close up the file ... if there WAS a file to close, that is.
+		if(how == EXPORT_AS_BLOCKS || how == EXPORT_AS_SINGLE_LINE) {
+			// end the DATA block
+			writer.println(";");
+			writer.println("END;");
+		
+			writer.println(buff_sets);
+
+			writer.close();
+		}
+		
+		// shut down delay 
+		if(delay != null)
+			delay.end();
+
+		// otherwise, err ... actually write the darn file out to begin with :p
+		if(how == EXPORT_AS_INTERLEAVED) {
+			NexusFile nf = new NexusFile();
+			nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(), 
+					new ProgressDialog(
+						matrix.getFrame(),
+						"Please wait, writing file ...",
+						"Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
+		}
+		
+	}
+
+
 }
 
