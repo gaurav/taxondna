@@ -1442,9 +1442,9 @@ public class Sequence  implements Comparable, Testable {
 				// missing data is ignored, always
 			} else if(isGap(ch1) || isGap(ch2)) {
 				if(
-						(isInternalGap(ch1) && !isInternalGap(ch2))
+						(isInternalGap(ch1) && !isInternalGap(ch2) && isGap(ch2))
 						 ||
-						(!isInternalGap(ch1) && isInternalGap(ch2))
+						(!isInternalGap(ch1) && isInternalGap(ch2) && isGap(ch2))
 				) {
 					// err, the next 'if' gets confused if only one of the
 					// sequences is an internal gap. If they are BOTH gaps,
