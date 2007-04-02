@@ -65,7 +65,7 @@ public class NexusFile extends BaseFormatHandler {
 	/**
 	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name. Note that this function isn't actually being used. Freaky.
 	 */
-	public String getMegaOTU(String name, int len) {
+	public String getNexusName(String name, int len) {
 		// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
 		char first = name.charAt(0);
 		if(
@@ -984,7 +984,7 @@ public class NexusFile extends BaseFormatHandler {
 						subseq = seq.getSubsequence(x + 1, until);
 					} catch(SequenceException e) {
 						delay.end();
-						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error.");
+						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error. The reason given was: " + e.getMessage());
 					}
 
 					writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
@@ -1064,7 +1064,7 @@ public class NexusFile extends BaseFormatHandler {
 	 * user decide what constants to use?
 	 */
 	public void writeFile(File f, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
-		// TODO
+		writeNexusFile(f, grid, EXPORT_AS_INTERLEAVED, INTERLEAVE_AT, delay);
 	}
 	
 	/** 
@@ -1080,12 +1080,13 @@ public class NexusFile extends BaseFormatHandler {
 		// set up delay 
 		if(delay != null)
 			delay.begin();
+		
+		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
 
 		// let's get this party started, etc.
 		// we begin by obtaining the Taxonsets (if any).
 		/* NO TAXONSETS AS YET WE'LL IMPLEMENT THIS LATER WHEN WE FEEL LIKE IT 
 		Taxonsets tx = matrix.getTaxonsets(); 
-		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
 		buff_sets.append("BEGIN SETS;\n");
 		if(tx.getTaxonsetList() != null) {
 			Vector v = tx.getTaxonsetList();
@@ -1115,19 +1116,19 @@ public class NexusFile extends BaseFormatHandler {
 
 		// Calculate the SETS blocks, with suitable widths etc.	
 		int widthThusFar = 0;
-		Iterator i = sg.getColumns().iterator();
+		Iterator i = grid.getColumns().iterator();
 
 		countThisLoop = 0;
 		while(i.hasNext()) {
 			countThisLoop++;
 			if(delay != null)
-				delay.delay(countThisLoop, tm.getCharsets().size());
+				delay.delay(countThisLoop, grid.getColumns().size());
 
 			String columnName = (String)i.next();
 
 			// write out a CharSet for this column, and adjust the widths
-			buff_sets.append("\tCHARSET " + fixColumnName(columnName) + " = " + (widthThusFar + 1) + "-" + (widthThusFar + tm.getColumnLength(columnName)) + ";\n");
-			widthThusFar += tm.getColumnLength(columnName);
+			buff_sets.append("\tCHARSET " + fixColumnName(columnName) + " = " + (widthThusFar + 1) + "-" + (widthThusFar + grid.getColumnLength(columnName)) + ";\n");
+			widthThusFar += grid.getColumnLength(columnName);
 		}
 
 		// end and write the SETS block
@@ -1148,7 +1149,7 @@ public class NexusFile extends BaseFormatHandler {
 			writer.println("");
 
 			writer.println("BEGIN DATA;");
-			writer.println("\tDIMENSIONS NTAX=" + grid.getSequencesCount() + " NCHAR=" + grid.getSequenceLength() + ";");
+			writer.println("\tDIMENSIONS NTAX=" + grid.getSequencesCount() + " NCHAR=" + grid.getCompleteSequenceLength() + ";");
 
 			writer.print("\tFORMAT DATATYPE=DNA GAP=- MISSING=? ");
 			if(how == EXPORT_AS_BLOCKS)
@@ -1167,13 +1168,13 @@ public class NexusFile extends BaseFormatHandler {
 		//
 		if(how == EXPORT_AS_BLOCKS) {
 			// loop over column names
-			Iterator i_cols = grid.getCharsets().iterator();
+			Iterator i_cols = grid.getColumns().iterator();
 
 			countThisLoop = 0;
-			int total_count = grid.getCharsets().size();
+			int total_count = grid.getColumns().size();
 			while(i_cols.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, total);
+					delay.delay(countThisLoop, total_count);
 				countThisLoop++;
 
 				String colName = (String) i_cols.next();
@@ -1191,7 +1192,7 @@ public class NexusFile extends BaseFormatHandler {
 					if(seq == null)
 						seq = Sequence.makeEmptySequence(seqName, colLength);
 
-					writer.println(getNexusName(seqName) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
+					writer.println(getNexusName(seqName, MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
 				}
 				
 				writer.println("[end of " + fixColumnName(colName) + "]");
@@ -1201,38 +1202,38 @@ public class NexusFile extends BaseFormatHandler {
 		} else if(how == EXPORT_AS_SINGLE_LINE || how == EXPORT_AS_INTERLEAVED) {
 			// loop over sequence names
 
-			Iterator i_rows = tm.getSequences().iterator();
+			Iterator i_rows = grid.getSequences().iterator();
 			countThisLoop = 0;
 			while(i_rows.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, tm.getSequences().size());
+					delay.delay(countThisLoop, grid.getSequences().size());
 				countThisLoop++;
 
 				String seqName = (String) i_rows.next();
 				Sequence seq_interleaved = null;
 				int length = 0;
 
-				if(how == Preferences.EXPORT_AS_SINGLE_LINE)
-					writer.print(getNexusName(seqName) + " ");
-				else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+				if(how == EXPORT_AS_SINGLE_LINE)
+					writer.print(getNexusName(seqName, MAX_TAXON_LENGTH) + " ");
+				else if(how == EXPORT_AS_INTERLEAVED)
 					seq_interleaved = new Sequence();
 
-				Iterator i_cols = tm.getCharsets().iterator();
+				Iterator i_cols = grid.getColumns().iterator();
 				while(i_cols.hasNext()) {
 					String colName = (String) i_cols.next();
-					Sequence seq = tm.getSequence(colName, seqName);
+					Sequence seq = grid.getSequence(colName, seqName);
 
 					if(seq == null)
-						seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
+						seq = Sequence.makeEmptySequence(colName, grid.getColumnLength(colName));
 
 					length += seq.getLength();
 
-					if(how == Preferences.EXPORT_AS_SINGLE_LINE)
+					if(how == EXPORT_AS_SINGLE_LINE)
 						writer.print(seq.getSequence());
-					else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+					else if(how == EXPORT_AS_INTERLEAVED)
 						seq_interleaved = seq_interleaved.concatSequence(seq);
 					else
-						throw new RuntimeException("'how' makes no sense in SequenceGrid.exportAsNexus()! [how = " + how + "]");
+						throw new RuntimeException("'how' makes no sense in NexusFile.exportAsNexus()! [how = " + how + "]");
 				}
 
 				if(how == EXPORT_AS_INTERLEAVED)
@@ -1240,7 +1241,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				if(how == EXPORT_AS_SINGLE_LINE)
 					writer.println(" [" + length + " bp]");
-				else if(how == Preferences.EXPORT_AS_INTERLEAVED)
+				else if(how == EXPORT_AS_INTERLEAVED)
 					list.add(seq_interleaved);
 			}
 		}
@@ -1263,15 +1264,19 @@ public class NexusFile extends BaseFormatHandler {
 		// otherwise, err ... actually write the darn file out to begin with :p
 		if(how == EXPORT_AS_INTERLEAVED) {
 			NexusFile nf = new NexusFile();
-			nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(), 
-					new ProgressDialog(
-						matrix.getFrame(),
-						"Please wait, writing file ...",
-						"Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
+			nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(), delay);
 		}
 		
 	}
-
-
+  
+	private String fixColumnName(String columnName) {
+		columnName = columnName.replaceAll("\\.nex", "");
+		columnName = columnName.replace('.', '_');
+		columnName = columnName.replace(' ', '_');
+		columnName = columnName.replace('-', '_');
+		columnName = columnName.replace('\\', '_');
+		columnName = columnName.replace('/', '_');
+		return columnName;
+	}
 }
 

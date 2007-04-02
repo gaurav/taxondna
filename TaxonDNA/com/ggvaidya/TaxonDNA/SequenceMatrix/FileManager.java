@@ -14,7 +14,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -724,6 +724,119 @@ public class FileManager implements FormatListener {
 			reportIOException(e, file, IOE_WRITING);
 		}
 	}
+
+	/**
+	 * Export all the sequences, randomly picking columns in groups of X, into a single directory.
+	 * Fun for all, and all for fun.
+	 */
+	public void exportSequencesByColumnsInGroups() {
+		// first, we need to figure out which format the person'd like to use:
+		Dialog dg = (Dialog) CloseableWindow.wrap(new Dialog(matrix.getFrame(), "Please choose your output options ...", true));
+		RightLayout rl = new RightLayout(dg);
+		dg.setLayout(rl);
+
+		rl.add(new Label("Write all the files into:"), RightLayout.NONE);
+		DirectoryInputPanel dinp = new DirectoryInputPanel(
+					null, 
+					DirectoryInputPanel.MODE_DIR_SELECT,
+					dg
+				);
+		rl.add(dinp, RightLayout.BESIDE | RightLayout.STRETCH_X);
+		rl.add(new Label("Write files with format:"), RightLayout.NEXTLINE);
+
+		Choice choice_formats = new Choice();
+		Vector fhs = SequenceList.getFormatHandlers();
+		Iterator i = fhs.iterator();
+		while(i.hasNext()) {
+			FormatHandler fh = (FormatHandler) i.next();
+			choice_formats.add(fh.getFullName());
+		}
+		rl.add(choice_formats, RightLayout.BESIDE | RightLayout.STRETCH_X);
+
+		Checkbox check_writeNASequences = new Checkbox("Write 'N/A' sequences into the files as well");
+		rl.add(check_writeNASequences, RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		// additional 'random' options
+		// TODO: Put in some sort of element grouping; this will presumably
+		// have to be implemented by whatisface RightLayout.
+
+		rl.add(new Label("Number of columns in each group: "), RightLayout.NEXTLINE);	
+		Choice choice_per_group = new Choice();
+		int colCount = matrix.getTableManager().getCharsets().size();
+		for(int x = 1; x <= colCount; x++) {
+			choice_per_group.add("" + x);
+		}
+
+		if(colCount == 0)
+			choice_per_group.add("No columns loaded!");
+
+		rl.add(choice_per_group, RightLayout.BESIDE);
+
+		rl.add(new Label("Number of randomizations to perform: "), RightLayout.NEXTLINE);
+		TextField tf_rands = new TextField();
+		rl.add(tf_rands, RightLayout.BESIDE);
+		// TODO: save and retrieve number of randomizations
+		
+		// Okay, done, back to your regularly scheduled programming
+		
+		DefaultButton btn = new DefaultButton(dg, "Write files");
+		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choice", 2)); // 2 == NexusFile, at some point of time
+		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_fileName", "")));
+		if(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_writeNASequences", 0) == 0)
+			check_writeNASequences.setState(false);
+		else 
+			check_writeNASequences.setState(true);
+		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0)));
+
+		dg.pack();
+		dg.setVisible(true);
+
+		if(btn.wasClicked()) {
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choice", choice_formats.getSelectedIndex());
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_fileName", dinp.getFile().getAbsolutePath());
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choicePerGroup", choice_per_group.getSelectedIndex() + 1);
+
+			int rands = 0;
+			try {
+				rands = Integer.parseInt(tf_rands.getText());
+			} catch(NumberFormatException e) {
+				rands = 10;	
+			}
+
+			// phew ... go!
+			try {
+				matrix.getExporter().exportColumnsInGroups(
+					rands,
+					choice_per_group.getSelectedIndex() + 1,
+					dinp.getFile(), 
+					(FormatHandler) fhs.get(choice_formats.getSelectedIndex()), 
+					check_writeNASequences.getState(),
+					new ProgressDialog(
+						matrix.getFrame(),
+						"Please wait, exporting sequences ...",
+						"All your sequences are being exported as individual files into '" + dinp.getFile() + "'. Please wait!")
+				);
+			} catch(IOException e) {
+				MessageBox mb = new MessageBox(
+						matrix.getFrame(),
+						"Error writing sequences to file!",
+						"The following error occured while writing sequences to file: " + e
+						);
+				mb.go();
+
+				return;
+			} catch(DelayAbortedException e) {
+				return;
+			}
+
+			new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into individual files in '" + dinp.getFile() + "'.").go();
+			// TODO: Would be nice if we have an option to open this Window using Explorer/Finder
+		}
+	}
+	
 
 	/**
 	 * Export all the sequences by column: one file per column.

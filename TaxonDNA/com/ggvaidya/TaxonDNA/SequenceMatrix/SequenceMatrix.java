@@ -253,6 +253,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.equals("Export table as sequences (one file per column)"))
 			fileManager.exportSequencesByColumn();
 
+		// Export -> Group columns randomly in groups of X
+		if(cmd.equals("Export columns grouped randomly"))
+			fileManager.exportSequencesByColumnsInGroups();
+
 		//
 		// Export -> Export as NEXUS.
 		//
@@ -543,6 +547,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		Menu	export 		= 	new Menu("Export");
 		export.add(new MenuItem("Export table as tab-delimited"));
 		export.add(new MenuItem("Export table as sequences (one file per column)"));
+		export.add(new MenuItem("Export columns grouped randomly"));
 		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as TNT"));
 		export.addActionListener(this);

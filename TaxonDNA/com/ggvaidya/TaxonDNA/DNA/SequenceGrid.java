@@ -890,12 +890,22 @@ public class SequenceGrid {
 	 * Warning: we don't really have any way of protecting against duplicates, etc.
 	 * So, err, for now, err ... be careful?
 	 */
-	public void addColumnFromDataStore(com.ggvaidya.TaxonDNA.SequenceMatrix.DataStore ds, String colName) {
-		Iterator i = ds.getSequenceNamesByColumn(colName).iterator();	
+	public void addColumnFromDataStore(com.ggvaidya.TaxonDNA.SequenceMatrix.DataStore ds, String colName, boolean includeNAs)  {
+		Set seqs = null;
+		if(includeNAs)
+			seqs = ds.getSequences();
+		else
+			seqs = ds.getSequenceNamesByColumn(colName);
+
+		Iterator i = seqs.iterator();
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
+			Sequence seq = ds.getCancelledSequence(colName, seqName);
 
-			setSequence(colName, seqName, ds.getCancelledSequence(colName, seqName));
+			if(seq == null)
+				seq = Sequence.makeEmptySequence(seqName, ds.getColumnLength(colName));
+
+			setSequence(colName, seqName, seq);
 		}
 	}
 }

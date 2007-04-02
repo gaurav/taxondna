@@ -166,26 +166,50 @@ public class Exporter implements SequencesHandler {
 		return name.replace(' ', '_').replace('.', '_');
 	}
 
-	public void exportColumnsInGroups(int total_randomizations, int per_group, File f_directory_to_export_to, DelayCallback delay) {
+	public void exportColumnsInGroups(int total_randomizations, int per_group, File f_directory_to_export_to, FormatHandler handler, boolean bool_includeNAs, DelayCallback delay) throws DelayAbortedException, IOException {
+		//new MessageBox(matrix.getFrame(), "Dude", "Okay, check this out: " + total_randomizations + ", " + per_group).go();
+		
 		// Step 1: Get stuff ready
 		TableManager tm = matrix.getTableManager();
 		List list_columns = tm.getCharsets();
 		Random rand = new Random();
 
+		if(f_directory_to_export_to == null || !f_directory_to_export_to.exists() || !f_directory_to_export_to.canWrite()) {
+			new MessageBox(matrix.getFrame(),
+					"Folder doesn't exist, or isn't writable!",
+					"You are trying to write columns in groups into " + f_directory_to_export_to + ", but it either doesn't exist, or you don't have permission to write to it."
+			).go();
+			return;
+		}
+
 		if(list_columns == null) {
 			new MessageBox(matrix.getFrame(),
 					"No columns to export!",
 					"You have no columns to export. Please import some data and try again. If that doesn't help, this is probably a programming problem, and should be reported to the developers.").go();
+			return;
 		}
 		
 		// Step 2: Go!
 		for(int randomization = 0; randomization < total_randomizations; randomization++) {
-			LinkedList list_to_pick = new LinkedList(); 	// so we get O(1) deletion	
+			LinkedList list_to_pick = new LinkedList(); 	// so we get O(1) deletion
 			list_to_pick.addAll(list_columns);
 
+			// we're in randomization #..., so let's create the directory!
+			File f_dir = new File(f_directory_to_export_to, "" + (randomization+1));
+			try {
+				f_dir.mkdir();
+			} catch(SecurityException e) {
+				new MessageBox(matrix.getFrame(),
+						"Can't create subfolder for randomization: " + f_dir,
+						"I'm trying to create '" + f_dir + "' to store the results of randomization #" + (randomization + 1) + ", but I don't seem to have adequate permissions to do this.").go();
+				return;
+			}
+
+			int group_id = -1;	// so we'll be '0' on the first iteration, for symmetry with randomization
 			while(list_to_pick.size() > 0) {
 				// pick per_group columns
 				LinkedList list_to_add = new LinkedList();
+				group_id++;
 
 				for(int x = 0; x < per_group; x++) {
 					int max = list_to_pick.size();
@@ -210,7 +234,7 @@ public class Exporter implements SequencesHandler {
 				Iterator i = list_to_add.iterator();
 				while(i.hasNext()) {
 					String colName = (String) i.next();
-					sg.addColumnFromDataStore(tm.getDataStore(), colName);	// add this column to the SequenceGrid.
+					sg.addColumnFromDataStore(tm.getDataStore(), colName, bool_includeNAs);	// add this column to the SequenceGrid.
 				}
 				
 				// we now have a DataStore we'd like to Write Out.
@@ -218,8 +242,11 @@ public class Exporter implements SequencesHandler {
 				// exports to handle DataStores directly.
 				//
 				// Fun.
-				//	
-				// TODO
+				//
+
+				File f = new File(f_dir, "group_" + (randomization + 1) + "_" + (group_id + 1) + "." + handler.getExtension());
+
+				handler.writeFile(f, sg, delay);
 			}
 		}
 	}
