@@ -123,7 +123,7 @@ public class BaseSequence extends Sequence {
 	public static Sequence promoteSequence(Sequence x) {
 		if(BaseSequence.class.isAssignableFrom(x.getClass())) {
 			try {
-				return new Sequence(x.getName(), x.getSequence());
+				return new Sequence(x.getFullName(), x.getSequence());
 			} catch(SequenceException e) {
 				return x;
 			}	
