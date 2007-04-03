@@ -78,7 +78,7 @@ public class NexusFile extends BaseFormatHandler {
 		) {
 			// it's all good!
 		} else {
-			name = "." + name;
+			name = "_" + name;
 		}
 
 		// Rule #2: strange characters we'll turn into '_' 
