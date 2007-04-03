@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class TNTFile extends BaseFormatHandler {
-	private static final int MAX_LENGTH =	31;		// TNT truncates at 32 characters, but it gives a warning at 32
+	private static final int MAX_TAXON_LENGTH =	31;		// TNT truncates at 32 characters, but it gives a warning at 32
 								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
@@ -62,7 +62,7 @@ public class TNTFile extends BaseFormatHandler {
 	/**
 	 * Returns a valid OTU (Operation Taxonomic Unit); that is, a taxon name.
 	 */
-	public String getOTU(String name, int len) {
+	public String getTNTName(String name, int len) {
 		// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
 		char first = name.charAt(0);
 		if(
@@ -839,7 +839,7 @@ public class TNTFile extends BaseFormatHandler {
 		 * The following piece of code has to:
 		 * 1.	Figure out VALID, UNIQUE names to output.
 		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
-		 * 	assume 32 chars for now - see MAX_LENGTH - and work
+		 * 	assume 32 chars for now - see MAX_TAXON_LENGTH - and work
 		 * 	around things when we need to).
 		 *
 		 * Interleaving will be handled later.
@@ -851,7 +851,7 @@ public class TNTFile extends BaseFormatHandler {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			String name = getOTU(seq.getFullName(MAX_LENGTH), MAX_LENGTH);
+			String name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH), MAX_TAXON_LENGTH);
 			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
@@ -863,7 +863,7 @@ public class TNTFile extends BaseFormatHandler {
 				if(no >= 100 && no < 1000)	digits = 3;
 				if(no >= 1000 && no < 10000)	digits = 4;
 
-				name = getOTU(seq.getFullName(MAX_LENGTH - digits - 1), MAX_LENGTH - digits - 1);
+				name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH - digits - 1), MAX_TAXON_LENGTH - digits - 1);
 				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
@@ -872,7 +872,7 @@ public class TNTFile extends BaseFormatHandler {
 
 				if(no == 10000) {
 					// this has gone on long enough!
-					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
+					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
 			
@@ -899,7 +899,7 @@ public class TNTFile extends BaseFormatHandler {
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(pad_string(name, MAX_LENGTH) + " " + seq.getSequence());
+				writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + seq.getSequence());
 
 				x++;
 			}
@@ -960,7 +960,7 @@ public class TNTFile extends BaseFormatHandler {
 					)
 						delay.addWarning("Sequence '" + subseq.getFullName() + "' contains the letter 'Z'. This letter might not work in TNT.");
 
-					writer.println(pad_string(name, MAX_LENGTH) + " " + subseq.getSequence());
+					writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + subseq.getSequence());
 				}
 
 				//writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
@@ -1030,5 +1030,175 @@ public class TNTFile extends BaseFormatHandler {
 			return false;
 		}
 	}
+	
+	private String fixColumnName(String columnName) {
+		columnName = columnName.replaceAll("\\.nex", "");
+		columnName = columnName.replaceAll("\\.tnt", "");
+		columnName = columnName.replace('.', '_');
+		columnName = columnName.replace(' ', '_');
+		columnName = columnName.replace('-', '_');
+		columnName = columnName.replace('\\', '_');
+		columnName = columnName.replace('/', '_');
+		return columnName;
+	}
+
+	/**
+	 * Export a SequenceGrid as a TNT file. 
+	 */
+	public void writeFile(File file, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
+		writeTNTFile(file, grid, delay);
+	}
+	
+	/**
+	 * Export a SequenceGrid as a TNT file.
+	 */
+	public void writeTNTFile(File f, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
+		// We want to put some stuff into the title
+		StringBuffer buff_title = new StringBuffer();
+
+		/*
+		// we begin by obtaining the Taxonsets (if any).
+		Taxonsets tx = matrix.getTaxonsets(); 
+		StringBuffer buff_taxonsets = new StringBuffer();
+		if(tx.getTaxonsetList() != null) {
+			if(tx.getTaxonsetList().size() >= 32) {
+				new MessageBox(
+					matrix.getFrame(),
+					"Too many taxonsets!",
+					"According to the manual, TNT can only handle 32 taxonsets. You have " + tx.getTaxonsetList().size() + " taxonsets. I will write the remaining taxonsets into the file title, from where you can copy it into the correct position in the file as needed.").go();
+			}
+
+			buff_taxonsets.append("agroup\n");
+
+			Vector v = tx.getTaxonsetList();
+			Iterator i = v.iterator();
+			int x = 0;
+			while(i.hasNext()) {
+				String taxonsetName = (String) i.next();
+				// TNT has offsets from '0'
+				String str = getTaxonset(taxonsetName, 0);
+				if(str != null) 
+				{
+					if(x == 31)
+						buff_title.append("@agroup\n");
+
+					if(x <= 31)
+						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
+					else
+						buff_title.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
+					x++;
+				}
+			}
+
+			buff_taxonsets.append(";\n\n\n");
+
+			if(x >= 32)
+				buff_title.append(";\n\n");
+		}
+		*/
+		
+		// set up the 'sets' buffer
+		Set cols = grid.getColumns();
+		if(cols.size() >= 32) {
+			delay.addWarning("TOO MANY CHARACTER SETS: According to the manual, TNT can only handle 32 character sets. You have " + cols.size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.");
+		}
+		
+		StringBuffer buff_sets = new StringBuffer();
+		buff_sets.append("xgroup\n");
+
+		Iterator i = cols.iterator();	
+		int at = 0;
+		int colid = 0;
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+
+			if(colid == 32)
+				buff_title.append("@xgroup\n");
+
+			if(colid <= 31)
+				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+			else
+				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+
+			for(int x = 0; x < grid.getColumnLength(colName); x++) {
+				if(colid <= 31)
+					buff_sets.append(at + " ");
+				else
+					buff_title.append(at + " ");
+				at++;
+			}
+
+			if(colid <= 31)
+				buff_sets.append("\n");
+			else
+				buff_title.append("\n");
+			
+			// increment the column id
+			colid++;
+		}
+		
+		buff_sets.append("\n;\n\n");
+
+		if(colid > 31)
+			buff_title.append("\n;");
+
+		// go!
+		if(delay != null)
+			delay.begin();		
+
+		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
+
+		writer.println("nstates dna;");
+		writer.println("xread\n'Exported by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + ".");
+		if(buff_title.length() > 0) {
+			writer.println("Additional taxonsets and character sets will be placed below this line.");
+			writer.println(buff_title.toString());
+			writer.println("Additional taxonsets and character sets end here.");
+		}
+		writer.println("'");
+		writer.println(grid.getCompleteSequenceLength() + " " + grid.getSequencesCount());
+
+		Iterator i_rows = grid.getSequences().iterator();
+		int count_rows = 0;
+		while(i_rows.hasNext()) {
+			if(delay != null)
+				delay.delay(count_rows, grid.getSequencesCount());
+
+			count_rows++;
+
+			String seqName = (String) i_rows.next();
+			Sequence seq_interleaved = null;
+			int length = 0;
+
+			writer.print(getTNTName(seqName, MAX_TAXON_LENGTH) + " ");
+
+			Iterator i_cols = cols.iterator();
+			while(i_cols.hasNext()) {
+				String colName = (String) i_cols.next();
+				Sequence seq = grid.getSequence(colName, seqName); 
+				
+				if(seq == null)
+					seq = Sequence.makeEmptySequence(colName, grid.getColumnLength(colName));
+
+				length += seq.getLength();
+
+				writer.print(seq.getSequence());
+			}
+
+			writer.println();
+		}
+
+		writer.println(";\n");
+		
+		writer.println(buff_sets);
+		//writer.println(buff_taxonsets);
+
+		writer.flush();
+		writer.close();
+
+		// shut down delay 
+		if(delay != null)
+			delay.end();
+	}	
 }
 

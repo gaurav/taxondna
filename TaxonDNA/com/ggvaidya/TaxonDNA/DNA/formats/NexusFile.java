@@ -1082,12 +1082,12 @@ public class NexusFile extends BaseFormatHandler {
 			delay.begin();
 		
 		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
+		buff_sets.append("BEGIN SETS;\n");
 
 		// let's get this party started, etc.
 		// we begin by obtaining the Taxonsets (if any).
 		/* NO TAXONSETS AS YET WE'LL IMPLEMENT THIS LATER WHEN WE FEEL LIKE IT 
 		Taxonsets tx = matrix.getTaxonsets(); 
-		buff_sets.append("BEGIN SETS;\n");
 		if(tx.getTaxonsetList() != null) {
 			Vector v = tx.getTaxonsetList();
 			Iterator i = v.iterator();
@@ -1237,7 +1237,7 @@ public class NexusFile extends BaseFormatHandler {
 				}
 
 				if(how == EXPORT_AS_INTERLEAVED)
-					seq_interleaved.changeName(seqName);
+					seq_interleaved.changeName(getNexusName(seqName, MAX_TAXON_LENGTH));
 
 				if(how == EXPORT_AS_SINGLE_LINE)
 					writer.println(" [" + length + " bp]");
