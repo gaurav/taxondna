@@ -324,7 +324,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 			// TODO: Make this faster, if I ever get the time to.
 			SequenceList list = seqId.lockSequenceList();
-			list.resort(SequenceList.SORT_BY_NAME);
+			list.resort(SequenceList.SORT_BYNAME);
 			Sequence seq = null;
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
