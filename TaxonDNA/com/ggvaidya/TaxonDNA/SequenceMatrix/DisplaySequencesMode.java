@@ -6,7 +6,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,12 +51,15 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	// Currently selected CheckboxMenuItem
 	private CheckboxMenuItem 	last_chmi = null;
 	private CheckboxMenuItem	chmi_name = null;
+	private CheckboxMenuItem	chmi_name_gi = null;
 	private CheckboxMenuItem	chmi_species = null;
 	private CheckboxMenuItem	chmi_charsets = null;
 	private CheckboxMenuItem	chmi_length = null;
 
 	private Comparator 		currentComparator = new SortByName();
 	private String			sortBy = "name";
+
+	private boolean			display_gi_noes = false;
 
 //
 // INNER CLASSES
@@ -258,6 +261,15 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 
 		if(seq == null)
 			return "(N/A)";	
+		
+		// if GI is on, display GI!
+		if(display_gi_noes) {
+			String gi = seq.getGI();
+			if(gi != null)
+				return "GI:" + gi;
+			else
+				return "GI:unknown";
+		}
 
 		int internalGaps = seq.countInternalGaps();
 		int n_chars = seq.countBases('N');
@@ -307,6 +319,9 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 			chmi_name = new CheckboxMenuItem("Sort by name");
 			chmi_name.addItemListener(this);
 
+			chmi_name_gi = new CheckboxMenuItem("Sort by name, but display GI numbers");
+			chmi_name_gi.addItemListener(this);
+
 			chmi_species = new CheckboxMenuItem("Sort by species epithet");
 			chmi_species.addItemListener(this);
 
@@ -318,6 +333,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		}
 
 		m.add(chmi_name);
+		m.add(chmi_name_gi);
 		m.add(chmi_species);
 		m.add(chmi_charsets);
 		m.add(chmi_length);
@@ -345,6 +361,12 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		// just in case
 		currentComparator = new SortByName();
 		sortBy = "name";
+		display_gi_noes = false;
+		if(chmi.equals(chmi_name_gi)) {
+			// okay, we keep the default
+			// but turn on display_gi_noes
+			display_gi_noes = true;
+		}
 		if(chmi.equals(chmi_species)) {
 			currentComparator = new SortBySecondName();
 			sortBy = "species epithet";
