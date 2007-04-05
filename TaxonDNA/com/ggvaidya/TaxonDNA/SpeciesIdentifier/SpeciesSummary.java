@@ -72,6 +72,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		add(top, BorderLayout.NORTH);
 
 		list_species.addItemListener(this);
+		list_species.addActionListener(this);
 		add(list_species);
 
 		Panel buttons = new Panel();
@@ -314,6 +315,30 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 						);
 				mb.go();
 			}
+		}
+
+		if(e.getSource().equals(list_species)) {
+			String seqName = (String) vec_Species.get(list_species.getSelectedIndex());
+			if(seqName == null)
+				return;
+
+			// TODO: Make this faster, if I ever get the time to.
+			SequenceList list = seqId.lockSequenceList();
+			list.resort(SequenceList.SORT_BY_NAME);
+			Sequence seq = null;
+			Iterator i = list.iterator();
+			while(i.hasNext()) {
+				Sequence seq_x = (Sequence) i.next();	
+
+				if(seq_x.getSpeciesName().equals(seqName)) {
+					seq = seq_x;
+					break;
+				}
+			}
+
+			if(seq != null)
+				seqId.getSequencePanel().selectSequence(seq);
+			seqId.unlockSequenceList();
 		}
 	}
 
