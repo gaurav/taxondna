@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -244,6 +244,31 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			// do something;
 		}
 		*/
+
+		//
+		// Import -> *
+		//
+		if((cmd.length() > 7) && (cmd.substring(0, 7).equals("Import_"))) {
+			int index = Integer.parseInt(cmd.substring(7));
+			FormatHandler handler = (FormatHandler) SequenceList.getFormatHandlers().get(index);
+
+			FileDialog fd = new FileDialog(
+					getFrame(),
+					"Choose filename to import as " + handler.getShortName(),
+					FileDialog.LOAD);
+
+			fd.setVisible(true);
+
+			if(fd.getFile() != null) {
+				String filename = fd.getFile();
+
+				if(fd.getDirectory() != null) {
+					filename = fd.getDirectory() + filename;
+				}
+				fileManager.addFile(new File(filename), handler);
+			}
+		}
+
 
 		// Export -> Export table as tab delimited.
 		if(cmd.equals("Export table as tab-delimited"))
@@ -496,9 +521,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Creates and returns the main menubar.
 	 */
 	private MenuBar createMenuBar() {
-		Iterator i;
 		MenuBar menubar 	=	new MenuBar();
-		int count = 0;
 
 		// File menu
 		Menu 	file		=	new Menu("File");
@@ -542,6 +565,23 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		analyses.addActionListener(this);
 		menubar.add(analyses);
+
+		// Import menu
+		Menu	imports		= 	new Menu("Import");
+
+   		Iterator i = SequenceList.getFormatHandlers().iterator();
+		int count = 0;
+		while(i.hasNext()) {
+			FormatHandler handler = (FormatHandler) i.next();
+			MenuItem menuItem = new MenuItem(handler.getShortName() + ": " + handler.getFullName());
+			menuItem.setActionCommand("Import_" + count);
+			menuItem.addActionListener(this);
+			imports.add(menuItem);
+			count++;
+		}
+		
+		imports.addActionListener(this);
+		menubar.add(imports);
 
 		// Export menu
 		Menu	export 		= 	new Menu("Export");
