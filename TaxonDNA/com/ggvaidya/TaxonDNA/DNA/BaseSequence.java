@@ -222,10 +222,13 @@ public class BaseSequence extends Sequence {
 						final_char = ']';
 
 					// convert brackets to the Real Thing
-					output.append('[');
+					if(writing) output.append('[');
 	
-					while(x != final_char) {
+					while(x != ']') {
 						x = r.read();
+
+						if(x == final_char)
+							x = ']';
 
 						if(x == -1)
 							throw new java.io.EOFException();
