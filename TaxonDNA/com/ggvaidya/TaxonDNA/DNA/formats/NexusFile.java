@@ -910,8 +910,18 @@ public class NexusFile extends BaseFormatHandler {
 							// The following is standard 'TaxonDNA' speak.
 							// It's just how we do things around here.
 							// So we can hard code this.
+		String dataType = "DNA";
+		Iterator i_seqs = set.iterator();
+		while(i_seqs.hasNext()) {
+			Sequence seq = (Sequence) i_seqs.next();
+
+			if(seq.getClass().isAssignableFrom(BaseSequence.class)) {
+				dataType = "STANDARD";		
+				break;			// even one is good enough
+			}
+		}
 		
-		writer.print("\tFORMAT DATATYPE=DNA MISSING=? GAP=- ");
+		writer.print("\tFORMAT DATATYPE=" + dataType + " MISSING=? GAP=- ");
 		if(set.getMaxLength() > interleaveAt) {
 			interleaved = true;
 			writer.print("\tINTERLEAVE");
