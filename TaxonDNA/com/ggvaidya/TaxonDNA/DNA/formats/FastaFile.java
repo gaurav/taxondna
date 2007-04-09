@@ -299,7 +299,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 			seq = seq.replace('U', 'T').replace('u', 't');
 		}
 
-		return BaseSequence.createSequence(name, seq);		
+		return BaseSequence.createSequence(name, seq.replaceAll("\\s+", ""));	// delete whitespace characters from the sequence before adding.
 	}
 
 	/**
