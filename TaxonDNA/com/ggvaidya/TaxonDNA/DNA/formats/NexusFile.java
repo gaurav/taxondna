@@ -921,6 +921,13 @@ public class NexusFile extends BaseFormatHandler {
 			}
 		}
 		
+		// We need fixups in here (i.e. TODO)
+		// Most importantly, we need to convert Sequences 'segments' to [ACTG], etc.
+		// While BaseSequences can remain in whatever form the raw data is.
+		// This seems to be pretty complicated, and I'm far too sleepy today
+		// to work on this. But I'm not committing this comment in until I know
+		// what to do.
+		// 
 		writer.print("\tFORMAT DATATYPE=" + dataType + " MISSING=? GAP=- ");
 		if(set.getMaxLength() > interleaveAt) {
 			interleaved = true;
