@@ -541,6 +541,11 @@ public class NexusFile extends BaseFormatHandler {
 					}
 
 					if(str.equalsIgnoreCase("MATRIX")) {
+						if(gapChar == missingChar) {
+							missingChar = 0;	// ha! find *this* character!
+							delay.addWarning("This Nexus file defines BOTH the gap character and the missing character as '" + gapChar + "'. I will use this as the gap character only; no missing data will be recognized for this dataset.");
+						}
+							
 						tok.reportNewlines(true);
 						inMatrix = true;
 					}
