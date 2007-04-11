@@ -69,7 +69,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private Exporter	exporter		= new Exporter(this);	// and the actual exports go thru exporter
 	
 	// managers
-	private FileManager	fileManager		= new FileManager(this); // file manager: handles files coming in
+	private FileManager	fileManager		= new FileManager(this); // file manager: handles files coming in and outgoing
 	private TableManager	tableManager		= null;			// the table manager handles mid-level UI
 	
 	// additional functionality
@@ -78,6 +78,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// analyses
 	private FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
+	// CheckboxMenuItems corresponding to the possible 'views' the program can be in.
+	private CheckboxMenuItem chmi_displaySequences	= null;
+	private CheckboxMenuItem chmi_displayDistances 	= null;
+	private CheckboxMenuItem chmi_displayCorrelations = null;
+	
 	private JToolBar	toolBar			= null;
 	private JPanel		statusBar		= null;
 
@@ -308,7 +313,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.equals("About SequenceMatrix")) {
 			String copyrightNotice = new String(
 					"You may cite this program as follows:\n\t" + getCitation() + "\n---\n" +
-					getName() + ", Copyright (C) 2006 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+					getName() + ", Copyright (C) 2006-07 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
 					
 			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
@@ -420,36 +425,40 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// using sort by, you really should have returned
 		// by this point.
 		//
+		String label = chmi.getLabel();
+		if(label.equals("As sequences"))
+			switchView(TableManager.DISPLAY_SEQUENCES);
+
+		if(label.equals("As pairwise distances"))
+			switchView(TableManager.DISPLAY_DISTANCES);
+
+		if(label.equals("As correlations"))
+			switchView(TableManager.DISPLAY_CORRELATIONS);
+	}
+
+	public void switchView(int mode) {
 		if(last_chmi != null)
 			last_chmi.setState(false);
 
-		String label = chmi.getLabel();
-		if(label.equals("As sequences"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_SEQUENCES);
+		tableManager.changeDisplayMode(mode);
+			
+		switch(mode) {
+			default:
+			case TableManager.DISPLAY_SEQUENCES:
+				chmi_displaySequences.setState(true);	
+				last_chmi = chmi_displaySequences;
+				break;
 
-		if(label.equals("As pairwise distances"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+			case TableManager.DISPLAY_DISTANCES:
+				chmi_displayDistances.setState(true);
+				last_chmi = chmi_displayDistances;
+				break;
 
-		if(label.equals("As correlations"))
-			tableManager.changeDisplayMode(TableManager.DISPLAY_CORRELATIONS);
-
-		/*
-		String label = chmi.getLabel();
-		if(label.equals("By name"))
-			tableManager.resort(DataStore.SORT_BYNAME);
-
-		if(label.equals("By species epithet"))
-			tableManager.resort(DataStore.SORT_BYSECONDNAME);
-		
-		if(label.equals("By number of character sets"))
-			tableManager.resort(DataStore.SORT_BYCHARSETS);
-
-		if(label.equals("By total length"))
-			tableManager.resort(DataStore.SORT_BYTOTALLENGTH);
-		*/
-
-		chmi.setState(true);
-		last_chmi = chmi;
+			case TableManager.DISPLAY_CORRELATIONS:
+				chmi_displayCorrelations.setState(true);
+				last_chmi = chmi_displayCorrelations;
+				break;
+		}
 	}
 
 //
@@ -543,6 +552,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// New view menu
 		CheckboxMenuItem chmi = new CheckboxMenuItem("As sequences", true);
+		chmi_displaySequences = chmi;
 		chmi.addItemListener(this);
 		view.add(chmi);
 		last_chmi = chmi;
@@ -556,10 +566,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		analyses.add(new MenuItem("Find all zero percent distances"));
 
 		chmi = new CheckboxMenuItem("As pairwise distances", false);
+		chmi_displayDistances = chmi;
 		chmi.addItemListener(this);
 		analyses.add(chmi);
 
 		chmi = new CheckboxMenuItem("As correlations", false);
+		chmi_displayCorrelations = chmi;
 		chmi.addItemListener(this);
 		analyses.add(chmi);
 

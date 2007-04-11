@@ -101,7 +101,7 @@ public class Exporter implements SequencesHandler {
 		if(delay != null)
 			delay.begin();
 
-		Vector vec_sequences = new Vector( (Collection) tm.getSequences());
+		Vector vec_sequences = new Vector( (Collection) tm.getSequenceNames());
 		int count_columns = tm.getCharsets().size();
 		Iterator i = tm.getCharsets().iterator();
 
@@ -271,7 +271,7 @@ public class Exporter implements SequencesHandler {
 		StringBuffer buff = new StringBuffer();
 		TableManager tm = matrix.getTableManager();
 		List columns = tm.getCharsets();
-		List sequences = tm.getSequences();
+		List sequences = tm.getSequenceNames();
 
 		// 1. Figure out what is being talked about here
 		if(name.startsWith(Taxonsets.prefix_Length)) {
@@ -354,7 +354,7 @@ public class Exporter implements SequencesHandler {
 		writer.println();
 
 		List colNames = tm.getCharsets();
-		List seqNames = tm.getSequences();
+		List seqNames = tm.getSequenceNames();
 
 		Iterator i_cols = colNames.iterator();
 		while(i_cols.hasNext()) {
@@ -582,7 +582,7 @@ public class Exporter implements SequencesHandler {
 				writer.println("[beginning " + fixColumnName(colName) + "]");
 
 				// then loop over all the sequences
-				Iterator i_seqs = tm.getSequences().iterator();
+				Iterator i_seqs = tm.getSequenceNames().iterator();
 				while(i_seqs.hasNext()) {
 					String seqName = (String) i_seqs.next();
 					Sequence seq = tm.getSequence(colName, seqName); 
@@ -600,11 +600,12 @@ public class Exporter implements SequencesHandler {
 		} else if(how == Preferences.PREF_NEXUS_SINGLE_LINE || how == Preferences.PREF_NEXUS_INTERLEAVED) {
 			// loop over sequence names
 
-			Iterator i_rows = tm.getSequences().iterator();
+			Iterator i_rows = tm.getSequenceNames().iterator();
 			countThisLoop = 0;
 			while(i_rows.hasNext()) {
 				if(delay != null)
-					delay.delay(countThisLoop, tm.getSequences().size());
+					delay.delay(countThisLoop, tm.getSequenceNames().size());
+				
 				countThisLoop++;
 
 				String seqName = (String) i_rows.next();
@@ -798,7 +799,7 @@ public class Exporter implements SequencesHandler {
 		writer.println("'");
 		writer.println(tm.getSequenceLength() + " " + tm.getSequencesCount());
 
-		Iterator i_rows = tm.getSequences().iterator();
+		Iterator i_rows = tm.getSequenceNames().iterator();
 		int count_rows = 0;
 		while(i_rows.hasNext()) {
 			if(delay != null)

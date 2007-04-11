@@ -18,7 +18,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -127,6 +127,10 @@ public class TableManager implements ActionListener {
 // 1.	GETTERS. Returns the state or instance variable of the table
 // 	at the moment.
 //
+/**
+  	Return the current reference sequence. If the user has not explicitly set a reference sequence,
+	we will return null.
+*/
 	public String getReferenceSequence() {
 		return referenceTaxon;
 	}
@@ -350,7 +354,7 @@ public class TableManager implements ActionListener {
 		return (java.util.List) sortedCharsets;
 	}
 
-	public java.util.List getSequences() {
+	public java.util.List getSequenceNames() {
 	       return (java.util.List) sortedSequences;
 	}
 
@@ -699,7 +703,7 @@ public class TableManager implements ActionListener {
 		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
 			String colName = cmd.substring(7);
 
-			changeDisplayMode(TableManager.DISPLAY_DISTANCES, colName);
+			matrix.switchView(TableManager.DISPLAY_DISTANCES);
 		}
 
 		// Delete a particular row

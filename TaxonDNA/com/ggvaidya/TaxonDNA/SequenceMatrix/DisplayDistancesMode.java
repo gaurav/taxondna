@@ -8,7 +8,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,8 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DisplayDistancesMode extends DisplayMode { 
-	public static final int	SELECTED_COLUMN		=	3;		// change this if the no of additionalColumns increase!
+	// change this if the no of additionalColumns increase!
+	public static final int	FIRST_COLUMN_CONTAINING_CHARSET	=	3;		
 	private String		selected_colName	=	null;		// the colName who is leftmost
 
 	private double		distances[][]		=	null;
@@ -66,39 +67,51 @@ public class DisplayDistancesMode extends DisplayMode {
 	private List		scores			=	null;
 
 	private class Score implements Comparable {
-			private String seqName_top = "";
-			private String seqName = "";
-			private double pairwise = 0.0;
-			private int constant = +1;
+		private String seqName_top = "";
+		private String seqName = "";
+		private double pairwise = 0.0;
+		private int constant = +1;
 
-			public Score(String seqName, double pairwise) {
-				this.seqName = seqName;
-				this.pairwise = pairwise;
+		public Score(String seqName, double pairwise) {
+			this.seqName = seqName;
+			this.pairwise = pairwise;
 
-				seqName_top = tableManager.getReferenceSequence();
+			seqName_top = tableManager.getReferenceSequence();
+			if(seqName_top == null) {
+				List l = tableManager.getSequenceNames();
+				if(l == null || l.size() == 0)
+					throw new RuntimeException("Can't sort relative to a non-existant sequence!");
+				seqName_top = (String) l.get(0);
 			}
+		}
 			
-			public Score(String seqName, double pairwise, int constant) {
-				this(seqName, pairwise);
-				this.constant = constant;
-			}
+		public Score(String seqName, double pairwise, int constant) {
+			this(seqName, pairwise);
+			this.constant = constant;
+		}
 
-			private String getName()	{	return seqName;		}
-			private double getPairwise() 	{	return pairwise;	}
+		private String getName()	{	return seqName;		}
+		private double getPairwise() 	{	return pairwise;	}
+		private String getSeqNameTop()	{	return seqName_top;	}
 
-			public int compareTo(Object o) {
-				Score s = (Score) o;
+		/** Compare this Score to another Score (with a common seqName_top); the smaller pairwise distance goes on top. */
+		public int compareTo(Object o) {
+			Score s = (Score) o;
 
-				if(getName().equals(seqName_top))
-					return -1;
+			// just a check
+			if(!s.getSeqNameTop().equals(getSeqNameTop()))
+				throw new RuntimeException("Two sequences without identical reference sequences being compared in DisplayDistancesMode.Score!");
 
-				if(s.getName().equals(seqName_top))
-					return +1;
+			if(getName().equals(seqName_top))
+				return -1;
 
-				return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
-			}
-		};
+			if(s.getName().equals(seqName_top))
+				return +1;
+
+			return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
+				- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
+		}
+	};
 
 //
 // 1.	CONSTRUCTOR
@@ -110,7 +123,10 @@ public class DisplayDistancesMode extends DisplayMode {
 	 */
 	public DisplayDistancesMode(TableManager tm) {
 		tableManager = tm;
-		additionalColumns = 3;	// Sequence name, total length, and # of charsets
+		additionalColumns = FIRST_COLUMN_CONTAINING_CHARSET;
+		// Sequence name, total length, and # of charsets
+		// we NEED to set this, because DisplayMode needs it. At any rate, it
+		// can't do any harm.
 	}
 
 //
@@ -125,7 +141,6 @@ public class DisplayDistancesMode extends DisplayMode {
 
 		static_oldRenderer = table.getDefaultRenderer(String.class);
 		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
-
 	}
 
 	public void deactivateDisplay() {
@@ -163,6 +178,12 @@ public class DisplayDistancesMode extends DisplayMode {
 	}
 
 	public List getSortedSequences(Set sequences) {
+		// step 0: is there anything to sort?
+		if(sequences.size() == 0) {
+			sortedSequences = new LinkedList();
+			return sortedSequences;
+		}
+
 		// step 1: copy whichever sequence we've been told to put on top
 		String seqName_top = tableManager.getReferenceSequence();
 
@@ -172,6 +193,7 @@ public class DisplayDistancesMode extends DisplayMode {
 		if(seqName_top == null) {
 			if(sequencesList.size() > 0)
 				seqName_top = (String) sequencesList.get(0);	
+				tableManager.setReferenceSequence(seqName_top);	// what could go wrong?
 		}
 
 		if(columnList == null || selected_colName == null || seqName_top == null) {
@@ -364,7 +386,7 @@ public class DisplayDistancesMode extends DisplayMode {
 			return tableManager.getCharsetsCount(seqName) + "";
 
 		// okay, it's an actual 'sequence'
-		int col = columnIndex - additionalColumns;
+		int col = columnIndex - FIRST_COLUMN_CONTAINING_CHARSET;
 		int row = rowIndex;
 
 		int ndist = (int) Math.round(norm_distances[col][row] * 100);
@@ -617,12 +639,12 @@ class PDMColorRenderer extends DefaultTableCellRenderer
 	comp.setForeground(Color.BLACK);
 	comp.setBackground(Color.WHITE);
 
-	if(row < 0 || col < DisplayDistancesMode.SELECTED_COLUMN) {
+	if(row < 0 || col < DisplayDistancesMode.FIRST_COLUMN_CONTAINING_CHARSET) {
 		return comp;
 	}
 
 	Color basicColor = Color.BLACK;
-	if(col == DisplayDistancesMode.SELECTED_COLUMN)
+	if(col == DisplayDistancesMode.FIRST_COLUMN_CONTAINING_CHARSET)
 		basicColor = Color.RED;
 	
 	String val = (String) value;
