@@ -776,6 +776,17 @@ public class FileManager implements FormatListener {
 		TextField tf_rands = new TextField();
 		rl.add(tf_rands, RightLayout.BESIDE);
 		// TODO: save and retrieve number of randomizations
+
+		rl.add(new Label("Number of taxa to remove from each group: "), RightLayout.NEXTLINE);
+		Choice choice_random_taxa = new Choice();	
+		int taxaCount = matrix.getTableManager().getSequenceNames().size();	// this sort of statement should not be allowed
+		for(int x = 1; x <= taxaCount; x++)
+			choice_random_taxa.add("" + x);
+
+		if(taxaCount == 0)
+			choice_random_taxa.add("No taxons present!");
+
+		rl.add(choice_random_taxa, RightLayout.BESIDE);
 		
 		// Okay, done, back to your regularly scheduled programming
 		
@@ -789,6 +800,7 @@ public class FileManager implements FormatListener {
 		else 
 			check_writeNASequences.setState(true);
 		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0)));
+		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0)));
 
 		dg.pack();
 		dg.setVisible(true);
@@ -798,6 +810,7 @@ public class FileManager implements FormatListener {
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_fileName", dinp.getFile().getAbsolutePath());
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choicePerGroup", choice_per_group.getSelectedIndex() + 1);
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", choice_random_taxa.getSelectedIndex() + 1);
 
 			int rands = 0;
 			try {
@@ -811,6 +824,7 @@ public class FileManager implements FormatListener {
 				matrix.getExporter().exportColumnsInGroups(
 					rands,
 					choice_per_group.getSelectedIndex() + 1,
+					choice_random_taxa.getSelectedIndex() + 1,
 					dinp.getFile(), 
 					(FormatHandler) fhs.get(choice_formats.getSelectedIndex()), 
 					check_writeNASequences.getState(),

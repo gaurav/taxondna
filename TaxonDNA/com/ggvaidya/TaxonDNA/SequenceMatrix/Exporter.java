@@ -166,7 +166,7 @@ public class Exporter implements SequencesHandler {
 		return name.replace(' ', '_').replace('.', '_');
 	}
 
-	public void exportColumnsInGroups(int total_randomizations, int per_group, File f_directory_to_export_to, FormatHandler handler, boolean bool_includeNAs, DelayCallback delay) throws DelayAbortedException, IOException {
+	public void exportColumnsInGroups(int total_randomizations, int per_group, int taxa_to_randomly_delete, File f_directory_to_export_to, FormatHandler handler, boolean bool_includeNAs, DelayCallback delay) throws DelayAbortedException, IOException {
 		//new MessageBox(matrix.getFrame(), "Dude", "Okay, check this out: " + total_randomizations + ", " + per_group).go();
 		
 		// Step 1: Get stuff ready
@@ -235,6 +235,16 @@ public class Exporter implements SequencesHandler {
 				while(i.hasNext()) {
 					String colName = (String) i.next();
 					sg.addColumnFromDataStore(tm.getDataStore(), colName, bool_includeNAs);	// add this column to the SequenceGrid.
+				}
+
+				// now, remove 'taxa_to_randomly_delete' taxa from this DataStore.
+				// DO YOU HAVE ANY IDEA HOW FRIGGIN EASY THIS IS AFTER THE LAST
+				// PUSHAROUND?!?!
+				Vector v = new Vector(sg.getSequences());
+				for(int x = 0; x < taxa_to_randomly_delete; x++) {
+					int index = rand.nextInt(v.size());
+					String seqName = (String) v.get(index);
+					sg.deleteRow(seqName);
 				}
 				
 				// we now have a DataStore we'd like to Write Out.
