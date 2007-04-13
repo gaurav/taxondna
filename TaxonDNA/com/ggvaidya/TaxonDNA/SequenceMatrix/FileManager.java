@@ -775,7 +775,6 @@ public class FileManager implements FormatListener {
 		rl.add(new Label("Number of randomizations to perform: "), RightLayout.NEXTLINE);
 		TextField tf_rands = new TextField();
 		rl.add(tf_rands, RightLayout.BESIDE);
-		// TODO: save and retrieve number of randomizations
 
 		rl.add(new Label("Number of taxa to remove from each group: "), RightLayout.NEXTLINE);
 		Choice choice_random_taxa = new Choice();	
@@ -787,6 +786,17 @@ public class FileManager implements FormatListener {
 			choice_random_taxa.add("No taxons present!");
 
 		rl.add(choice_random_taxa, RightLayout.BESIDE);
+
+		rl.add(new Label("Taxon to never delete (i.e. reference taxon): "), RightLayout.NEXTLINE);
+		Choice choice_ref_taxon = new Choice();	
+		choice_ref_taxon.add("None");
+		java.util.List list_seqNames = matrix.getTableManager().getSequenceNames();
+		i = list_seqNames.iterator();	
+		while(i.hasNext()) {
+			String seqName = (String) i.next();
+			choice_ref_taxon.add(seqName);
+		}
+		rl.add(choice_ref_taxon, RightLayout.BESIDE);
 		
 		// Okay, done, back to your regularly scheduled programming
 		
@@ -799,8 +809,15 @@ public class FileManager implements FormatListener {
 			check_writeNASequences.setState(false);
 		else 
 			check_writeNASequences.setState(true);
+		tf_rands.setText(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_noOfRands", "10"));
 		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0)));
-		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0)));
+		choice_random_taxa.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0)));
+		int index_sel = list_seqNames.indexOf(	
+					matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRefTaxon", "None")
+				);
+				
+		if(index_sel > 0)
+			choice_ref_taxon.select(index_sel + 1);
 
 		dg.pack();
 		dg.setVisible(true);
@@ -811,6 +828,7 @@ public class FileManager implements FormatListener {
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choicePerGroup", choice_per_group.getSelectedIndex() + 1);
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", choice_random_taxa.getSelectedIndex() + 1);
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choiceRefTaxon", choice_ref_taxon.getSelectedItem());
 
 			int rands = 0;
 			try {
@@ -818,6 +836,12 @@ public class FileManager implements FormatListener {
 			} catch(NumberFormatException e) {
 				rands = 10;	
 			}
+			
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_noOfRands", String.valueOf(rands));
+
+			String ref_taxon = choice_ref_taxon.getSelectedItem();
+			if(ref_taxon.equals("None"))
+				ref_taxon = null;
 
 			// phew ... go!
 			try {
@@ -826,6 +850,7 @@ public class FileManager implements FormatListener {
 					choice_per_group.getSelectedIndex() + 1,
 					choice_random_taxa.getSelectedIndex() + 1,
 					dinp.getFile(), 
+					ref_taxon,	
 					(FormatHandler) fhs.get(choice_formats.getSelectedIndex()), 
 					check_writeNASequences.getState(),
 					new ProgressDialog(

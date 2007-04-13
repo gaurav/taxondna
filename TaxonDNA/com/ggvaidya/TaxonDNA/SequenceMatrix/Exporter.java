@@ -166,7 +166,7 @@ public class Exporter implements SequencesHandler {
 		return name.replace(' ', '_').replace('.', '_');
 	}
 
-	public void exportColumnsInGroups(int total_randomizations, int per_group, int taxa_to_randomly_delete, File f_directory_to_export_to, FormatHandler handler, boolean bool_includeNAs, DelayCallback delay) throws DelayAbortedException, IOException {
+	public void exportColumnsInGroups(int total_randomizations, int per_group, int taxa_to_randomly_delete, File f_directory_to_export_to, String taxonToNeverDelete, FormatHandler handler, boolean bool_includeNAs, DelayCallback delay) throws DelayAbortedException, IOException {
 		//new MessageBox(matrix.getFrame(), "Dude", "Okay, check this out: " + total_randomizations + ", " + per_group).go();
 		
 		// Step 1: Get stuff ready
@@ -241,11 +241,16 @@ public class Exporter implements SequencesHandler {
 				// DO YOU HAVE ANY IDEA HOW FRIGGIN EASY THIS IS AFTER THE LAST
 				// PUSHAROUND?!?!
 				Vector v = new Vector(sg.getSequences());
-				for(int x = 0; x < taxa_to_randomly_delete; x++) {
-					int index = rand.nextInt(v.size());
-					String seqName = (String) v.get(index);
-					sg.deleteRow(seqName);
-				}
+				if(taxonToNeverDelete != null && taxonToNeverDelete.length() > 0)
+					v.remove(taxonToNeverDelete);
+
+				if(v.size() != 0)
+					for(int x = 0; x < taxa_to_randomly_delete; x++) {
+						int index = rand.nextInt(v.size());
+						String seqName = (String) v.get(index);
+						sg.deleteRow(seqName);
+						v.remove(seqName);
+					}
 				
 				// we now have a DataStore we'd like to Write Out.
 				// the easiest way to do that: rewrite the Nexus and TNT
