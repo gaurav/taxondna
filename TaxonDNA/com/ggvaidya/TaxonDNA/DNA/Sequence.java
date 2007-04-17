@@ -173,6 +173,19 @@ public class Sequence  implements Comparable, Testable {
 	}	
 
 	/**
+	 * 'Clone' constructor. We replicate a given Sequence, creating another identical
+	 * sequence WITH A DIFFERENT UUID (duh) in the process.
+	 */
+	public Sequence(Sequence seq) {
+		try {
+			changeName(seq.getFullName());
+			changeSequence(seq.getSequence());
+		} catch(SequenceException e) {
+			throw new RuntimeException("Can't 'clone' sequence seq: " + e.getMessage());
+		}
+	}
+
+	/**
 	 * Creates a sequence consisting entirely of 'missing'.
 	 */
 	public static Sequence makeEmptySequence(String name, int size) {
