@@ -42,7 +42,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DataStore {
+public class DataStore extends SequenceGrid {
 	// Defines: should we ignore differently sized sequences in the same sequence list?
 	// Note that exports will be severelly retarded!
 	//
