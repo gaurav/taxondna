@@ -754,6 +754,10 @@ public class TableManager implements ActionListener {
 	public DataStore getDataStore() {
 		return dataStore;
 	}
+
+	public Frame getFrame() {
+		return matrix.getFrame();
+	}
 }
 
 /**
@@ -910,5 +914,4 @@ class ToolbarManager implements ActionListener {
 	public String getCurrentSequence() {
 		return currentSeqName;
 	}
-
 }
