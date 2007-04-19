@@ -334,7 +334,7 @@ public class NexusTokenizer {
 			lastResult = eatNextToken();
 		}
 		
-		System.err.println(lastResult);
+		//System.err.println(lastResult);
 
 		// now we have a 'lastResult'.
 		// There are three kinds of lastResults
@@ -366,7 +366,7 @@ public class NexusTokenizer {
 
 	public void pushBack() {
 		lastResult = (Results) previousResults.pop();
-		System.err.println("Popping: " + lastResult);
+		//System.err.println("Popping: " + lastResult);
 	}
 
 	// Functions which need to work/we need to have:
