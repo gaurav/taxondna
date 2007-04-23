@@ -113,6 +113,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 */
 	public SequenceMatrix(Collection files) {
 		Sequence.setMinOverlap(1);	// even a single overlap is okay
+		Sequence.setPairwiseDistanceMethod(Sequence.PDM_TRANS_ONLY);
 		createUI();			// create our user interface
 
 		// now load up all the files
