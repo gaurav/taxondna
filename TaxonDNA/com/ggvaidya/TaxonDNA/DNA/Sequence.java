@@ -56,8 +56,9 @@ public class Sequence  implements Comparable, Testable {
 
 	public static final int	PDM_UNCORRECTED = 0;	// uncorrected pairwise distances
 	public static final int	PDM_K2P = 1;		// Kimura 2-parameter distances
+	public static final int PDM_TRANS_ONLY = 2;	// Transversion distances ONLY to be used
 	private static int	pairwiseDistanceMethod 	// Determines how we calculate the pairwise distances
-					= PDM_UNCORRECTED;		
+					= PDM_UNCORRECTED;
 							
 	private static int	minOverlap = 300;	// the minimum overlap necessary for comparison
 							// overlaps less than this will cause the pairwise()
@@ -1220,10 +1221,7 @@ public class Sequence  implements Comparable, Testable {
 	 * will return true here.
 	 */
 	public static boolean isPyrimidine(char ch) {
-		int code = getint(ch);
-		int pyramidine = getint('Y');	// Y = C+T
-
-		if((code & pyramidine) != 0)
+		if(ch == 'Y' || ch == 'T' || ch == 'C')
 			return true;
 		return false;
 	}
@@ -1235,10 +1233,7 @@ public class Sequence  implements Comparable, Testable {
 	 * will return true here.
 	 */
 	public static boolean isPurine(char ch) {
-		int code = getint(ch);
-		int purine = getint('R');	// R = A+G
-
-		if((code & purine) != 0)
+		if(ch == 'R' || ch == 'A' || ch == 'G')
 			return true;
 		return false;
 	}	
@@ -1382,6 +1377,42 @@ public class Sequence  implements Comparable, Testable {
 			char ch2 = compare[x];
 
 			if(identical(ch1, ch2)) {
+				count++;
+			}
+		}
+		
+		return count;
+	}
+
+	/**
+	 * Calculates the number of bases which have been 'transversioned'.
+	 * i.e. where a purine has become a pyrimidine, or vice versa.
+	 *
+	 * Note that this is a sensible assumption: since we don't
+	 * know what was beyond the last base of the smaller
+	 * sequence, we assume that it IS significant, but missing.
+	 * Since in this program, missing sequences and gaps are
+	 * scored is similar ways, this should not make *too* much
+	 * of a difference.
+	 */
+	public int countTransversions(Sequence seq2) {
+		char compare[] = seq2.getSequenceRaw().toCharArray();
+
+		// find the shorter length
+		int min = len;
+		if(compare.length < min)
+			min = compare.length;
+
+		// walk the string 
+		int count = 0;
+		for(int x = 0; x < min; x++) {
+			char ch1 = seq[x];
+			char ch2 = compare[x];
+
+			if(
+				(isPurine(ch1) && isPyrimidine(ch2)) ||
+				(isPurine(ch2) && isPyrimidine(ch1))
+			) {
 				count++;
 			}
 		}
@@ -1721,11 +1752,13 @@ public class Sequence  implements Comparable, Testable {
 	public double getPairwiseNoBuffer(Sequence seq2) {
 		int shared	=	getSharedLength(seq2);
 		double distance = 0;
-		
+
 		if(shared >= minOverlap) {
 			switch(pairwiseDistanceMethod) {
 				case PDM_K2P:
 					return getK2PDistance(seq2);
+				case PDM_TRANS_ONLY:
+					return ((double)countTransversions(seq2))/shared;
 				default:
 				case PDM_UNCORRECTED:
 					return 1.0 - ((double)countIdentical(seq2)/shared);

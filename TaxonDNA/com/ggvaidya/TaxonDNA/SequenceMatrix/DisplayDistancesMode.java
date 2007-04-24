@@ -37,6 +37,7 @@ import java.lang.reflect.*;	// Reflection
 
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Menu;
 import java.awt.event.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
@@ -570,6 +571,16 @@ public class DisplayDistancesMode extends DisplayMode {
 
 		return (total / (double)n);
 	}
+
+	/**
+ 	 * We, err, use our mode-specific menu to flip between pairwise distance types.
+	 * That makes sense, no? No?
+	 */
+	public Menu getDisplayModeMenu() {
+		Menu m = new Menu("Blech");
+
+		return m;
+	}	
 
 	/** For convenience */
 	public boolean identical(double x, double y) {

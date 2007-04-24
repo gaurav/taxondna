@@ -14,7 +14,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -54,7 +54,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayCorrelationsMode extends DisplayMode implements MouseListener { 
+public class DisplayCorrelationsMode extends DisplayMode implements MouseListener, Runnable { 
 	private String		seqName_top		=	null;	// the 'reference' sequence, the sequence ON_TOP
 
 	private double		distances[][]		=	null;	// the distances from the seq ON_TOP
@@ -79,12 +79,11 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 									// the reference sequence.
 
 	private class Score implements Comparable {
-			private String seqName_top = "";	// TODO: What the fudge is this here for?
+			private String seqName_top = "";	// the seqname named 'seqName_top' is floated to the top
 			private String name = "";
 			private double pairwise = 0.0;
 			private int constant = +1;		// a multiplier; set the constant to '-1'
 								// to sort in opposite-to-natural order
-
 		
 			/** 
 			 * Full on constructor; sets the constant as well as the name
@@ -268,6 +267,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 				}
 			}
 		}
+		System.err.println("Pass 1");
 
 		// pass 2: normalise this
 		norm_distances = new double[columnList.size()][sequencesList.size()];
@@ -280,6 +280,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 					norm_distances[x][y] = distances[x][y];	// save the <0's
 			}
 		}
+		
+		System.err.println("Pass 2");
 
 		// pass 3: now, we've got rationalised numbers
 		// we need to figure out the average of THESE, and use THIS to sort the
@@ -305,6 +307,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			scores.add(new Score(seqName, totalScore));
 		}
+		
+		System.err.println("Pass 3");
 
 		// sort out the sequence names ...
 		Collections.sort(scores);
@@ -314,6 +318,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		norm_distances = new double[columnList.size()][scores.size()];	// and writing over the old POINTER,
 										// NOT the old data. I hope.
 		distances = new double[columnList.size()][scores.size()];	// ditto (see above)
+		
+		System.err.println("Sort");
 
 		// ... and resort the distances[][] table.
 		Iterator i = scores.iterator();	
@@ -330,6 +336,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			seqIndex++;
 		}
+		
+		System.err.println("Resort");
 
 		old_distances = null;	// free the array	
 		old_norm_distances = null;
@@ -341,6 +349,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			sequencesList.add(seqName);
 		}
+		
+		System.err.println("Iterate");
 
 		// Now that we have a definite list, nicely synced up and
 		// everything, we can figure out the rank table!
@@ -363,6 +373,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 					ranks[x][y] = (int) Math.floor(distances[x][y]);
 			}
 		}
+		
+		System.err.println("Sync");
+
+		System.err.println("CDM:sorted");
+		//if(Math.random() > 0.999)
+		//	throw new RuntimeException("GO!");
 
 		sortedSequences = sequencesList;
 		return sortedSequences;
@@ -456,9 +472,14 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			String colName = getColumnName(col);
 			String rowName = getRowName(row);
 
-			tableManager.toggleCancelled(colName, rowName);
-			testCorrelation();
-			tableManager.selectSequence(colName, rowName);
+			// now, now, don't be STUPID.
+			Sequence seq = tableManager.getCancelledSequence(colName, rowName);
+
+			if(seq != null) {
+				tableManager.toggleCancelled(colName, rowName);
+				testCorrelation();
+				tableManager.selectSequence(colName, rowName);
+			}
 		}
 	}
 	
@@ -696,11 +717,14 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	public double getAverageR() {
 		int N = sortedColumns.size();
 
+		//System.err.println("avg_r begin");
 		if(N == 0 || distances == null)
 			return -2.0;		// don't try this unless you've got atleast one column
 
 		if(N == 1)
 			return -1.0;		// don't try this unless you've got atleast two columns
+
+		//System.err.println("avg_r middle");
 
 		double dist[][] = dist = (double[][]) distances.clone();
 		double R_iy[] = new double[N - 1];
@@ -721,6 +745,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 				n++;
 			}
 		}
+		
+		//System.err.println("avg_r end");
 
 		if(n == 0)
 			return -1;
@@ -729,6 +755,16 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	}
 
 	public void testCorrelation() {
+		Thread t = new Thread(this, "DisplayCorrelationsMode");
+		try {
+			t.start();
+			t.join();		// wait until run() finishes
+		} catch(InterruptedException e) {
+			System.err.println("Gotcha!: " + e);
+		}
+	}
+
+	public void run() {
 		// here's what we do ...
 		// 1. 	cancel every single sequence, one by one (note that this actually means
 		// 	we UNCANCEL sequences which are already cancelled, which does kinda sorta
@@ -739,6 +775,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 		// what's the initial R2?
 		double r2_initial = -1;
+
+		ProgressDialog delay = new ProgressDialog(
+				tableManager.getFrame(),
+				"Please wait, calculation correlations ...",
+				"Correlations between genes are being calculated. Sorry for the delay!");
+		delay.begin();
 
 		if(sortedSequences == null || sortedSequences.size() == 0)
 			return;				// can't do without sequences to test
@@ -770,6 +812,12 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			String seqName_z = (String) initialSequencesList.get(z);
 
 			override_reference_sequence = seqName_z;
+			System.err.println("Sorting z=" + seqName_z);
+			try {
+				delay.delay(z, initialSequencesList.size());
+			} catch(DelayAbortedException e) {
+				// ignore
+			}
 			getSortedSequences(sequencesSet);	// we don't need it, just the tables
 			//updateDisplay();
 		
@@ -850,6 +898,9 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 			ht_matches.put(gene, matches);
 		}
+
+		System.err.println("CDM:testCorrelation");
+		delay.end();
 		
 		//MessageBox mb = new MessageBox(
 		//		matrix.getFrame(),
