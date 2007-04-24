@@ -140,6 +140,7 @@ public class Sequence  implements Comparable, Testable {
 	 * really ought to be one of PDM_K2P or PDM_UNCORRECTED.
 	 */
 	public synchronized static void setPairwiseDistanceMethod(int pdwRequested) {
+		clearPairwiseCache();
 		pairwiseDistanceMethod = pdwRequested;
 	}
 
@@ -1465,6 +1466,9 @@ public class Sequence  implements Comparable, Testable {
 	 * Returns the length shared between this and another Sequence.
 	 * Basically, the length of the sequence, without counting
 	 * gaps and missing data.
+	 *
+	 * Rapidly becoming my least-liked function in TaxonDNA,
+	 * I might add.
 	 */
 	public int getSharedLength(Sequence seq2) {
 		char 		compare[] 	= seq2.getSequenceRaw().toCharArray();
@@ -1488,7 +1492,7 @@ public class Sequence  implements Comparable, Testable {
 				if(
 						(isInternalGap(ch1) && !isInternalGap(ch2) && isGap(ch2))
 						 ||
-						(!isInternalGap(ch1) && isInternalGap(ch2) && isGap(ch2))
+						(!isInternalGap(ch1) && isInternalGap(ch2) && isGap(ch1))
 				) {
 					// err, the next 'if' gets confused if only one of the
 					// sequences is an internal gap. If they are BOTH gaps,
@@ -1505,7 +1509,9 @@ public class Sequence  implements Comparable, Testable {
 				} else if(isInternalGap(ch1) || isInternalGap(ch2)) {
 					// internal gaps are counted, as they are "informative"
 					// *unless* we're K2P mode, in which case we ignore them
-					if(pairwiseDistanceMethod != PDM_K2P)
+					if(pairwiseDistanceMethod == PDM_K2P)
+						; // ignore
+					else
 						count++;
 				} else {
 					// all other gaps are ignored
@@ -1527,8 +1533,19 @@ public class Sequence  implements Comparable, Testable {
 					} else {
 						count++;
 					}
-				}
-				count++;
+				} else if(pairwiseDistanceMethod == PDM_TRANS_ONLY) {
+					// if it's NOT obviously a purine or a pyramidine,
+					// we should ignore it.
+					if(
+						(!isPurine(ch1) && !isPyrimidine(ch1)) ||
+						(!isPurine(ch2) && !isPyrimidine(ch2))
+					)
+						;		// ignore
+					else
+						count++;	// count
+
+				} else
+					count++;
 			}
 		}
 		
@@ -1643,15 +1660,21 @@ public class Sequence  implements Comparable, Testable {
 	 * cache to date and start over. It's a slowdown, but it'll help
 	 * avoid those nasty OutOfMemoryExceptions
 	 */
-	private void checkPairwiseCache() {
+	private static void checkPairwiseCache() {
 		Runtime runtime = Runtime.getRuntime();
 		long memoryTotal = runtime.maxMemory(); 
 		long memoryUsed = runtime.totalMemory() - runtime.freeMemory();
 
-		if(((double)memoryUsed/memoryTotal) > Settings.PairwiseCacheMemoryUsageLimit) {
-			pairwise_buffer = new Hashtable();
-			System.gc();
-		}
+		if(((double)memoryUsed/memoryTotal) > Settings.PairwiseCacheMemoryUsageLimit)
+			clearPairwiseCache();
+	}
+
+	/**
+	 * Clears the pairwise cache.
+	 */
+	public static void clearPairwiseCache() {
+		pairwise_buffer = new Hashtable();
+		System.gc();		
 	}
 	
 	/**
