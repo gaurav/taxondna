@@ -457,7 +457,10 @@ public class TableManager implements ActionListener {
 		// turn on the new menu!
 		Menu menu = currentDisplayMode.getDisplayModeMenu();
 		if(menu != null) {
-			// ugh
+			// we'd like to insert this menu somewhere specific.
+			// thankfully, the awt "protects" us from having to
+			// make decisions like that: we can only 'add' a
+			// Menu to a MenuBar.
 			matrix.getFrame().getMenuBar().add(menu);
 			last_displayModeMenu = menu;
 		}
