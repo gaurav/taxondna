@@ -38,6 +38,7 @@ import java.lang.reflect.*;	// Reflection
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Menu;
+import java.awt.CheckboxMenuItem;
 import java.awt.event.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
@@ -49,7 +50,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
-public class DisplayDistancesMode extends DisplayMode { 
+public class DisplayDistancesMode extends DisplayMode implements ItemListener { 
 	// change this if the no of additionalColumns increase!
 	public static final int	FIRST_COLUMN_CONTAINING_CHARSET	=	3;		
 	private String		selected_colName	=	null;		// the colName who is leftmost
@@ -64,6 +65,15 @@ public class DisplayDistancesMode extends DisplayMode {
 	public static double	DIST_NO_OVERLAP		=	-256.0;	
 	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
 	public static double 	DIST_CANCELLED		=	-2048.0;
+
+	private int		currentDistanceMethod	=	Sequence.PDM_TRANS_ONLY;
+	private int		oldOverlap		=	0;
+	private int		oldDistanceMode		=	Sequence.PDM_UNCORRECTED;
+
+	private CheckboxMenuItem chmi_uncorrected	=	new CheckboxMenuItem("Uncorrected pairwise distances");
+	private CheckboxMenuItem chmi_k2p		=	new CheckboxMenuItem("K2P distances");
+	private CheckboxMenuItem chmi_trans		=	new CheckboxMenuItem("Transversions only");
+	private CheckboxMenuItem chmi_last		=	chmi_trans;		// default
 
 	private List		scores			=	null;
 
@@ -128,6 +138,14 @@ public class DisplayDistancesMode extends DisplayMode {
 		// Sequence name, total length, and # of charsets
 		// we NEED to set this, because DisplayMode needs it. At any rate, it
 		// can't do any harm.
+		
+		// We do need to set up the chmi_* callbacks, though.
+		//
+		chmi_uncorrected.addItemListener(this);
+		chmi_k2p.addItemListener(this);
+		chmi_trans.addItemListener(this);
+
+		chmi_last.setState(true);
 	}
 
 //
@@ -135,16 +153,25 @@ public class DisplayDistancesMode extends DisplayMode {
 //
 	private TableCellRenderer static_oldRenderer = null;
 	public void activateDisplay(JTable table, Object argument) {
+		oldOverlap = Sequence.getMinOverlap();
+		oldDistanceMode = Sequence.getPairwiseDistanceMethod();
+
+		Sequence.setMinOverlap(1);		// don't think we'll have to change this!
+		Sequence.setPairwiseDistanceMethod(currentDistanceMethod);
+
 		super.activateDisplay(table, argument);
 
 		selected_colName = (String) argument; 
-		System.err.println("DDM go: colname = " + selected_colName);
+		//System.err.println("DDM go: colname = " + selected_colName);
 
 		static_oldRenderer = table.getDefaultRenderer(String.class);
 		table.setDefaultRenderer(String.class, new PDMColorRenderer(this));
 	}
 
 	public void deactivateDisplay() {
+		Sequence.setMinOverlap(oldOverlap);
+		Sequence.setPairwiseDistanceMethod(oldDistanceMode);
+
 //		table.setModel(null);		-- CANNOT - you better pick it up on the next activateDisplay()!
 		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
 	}
@@ -178,7 +205,14 @@ public class DisplayDistancesMode extends DisplayMode {
 		return (java.util.List ) v;
 	}
 
+	public void updateDisplay() {
+		//System.err.println("Update!\n");
+		super.updateDisplay();
+	}
+
 	public List getSortedSequences(Set sequences) {
+		//System.err.println("getSortedSequences started, PDM = " + Sequence.getPairwiseDistanceMethod());
+
 		// step 0: is there anything to sort?
 		if(sequences.size() == 0) {
 			sortedSequences = new LinkedList();
@@ -192,9 +226,10 @@ public class DisplayDistancesMode extends DisplayMode {
 		List sequencesList = new Vector(sequences);
 		List columnList = new Vector(sortedColumns);
 		if(seqName_top == null) {
-			if(sequencesList.size() > 0)
+			if(sequencesList.size() > 0) {
 				seqName_top = (String) sequencesList.get(0);	
 				tableManager.setReferenceSequence(seqName_top);	// what could go wrong?
+			} // if we don't get seqName_top, we'll bail out in just a second ...
 		}
 
 		if(columnList == null || selected_colName == null || seqName_top == null) {
@@ -577,10 +612,43 @@ public class DisplayDistancesMode extends DisplayMode {
 	 * That makes sense, no? No?
 	 */
 	public Menu getDisplayModeMenu() {
-		Menu m = new Menu("Blech");
+		Menu m = new Menu("Distance settings");
+		m.add(chmi_uncorrected);
+		m.add(chmi_k2p);
+		m.add(chmi_trans);
 
 		return m;
 	}	
+
+	/**
+	 * Now, somebody's going to have to LISTEN to that menu, huh?
+	 */
+	public void itemStateChanged(ItemEvent e) {
+		// is it the currently selected item?
+		if(e.getSource().equals(chmi_last)) {
+			chmi_last.setState(true);
+			return;
+		}	
+
+		// turn off current item, and swap in the new one
+		chmi_last.setState(false);
+		chmi_last = (CheckboxMenuItem) e.getSource();
+		chmi_last.setState(true);
+
+		// now: the only question to remain is, who-dun-it?
+		//
+		if(chmi_uncorrected.equals(chmi_last))
+			currentDistanceMethod = Sequence.PDM_UNCORRECTED;
+		
+		if(chmi_k2p.equals(chmi_last))
+			currentDistanceMethod = Sequence.PDM_K2P;
+
+		if(chmi_trans.equals(chmi_last))
+			currentDistanceMethod = Sequence.PDM_TRANS_ONLY;
+
+		// now, recalculate the values, etc.
+		tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);
+	}
 
 	/** For convenience */
 	public boolean identical(double x, double y) {
