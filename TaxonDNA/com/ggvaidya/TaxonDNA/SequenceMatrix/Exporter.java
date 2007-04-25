@@ -119,6 +119,12 @@ public class Exporter implements SequencesHandler {
 			Iterator i2 = vec_sequences.iterator();	
 			while(i2.hasNext()) {
 				String seqName = (String) i2.next();
+				// okay, this is a little odd, so listen up
+				// we can't just 'get the Sequence, put it into a List, and export it'
+				// because then it assumes it's TRUE name, NOT the name specified in the
+				// left-most column.
+				//
+				//  This fixes issue #112, if you're interested.
 				Sequence seq = tm.getSequence(colName, seqName);
 	
 				if(seq == null) {
@@ -130,6 +136,8 @@ public class Exporter implements SequencesHandler {
 				} else {
 					// seq != null
 					// write it!
+					seq = new Sequence(seq);	// clone 'seq'
+					seq.changeName(seqName);	// and rename it to the 'correct' row name.
 					sl.add(seq);
 				}
 			}
