@@ -706,7 +706,7 @@ public class TableManager implements ActionListener {
 		if(cmd.length() > 7 && cmd.substring(0, 7).equals("DO_PDM:")) {
 			String colName = cmd.substring(7);
 
-			matrix.switchView(TableManager.DISPLAY_DISTANCES);
+			matrix.switchView(TableManager.DISPLAY_DISTANCES, colName);
 		}
 
 		// Delete a particular row
