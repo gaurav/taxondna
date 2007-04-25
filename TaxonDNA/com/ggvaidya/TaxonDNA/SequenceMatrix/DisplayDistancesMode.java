@@ -450,6 +450,28 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		}
 	}
 
+	/**
+	 * Don't accept double-clicks on 'invalid' distances.
+	 */
+	public void doubleClick(MouseEvent e, int colIndex, int rowIndex) {
+		int col = colIndex - FIRST_COLUMN_CONTAINING_CHARSET;
+		int row = rowIndex;
+
+		if(distances.length < col)		// out of range
+			return;
+
+		if(distances[col].length < row)
+			return;
+		
+		double d = distances[col][row];
+
+		if(d >= 0) {
+			// proper
+			super.doubleClick(e, colIndex, rowIndex);
+		} else
+			;	// ignore
+	}
+
 	/** Convenience function */
 	private double percentage(double x, double y) {
 		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
