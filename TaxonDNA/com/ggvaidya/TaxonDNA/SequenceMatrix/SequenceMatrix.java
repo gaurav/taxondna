@@ -436,10 +436,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	}
 
 	public void switchView(int mode) {
+		switchView(mode, null);
+	}
+	
+	public void switchView(int mode, String arg) {
 		if(last_chmi != null)
 			last_chmi.setState(false);
 
-		tableManager.changeDisplayMode(mode);
+		tableManager.changeDisplayMode(mode, arg);
 			
 		switch(mode) {
 			default:
