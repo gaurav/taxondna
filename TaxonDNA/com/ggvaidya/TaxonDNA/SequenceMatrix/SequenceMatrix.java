@@ -572,7 +572,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		chmi = new CheckboxMenuItem("As correlations", false);
 		chmi_displayCorrelations = chmi;
 		chmi.addItemListener(this);
-		analyses.add(chmi);
+		// TODO: remove this we need need corelation mode back.
+//		analyses.add(chmi);
 
 		analyses.addActionListener(this);
 		menubar.add(analyses);
