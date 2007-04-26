@@ -5,7 +5,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005, 2007
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,6 +46,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	private Button		btn_export_multiple = new Button("Export species with multiple sequences");
 	private Button		btn_export_with_cons = new Button("Export sequences with conspecifics");
 	private Button		btn_Copy = new Button("Copy species summary");
+
+	private Button		btn_exportRandomly = new Button("Export a random subset");
 	
 	private Vector		vec_Species =		null;
 
@@ -75,30 +77,56 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		list_species.addActionListener(this);
 		add(list_species);
 
-		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+		// the 'south' panel on the main BorderLayout
+		// is known simply as 'below'
+		Panel below = new Panel();
+		below.setLayout(new BorderLayout());
+
+		// 'below' consists of two Panels of its own:
+		// a 'north' panel, called actions
+		// and a 'south' panel called functions
+		//
+		// 'actions' contains a list of things you can do
+		// to specific entries in the SpeciesSummary list.
+		Panel actions = new Panel();
+		actions.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		btn_Delete.addActionListener(this);
 		btn_Delete.setEnabled(false);
-		buttons.add(btn_Delete);
+		actions.add(btn_Delete);
+
+		btn_exportRandomly.addActionListener(this);
+		actions.add(btn_exportRandomly);
 		
+		btn_Copy.addActionListener(this);
+		actions.add(btn_Copy);
+		
+		below.add(actions, BorderLayout.NORTH);
+
+		// while 'functions' contains a list of
+		// things you can do to the entire 'species summary'
+		// list.
+		Panel functions = new Panel();
+		functions.setLayout(new FlowLayout(FlowLayout.RIGHT));
+
 		btn_export_multiple.addActionListener(this);
-		buttons.add(btn_export_multiple);
+		functions.add(btn_export_multiple);
 
 		btn_export_with_cons.addActionListener(this);
-		buttons.add(btn_export_with_cons);
+		functions.add(btn_export_with_cons);
 
-		btn_Copy.addActionListener(this);
-		buttons.add(btn_Copy);
-
-		add(buttons, BorderLayout.SOUTH);
+		below.add(functions, BorderLayout.SOUTH);
+		add(below, BorderLayout.SOUTH);
 	}
 
 	/**
 	 * actionListener. We're listening to events as they come in.
 	 */
 	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(btn_Calculate)) {
+		if(e.getSource().equals(btn_exportRandomly)) {
+			exportRandomly();
+			return;	
+		} else if(e.getSource().equals(btn_Calculate)) {
 			new Thread(this, "SpeciesSummary").start();
 			return;
 		}
@@ -438,5 +466,102 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
 	public Panel getPanel() {
 		return this;
+	}
+
+	/**
+	 * exportRandomly() lets you export species (or, hopefully, sequences) at random.
+	 * It pops up a little dialog box, which lets you pick the number of sequences (or species)
+	 * to export, the format to export the remaining sequences in, and the directory into
+	 * which to spit them out. 
+	 */
+	public void exportRandomly() {
+		if(vec_Species == null)
+			return;
+
+		// now, we pop up the dialog box
+		Dialog w = new Dialog(seqId.getFrame(), "Which species would you like to export?", true);
+		CloseableWindow.wrap(w);
+
+		RightLayout rl = new RightLayout(w);
+		w.setLayout(rl);
+
+		DirectoryInputPanel dinp = new DirectoryInputPanel("Directory to export random subsets to:", DirectoryInputPanel.MODE_DIR_SELECT, w);
+		rl.add(dinp, RightLayout.FILL_2);
+
+		rl.add(new Label("Number of species to export:"), RightLayout.NEXTLINE);
+		Choice ch_no_of_species = new Choice();
+		for(int x = 0; x < vec_Species.size(); x++) {
+			ch_no_of_species.add((x + 1) + " species (" + percentage(x + 1, vec_Species.size()) + "%)");
+		}
+		rl.add(ch_no_of_species, RightLayout.BESIDE);
+
+		rl.add(new Label("Number of randomizations:"), RightLayout.NEXTLINE);
+
+		TextField tf_rands = new TextField();
+		rl.add(tf_rands, RightLayout.BESIDE);
+
+		DefaultButton 	btn_go = 	new DefaultButton(w, "OK");
+		DefaultButton 	btn_cancel = 	new DefaultButton(w, "Cancel");
+
+		rl.add(btn_go, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
+		rl.add(btn_cancel, RightLayout.BESIDE | RightLayout.STRETCH_X);
+
+		w.pack();
+		w.setVisible(true);
+
+		if(btn_go.wasClicked()) {
+			// go go go!
+			int rands = 10;
+			int species = 1;
+
+			try {
+				rands = Integer.parseInt(tf_rands.getText());	
+			} catch(NumberFormatException e) {
+				rands = 10;
+			}
+
+			species = ch_no_of_species.getSelectedIndex() + 1;
+			
+			File dir = dinp.getFile();
+			if(dir == null)
+				// goto, goto damnit!
+				// TODO: fix up DINP so it doesn't return up 'null' directories.
+				exportRandomly();
+
+			try {
+				exportSpeciesRandomly(dir, species, rands);
+			} catch(IOException e) {
+
+			}
+		}
+	}
+
+	public void exportSpeciesRandomly(File dir, int species, int rands) throws IOException {
+		//TODO: check for vec_Species == null
+		//
+		for(int x = 0; x < rands; x++) {
+			File f = new File(dir, "randomization_" + species + "_species_" + x + ".txt");
+			
+			Vector v_from = new Vector();
+			Vector v_to = new Vector();
+
+			v_from.addAll(vec_Species);
+			Random r = new Random();
+
+			for(int c = 0; c < species; c++) {
+				int index = r.nextInt(v_from.size());
+
+				Object o = v_from.get(index);
+				v_to.add(o);
+				v_from.remove(o);
+			}
+
+			System.err.println("Rand #" + x);
+			System.err.println(v_to);
+		}
+	}
+
+	public double percentage(double x, double y) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
 	}
 }
