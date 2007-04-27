@@ -33,6 +33,7 @@ import java.awt.datatransfer.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
@@ -529,18 +530,35 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				exportRandomly();
 
 			try {
-				exportSpeciesRandomly(dir, species, rands);
+				exportSpeciesRandomly(dir, species, rands, new ProgressDialog(
+							seqId.getFrame(),
+							"Please wait, exporting species ...",
+							"Now exporting species to " + dir + ", sorry for the delay!"));
 			} catch(IOException e) {
 
+			} catch(DelayAbortedException e) {
+
 			}
+
+			new MessageBox(seqId.getFrame(),
+					"All done!",
+					rands + " randomizations of " + species + " species each were exported to " + dir).go();
 		}
 	}
 
-	public void exportSpeciesRandomly(File dir, int species, int rands) throws IOException {
-		//TODO: check for vec_Species == null
-		//
-		for(int x = 0; x < rands; x++) {
-			File f = new File(dir, "randomization_" + species + "_species_" + x + ".txt");
+	public void exportSpeciesRandomly(File dir, int species, int rands, ProgressDialog pd) throws IOException, DelayAbortedException {
+		if(vec_Species == null)
+			return;
+
+		if(pd != null)
+			pd.begin();
+
+		for(int x = 1; x <= rands; x++) {
+			if(pd != null)
+				pd.delay(x, rands);
+
+			File f = null;
+			f = new File(dir, species + "_species_randomization_" + x + ".txt");
 			
 			Vector v_from = new Vector();
 			Vector v_to = new Vector();
@@ -556,9 +574,37 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				v_from.remove(o);
 			}
 
-			System.err.println("Rand #" + x);
-			System.err.println(v_to);
+			SequenceList sl_exp = new SequenceList();
+
+			Iterator i_to = v_to.iterator();
+			while(i_to.hasNext()) {
+				String spName = (String) i_to.next();
+
+				// export spName to a file
+				SequenceList sl = seqId.lockSequenceList();
+				Iterator i_sp = sl.conspecificIterator(spName);
+
+				while(i_sp.hasNext()) {
+					Sequence seq = (Sequence) i_sp.next();
+					sl_exp.add(seq);
+				}
+
+				seqId.unlockSequenceList();
+			}
+			
+			FastaFile ff = new FastaFile();
+
+			try {
+				ff.writeFile(f, sl_exp, null);
+			} catch(IOException e) {
+				if(pd != null)
+					pd.end();
+				throw e;
+			}
 		}
+
+		if(pd != null)
+			pd.end();
 	}
 
 	public double percentage(double x, double y) {
