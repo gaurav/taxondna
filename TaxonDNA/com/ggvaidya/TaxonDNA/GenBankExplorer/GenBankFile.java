@@ -368,6 +368,44 @@ public class GenBankFile {
 				// lot you *can* do with that information.
 				return seq.getSubsequence(my_from, my_to);
 			}
+
+			/** returns the 'true' from, the lower of the two location values */
+			public int getFrom() {
+				if(complemented)
+					return to;
+				return from;
+			}
+
+			/** return the 'true' to, the lower of the two location values */
+			public int getTo() {
+				if(complemented)
+					return from;
+				return to;
+			}
+
+			/**
+			 * Does this SingleLocation intersect another SingleLocation?
+			 */
+			public boolean doesIntersect(SingleLocation s) {
+				if(getFrom() <= s.getFrom() && getTo() >= s.getFrom()) {	// intersects atleast at s.from
+					return true;			
+				} else if(getTo() >= s.getTo() && getFrom() <= s.getTo()) {	// insersects atleast at s.to
+					return true;
+				}
+
+				return false;
+			}
+
+			/**
+			 * Does this SingleLocation intersect with a Location?
+			 * Now, a location has a full powered way of doing this,
+			 * and we should have the SingleLocation.doesIntersect(SingleLocation)
+			 * case above, so hopefully this won't just sit around
+			 * looping infinitely.
+			 */
+			public boolean doesIntersect(Location l) {
+				return l.doesIntersect(this);
+			}
 		}
 
 		private Vector locations = new Vector();
@@ -431,6 +469,48 @@ public class GenBankFile {
 			}
 
 			return sequence;
+		}
+
+		public List getLocations() {
+			return locations;
+		}
+
+		/**
+		 * Does this intersect with a SingleLocation?
+		 */
+		public boolean doesIntersect(SingleLocation loc) {
+			// if ANY of our Locations intersect with this SL, we're through
+			
+			for(int x = 0; x < locations.size(); x++) {
+				Location l = (Location) locations.get(x);
+
+				if(l.doesIntersect(loc))
+					return true;
+			}
+
+			return false;
+		}
+
+		/**
+		 * Does this intersect with a Location?
+		 * Ditto as above, except that we repeat for n x n.
+		 */
+		public boolean doesIntersect(Location loc) {
+			Iterator i_me = locations.iterator();
+
+			while(i_me.hasNext()) {
+				Location l_me = (Location) i_me.next();
+			
+				Iterator i_you = loc.getLocations().iterator();	
+				while(i_you.hasNext()) {
+					Location l_you = (Location) i_you.next();
+
+					if(l_me.doesIntersect(l_you))
+						return true;
+				}
+			}
+
+			return false;
 		}
 	}
 
