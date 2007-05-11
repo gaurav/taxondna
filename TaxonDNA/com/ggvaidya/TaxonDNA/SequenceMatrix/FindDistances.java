@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006-07 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ public class FindDistances implements WindowListener, ActionListener {
 
 	private TextField		tf_percentLow = new TextField("0.0000");
 	private TextField		tf_percentHigh = new TextField("0.0000");
+	private Choice			choice_gene = new Choice();
 	private Button			btn_Go = new Button("Go!");
 
 	private Button			btn_Copy = new Button("Copy to clipboard");
@@ -86,8 +87,13 @@ public class FindDistances implements WindowListener, ActionListener {
 		rl.add(tf_percentHigh, RightLayout.NEXTLINE);
 		rl.add(new Label("% (inclusive)"), RightLayout.BESIDE);
 		btn_Go.addActionListener(this);
+
+		rl.add(new Label("Search within "), RightLayout.NEXTLINE);
+		rl.add(choice_gene, RightLayout.BESIDE);
+		
 		rl.add(btn_Go, RightLayout.NEXTLINE | RightLayout.STRETCH_X | RightLayout.FILL_2);
 		fr_findDistances.add(options, BorderLayout.NORTH);
+
 
 		// Text_main. All results are printed out here for the purview of the customer.
 		text_main.setEditable(false);
@@ -107,6 +113,14 @@ public class FindDistances implements WindowListener, ActionListener {
 	}
 
 	public void go() {
+		choice_gene.removeAll();
+		choice_gene.add("All genes");
+		Iterator i = matrix.getTableManager().getCharsets().iterator();
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+			choice_gene.add(colName);
+		}
+
 		fr_findDistances.pack();
 		fr_findDistances.setVisible(true);
 	}
@@ -115,6 +129,11 @@ public class FindDistances implements WindowListener, ActionListener {
 		// 
 		// Step 1. Figure out what we're really (kinda, sorta) looking for.
 		//
+	
+		String colName_to_use = null;
+		int selected = choice_gene.getSelectedIndex();
+		if(selected != -1 && selected != 0) 	// nothing or the 1st entry ('all genes')
+			colName_to_use = (String) matrix.getTableManager().getCharsets().get(selected - 1);
 
 		double from = 0.0;	// percentageBegin
 		double to = 0.0;	// percentageEnd
@@ -146,6 +165,11 @@ public class FindDistances implements WindowListener, ActionListener {
 		//
 		// Step 2. Get the pairwiseDistances ready.
 		//
+		// We store the names of the columns in a different Vector
+		// note that both pdColumns.get(x) and pdColumns.get(x + 1) refer to vec_colNames.get((x + 1) / 2)	(really?)
+		//
+		Vector vec_colNames = new Vector();
+
 		if(true || pdColumns == null) {	// since we don't reset pdColumns when the table changes
 						// we can't guarantee that the last pdColumns is still valid
 			pdColumns = new Vector();
@@ -155,7 +179,14 @@ public class FindDistances implements WindowListener, ActionListener {
 			Iterator i = tm.getColumns().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
+				
+				// if colName_to_use is available, skip this distance unless it's that particular colName
+				if(colName_to_use != null && !colName.equals(colName_to_use))
+					continue;
+
 				SequenceList sl = tm.getSequenceListByColumn(colName);
+
+				vec_colNames.add(colName);
 			
 				//colNames.add(colName);
 				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
@@ -185,34 +216,37 @@ public class FindDistances implements WindowListener, ActionListener {
 				"Searching for pairwise distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%. Sorry for the delay!");
 		delay.begin();
 		int count = 0;
-		Iterator i = pdColumns.iterator();
+		boolean deleteThisTime = false;			// you won't believe what this does
 
+		StringBuffer buff = new StringBuffer();
+
+		Iterator i = pdColumns.iterator();
 		while(i.hasNext()) {
 			delay.delay(count, pdColumns.size());
 
-			PairwiseDistances pd = (PairwiseDistances) i.next();
-			Vector add = pd.getDistancesBetween(from, to);
+			String colName = (String) vec_colNames.get(0);	// this can compressed to 'String colName = vec_colNames.remove(0);'
+			if(deleteThisTime)
+				vec_colNames.remove(0);			// but why bother?
+			deleteThisTime = !deleteThisTime;
 
-			results.addAll(add);
+			PairwiseDistances pds = (PairwiseDistances) i.next();
+
+//			System.err.println("From/to: " + from + " to " + to + " (aka " + percentage(from, 1) + "% and " + percentage(to, 1) +"%");
+
+			Vector add = pds.getDistancesBetween(from, to);
+			Iterator i_dists = add.iterator();
+			while(i_dists.hasNext()) {
+				PairwiseDistance pd = (PairwiseDistance) i_dists.next();
+		
+				// simple whole-table-to-half-table splitter
+				//
+				if(pd.getSequenceA().getFullName().compareTo(pd.getSequenceB().getFullName()) < 0) {
+					count++;
+					buff.append(colName + "\t" + pd.getSequenceA().getFullName() + "\t" + pd.getSequenceB().getFullName() + "\t" + percentage(pd.getDistance(), 1) + "\n");
+				}
+			}
 		}
 
-		//
-		// Step 4. We now have a Vector of PairwiseDistance objects. If only we could format
-		// them for output and display them, somehow.
-		//
-		StringBuffer buff = new StringBuffer();
-		count = 0;
-		i = results.iterator();
-		while(i.hasNext()) {
-			count++;
-			
-			delay.delay(count, results.size());
-
-			PairwiseDistance pd = (PairwiseDistance) i.next();
-
-			buff.append(pd.getSequenceA().getDisplayName() + "\t" + pd.getSequenceB().getDisplayName() + "\t" + percentage(pd.getDistance(), 1) + "\n");
-
-		}
 		text_main.setText(count + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
 
 		delay.end();
