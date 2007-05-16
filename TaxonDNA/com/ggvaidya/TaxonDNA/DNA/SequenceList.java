@@ -17,7 +17,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005	Gaurav Vaidya
+    Copyright (C) 2005, 2007	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -51,6 +51,10 @@ public class SequenceList implements List, Testable {
 	private FormatHandler	formatHandler =	null;			// the formathandler used to extract this file
 	private int		sortedBy = 	0;			// the order in which we are (currently) sorted 
 	private boolean		modified = 	false;			// has this sequencelist been modified?
+
+	// Hashtable to store species name -> Integer(index)
+	//
+	private Hashtable	ht_species =	new Hashtable();
 
 	// constants for the sorting mechanism (i.e. what can be stored in sortedBy)
 	public static final int		SORT_UNSORTED = 0;
@@ -607,17 +611,39 @@ public class SequenceList implements List, Testable {
 		Sequence seq = null;
 
 		int index = 0;
-		while(index < sequences.size()) {
-			seq = (Sequence) sequences.get(index);
-			if(seq != null && seq.getSpeciesName().equals(speciesName))
-				break;
-			index++;
+
+		if(ht_species.get(speciesName) != null) {		
+			index = ((Integer) ht_species.get(speciesName)).intValue();
+			seq = (Sequence) this.get(index);
+		} else {
+			String last_spName = null;
+
+			while(index < sequences.size()) {
+				seq = (Sequence) sequences.get(index);
+				if(seq != null) {
+					if(seq.getSpeciesName().equals(speciesName))
+						break;
+
+					if(last_spName == null || !last_spName.equals(	seq.getSpeciesName() )) {
+						// new species!
+						ht_species.put(seq.getSpeciesName(), new Integer(index));
+					}
+
+					last_spName = seq.getSpeciesName();
+				}
+				index++;
+			}
+
+			if(seq == null) {
+				unlock();
+				return null;
+			}
+		
+			ht_species.put(speciesName, new Integer(index));
 		}
 
-		if(seq == null) {
-			unlock();
-			return null;
-		}
+	//	System.err.println("Freemem = " + Runtime.getRuntime().freeMemory());
+	//	System.err.println("CI: " + seq + " at " + index + " to <" + this + ">");
 
 		Iterator i = new ConspecificIterator(this, seq, index);
 
@@ -772,6 +798,7 @@ public class SequenceList implements List, Testable {
 		modified = true;	
 		sortedBy = SORT_UNSORTED;
 		details = null;
+		ht_species = new Hashtable();
 	}
 
 	/**
