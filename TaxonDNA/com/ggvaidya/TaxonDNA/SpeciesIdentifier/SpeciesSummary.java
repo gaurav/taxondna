@@ -524,10 +524,13 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			species = ch_no_of_species.getSelectedIndex() + 1;
 			
 			File dir = dinp.getFile();
+
+		//	System.err.println("Try, dir = " + dir);
 			if(dir == null)
 				// goto, goto damnit!
 				// TODO: fix up DINP so it doesn't return up 'null' directories.
 				exportRandomly();
+		//	System.err.println("Done, dir = " + dir);
 
 			try {
 				exportSpeciesRandomly(dir, species, rands, new ProgressDialog(
@@ -554,6 +557,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			pd.begin();
 
 		for(int x = 1; x <= rands; x++) {
+		//	System.err.println("x = " + x);
+
 			if(pd != null)
 				pd.delay(x, rands);
 
@@ -577,20 +582,27 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			SequenceList sl_exp = new SequenceList();
 
 			Iterator i_to = v_to.iterator();
+			SequenceList sl = seqId.lockSequenceList();
+			int tmp_count = 0;
 			while(i_to.hasNext()) {
+				tmp_count++;
+			//	System.err.println("tmp_count = " + tmp_count);
+
 				String spName = (String) i_to.next();
 
 				// export spName to a file
-				SequenceList sl = seqId.lockSequenceList();
 				Iterator i_sp = sl.conspecificIterator(spName);
+
+				System.err.println("cons found");
 
 				while(i_sp.hasNext()) {
 					Sequence seq = (Sequence) i_sp.next();
 					sl_exp.add(seq);
 				}
 
-				seqId.unlockSequenceList();
+			//	System.err.println("sec copied");
 			}
+			seqId.unlockSequenceList();
 			
 			FastaFile ff = new FastaFile();
 
