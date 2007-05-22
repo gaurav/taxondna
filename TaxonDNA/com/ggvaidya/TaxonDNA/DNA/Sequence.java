@@ -375,7 +375,35 @@ public class Sequence  implements Comparable, Testable {
 		}
 
 		return count;
-	}	
+	}
+
+	/**
+	 * Returns the index (zero-based) of the first character in this sequence which is
+	 * not a gap (internal or external). Returns -1 if there is no non-gap character in
+	 * this sequence.
+	 */
+	public int getFirstRealCharacter() {
+		for(int x = 0; x < len; x++) {
+			if(!isGap(seq[x]) && !isMissing(seq[x]))
+				return x;
+		}
+
+		return -1;
+	}
+
+	/**
+	 * Returns the index (zero-based) of the first character in this sequence which is
+	 * not a gap (internal or external). Returns -1 if there is no non-gap character in
+	 * this sequence.
+	 */
+	public int getLastRealCharacter() {
+		for(int x = len - 1; x >= 0; x--) {
+			if(!isGap(seq[x]) && !isMissing(seq[x]))
+				return x;
+		}
+
+		return -1;
+	}
 
 	/**
 	 * Returns the number of base x in this sequence.
