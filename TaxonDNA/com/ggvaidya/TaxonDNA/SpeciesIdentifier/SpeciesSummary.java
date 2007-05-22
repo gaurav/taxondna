@@ -489,12 +489,27 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		DirectoryInputPanel dinp = new DirectoryInputPanel("Directory to export random subsets to:", DirectoryInputPanel.MODE_DIR_SELECT, w);
 		rl.add(dinp, RightLayout.FILL_2);
 
-		rl.add(new Label("Number of species to export:"), RightLayout.NEXTLINE);
+		rl.add(new Label("Please choose either ..."), RightLayout.NEXTLINE | RightLayout.FILL_2);
+
+		CheckboxGroup check_group = new CheckboxGroup();
+
+		Checkbox ch_species = new Checkbox("Number of species to export:", check_group, true);
+		rl.add(ch_species, RightLayout.NEXTLINE);
 		Choice ch_no_of_species = new Choice();
 		for(int x = 0; x < vec_Species.size(); x++) {
 			ch_no_of_species.add((x + 1) + " species (" + percentage(x + 1, vec_Species.size()) + "%)");
 		}
 		rl.add(ch_no_of_species, RightLayout.BESIDE);
+
+		SequenceList sl = seqId.lockSequenceList();
+		Checkbox ch_specimens = new Checkbox("Number of specimens to export:", check_group, false);
+		rl.add(ch_specimens, RightLayout.NEXTLINE);
+		Choice ch_no_of_specimens = new Choice();
+		for(int x = 0; x < sl.count(); x++) {
+			ch_no_of_specimens.add((x + 1) + " specimens (" + percentage(x + 1, sl.count()) + "%)");
+		}
+		rl.add(ch_no_of_specimens, RightLayout.BESIDE);
+		seqId.unlockSequenceList();
 
 		rl.add(new Label("Number of randomizations:"), RightLayout.NEXTLINE);
 
@@ -514,6 +529,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			// go go go!
 			int rands = 10;
 			int species = 1;
+			int specimens = 1;
 
 			try {
 				rands = Integer.parseInt(tf_rands.getText());	
@@ -522,6 +538,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			}
 
 			species = ch_no_of_species.getSelectedIndex() + 1;
+			specimens = ch_no_of_specimens.getSelectedIndex() + 1;
 			
 			File dir = dinp.getFile();
 
@@ -530,22 +547,37 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				// goto, goto damnit!
 				// TODO: fix up DINP so it doesn't return up 'null' directories.
 				exportRandomly();
-		//	System.err.println("Done, dir = " + dir);
+		//	System.err.println("Done, dir = " + dir)
 
 			try {
-				exportSpeciesRandomly(dir, species, rands, new ProgressDialog(
+				Checkbox ch_selected = check_group.getSelectedCheckbox();
+				if(ch_selected == ch_species) {
+					exportSpeciesRandomly(dir, species, rands, new ProgressDialog(
 							seqId.getFrame(),
 							"Please wait, exporting species ...",
 							"Now exporting species to " + dir + ", sorry for the delay!"));
+					new MessageBox(seqId.getFrame(),
+						"All done!",
+						rands + " randomizations of " + species + " species each were exported to " + dir).go();
+
+				}
+				else {
+					exportSpecimensRandomly(dir, specimens, rands, new ProgressDialog(
+							seqId.getFrame(),
+							"Please wait, exporting specimens ...",
+							"Now exporting specimens to " + dir + ", sorry for the delay!"));
+					new MessageBox(seqId.getFrame(),
+						"All done!",
+						rands + " randomizations of " + specimens + " specimens each were exported to " + dir).go();
+					
+				}
+
 			} catch(IOException e) {
 
 			} catch(DelayAbortedException e) {
 
 			}
 
-			new MessageBox(seqId.getFrame(),
-					"All done!",
-					rands + " randomizations of " + species + " species each were exported to " + dir).go();
 		}
 	}
 
@@ -604,6 +636,55 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			}
 			seqId.unlockSequenceList();
 			
+			FastaFile ff = new FastaFile();
+
+			try {
+				ff.writeFile(f, sl_exp, null);
+			} catch(IOException e) {
+				if(pd != null)
+					pd.end();
+				throw e;
+			}
+		}
+
+		if(pd != null)
+			pd.end();
+	}
+
+	public void exportSpecimensRandomly(File dir, int specimens, int rands, ProgressDialog pd) throws IOException, DelayAbortedException {
+		if(pd != null)
+			pd.begin();
+
+		for(int x = 1; x <= rands; x++) {
+		//	System.err.println("x = " + x);
+
+			if(pd != null)
+				pd.delay(x, rands);
+
+			File f = null;
+			f = new File(dir, specimens + "_specimens_randomization_" + x + ".txt");
+			
+			Vector v_from = new Vector();
+			Vector v_to = new Vector();
+
+			SequenceList sl = seqId.lockSequenceList();
+
+			v_from.addAll(sl);
+			Random r = new Random();
+			
+			seqId.unlockSequenceList();
+
+			for(int c = 0; c < specimens; c++) {
+				int index = r.nextInt(v_from.size());
+
+				Object o = v_from.get(index);
+				v_to.add(o);
+				v_from.remove(o);
+			}
+
+			SequenceList sl_exp = new SequenceList();
+			sl_exp.addAll(v_to);
+
 			FastaFile ff = new FastaFile();
 
 			try {
