@@ -36,7 +36,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Cluster extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
-	private static final boolean	FLAG_SKIP_INDIVIDUAL_ENTRIES = true;
+	private static final boolean	FLAG_SKIP_INDIVIDUAL_ENTRIES = false;
 
 	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
@@ -269,9 +269,18 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					count_sequences++;
 			}
 
+			int count_extremes = 0;
+			Vector extremes_index = new Vector();
+			Vector extremes_left = new Vector();
+			Vector extremes_right = new Vector();
+
+			int x = 1;
 			Iterator iter1 = clusters.iterator();
 			while(iter1.hasNext()) {
 				Vector bin = (Vector)iter1.next();
+
+				int extreme_left = -1;	// for this particular bin
+				int extreme_right = -1;
 
 				int contains_species = 0;
 				Iterator iter2 = bin.iterator();
@@ -281,11 +290,29 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					Sequence seq = (Sequence) iter2.next();
 					String speciesName = seq.getSpeciesName();
 
+			
+					// now, back to normal processing ...
 					if(speciesName == null)
 						continue;
 					
 					if(speciesName.equals(name)) {
-						containsThisOne = true;
+						containsThisOne = true;		
+
+						// also, we need to figure out the 'extreme' values on this particular 'bin'.
+						if(extreme_left == -1 || 
+								(seq.getFirstRealCharacter() != -1 && seq.getFirstRealCharacter() < extreme_left
+								 )
+						)
+							extreme_left = seq.getFirstRealCharacter();
+
+						if(extreme_right == -1 || 
+								(seq.getLastRealCharacter() != -1 && seq.getLastRealCharacter() > extreme_right
+								 )
+						)
+							extreme_right = seq.getLastRealCharacter();
+
+//						System.err.println("extremes: " + extreme_left + ", " + extreme_right);
+
 					} else if(species.get(speciesName) == null) {
 						species.put(speciesName, new Integer(1));
 						contains_species++;
@@ -295,10 +322,54 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				if(containsThisOne) {
 					containsThisOne = false;
 					species_found_with += contains_species;
+					// TODO: insert code to determine which species are split
+					// and to calculate the overlap (extreme points, NOT full
+					// consensus). Species which are found in multiple clusters
+					// which have NO significant overlap need to be highlighted.
+					//
+					// now we know that species 'name' is found in cluster 'bin'.
+					// So we need to save extreme points of cluster 'bin'.
+					if(extreme_left != -1 && extreme_right != -1) {
+						extremes_index.add(new Integer(x));
+						extremes_left.add(new Integer(extreme_left));
+						extremes_right.add(new Integer(extreme_right));
+						count_extremes++;
+					}
 				}
+
+				x++;
 			}
 
-			str.append(name + "\t" + count_sequences + "\t" + hash_species.get(name) + "\t" + species_found_with + "\n"); 
+			str.append(name + "\t" + count_sequences + "\t" + hash_species.get(name) + "\t" + species_found_with + "\n");
+
+			for(int index_outer = 0; index_outer < count_extremes; index_outer++) {
+				for(int index_inner = 0; index_inner < count_extremes; index_inner++) {
+					if(index_inner == index_outer)
+						continue;
+
+					int left_in = ((Integer) extremes_left.get(index_inner) ).intValue();
+					int right_in = ((Integer) extremes_right.get(index_inner) ).intValue();
+
+					int left_out = ((Integer) extremes_left.get(index_outer) ).intValue();
+					int right_out = ((Integer) extremes_right.get(index_outer) ).intValue();					
+					int minOverlap = Sequence.getMinOverlap();
+					int overlap = 0;
+
+					if(left_in < left_out && right_in > right_out)
+						overlap = right_out - left_out;
+					else if(left_out < left_in && right_out > right_in)
+						overlap = right_in - left_in;
+					else if(left_in < right_out)
+						overlap = right_out - left_in;
+					else if(left_out < right_in)
+						overlap = right_in - left_out;
+					else
+						overlap = 0;		// if left_in >= right_out, there is NO overlap
+
+					if(overlap >= 0 && overlap < minOverlap)
+						str.append("\tClusters \t" + extremes_index.get(index_inner) + "\t and \t"+ extremes_index.get(index_outer) + "\t have an overlap of \t" + overlap + "\t bp.\n");
+				}
+			}
 		}
 
 		// add stuff to str_final
