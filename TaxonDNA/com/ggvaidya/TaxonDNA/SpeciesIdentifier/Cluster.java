@@ -353,20 +353,15 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					int left_out = ((Integer) extremes_left.get(index_outer) ).intValue();
 					int right_out = ((Integer) extremes_right.get(index_outer) ).intValue();					
 					int minOverlap = Sequence.getMinOverlap();
-					int overlap = 0;
 
-					if(left_in < left_out && right_in > right_out)
-						overlap = right_out - left_out;
-					else if(left_out < left_in && right_out > right_in)
-						overlap = right_in - left_in;
-					else if(left_in < right_out)
-						overlap = right_out - left_in;
-					else if(left_out < right_in)
-						overlap = right_in - left_out;
-					else
-						overlap = 0;		// if left_in >= right_out, there is NO overlap
+					int leftmost_right = (right_out <= right_in ? right_out : right_in);
+					int rightmost_left = (left_out <= left_in ? left_out : left_in);
+					int overlap = rightmost_left - leftmost_right;
 
-					if(overlap >= 0 && overlap < minOverlap)
+					if(overlap < 0)
+						overlap = 0;
+
+					if(overlap == 0 || overlap < minOverlap)
 						str.append("\tClusters \t" + extremes_index.get(index_inner) + "\t and \t"+ extremes_index.get(index_outer) + "\t have an overlap of \t" + overlap + "\t bp.\n");
 				}
 			}
