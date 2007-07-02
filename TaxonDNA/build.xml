@@ -31,7 +31,6 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/SpeciesIdentifier.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne"  />		
 	</target>
 
 	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
@@ -45,7 +44,6 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
 	<!-- GenBankExplorer:		Builds the Jar file for GenBankExplorer -->
@@ -59,7 +57,6 @@
 				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
 			</manifest>
 		</jar>
-		<signjar jar="Release/GenBankExplorer.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
 	</target>
 
 	<!-- build:			Prepares ChangeLog and Readme files. 
@@ -145,5 +142,11 @@
             <java jar="Release/GenBankExplorer.jar" maxmemory="1024m" fork="true">
             </java>
         </target>
+
+	<target name="sign" depends="SpeciesIdentifier, SequenceMatrix, GenBankExplorer">
+		<signjar jar="Release/SpeciesIdentifier.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne"  />
+		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+		<signjar jar="Release/GenBankExplorer.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+	</target>
         
 </project>
