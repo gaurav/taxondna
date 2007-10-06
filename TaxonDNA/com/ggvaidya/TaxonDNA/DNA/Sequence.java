@@ -343,6 +343,49 @@ public class Sequence  implements Comparable, Testable {
 	}
 
 	/**
+	 * Returns the sequence (DNA) in its 'expanded' form: ambiguous codons are expanded to
+	 * their full form, with characters _begin_ and _end_ being used to demarcate them.
+         * Both TNT and Nexus use this on occasion; it will probably be a good idea for
+	 * BaseSequence to expand Sequences which are converted into BS, since most BS-type
+	 * situations cannot distinguish between amino acids and character data, and don't
+	 * know how to expand the ambiguous codons.	 
+	 */
+	public String getSequenceExpanded(char begin, char end) {
+		String s = getSequence();
+		StringBuffer ret = new StringBuffer();
+
+		for(int x = 0; x < s.length(); x++) {
+			char ch = s.charAt(x);
+
+			// simple or ambiguous?
+			if(ch == 'A' || ch == 'C' || ch == 'T' || ch == 'G')
+				ret.append(ch);
+			else if(ch == '?' || ch == '-')
+				ret.append(ch);
+			else {
+				// okay, NOT simple
+				int code = getcode(ch);
+				StringBuffer sb = new StringBuffer();
+
+				if((code & getcode('A')) != 0)
+					sb.append("A");
+				if((code & getcode('C')) != 0)
+					sb.append("C");
+				if((code & getcode('T')) != 0)
+					sb.append("T");
+				if((code & getcode('G')) != 0)
+					sb.append("G");
+
+				ret.append(begin);
+				ret.append(sb);
+				ret.append(end);
+			}
+		}
+
+		return ret.toString();
+	}
+
+	/**
 	 * Returns the length of this sequence.
 	 */
 	public int getLength() {
@@ -637,8 +680,8 @@ public class Sequence  implements Comparable, Testable {
 				changeSequence(getSequence() + seq.getSequence());
 				return this;
 			} else {
-				// one of them is a BaseSequence.
-				BaseSequence bs = new BaseSequence(getFullName(), getSequence() + seq.getSequence());
+				// one or both of them is a BaseSequence.
+				BaseSequence bs = new BaseSequence(getFullName(), getSequenceExpanded('[', ']') + seq.getSequenceExpanded('[', ']'));
 				return BaseSequence.promoteSequence(bs);	// why? because the BS might be
 										// misidentified, is why. Plus,
 										// talk is cheap.

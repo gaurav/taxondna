@@ -134,6 +134,15 @@ public class BaseSequence extends Sequence {
 	}
 
 	/**
+	 * Normally, getSequenceExpanded(char x, char y) would 'expand' a Sequence.
+	 * You can't expand a BaseSequence. However, we will replace '['...']' with
+	 * the characters you specify.
+	 */
+	public String getSequenceExpanded(char begin, char end) {
+		return getSequence().replace('[', begin).replace(']', end);
+	}
+
+	/**
 	 * Returns a string representation of this object.
 	 */
 	public String toString() {

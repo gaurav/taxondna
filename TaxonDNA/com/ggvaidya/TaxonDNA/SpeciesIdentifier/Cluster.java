@@ -4,7 +4,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005
+    Copyright (C) Gaurav Vaidya, 2005, 2007
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -36,10 +36,11 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 
 public class Cluster extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
-	private static final boolean	FLAG_SKIP_INDIVIDUAL_ENTRIES = false;
+	private boolean		flag_skipIndivEntries = false;
+	private Checkbox	check_skipIndivEntries = new Checkbox("Generate individual information on every cluster");
 
 	private SpeciesIdentifier	seqId;
-	private SequenceList	set = null;
+	private SequenceList		set = null;
 
 	private Button		btn_MakeClusters = new Button(" Make clusters now! ");
 	private TextField	text_threshold = new TextField("03.000");
@@ -68,14 +69,17 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		setLayout(new BorderLayout());
 
 		Panel settings = new Panel();
+		RightLayout rl = new RightLayout(settings);
+		settings.setLayout(rl);
 
-		
-		settings.add(new Label("Please select the threshold at which to cluster:"));
-		settings.add(text_threshold);
-		settings.add(new Label("%"));
+		rl.add(new Label("Please select the threshold at which to cluster:"), RightLayout.NONE);
+		rl.add(text_threshold, RightLayout.BESIDE);
+		rl.add(new Label("%"), RightLayout.BESIDE);
+
+		rl.add(check_skipIndivEntries, RightLayout.NEXTLINE);
 		
 		btn_MakeClusters.addActionListener(this);
-		settings.add(btn_MakeClusters);
+		rl.add(btn_MakeClusters, RightLayout.BESIDE);
 		add(settings, BorderLayout.NORTH);
 		
 		Panel main = new Panel();
@@ -161,6 +165,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			int valid_comparisons = 0;
 			int valid_comparisons_over = 0;
 			Hashtable hash_species_this = new Hashtable();
+			boolean bool_containsAllSequencesOfOneSpecies = false;
 				
 			str.append((x + 1) + "\t");
 
@@ -243,14 +248,43 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				if(
 					sd.getSpeciesDetailsByName(speciesName) != null &&
 					sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidMatchesCount() == bin.size()
-				)
+				) {
+					bool_containsAllSequencesOfOneSpecies = true;
 					no_of_clusters_with_all_sequences_for_a_species++;
+				}
 			}
 
 			if(hash_species_this.keySet().size() > largest_no_of_species_in_a_cluster)
 				largest_no_of_species_in_a_cluster = hash_species_this.keySet().size();
+
+			String cluster_status =  "";
+			if(hash_species_this.keySet().size() > 1) {
+				cluster_status = "Lumped\t(contains multiple species)";
+			} else {
+				// it's either:
+				// 1.	'perfect': all seqs of 1 sp, and EVERY seq of that sp
+				// 2.	'technically split': all seqs of 1 sp, some seqs of that
+				//	species in another cluster, overlap between clusters is
+				//	< min_overlap
+				// 3.	'biologically split': all seqs of 1 sp, some seqs of that
+				//	species in another cluster, overlap between clusters is
+				//	>= min_overlap
+				// 4. 	'technically AND biologically split' all seqs of 1 sp, some
+				//	seqs of that species in another cluster with < min_overlap
+				// 	to this cluster, some in another cluster with >= min_overlap.	
+				// 5.	'no species names': none of the sequences in this cluster
+				//	have a species name.
+				//
+				if(bool_containsAllSequencesOfOneSpecies)
+					cluster_status = "Perfect\t(contains all sequences of one species)";
+				else {
+					String sp_Name = ( (String) (hash_species_this.keySet().toArray())[0] );
+					// so ... now we need to find other clusters containing sp_Name.
+					// which is pretty hard, considering. sigh.
+				}
+			}
 			
-			str.append(bin.size() + "\t" + hash_species_this.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\n");
+			str.append(bin.size() + "\t" + hash_species_this.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\t" + cluster_status + "\n");
 		}
 
 		str.append("\n\nSummary of species\n\nSPECIES\tSEQUENCES\tFOUND IN HOW MANY CLUSTERS?\tFOUND WITH HOW MANY OTHER SPECIES?\n");
@@ -382,7 +416,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		item_strings[0] = str_final.toString();
 
 		delay_count++;
-		for(int i = 1; !FLAG_SKIP_INDIVIDUAL_ENTRIES && i <= clusters.size(); i++) {
+		for(int i = 1; !flag_skipIndivEntries && i <= clusters.size(); i++) {
 		// information on that particular clusters
 			Vector bin = (Vector)clusters.get(i - 1); // 
 			str = new StringBuffer();
@@ -480,6 +514,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		}
 
 		if(evt.getSource().equals(btn_MakeClusters)) {
+			flag_skipIndivEntries = !check_skipIndivEntries.getState();
+			
 			try {
 				Double d = new Double(text_threshold.getText());
 				max_pairwise = d.doubleValue()/100;
@@ -623,7 +659,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 					name.append(")");
 
-					list_clusters.add(name.toString());
+					if(!flag_skipIndivEntries)
+						list_clusters.add(name.toString());
 				}
 		
 			}
