@@ -16,12 +16,17 @@
  * &gt;Sequence name 2
  * Sequence 2
  *
+ * PS: Because of other programs, we're now going
+ * to be strictly putting underscores into all
+ * FASTA names. This should be okay, because we
+ * convert underscores into spaces automatically.
+ *
  * @author Gaurav Vaidya, gaurav@ggvaidya.com 
  */
 
 /*
     TaxonDNA
-    Copyright (C) 2005-06 Gaurav Vaidya
+    Copyright (C) 2005-07 Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -320,7 +325,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			writer.println(">" + seq.getFullName());
+			writer.println(">" + seq.getFullName().trim().replace(' ', '_'));
 			writer.println(seq.getSequenceWrapped(70));
 
 			try {
