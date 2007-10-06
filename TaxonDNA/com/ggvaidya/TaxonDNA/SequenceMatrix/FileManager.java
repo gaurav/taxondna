@@ -601,7 +601,7 @@ public class FileManager implements FormatListener {
 				interleaveAt = 1000;
 			}
 			matrix.getPrefs().setPreference("exportAsNexus_interleaveAt", interleaveAt);
-			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", file.getAbsolutePath());
+			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", file.getParent());
 
 			// phew ... go!
 			try {
@@ -824,7 +824,7 @@ public class FileManager implements FormatListener {
 
 		if(btn.wasClicked()) {
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choice", choice_formats.getSelectedIndex());
-			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_fileName", dinp.getFile().getAbsolutePath());
+			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_fileName", dinp.getFile().getParent());
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choicePerGroup", choice_per_group.getSelectedIndex() + 1);
 			matrix.getPrefs().setPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", choice_random_taxa.getSelectedIndex() + 1);
@@ -922,7 +922,7 @@ public class FileManager implements FormatListener {
 
 		if(btn.wasClicked()) {
 			matrix.getPrefs().setPreference("exportSequencesByColumn_choice", choice_formats.getSelectedIndex());
-			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getAbsolutePath());
+			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getParent());
 			matrix.getPrefs().setPreference("exportSequencesByColumn_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
 
 			// phew ... go!
