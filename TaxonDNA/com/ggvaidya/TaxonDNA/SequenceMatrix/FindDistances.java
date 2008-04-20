@@ -94,7 +94,6 @@ public class FindDistances implements WindowListener, ActionListener {
 		rl.add(btn_Go, RightLayout.NEXTLINE | RightLayout.STRETCH_X | RightLayout.FILL_2);
 		fr_findDistances.add(options, BorderLayout.NORTH);
 
-
 		// Text_main. All results are printed out here for the purview of the customer.
 		text_main.setEditable(false);
 		fr_findDistances.add(text_main);
