@@ -787,7 +787,7 @@ public class FileManager implements FormatListener {
 
 		rl.add(choice_random_taxa, RightLayout.BESIDE);
 
-		rl.add(new Label("Taxon to never delete (i.e. reference taxon): "), RightLayout.NEXTLINE);
+		rl.add(new Label("Taxon to never delete: "), RightLayout.NEXTLINE);
 		Choice choice_ref_taxon = new Choice();	
 		choice_ref_taxon.add("None");
 		java.util.List list_seqNames = matrix.getTableManager().getSequenceNames();
