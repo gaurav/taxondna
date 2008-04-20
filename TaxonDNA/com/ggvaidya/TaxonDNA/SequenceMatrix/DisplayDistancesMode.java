@@ -436,11 +436,11 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		} else if(dist == DIST_ILLEGAL) {
 			return "(N/A - bug)";
 		} else if(dist == DIST_NO_COMPARE_SEQ) {
-			return "(N/A - charset missing)";
+			return "(No data for reference taxon)";
 		} else if(dist == DIST_SEQ_NA) {
-			return "(N/A)";
+			return "(No data)";
 		} else if(dist == DIST_NO_OVERLAP) {
-			return "(NO OVERLAP)";
+			return "(No overlap with reference)";
 		} else if(dist == DIST_SEQ_ON_TOP) {
 			return "(ON TOP)";
 		} else if(dist == DIST_CANCELLED) {
