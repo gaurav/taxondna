@@ -277,12 +277,12 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 			if(n_chars == 0)
 				return seq.getActualLength() + "";
 			else
-				return seq.getActualLength() + " (" + n_chars + " 'N' characters)";
+				return seq.getActualLength() + " (" + n_chars + " 'N')";
 		} else {
 			if(n_chars == 0)
-				return seq.getActualLength() + " (" + internalGaps + " gaps)";
+				return seq.getActualLength() + " (" + internalGaps + " indels)";
 			else
-				return seq.getActualLength() + " (" + internalGaps + " gaps, " + n_chars + " 'N' characters)";
+				return seq.getActualLength() + " (" + n_chars + " 'N', " + internalGaps + " indels)";
 		}
 	}
 
