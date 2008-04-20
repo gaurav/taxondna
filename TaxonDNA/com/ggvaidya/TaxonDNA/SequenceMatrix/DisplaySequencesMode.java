@@ -260,7 +260,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 			return "(CANCELLED)";
 
 		if(seq == null)
-			return "(N/A)";	
+			return "(No data)";
 		
 		// if GI is on, display GI!
 		if(display_gi_noes) {
