@@ -1661,10 +1661,10 @@ public class Sequence  implements Comparable, Testable {
 				// ignore gaps, too.
 			} else {
 				// but: is it a transition or transversions?
-				if(isPurine(ch1) && isPyrimidine(ch1)) {
+				if(!isPurine(ch1) && !isPyrimidine(ch1)) {
 					// ch1 is ambiguous
 					continue;
-				} else if(isPurine(ch2) && isPyrimidine(ch2)) {
+				} else if(!isPurine(ch2) && !isPyrimidine(ch2)) {
 					// ch2 is ambiguous
 					continue;
 				} else {
@@ -1688,7 +1688,7 @@ public class Sequence  implements Comparable, Testable {
 					) {
 						nTransversions++;
 					} else {
-						throw new RuntimeException("In getK2PDistance, comparing this=" + this + " with=" + seq2 + ": Unexpected branch of code encountered. Something is very, very wrong.");
+						throw new RuntimeException("In getK2PDistance, comparing this=" + this + " ['" + ch1 + "'] with=" + seq2 + " ['" + ch2 + "']: Unexpected branch of code encountered. Something is very, very wrong.");
 					}
 				}
 			}
