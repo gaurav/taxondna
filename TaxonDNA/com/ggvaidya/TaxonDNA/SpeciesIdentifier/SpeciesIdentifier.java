@@ -807,11 +807,12 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		uiExtensions.add((UIExtension)new Exporter(this));
 //		uiExtensions.add((UIExtension)new Randomizer(this));
 //		uiExtensions.add((UIExtension)new Tester(this));
-		uiExtensions.add((UIExtension)new ExportBySpeciesName(this));
 		uiExtensions.add((UIExtension)new SystemUsage(this));
 //		uiExtensions.add((UIExtension)new CombineDatasets(this));
 //		uiExtensions.add((UIExtension)new GenerateSubSet(this));
 //		uiExtensions.add((UIExtension)new EditDataSet(this));
+		uiExtensions.add((UIExtension)new ExportBySpeciesName(this));
+		uiExtensions.add((UIExtension)new OverlapAnalysis(this));
 	}
 
 //

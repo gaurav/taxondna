@@ -53,7 +53,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	
 	private Button		btn_Copy = new Button("Copy to Clipboard");
 
-	private SequenceList	list_consensuses;;
+	private SequenceList	list_consensuses;
 
 	private static final int	CHAR_LIMIT_ON_CLUSTER_NAMES = 30;	// err ... hard to explain. go look it up :p
 
@@ -706,6 +706,20 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 		pb.end();
 
+
+		pb = new ProgressDialog(
+				seqId.getFrame(),
+				"Writing up information ...",
+				"Formatting and writing the results, please wait.",
+				0);
+
+		try {
+			writeupItemStrings(pb);
+		} catch(DelayAbortedException e) {
+			seqId.unlockSequenceList();
+			return;
+		}
+		
 		FileDialog fd_saveConsensuses = new FileDialog(
 				seqId.getFrame(),
 				"Please select a file to save the consensuses into",
@@ -742,19 +756,6 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 			MessageBox mb_done = new MessageBox(seqId.getFrame(), "Done!", list_consensuses.count() + " consensus sequences were exported.");
 			mb_done.showMessageBox();
-		}
-
-		pb = new ProgressDialog(
-				seqId.getFrame(),
-				"Writing up information ...",
-				"Formatting and writing the results, please wait.",
-				0);
-
-		try {
-			writeupItemStrings(pb);
-		} catch(DelayAbortedException e) {
-			seqId.unlockSequenceList();
-			return;
 		}
 
 		selectItem(0);
