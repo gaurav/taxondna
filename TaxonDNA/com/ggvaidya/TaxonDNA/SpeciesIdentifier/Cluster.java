@@ -4,7 +4,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005, 2007
+    Copyright (C) Gaurav Vaidya, 2005, 2007-08
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -53,7 +53,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	
 	private Button		btn_Copy = new Button("Copy to Clipboard");
 
-	private SequenceList	list_consensuses;
+	private SequenceList	list_consensuses_lumped;
+	private SequenceList	list_consensuses_perfect;
+	private SequenceList	list_consensuses_split;
 
 	private static final int	CHAR_LIMIT_ON_CLUSTER_NAMES = 30;	// err ... hard to explain. go look it up :p
 
@@ -117,6 +119,27 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		if(i < item_strings.length) {
 		       text_main.setText(item_strings[i]);
 		}
+	}
+
+	/*
+	 * Just don't ask.
+	 */
+	private Sequence makeConsensusOfBin(Vector bin) throws SequenceException {
+		// Step 1. Go through all sequences, construct a consensus.
+		Iterator 	i_seqs = bin.iterator();
+		Sequence	consensus = null;
+		while(i_seqs.hasNext()) {
+			Sequence seq = (Sequence)	i_seqs.next();
+
+			if(consensus == null)
+				consensus = seq;
+			else {
+				consensus = consensus.getConsensus(seq);
+				// might throw exception
+			}
+		}
+
+		return consensus;
 	}
 
 	public void writeupItemStrings(DelayCallback delay) throws DelayAbortedException {	
@@ -260,8 +283,15 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				largest_no_of_species_in_a_cluster = hash_species_this.keySet().size();
 
 			String cluster_status =  "";
+			SequenceList list_of_consensus = null;
+			String cluster_type = null;
+			String species_name = null;
+				
 			if(hash_species_this.keySet().size() > 1) {
 				cluster_status = "Lumped\t(contains multiple species)";
+				list_of_consensus = list_consensuses_lumped;
+				cluster_type = "Lumped cluster multiple species";
+				species_name = "Multiple species";
 			} else {
 				// it's either:
 				// 1.	'perfect': all seqs of 1 sp, and EVERY seq of that sp
@@ -277,49 +307,39 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				// 5.	'no species names': none of the sequences in this cluster
 				//	have a species name.
 				//
-				if(bool_containsAllSequencesOfOneSpecies)
+				if(bool_containsAllSequencesOfOneSpecies) {
 					cluster_status = "Perfect\t(contains all sequences of one species)";
-				else {
-					String sp_Name = ( (String) (hash_species_this.keySet().toArray())[0] );
+					list_of_consensus = list_consensuses_perfect;
+					cluster_type = "Perfect cluster single species";
+
+					species_name = ( (String) (hash_species_this.keySet().toArray())[0] );
+				} else {
+					species_name = ( (String) (hash_species_this.keySet().toArray())[0] );
 					// so ... now we need to find other clusters containing sp_Name.
 					// which is pretty hard, considering. sigh.
 					cluster_status = "Split";	// One way or another
-
-					// Step 1. Go through all sequences, construct a consensus.
-					Iterator 	i_seqs = bin.iterator();
-					Sequence	consensus = null;
-					while(i_seqs.hasNext()) {
-						Sequence seq = (Sequence)	i_seqs.next();
-
-						if(consensus == null)
-							consensus = seq;
-						else {
-							try {
-								consensus = consensus.getConsensus(seq);
-							} catch(SequenceException e) {
-								item_strings[0] = "Clustering incomplete; failed at consensus of " + consensus + " and " + seq;
-								return;
-							}
-						}
-					}
-
-					Iterator i_species = hash_species_this.keySet().iterator();
-					while(i_species.hasNext()) {
-						String species_name = (String) i_species.next();
-						String consensusName = species_name + " (cluster #" + (x + 1) + ")";
-
-						// For each species name 
-						Sequence seq;
-						try {
-							seq = new Sequence(consensusName, consensus.getSequence()); 
-						} catch(SequenceException e) {
-							item_strings[0] = "Clustering incomplete; please recluster: could not process consensus sequence for " + consensusName;
-							return;
-						}
-
-						list_consensuses.add(seq);
-					}
+					list_of_consensus = list_consensuses_split;
+					cluster_type = "Split cluster single species";
 				}
+			}
+
+			Sequence consensus;
+			try {
+				consensus = makeConsensusOfBin(bin);
+			} catch(SequenceException e) {
+				item_strings[0] = "Clustering incomplete; consensus failed: " + e;
+				return;
+			}
+
+			String consensusName = cluster_type.replace(' ', '~') + " " + species_name + " (cluster #" + (x + 1) + ")";
+			try {
+				list_of_consensus.add(new Sequence(
+					consensusName,
+					consensus.getSequence()
+				));
+			} catch(SequenceException e) {
+				item_strings[0] = "Clustering incomplete; please recluster: could not process split consensus sequence for " + consensusName;
+				return;
 			}
 			
 			str.append(bin.size() + "\t" + hash_species_this.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\t" + cluster_status + "\n");
@@ -587,7 +607,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			text_main.setText("");
 
 			clusters = new Vector();
-			list_consensuses = new SequenceList();
+			list_consensuses_lumped = new SequenceList();
+			list_consensuses_perfect= new SequenceList();
+			list_consensuses_split	= new SequenceList();
 			
 			if(set != null) {
 				Iterator iter = set.iterator();
@@ -742,10 +764,23 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
 			try {
 				ff.writeFile(
-					file_to,
-					list_consensuses,
+					new java.io.File(file_to.getAbsolutePath() + "_lumped.txt"),
+					list_consensuses_lumped,
 					null
 				    );
+				
+				ff.writeFile(
+					new java.io.File(file_to.getAbsolutePath() + "_split.txt"),
+					list_consensuses_split,
+					null
+				);
+
+				ff.writeFile(
+					new java.io.File(file_to.getAbsolutePath() + "_perfect.txt"),
+					list_consensuses_perfect,
+					null
+				);
+							
 			} catch(DelayAbortedException e) {
 				return;
 			} catch(java.io.IOException e) {
@@ -754,7 +789,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				return;
 			}	
 
-			MessageBox mb_done = new MessageBox(seqId.getFrame(), "Done!", list_consensuses.count() + " consensus sequences were exported.");
+			MessageBox mb_done = new MessageBox(seqId.getFrame(), "Done!", "All consensus sequences were exported.");
 			mb_done.showMessageBox();
 		}
 
