@@ -190,7 +190,10 @@ public class FileManager implements FormatListener {
 	}
 
 	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
-	public void checkNameToUse() {
+	public void checkNameToUse(String str_sequence_name, String str_species_name) {
+		if(str_sequence_name == null)	str_sequence_name = "(No sequence name provided)";
+		if(str_species_name == null)	str_species_name =  "(No species name provided)";
+		
 		if(pref_useWhichName == PREF_NOT_SET_YET) {
 			Dialog dg = new Dialog(
 					matrix.getFrame(),
@@ -200,9 +203,9 @@ public class FileManager implements FormatListener {
 
 			dg.setLayout(new BorderLayout());
 
-			TextArea ta = new TextArea("", 4, 40, TextArea.SCROLLBARS_VERTICAL_ONLY);
+			TextArea ta = new TextArea("", 9, 60, TextArea.SCROLLBARS_VERTICAL_ONLY);
 			ta.setEditable(false);
-			ta.setText("Would you like to use the full sequence name? I could also try to determine the species name from the sequence name, and use that instead.");
+			ta.setText("Would you like to use the full sequence name? Sequence names from this file look like this:\n\t" + str_sequence_name + "\n\nI can also try to guess the species name, which looks like this:\n\t" + str_species_name +"\n\nNote that the species name might not be guessable for every sequence in this dataset.");
 			dg.add(ta);
 
 			Panel buttons = new Panel();
@@ -258,9 +261,37 @@ public class FileManager implements FormatListener {
 	 * we think is the right initial seq name NOW. 
 	 */
 	private void setupNamesToUse(SequenceList list) {
-		if(pref_useWhichName == PREF_NOT_SET_YET)
-			checkNameToUse();			// sorry! but you really should
-								// have figured this out yourself
+	    if (list.count() == 0) return;     // Don't handle empty sequence lists
+	    
+	    String str_sequence_name = "(No sequence name in this set contains a sequence name)";
+	    String str_species_name = "(No sequence name in this set contains a species name)";
+
+	    Iterator i_find_example = list.iterator();
+	    while (i_find_example.hasNext()) {
+		Sequence seq = (Sequence) i_find_example.next();
+		if (
+			seq.getFullName() != null &&
+			!seq.getFullName().equals("")
+                ) {
+		    // we have a full name
+		    str_sequence_name = seq.getFullName();
+		    
+		    if(
+			seq.getSpeciesName() != null &&
+                        !seq.getSpeciesName().equals("")
+		    )
+		    {
+			// we've got both!
+			str_species_name = seq.getSpeciesName();
+		    }
+		}
+	    }
+
+            if(pref_useWhichName == PREF_NOT_SET_YET)
+			checkNameToUse(
+                                    str_sequence_name,
+				    str_species_name
+                                );			
 
 		Iterator i = list.iterator();
 		while(i.hasNext()) {
@@ -284,10 +315,6 @@ public class FileManager implements FormatListener {
 	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
 		SequenceList sequences = null;
 		boolean sets_were_added = false;
-
-		// ask the user how he'd like to specify the species or column names (?!),
-		// and save the output for future use.
-		checkNameToUse();
 
 		try {
 			if(handler != null) {
