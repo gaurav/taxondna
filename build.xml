@@ -1,60 +1,73 @@
-<project default="compile">
-	<property name="build.dir" location="build"/>
-	<property resource="version.txt" />
+<project default = "compile">
+	<property name =        "build.dir"      location = "build"    />
+	<property file =        "version.txt" />
 
 	<!-- compile-time options -->
-	<property name="files.common" value="**/Common/**,**/DNA/**,**/Others/**,**/UI/**" />
+
+        <!-- Until TaxonDNA 1.5, code was written to target JRE 1.4. Since then,
+             we target JRE 1.5 instead. If you'd like to backport TaxonDNA to
+             JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
+             variable and fix all the issues which come up.
+        -->
+        <property name = "java.version" value = "1.5" />
+
+        <!-- files.common: (Common) files used by all the TaxonDNA tools -->
+	<property name = "files.common" value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**" />
 	
-	<!-- compile:			Compile will recompile all our Java code in one shot -->
-	<target name="compile">
+        <!--    Targets begin here. Possible targets include: compile, SpeciesIdentifier, SequenceMatrix,
+                GenBankExplorer, build, src, javadocs, clean, rebuild, run_*, sign
+        -->
+
+	<!-- compile:			Compile will recompile all our Java code into Java classes in one shot -->
+	<target name = "compile">
 		<javac 
-			srcdir="." 
-			debug="yes" 
-			optimize="yes" 
-			deprecation="yes" 
-			source="1.4"
-			excludes="Tests/**,Backup/**,Documentation/**,Release/**,build/**,Redacted/**"
-			destdir="${build.dir}/classes"
+			srcdir =        "." 
+			debug =         "yes" 
+			optimize =      "yes" 
+			deprecation =   "yes" 
+			source =        "${java.version}"
+			excludes =      "Tests/**, Backup/**, Documentation/**, Release/**, build/**, Redacted/**"
+			destdir =       "${build.dir}/classes"
 		>
-			<compilerarg value="-Xlint:unchecked" />
+			<compilerarg value = "-Xlint:unchecked" />
 		</javac>
 	</target>
 
 	<!-- SpeciesIdentifier:		Builds the Jar file for SpeciesIdentifier -->
-	<target name="SpeciesIdentifier" depends="compile">
+	<target name = "SpeciesIdentifier"      depends = "compile">
 		<jar  
-			destfile="Release/SpeciesIdentifier.jar" 
-			basedir="${build.dir}/classes" 
-			includes="${files.common},**/SpeciesIdentifier/**"
+			destfile =  "Release/SpeciesIdentifier.jar" 
+			basedir =   "${build.dir}/classes" 
+			includes =  "${files.common}, **/SpeciesIdentifier/**"
 		>
 			<manifest>
-				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
+				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
 			</manifest>
 		</jar>
 	</target>
 
 	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
-	<target name="SequenceMatrix" depends="compile">
+	<target name = "SequenceMatrix"         depends = "compile">
 		<jar  
-			destfile="Release/SequenceMatrix.jar" 
-			basedir="${build.dir}/classes" 
-			includes="${files.common},**/SequenceMatrix/**" 
+			destfile =  "Release/SequenceMatrix.jar" 
+			basedir =   "${build.dir}/classes" 
+			includes =  "${files.common}, **/SequenceMatrix/**" 
 		>
 			<manifest>
-				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
+				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
 			</manifest>
 		</jar>
 	</target>
 
 	<!-- GenBankExplorer:		Builds the Jar file for GenBankExplorer -->
-	<target name="GenBankExplorer" depends="compile">
+	<target name = "GenBankExplorer"        depends = "compile">
 		<jar  
-			destfile="Release/GenBankExplorer.jar" 
-			basedir="${build.dir}/classes" 
-			includes="${files.common},**/GenBankExplorer/**" 
+			destfile =  "Release/GenBankExplorer.jar" 
+			basedir =   "${build.dir}/classes" 
+			includes =  "${files.common}, **/GenBankExplorer/**" 
 		>
 			<manifest>
-				<attribute name="Main-Class" value="com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
+				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
 			</manifest>
 		</jar>
 	</target>
@@ -63,69 +76,58 @@
 					This is also the most convenient way to
 					ensure that all Jars are built
 
-					Does NOT make a final zip. 'release' does this.
+					Does NOT make a final zip. 'release' does that.
 	-->
-	<target name="build" depends="SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
-		<!--		<copy file="CHANGELOG.txt" todir="Release" />
-		<copy file="README.txt" todir="Release" overwrite="yes" />
-		-->
-
+	<target name = "build" depends = "SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
 	</target>
 
 	<!-- src:			Zips up the ENTIRE directory into one
 					file for backup.
 	-->
-	<target name="src">
+	<target name = "src">
 		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
 		<zip 
-			destfile="../TaxonDNA-src-${version}.zip"
-			basedir="../"
-			includes="TaxonDNA/**"
-			excludes="**/.svn"
-			comment="(c) Gaurav Vaidya, 2006"
+			destfile =      "../TaxonDNA-src-${taxondna.version}.zip"
+			basedir =       "../"
+			includes =      "TaxonDNA/**"
+			excludes =      "**/.svn, TaxonDNA/Releases"
+			comment =       "(c) Gaurav Vaidya, 2006, 2009"
 		/>
+                <move file = "../TaxonDNA-src-${taxondna.version}.zip" todir = "Releases" />
 	</target>
 
 	<!-- javadocs:			Recompiles the JavaDocs (in Documentation/Javadocs) -->
-	<target name="javadocs" depends="compile">
+	<target name = "javadocs"   depends = "compile">
 		<javadoc 
-			packagenames="com.ggvaidya.TaxonDNA.*"
-			sourcepath="."
-			source="1.4"
-			destdir="Documentation/Javadocs/"
+			packagenames =  "com.ggvaidya.TaxonDNA.*"
+			sourcepath =    "."
+			source =        "${java.version}"
+			destdir =       "Documentation/Javadocs/"
 		/>
 	</target>
 
 	<!-- clean:			Cleans up the build path -->
-	<target name="clean">
-		<delete dir="${build.dir}" />
-		<mkdir dir="${build.dir}" />
-		<mkdir dir="${build.dir}/classes" />
+	<target name = "clean">
+		<delete     dir = "${build.dir}"            />
+		<mkdir      dir = "${build.dir}"            />
+		<mkdir      dir = "${build.dir}/classes"    />
 	</target>
 
 	<!-- rebuild:			Cleans the build path, then generates a build -->
-	<target name="rebuild" depends="clean,build">
+	<target name = "rebuild"    depends = "clean, build">
 	</target>
 
 	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
-	<target name="release" depends="build">
+	<target name = "release"    depends = "build">
 		<zip 
-			destfile="../TaxonDNA-${version}.zip"
-			basedir="Release/"
-			comment="(c) Gaurav Vaidya, 2007"
-			update="false"
+			destfile =      "../TaxonDNA-${taxondna.version}.zip"
+			basedir =       "Release/"
+			comment =       "(c) Gaurav Vaidya, 2007, 2009"
+			update =        "false"
 		/>
+                <move file = "../TaxonDNA-${taxondna.version}.zip" todir = "Releases" />
 	</target>
 
-	<!-- 	
-		Dummy target to just build the GBE file (and ONLY the GBE file). 
-		Unless you're *sure* you didn't modify code outside GenBankExplorer.*,
-		you'll need to ant 'clean' and 'release' to make sure everything gets
-		recompiled.
-	-->
-	<target name="gbx" depends="GenBankExplorer">
-	</target>
-        
         <!--
                 NetBeans needs targets for running specific programs. Can't say
                 that's a bad idea.
@@ -144,9 +146,9 @@
         </target>
 
 	<target name="sign" depends="SpeciesIdentifier, SequenceMatrix, GenBankExplorer">
-		<signjar jar="Release/SpeciesIdentifier.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne"  />
-		<signjar jar="Release/SequenceMatrix.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
-		<signjar jar="Release/GenBankExplorer.jar" alias="taxondna" storepass="567Gandhi^(" keypass="TrustMeOnThisOne" />
+		<signjar jar = "Release/SpeciesIdentifier.jar"  alias = "taxondna"   storepass = "123$%^Gta(9"  /> 
+		<signjar jar = "Release/SequenceMatrix.jar"     alias = "taxondna"   storepass = "123$%^Gta(9"  />
+		<signjar jar = "Release/GenBankExplorer.jar"    alias = "taxondna"   storepass = "123$%^Gta(9"  />
 	</target>
         
 </project>
