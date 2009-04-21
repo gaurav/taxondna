@@ -580,8 +580,7 @@ public class FileManager implements FormatListener {
 		rl.add(new Label("Export as:"), RightLayout.NEXTLINE);
 		Choice choice_exportAs = new Choice();
 		choice_exportAs.add("Interleaved");
-		choice_exportAs.add("Blocks (NOT usable on Macintosh versions of PAUP* and MacClade!)");
-		choice_exportAs.add("One single (potentially very long) line");
+		choice_exportAs.add("Non-interleaved");
 		rl.add(choice_exportAs, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
 		rl.add(new Label("Interleave at:"), RightLayout.NEXTLINE);
@@ -609,9 +608,6 @@ public class FileManager implements FormatListener {
 					exportAs = Preferences.PREF_NEXUS_INTERLEAVED;
 					break;
 				case 1:
-					exportAs = Preferences.PREF_NEXUS_BLOCKS;
-					break;
-				case 2:
 					exportAs = Preferences.PREF_NEXUS_SINGLE_LINE;
 					break;
 			}
