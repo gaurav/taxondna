@@ -238,7 +238,7 @@ public class FileManager implements FormatListener {
 		MessageBox mb = new MessageBox(
 			matrix.getFrame(),
 			"Replace external gaps with missing characters during import?",
-			"Would you like to recode external gaps as question marks in the column '" + colName + "'?",
+			"Would you like to recode external gaps as question marks?",
 			MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
 		);
 		if(mb.showMessageBox() == MessageBox.MB_YES) {
