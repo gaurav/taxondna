@@ -809,7 +809,7 @@ class ToolbarManager implements ActionListener {
 //		toolbar.add(tf_seqName);
 
 		
-		btn = new JButton("Make reference taxon");
+		btn = new JButton("Make outgroup");
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
@@ -904,7 +904,7 @@ class ToolbarManager implements ActionListener {
 				tm.cancelRow(currentSeqName);
 		}
 
-		if(cmd.equals("Make reference taxon")) {
+		if(cmd.equals("Make outgroup")) {
 			if(currentSeqName != null)
 				tm.setReferenceSequence(currentSeqName);
 		}
