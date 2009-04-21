@@ -69,7 +69,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	private java.awt.List		list_totalCharSets	=	new java.awt.List(5);
 	private Button			btn_totalCharSets_Delete=	new Button("Delete this taxonset");
 
-	private Checkbox		check_generateGeneSets 	=	new Checkbox("Generate taxonsets containing particular genes");
+	private Checkbox		check_generateGeneSets 	=	new Checkbox("Generate taxonsets for all taxa having information for a particular gene");
 
 	private Button 			btn_Ok 			=	new Button("OK");
 
