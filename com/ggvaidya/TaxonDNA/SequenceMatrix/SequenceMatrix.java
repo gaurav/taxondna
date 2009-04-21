@@ -590,8 +590,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		chmi.addItemListener(this);
 		view.add(chmi);
 
-                view.addSeparator();
-
 		// TODO: remove this if we need corelation mode back.
 /*
 		chmi = new CheckboxMenuItem("As correlations", false);
