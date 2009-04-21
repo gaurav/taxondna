@@ -539,12 +539,37 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		Menu 	file		=	new Menu("File");
 		file.add(new MenuItem("Clear all"));
 		file.add(new MenuItem("Add sequences"));
-		file.add(new MenuItem("Save"));
-//		file.addSeparator();
-//		file.add(new MenuItem("Save", new MenuShortcut(KeyEvent.VK_S)));
-//		file.add(new MenuItem("Save As", null));
-				// new MenuShortcut(KeyEvent.VK_V))); --> Gets in the way of Ctrl-C Ctrl-V
-				// new MenuShortcut(KeyEvent.VK_A)) --> deleting the shortcut since it gets in the way of Ctrl-A on Windows
+		//file.add(new MenuItem("Save"));
+                file.addSeparator();
+        
+                // Import submenu
+		Menu	imports		= 	new Menu("Import");
+
+   		Iterator i = SequenceList.getFormatHandlers().iterator();
+		int count = 0;
+		while(i.hasNext()) {
+			FormatHandler handler = (FormatHandler) i.next();
+			MenuItem menuItem = new MenuItem(handler.getShortName() + ": " + handler.getFullName());
+			menuItem.setActionCommand("Import_" + count);
+			menuItem.addActionListener(this);
+			imports.add(menuItem);
+			count++;
+		}
+		
+		imports.addActionListener(this);
+		file.add(imports);
+
+                // Export submenu
+		Menu	export 		= 	new Menu("Export");
+		export.add(new MenuItem("Export table as tab-delimited"));
+		export.add(new MenuItem("Export table as sequences (one file per column)"));
+		export.add(new MenuItem("Export columns grouped randomly"));
+		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export sequences as TNT"));
+		export.addActionListener(this);
+		file.add(export);
+
+                // And back to the File menu proper.
 		file.addSeparator();
 		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
@@ -560,54 +585,23 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		view.add(chmi);
 		last_chmi = chmi;
 
-
-		view.addActionListener(this);
-		menubar.add(view);
-
-		// Analysis menu
-		Menu	analyses	= 	new Menu("Analyses");
-		analyses.add(new MenuItem("Find all zero percent distances"));
-
 		chmi = new CheckboxMenuItem("As pairwise distances", false);
 		chmi_displayDistances = chmi;
 		chmi.addItemListener(this);
-		analyses.add(chmi);
+		view.add(chmi);
 
+                view.addSeparator();
+
+		// TODO: remove this if we need corelation mode back.
+/*
 		chmi = new CheckboxMenuItem("As correlations", false);
 		chmi_displayCorrelations = chmi;
 		chmi.addItemListener(this);
-		// TODO: remove this we need need corelation mode back.
-//		analyses.add(chmi);
 
-		analyses.addActionListener(this);
-		menubar.add(analyses);
-
-		// Import menu
-		Menu	imports		= 	new Menu("Import");
-
-   		Iterator i = SequenceList.getFormatHandlers().iterator();
-		int count = 0;
-		while(i.hasNext()) {
-			FormatHandler handler = (FormatHandler) i.next();
-			MenuItem menuItem = new MenuItem(handler.getShortName() + ": " + handler.getFullName());
-			menuItem.setActionCommand("Import_" + count);
-			menuItem.addActionListener(this);
-			imports.add(menuItem);
-			count++;
-		}
-		
-		imports.addActionListener(this);
-		menubar.add(imports);
-
-		// Export menu
-		Menu	export 		= 	new Menu("Export");
-		export.add(new MenuItem("Export table as tab-delimited"));
-		export.add(new MenuItem("Export table as sequences (one file per column)"));
-		export.add(new MenuItem("Export columns grouped randomly"));
-		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
-		export.add(new MenuItem("Export sequences as TNT"));
-		export.addActionListener(this);
-		menubar.add(export);
+		analyses.add(chmi);
+*/
+		view.addActionListener(this);
+		menubar.add(view);
 
 		// Settings menu
 		Menu 	settings	=	new Menu("Settings");
