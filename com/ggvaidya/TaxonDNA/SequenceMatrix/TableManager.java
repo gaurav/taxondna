@@ -65,7 +65,7 @@ public class TableManager implements ActionListener {
 //
 	// The SequenceMatrix is the Big Guy, and we report up to him (value set in constructor)
 	// also: the table we are managing
-	private SequenceMatrix 	matrix	=	null;			// the Application
+	public SequenceMatrix 	matrix	=	null;			// the Application
 	private JTable		table	=	null;			// the JTable we're managing
 	private JTextField	tf_statusBar = 	new JTextField();	// the statusbar of the window we're managing
 	private ToolbarManager	toolbarManager = new ToolbarManager(this);
@@ -820,6 +820,11 @@ class ToolbarManager implements ActionListener {
 		btn = new JButton("Cancel entire taxon");
 		btn.addActionListener(this);
 		toolbar.add(btn);
+
+                btn = new JButton("Find 0% distances");
+                btn.addActionListener(this);
+                toolbar.add(btn);
+
 		setToolbarStatus("", "");
 
 		table.addMouseListener(new MouseAdapter() {
@@ -908,6 +913,10 @@ class ToolbarManager implements ActionListener {
 			if(currentSeqName != null)
 				tm.setReferenceSequence(currentSeqName);
 		}
+
+                if(cmd.equals("Find 0% distances")) {
+                    tm.matrix.findDistances.go();
+                }
 	}
 
 	public String getCurrentColumn() {

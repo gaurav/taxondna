@@ -76,7 +76,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
 
 	// analyses
-	private FindDistances	findDistances		= new FindDistances(this); // helps you find distances
+	public FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
 	// CheckboxMenuItems corresponding to the possible 'views' the program can be in.
 	private CheckboxMenuItem chmi_displaySequences	= null;
