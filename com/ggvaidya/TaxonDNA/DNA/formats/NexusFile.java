@@ -935,7 +935,7 @@ public class NexusFile extends BaseFormatHandler {
                                                 token != NexusTokenizer.TT_WORD ||
                                                 !tok.sval.equalsIgnoreCase(str_positions[x])
                                             )
-                                                //throw formatException(tok, "I expect '" + str_positions[x] + "' to be in the correct order in CODONSETPOS. The standard says so!");
+                                                //throw formatException(tok, "I expect '" + str_positions[x] + "' to be in the correct order in CODONPOSSET. The standard says so!");
                                                 // On second thoughts: keep going.
                                                 continue;
 
@@ -945,7 +945,7 @@ public class NexusFile extends BaseFormatHandler {
 
                                         // Consume the last ';'
                                         if(token != ';')
-                                            throw formatException(tok, "Wait, the CODONSETPOS didn't end with ';' (it ended with " + (char) token + "/" + tok.sval + "). I wasn't expecting that. Ouch.");
+                                            throw formatException(tok, "Wait, the CODONPOSSET didn't end with ';' (it ended with " + (char) token + "/" + tok.sval + "). I wasn't expecting that. Ouch.");
 
 				// commands we ignore in CODONS 
 				} else if(
