@@ -7,7 +7,7 @@
 
 /*
  * TaxonDNA
- * Copyright (C) 2005-08 Gaurav Vaidya
+ * Copyright (C) 2005-09 Gaurav Vaidya
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -32,6 +32,6 @@ public class Versions {
 	 * Returns the common version string for the entire TaxonDNA package. 
 	 */
 	public static String getTaxonDNA() {
-		return "1.6-dev1";
+		return "1.6.1-dev1";
 	}
 }
