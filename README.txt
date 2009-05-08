@@ -1,5 +1,5 @@
-Readme for TaxonDNA 1.6-dev1
-============================
+Readme for TaxonDNA 1.6.1
+==========================
 
 CONTENTS
 1. 	System requirements
