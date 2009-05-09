@@ -80,6 +80,266 @@ public class FileManager implements FormatListener {
 		}
 	}
 
+    /**
+     * A FileLoadDialog handles the UI for loading a file, including asking multiple questions,
+     * reporting multiple formatting errors, or otherwise guiding you through a load. If there's
+     * something to report, we're report it all in one shot at the end. If there's nothing to
+     * report, we'll close automatically (but that's not very likely).
+     */
+    class FileLoadDialog extends Dialog implements FormatListener, ActionListener, Runnable {
+        // Our loading responsibilities
+        private File            file;
+        private FormatHandler   formatHandler;
+
+
+        // UI stuffs
+        private Button  btn_Close = new Button("Close");
+
+        /**
+         * The standard constructor.
+         */
+        public FileLoadDialog(Frame parent, File fileBeingProcessed, FormatHandler handlerToUse) {
+            // Set us up as a dialog.
+            super(parent, "Loading " + fileBeingProcessed, true);
+        
+            // Get our inputs straight.
+            file = fileBeingProcessed;
+            formatHandler = handlerToUse;
+
+            String str_handler =    "(unknown handler)";
+            if(formatHandler != null)
+                str_handler = formatHandler.getFullName();
+
+            setTitle("Loading " + file + " with " + str_handler);
+
+            // Organize the dialog.
+            RightLayout rl = new RightLayout(this);
+            rl.add(new Label("OH HAI"), RightLayout.NONE); 
+
+            btn_Close.addActionListener(this);
+            rl.add(btn_Close,      RightLayout.NEXTLINE);
+
+            // Pack it in good and nice.
+            pack();
+
+            // Spawn off a thread to read the file itself.
+            Thread th = new Thread(this, "Loading " + file + " using handler " + str_handler);
+            th.start();
+
+            // Go go FileLoadDialog!
+            setVisible(true);
+        }
+
+        /**
+         * All processing happens here.
+         */
+        public void run() {
+            SequenceList sequences = null;
+            boolean sets_were_added = false;
+            FormatHandler handler = formatHandler;
+
+            try {
+                if(handler != null) {
+                    handler.addFormatListener(this);
+
+                    sequences = new SequenceList(
+                            file,	
+                            handler,
+                            new ProgressDialog(
+                                matrix.getFrame(), 
+                                "Loading file ...", 
+                                "Loading '" + file + "' (of format " + handler.getShortName() + " into memory. Sorry for the delay!",
+                                ProgressDialog.FLAG_NOCANCEL
+                                )
+                            );
+                } else {
+                    sequences = SequenceList.readFile(
+                            file, 
+                            new ProgressDialog(
+                                matrix.getFrame(), 
+                                "Loading file ...", 
+                                "Loading '" + file + "' into memory. Sorry for the delay!",
+                                ProgressDialog.FLAG_NOCANCEL
+                                ),
+                            this		// use us as the format listener
+                            );
+                }
+
+            } catch(SequenceListException e) {
+                MessageBox mb = new MessageBox(matrix.getFrame(), "Could not read file!", "I could not understand a sequence in this file. Please fix any errors in the file.\n\nThe technical description of the error is: " + e);
+                mb.go();
+
+                return;
+            } catch(DelayAbortedException e) {
+                // pass it on, no returns
+                // TODO FOR REAL: Set up a way to tell ourselves to report a DelayAbortedException.
+                return; 
+            }
+
+            // now, we're almost done with this file ... bbbut ... before we do
+            // do we have sets?
+            synchronized(hash_sets) {
+                if(hash_sets.size() > 0) {
+                    // we do!
+                    MessageBox mb = new MessageBox(
+                            matrix.getFrame(),
+                            "I see sets!",
+                            "The file " + file + " contains character sets. Do you want me to split the file into character sets?",
+                            MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
+
+                    if(mb.showMessageBox() == MessageBox.MB_YES) {
+                        //					pd.begin();
+
+                        /////////////////////////////////////////////////////////////////////////////////
+                        // TODO: This code is busted. Since we're not sure what ORDER the messages come
+                        // in (or that they get entered into the vectors), we need to make sure we SORT
+                        // the vectors before we start anything funky. Of course, we can't sort them as
+                        // is, which means another layer of hacks.
+                        // TODO.
+                        /////////////////////////////////////////////////////////////////////////////////
+
+                        // do stuff
+                        //
+                        // this is how it works:
+                        // 1.	we will NEVER let anybody else see 'sequences' (our main SequenceList)
+                        // 2.	we split sequences into subsequencelists. These, we will let people see.
+                        // 3.	any characters remaining 'unmatched' are thrown into 'no sets'
+                        // 4.	we split everything :(. this is the best solution, but, err, that
+                        // 	means we have to figure out a delete column. Sigh.
+                        //
+                        sequences.lock();
+
+                        Iterator i_sets = hash_sets.keySet().iterator();
+                        int set_count = 0;
+                        while(i_sets.hasNext()) {
+                            //pd.delay(set_count, hash_sets.size());
+                            set_count++;
+
+                            String name = (String) i_sets.next();
+                            Vector v = (Vector) hash_sets.get(name);
+
+                            ProgressDialog pd = new ProgressDialog(
+                                    matrix.getFrame(),
+                                    "Please wait, separating out set '" + name + "' ...",
+                                    "Please wait while I separate out '" + name + "'. Sorry for the wait!");
+                            pd.begin();		// and the addSequenceList(..., pd) call will
+                            // eventually call pd.end(). It's hacky, I know!
+                            // I'm sorry, Grandpa!
+
+
+                            Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
+
+                            SequenceList sl = new SequenceList();
+
+                            Iterator i_seq = sequences.iterator();
+                            while(i_seq.hasNext()) {
+                                Sequence seq = (Sequence) i_seq.next();
+                                Sequence seq_out = new Sequence();
+                                seq_out.changeName(seq.getFullName());
+
+                                Iterator i_coords = v.iterator();
+                                while(i_coords.hasNext()) {
+                                    FromToPair ftp = (FromToPair)(i_coords.next());
+                                    int from = ftp.from; 
+                                    int to = ftp.to;
+
+                                    try {
+                                        // System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+                                        Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
+                                        seq_out = seq_out.concatSequence(s);
+                                    } catch(SequenceException e) {
+                                        pd.end();
+
+                                        MessageBox mb_2 = new MessageBox(
+                                                matrix.getFrame(),
+                                                "Uh-oh: Error forming a set",
+                                                "According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
+                                        mb_2.go();
+                                        sequences.unlock();
+                                        hash_sets.clear();
+                                        sets_were_added = true;
+
+                                        // we're done here. I honestly don't remember why.
+                                        // but I have FAITH, and that is what matters.
+                                        return;
+                                    }
+                                }
+
+                                // WARNING: note that this will eliminate any deliberately gapped regions!
+                                // (which is, I guess, okay)
+                                //System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+                                if(seq_out.getActualLength() > 0)
+                                    sl.add(seq_out);
+                            }
+                            pd.end();
+
+                            setupNamesToUse(sl);
+                            checkGappingSituation(name, sl);
+
+                            StringBuffer buff_complaints = new StringBuffer();
+                            matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
+                            if(buff_complaints.length() > 0) {
+                                new MessageBox(	matrix.getFrame(),
+                                        name + ": Some sequences weren't added!",
+                                        "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+                                        ).go();
+                            }
+                        }
+
+                        sequences.unlock();
+
+                        hash_sets.clear();
+                        sets_were_added = true;
+                    }
+                }
+                // if we're here, we've only got one 'sequences'.
+                // so add it!
+                if(!sets_were_added) {
+                    setupNamesToUse(sequences);
+                    checkGappingSituation(file.toString(), sequences);
+
+                    StringBuffer buff_complaints = new StringBuffer();
+                    matrix.getTableManager().addSequenceList(sequences,
+                            buff_complaints,
+                            new ProgressDialog(
+                                matrix.getFrame(),
+                                "Please wait, adding sequences ...",
+                                "The new sequences are being added to the table now. Sorry for the delay!"
+                                )
+                            );
+
+                    if(buff_complaints.length() > 0) {
+                        new MessageBox(	
+                                matrix.getFrame(),
+                                file + ": Some sequences weren't added!",
+                                "Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
+                                ).go();
+                    }
+                }
+            }
+        }
+
+        /**
+         * Is informed in case of an formatting exception.
+         * @return true if we completely consume this event, false if its okay for other people to know about it.
+         * @exception FormatException If something's wrong in the formatting.
+         */
+         public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {
+            return true;
+         }
+
+         /**
+          * Our standard action listener. Keeps an ear on our buttons, and make sure this dialog can be
+          * closed if things go pear shaped.
+          */
+         public void actionPerformed(ActionEvent e) {
+            if(e.getSource().equals(btn_Close)) {
+                // Close ourselves.
+                this.setVisible(false);
+            }
+         }
+    }
+
 //
 // 	1.	CONSTRUCTORS.
 //
@@ -287,189 +547,9 @@ public class FileManager implements FormatListener {
          * back when most of the system wasn't. Now, it all is. Boo.
 	 */
 	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
-		SequenceList sequences = null;
-		boolean sets_were_added = false;
-
-		try {
-			if(handler != null) {
-				handler.addFormatListener(this);
-
-				sequences = new SequenceList(
-					file,	
-					handler,
-					new ProgressDialog(
-						matrix.getFrame(), 
-						"Loading file ...", 
-						"Loading '" + file + "' (of format " + handler.getShortName() + " into memory. Sorry for the delay!",
-						ProgressDialog.FLAG_NOCANCEL
-						)
-				);
-			} else {
-				sequences = SequenceList.readFile(
-					file, 
-					new ProgressDialog(
-						matrix.getFrame(), 
-						"Loading file ...", 
-						"Loading '" + file + "' into memory. Sorry for the delay!",
-						ProgressDialog.FLAG_NOCANCEL
-						),
-					this		// use us as the format listener
-					);
-			}
-
-		} catch(SequenceListException e) {
-			MessageBox mb = new MessageBox(matrix.getFrame(), "Could not read file!", "I could not understand a sequence in this file. Please fix any errors in the file.\n\nThe technical description of the error is: " + e);
-			mb.go();
-
-			return;
-		} catch(DelayAbortedException e) {
-			// pass it on, no returns
-			throw e;
-		}
-
-		// now, we're almost done with this file ... bbbut ... before we do
-		// do we have sets?
-		synchronized(hash_sets) {
-			if(hash_sets.size() > 0) {
-				// we do!
-				MessageBox mb = new MessageBox(
-						matrix.getFrame(),
-						"I see sets!",
-						"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
-						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
-
-				if(mb.showMessageBox() == MessageBox.MB_YES) {
-//					pd.begin();
-
-					/////////////////////////////////////////////////////////////////////////////////
-					// TODO: This code is busted. Since we're not sure what ORDER the messages come
-					// in (or that they get entered into the vectors), we need to make sure we SORT
-					// the vectors before we start anything funky. Of course, we can't sort them as
-					// is, which means another layer of hacks.
-					// TODO.
-					/////////////////////////////////////////////////////////////////////////////////
-
-					// do stuff
-					//
-					// this is how it works:
-					// 1.	we will NEVER let anybody else see 'sequences' (our main SequenceList)
-					// 2.	we split sequences into subsequencelists. These, we will let people see.
-					// 3.	any characters remaining 'unmatched' are thrown into 'no sets'
-					// 4.	we split everything :(. this is the best solution, but, err, that
-					// 	means we have to figure out a delete column. Sigh.
-					//
-					sequences.lock();
-
-					Iterator i_sets = hash_sets.keySet().iterator();
-					int set_count = 0;
-					while(i_sets.hasNext()) {
-						//pd.delay(set_count, hash_sets.size());
-						set_count++;
-						
-						String name = (String) i_sets.next();
-						Vector v = (Vector) hash_sets.get(name);
-						
-						ProgressDialog pd = new ProgressDialog(
-							matrix.getFrame(),
-							"Please wait, separating out set '" + name + "' ...",
-							"Please wait while I separate out '" + name + "'. Sorry for the wait!");
-						pd.begin();		// and the addSequenceList(..., pd) call will
-									// eventually call pd.end(). It's hacky, I know!
-									// I'm sorry, Grandpa!
-
-
-						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
-
-						SequenceList sl = new SequenceList();
-
-						Iterator i_seq = sequences.iterator();
-						while(i_seq.hasNext()) {
-							Sequence seq = (Sequence) i_seq.next();
-							Sequence seq_out = new Sequence();
-							seq_out.changeName(seq.getFullName());
-
-							Iterator i_coords = v.iterator();
-							while(i_coords.hasNext()) {
-								FromToPair ftp = (FromToPair)(i_coords.next());
-								int from = ftp.from; 
-								int to = ftp.to;
-
-								try {
-									// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
-									seq_out = seq_out.concatSequence(s);
-								} catch(SequenceException e) {
-									pd.end();
-
-									MessageBox mb_2 = new MessageBox(
-											matrix.getFrame(),
-											"Uh-oh: Error forming a set",
-											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
-									mb_2.go();
-									sequences.unlock();
-									hash_sets.clear();
-									sets_were_added = true;
-
-									// we're done here. I honestly don't remember why.
-									// but I have FAITH, and that is what matters.
-									return;
-								}
-							}
-
-							// WARNING: note that this will eliminate any deliberately gapped regions!
-							// (which is, I guess, okay)
-							//System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
-							if(seq_out.getActualLength() > 0)
-								sl.add(seq_out);
-						}
-						pd.end();
-
-						setupNamesToUse(sl);
-						checkGappingSituation(name, sl);
-
-						StringBuffer buff_complaints = new StringBuffer();
-						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
-						if(buff_complaints.length() > 0) {
-							new MessageBox(	matrix.getFrame(),
-									name + ": Some sequences weren't added!",
-									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
-							).go();
-						}
-					}
-
-					sequences.unlock();
-
-					hash_sets.clear();
-					sets_were_added = true;
-				}
-			}
-		}
-
-		// if we're here, we've only got one 'sequences'.
-		// so add it!
-		if(!sets_were_added) {
-			setupNamesToUse(sequences);
-			checkGappingSituation(file.toString(), sequences);
-
-			StringBuffer buff_complaints = new StringBuffer();
-			matrix.getTableManager().addSequenceList(sequences,
-					buff_complaints,
-					new ProgressDialog(
-						matrix.getFrame(),
-						"Please wait, adding sequences ...",
-						"The new sequences are being added to the table now. Sorry for the delay!"
-					)
-				);
-
-			if(buff_complaints.length() > 0) {
-				new MessageBox(	
-					matrix.getFrame(),
-					file + ": Some sequences weren't added!",
-					"Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
-				).go();
-			}
-		}
-	}
+                // We pop up a FileLoadDialog for each loaded file, to report back on what's going on.
+                FileLoadDialog f = new FileLoadDialog(matrix.getFrame(), file, handler);
+    	}
 
 	/**
 	 * The Thread responsible for the asynchronous addFile().
