@@ -150,37 +150,11 @@ public class FileManager implements FormatListener {
 
 	/**
 	 * Adds the file to this dataset, using the specified handler.
-	 * How this works is a little non-logical: addFile() immediately
-	 * queues up the file for addition, spawns a thread
-	 * to handle the actual file loading, and returns immediately.
-	 *
-	 * The upshot of this is that addFile() is non-blocking:
-	 * you are NOT guaranteed that the file will be loaded
-	 * once addFile() returns.
-	 *
-	 * We will lock the interface, and only unlock it once the
-	 * files are loaded. This means that if you're waiting for
-	 * input (i.e. the user clicking on a menu option), you're
-	 * okay. But do NOT begin calculations immediately after
-	 * you've called addFile().
-	 *
-	 * This is a convenience function, since there are a lot
-	 * of functions (particularly the drag-drop system)
-	 * which needs asynchronous addition. They are also slightly
-	 * faster, since the difference SequenceLists can be
-	 * created independently.
-	 *
-	 * If you really need a synchronous add(), let me know
-	 * and I'll write one.
+         * This is completely synchronous. Sorry about that.
 	 *
 	 */
 	public void addFile(File file, FormatHandler handler) {
 		synchronized(filesToLoad) {
-			//filesToLoad.add(file);
-			//filesToLoad.add(handler);	// primitive two-variable list
-
-			//Thread t = new Thread(this);
-			//t.start();
 			try {
 				addNextFile(file, handler);
 			} catch(DelayAbortedException e) {
@@ -309,8 +283,8 @@ public class FileManager implements FormatListener {
 	}
 
 	/**
-	 * Loads the file and handler. This is *very* synchronous, so please
-	 * call only from the Thread.
+	 * Loads the file and handler. This is *very* synchronous, which mattered
+         * back when most of the system wasn't. Now, it all is. Boo.
 	 */
 	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
 		SequenceList sequences = null;
