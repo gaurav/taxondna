@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -258,7 +258,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 			FileDialog fd = new FileDialog(
 					getFrame(),
-					"Choose filename to import as " + handler.getShortName(),
+					"Choose file to import as " + handler.getShortName(),
 					FileDialog.LOAD);
 
 			fd.setVisible(true);

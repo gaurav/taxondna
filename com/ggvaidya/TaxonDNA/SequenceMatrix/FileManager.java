@@ -14,7 +14,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -538,7 +538,7 @@ public class FileManager implements FormatListener {
 	 * Ask the user for the file, even.
 	 */
 	public void addFile() {
-		FileDialog fd = new FileDialog(matrix.getFrame(), "Which file would you like to open?", FileDialog.LOAD);
+		FileDialog fd = new FileDialog(matrix.getFrame(), "Which file would you like to add?", FileDialog.LOAD);
 		fd.setVisible(true);
 
 		if(fd.getFile() != null) {
