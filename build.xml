@@ -118,8 +118,13 @@
 	<target name = "rebuild"    depends = "clean, build">
 	</target>
 
+        <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
+        <target name = "SequenceMatrix.app"     depends = "build">
+            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/Sequence Matrix.app/Contents/Resources/Java" />
+        </target>
+
 	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
-	<target name = "release"    depends = "build">
+	<target name = "release"    depends = "build, SequenceMatrix.app">
 		<zip 
 			destfile =      "../TaxonDNA-${taxondna.version}.zip"
 			basedir =       "Release/"
