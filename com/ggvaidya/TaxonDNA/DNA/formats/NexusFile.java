@@ -786,7 +786,7 @@ public class NexusFile extends BaseFormatHandler {
          * 
          * Note that the first argument is 0 for 'N', and 1, 2, 3 for the three positions respectively.
          */
-        private void addCodonPosSet(int pos, NexusTokenizer tok) throws FormatException, IOException {
+        private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok) throws FormatException, IOException {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
 
@@ -822,7 +822,7 @@ public class NexusFile extends BaseFormatHandler {
                     token = tok.nextToken();
                     if(token == '-') {
                         if(tok.nextToken() != NexusTokenizer.TT_WORD) {
-                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from);
+                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
                             tok.pushBack();
                             continue;
                         }
@@ -830,7 +830,7 @@ public class NexusFile extends BaseFormatHandler {
                         to = Integer.parseInt(tok.sval);
 
                         if(tok.nextToken() != '\\') {
-                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from));
+                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from)));
 
                             tok.pushBack();
                             continue;
@@ -840,7 +840,7 @@ public class NexusFile extends BaseFormatHandler {
                             throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!"); 
                         }
 
-                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from));
+                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from)));
 
                     } else {
                         tok.pushBack();
@@ -945,7 +945,7 @@ public class NexusFile extends BaseFormatHandler {
                                                 // On second thoughts: keep going.
                                                 continue;
 
-                                            addCodonPosSet(x, tok);
+                                            addCodonPosSet(x, evt, tok);
                                             token = tok.nextToken();
                                         }
 
