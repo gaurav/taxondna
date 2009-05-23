@@ -19,7 +19,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005-08 Gaurav Vaidya
+    Copyright (C) 2005-09 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -50,11 +50,12 @@ public class NexusFile extends BaseFormatHandler {
 	public static final int EXPORT_AS_SINGLE_LINE = 	2;
 	public static final int EXPORT_AS_INTERLEAVED =	        3;
 	
-		// what is the maximum lengh of taxon names allowed?
+	// what is the maximum lengh of taxon names allowed?
 	private int MAX_TAXON_LENGTH = 	32;
-		// when sequences get bigger than INTERLEAVE_AT, we'll
-		// interlace to avoid confusion. Of course, we can't
-		// interlace unless we interlace EVERYTHING, so we
+
+	// when sequences get bigger than INTERLEAVE_AT, we'll
+	// interlace to avoid confusion. Of course, we can't
+	// interlace unless we interlace EVERYTHING, so we
 	private int INTERLEAVE_AT = 	80;	
 
 	/** Returns the extension. We'll go with '.nex', our most common extension */
@@ -821,6 +822,7 @@ public class NexusFile extends BaseFormatHandler {
                     token = tok.nextToken();
                     if(token == '-') {
                         if(tok.nextToken() != NexusTokenizer.TT_WORD) {
+                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from);
                             tok.pushBack();
                             continue;
                         }
@@ -828,6 +830,8 @@ public class NexusFile extends BaseFormatHandler {
                         to = Integer.parseInt(tok.sval);
 
                         if(tok.nextToken() != '\\') {
+                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from));
+
                             tok.pushBack();
                             continue;
                         }
@@ -835,6 +839,8 @@ public class NexusFile extends BaseFormatHandler {
                         if(tok.nextToken() != NexusTokenizer.TT_WORD || !tok.sval.equalsIgnoreCase("3")) {
                             throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!"); 
                         }
+
+                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from));
 
                     } else {
                         tok.pushBack();
