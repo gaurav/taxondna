@@ -271,18 +271,25 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 				return "GI:unknown";
 		}
 
+                String str_positions = "";
+                if(seq.getProperty("position_0") != null)   str_positions += "N";
+                if(seq.getProperty("position_1") != null)   str_positions += "1";
+                if(seq.getProperty("position_2") != null)   str_positions += "2";
+                if(seq.getProperty("position_3") != null)   str_positions += "3";
+                if(!str_positions.equals(""))               str_positions = "[" + str_positions + "]";
+
 		int internalGaps = seq.countInternalGaps();
 		int n_chars = seq.countBases('N');
 		if(internalGaps == 0) {
 			if(n_chars == 0)
-				return seq.getActualLength() + "";
+				return seq.getActualLength() + "" + str_positions;
 			else
-				return seq.getActualLength() + " (" + n_chars + " 'N')";
+				return seq.getActualLength() + " (" + n_chars + " 'N')" + str_positions;
 		} else {
 			if(n_chars == 0)
-				return seq.getActualLength() + " (" + internalGaps + " indels)";
+				return seq.getActualLength() + " (" + internalGaps + " indels)" + str_positions;
 			else
-				return seq.getActualLength() + " (" + n_chars + " 'N', " + internalGaps + " indels)";
+				return seq.getActualLength() + " (" + n_chars + " 'N', " + internalGaps + " indels)" + str_positions;
 		}
 	}
 

@@ -355,6 +355,7 @@ public class FileManager implements FormatListener {
 
 		// now, we're almost done with this file ... bbbut ... before we do
 		// do we have sets?
+                boolean contains_codon_sets = false;
 		synchronized(hash_sets) {
 			if(hash_sets.size() > 0) {
 				// we do!
@@ -394,6 +395,22 @@ public class FileManager implements FormatListener {
 						
 						String name = (String) i_sets.next();
 						Vector v = (Vector) hash_sets.get(name);
+                                                SequenceList sl = new SequenceList();
+
+                                                if(name.charAt(0) == ':') {
+                                                    char pos = name.charAt(1);
+
+                                                    Iterator i_seq = sequences.iterator();
+                                                    while(i_seq.hasNext()) {
+                                                        Sequence seq = (Sequence) i_seq.next();
+                    
+                                                        seq.setProperty("position_" + pos, v);
+                                                    }
+
+                                                    contains_codon_sets = true;
+
+                                                    continue;
+                                                }
 
 						ProgressDialog pd = new ProgressDialog(
 							matrix.getFrame(),
@@ -403,64 +420,67 @@ public class FileManager implements FormatListener {
 									// eventually call pd.end(). It's hacky, I know!
 									// I'm sorry, Grandpa!
 
-
 						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
-						SequenceList sl = new SequenceList();
+                                                //} else { 
+                                                {
+                                                    Iterator i_seq = sequences.iterator();
+                                                    while(i_seq.hasNext()) {
+                                                            Sequence seq = (Sequence) i_seq.next();
+                                                            Sequence seq_out = new Sequence();
+                                                            seq_out.changeName(seq.getFullName());
 
-						Iterator i_seq = sequences.iterator();
-						while(i_seq.hasNext()) {
-							Sequence seq = (Sequence) i_seq.next();
-							Sequence seq_out = new Sequence();
-							seq_out.changeName(seq.getFullName());
+                                                            Iterator i_coords = v.iterator();
+                                                            while(i_coords.hasNext()) {
+                                                                    FromToPair ftp = (FromToPair)(i_coords.next());
+                                                                    int from = ftp.from; 
+                                                                    int to = ftp.to;
 
-							Iterator i_coords = v.iterator();
-							while(i_coords.hasNext()) {
-								FromToPair ftp = (FromToPair)(i_coords.next());
-								int from = ftp.from; 
-								int to = ftp.to;
+                                                                    try {
+                                                                            // System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+                                                                            Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
+                                                                            seq_out = seq_out.concatSequence(s);
+                                                                    } catch(SequenceException e) {
+                                                                            pd.end();
 
-								try {
-									System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
-									seq_out = seq_out.concatSequence(s);
-								} catch(SequenceException e) {
-									pd.end();
+                                                                            MessageBox mb_2 = new MessageBox(
+                                                                                            matrix.getFrame(),
+                                                                                            "Uh-oh: Error forming a set",
+                                                                                            "According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
+                                                                            mb_2.go();
+                                                                            sequences.unlock();
+                                                                            hash_sets.clear();
+                                                                            sets_were_added = true;
 
-									MessageBox mb_2 = new MessageBox(
-											matrix.getFrame(),
-											"Uh-oh: Error forming a set",
-											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
-									mb_2.go();
-									sequences.unlock();
-									hash_sets.clear();
-									sets_were_added = true;
+                                                                            // we're done here. I honestly don't remember why.
+                                                                            // but I have FAITH, and that is what matters.
+                                                                            return;
+                                                                    }
+                                                            }
 
-									// we're done here. I honestly don't remember why.
-									// but I have FAITH, and that is what matters.
-									return;
-								}
-							}
+                                                            // WARNING: note that this will eliminate any deliberately gapped regions!
+                                                            // (which is, I guess, okay)
+                                                            //System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+                                                            if(seq_out.getActualLength() > 0)
+                                                                    sl.add(seq_out);
+                                                    }
+                                                }
 
-							// WARNING: note that this will eliminate any deliberately gapped regions!
-							// (which is, I guess, okay)
-							//System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
-							if(seq_out.getActualLength() > 0)
-								sl.add(seq_out);
-						}
-						pd.end();
+                                                pd.end();
 
-						setupNamesToUse(sl);
-						checkGappingSituation(name, sl);
+                                                if(sl.count() > 0) {
+                                                    setupNamesToUse(sl);
+                                                    checkGappingSituation(name, sl);
 
-						StringBuffer buff_complaints = new StringBuffer();
-						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
-						if(buff_complaints.length() > 0) {
-							new MessageBox(	matrix.getFrame(),
-									name + ": Some sequences weren't added!",
-									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
-							).go();
-						}
+                                                    StringBuffer buff_complaints = new StringBuffer();
+                                                    matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
+                                                    if(buff_complaints.length() > 0) {
+                                                            new MessageBox(	matrix.getFrame(),
+                                                                            name + ": Some sequences weren't added!",
+                                                                            "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+                                                            ).go();
+                                                    }
+                                                }
 					}
 
 					sequences.unlock();
@@ -473,7 +493,7 @@ public class FileManager implements FormatListener {
 
 		// if we're here, we've only got one 'sequences'.
 		// so add it!
-		if(!sets_were_added) {
+		if(!sets_were_added || (sets_were_added && contains_codon_sets)) {
 			setupNamesToUse(sequences);
 			checkGappingSituation(file.toString(), sequences);
 
