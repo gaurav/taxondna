@@ -394,7 +394,7 @@ public class FileManager implements FormatListener {
 						
 						String name = (String) i_sets.next();
 						Vector v = (Vector) hash_sets.get(name);
-						
+
 						ProgressDialog pd = new ProgressDialog(
 							matrix.getFrame(),
 							"Please wait, separating out set '" + name + "' ...",
@@ -421,7 +421,7 @@ public class FileManager implements FormatListener {
 								int to = ftp.to;
 
 								try {
-									// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+									System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
 									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
 									seq_out = seq_out.concatSequence(s);
 								} catch(SequenceException e) {

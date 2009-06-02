@@ -830,7 +830,7 @@ public class NexusFile extends BaseFormatHandler {
                         to = Integer.parseInt(tok.sval);
 
                         if(tok.nextToken() != '\\') {
-                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from)));
+                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
                             tok.pushBack();
                             continue;
@@ -840,7 +840,7 @@ public class NexusFile extends BaseFormatHandler {
                             throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!"); 
                         }
 
-                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, (to - from)));
+                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
                     } else {
                         tok.pushBack();
