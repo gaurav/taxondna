@@ -64,21 +64,7 @@ public class FileManager implements FormatListener {
 //
 //	0.	OUR CLASSES, WHO ART IN CORE
 //
-	private class FromToPair implements Comparable {
-		public int from;
-		public int to;
-
-		public FromToPair(int from, int to) {
-			this.from = from;
-			this.to = to;
-		}
-
-		public int compareTo(Object o) {
-			FromToPair ftp = (FromToPair) o;
-
-			return (this.from - ftp.from);
-		}
-	}
+        // See FromToPair.java.
 
 //
 // 	1.	CONSTRUCTORS.
@@ -356,6 +342,7 @@ public class FileManager implements FormatListener {
 		// now, we're almost done with this file ... bbbut ... before we do
 		// do we have sets?
                 boolean contains_codon_sets = false;
+                System.err.println("hash_sets.size: " + hash_sets.size());
 		synchronized(hash_sets) {
 			if(hash_sets.size() > 0) {
 				// we do!
