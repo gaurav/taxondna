@@ -1298,6 +1298,10 @@ public class NexusFile extends BaseFormatHandler {
 		// how do we have to do this?
 		int how = exportAs;
 
+                if(how != EXPORT_AS_BLOCKS && how != EXPORT_AS_SINGLE_LINE && how != EXPORT_AS_INTERLEAVED) {
+                    throw new IOException("Internal program error: incorrect 'how', " + how);
+                }
+
 		// set up delay 
 		if(delay != null)
 			delay.begin();

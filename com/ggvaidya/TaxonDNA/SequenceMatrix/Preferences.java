@@ -65,7 +65,7 @@ public class Preferences implements ActionListener {
 	// How should Nexus output be formatted?
 	//
 	/** Nexus output should be interleaved. Returned by getNexusOutput(). */
-	public static final int		PREF_NEXUS_INTERLEAVED	=	0;
+	public static final int		PREF_NEXUS_INTERLEAVED	=	3;
 	/** Nexus output should be in blocks. Returned by getNexusOutput(). */
 	public static final int		PREF_NEXUS_BLOCKS	=	1;
 	/** Nexus output should be in single, long lines. Returned by getNexusOutput(). */
