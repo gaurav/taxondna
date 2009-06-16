@@ -191,6 +191,10 @@ public class FileManager implements FormatListener {
 
 	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
 	public void checkNameToUse(String str_sequence_name, String str_species_name) {
+                // Don't ask if we can't read species names.
+                if(str_species_name == null)
+                    pref_useWhichName = PREF_USE_FULL_NAME;
+
 		if(str_sequence_name == null)	str_sequence_name = "(No sequence name provided)";
 		if(str_species_name == null)	str_species_name =  "(No species name provided)";
 		
@@ -263,8 +267,8 @@ public class FileManager implements FormatListener {
 	private void setupNamesToUse(SequenceList list) {
 	    if (list.count() == 0) return;     // Don't handle empty sequence lists
 	    
-	    String str_sequence_name = "(No sequence name in this set contains a sequence name)";
-	    String str_species_name = "(No sequence name in this set contains a species name)";
+	    String str_sequence_name =  null; 
+	    String str_species_name =   null;
 
 	    Iterator i_find_example = list.iterator();
 	    while (i_find_example.hasNext()) {
@@ -283,6 +287,7 @@ public class FileManager implements FormatListener {
 		    {
 			// we've got both!
 			str_species_name = seq.getSpeciesName();
+                        break;
 		    }
 		}
 	    }

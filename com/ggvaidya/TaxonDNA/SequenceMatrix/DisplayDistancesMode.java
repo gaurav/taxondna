@@ -459,6 +459,9 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 
 		if(distances.length < col)		// out of range
 			return;
+                
+                if(col < 0)                             // out of range again
+                        return;
 
 		if(distances[col].length < row)
 			return;
