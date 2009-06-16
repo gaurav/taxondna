@@ -9,7 +9,7 @@
              JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
              variable and fix all the issues which come up.
         -->
-        <property name = "java.targetversion" value = "1.5" />
+        <property name = "java.targetversion" value = "1.4" />
 
         <!-- files.common: (Common) files used by all the TaxonDNA tools -->
 	<property name = "files.common" value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**" />
