@@ -257,7 +257,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		// okay, it's an actual 'sequence'
 		// is it cancelled?
 		if(tableManager.isSequenceCancelled(colName, seqName))
-			return "(CANCELLED)";
+			return "(EXCISED)";
 
 		if(seq == null)
 			return "(No data)";
