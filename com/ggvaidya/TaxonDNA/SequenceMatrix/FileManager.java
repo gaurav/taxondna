@@ -595,8 +595,8 @@ public class FileManager implements FormatListener {
 		DefaultButton btn = new DefaultButton(frame, "Write files");
 		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		choice_exportAs.select(matrix.getPrefs().getPreference("exportAsNexus_exportAs", 0));
-		tf_interleaveAt.setText(new Integer(matrix.getPrefs().getPreference("exportAsNexus_interleaveAt", 1000)).toString());
+		choice_exportAs.select(matrix.getPrefs().getPreference("exportAsNexus_exportAs", 0, 0, 1));
+		tf_interleaveAt.setText(new Integer(matrix.getPrefs().getPreference("exportAsNexus_interleaveAt", 1000, 0, 1000000)).toString());
 		finp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
 
 		frame.pack();
@@ -831,15 +831,15 @@ public class FileManager implements FormatListener {
 		DefaultButton btn = new DefaultButton(dg, "Write files");
 		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choice", 2)); // 2 == NexusFile, at some point of time
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choice", 2, 0, choice_formats.getItemCount())); // 2 == NexusFile, at some point of time
 		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_fileName", "")));
-		if(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_writeNASequences", 0) == 0)
+		if(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_writeNASequences", 0, 0, 1) == 0)
 			check_writeNASequences.setState(false);
 		else 
 			check_writeNASequences.setState(true);
 		tf_rands.setText(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_noOfRands", "10"));
-		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0)));
-		choice_random_taxa.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0)));
+		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0, 0, choice_per_group.getItemCount())));
+		choice_random_taxa.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0, 0, choice_random_taxa.getItemCount())));
 		int index_sel = list_seqNames.indexOf(	
 					matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRefTaxon", "None")
 				);
@@ -938,9 +938,9 @@ public class FileManager implements FormatListener {
 		DefaultButton btn = new DefaultButton(dg, "Write files");
 		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumn_choice", 0));
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumn_choice", 0, 0, choice_formats.getItemCount()));
 		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
-		if(matrix.getPrefs().getPreference("exportSequencesByColumn_writeNASequences", 0) == 0)
+		if(matrix.getPrefs().getPreference("exportSequencesByColumn_writeNASequences", 0, 0, 1) == 0)
 			check_writeNASequences.setState(false);
 		else 
 			check_writeNASequences.setState(true);
