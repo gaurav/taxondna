@@ -612,7 +612,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		help.add("About SequenceMatrix");
 		help.addActionListener(this);
 		menubar.add(help);
-		menubar.setHelpMenu(help);
 		
 		return menubar;
 	}
