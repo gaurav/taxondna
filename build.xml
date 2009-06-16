@@ -3,6 +3,14 @@
 	<property file =        "version.txt" />
 
 	<!-- compile-time options -->
+
+        <!-- Until TaxonDNA 1.5, code was written to target JRE 1.4. Since then,
+             we target JRE 1.5 instead. If you'd like to backport TaxonDNA to
+             JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
+             variable and fix all the issues which come up.
+
+             But! This generates a lot of warnings. So nevermind, 1.4 it is.
+        -->
         <property name = "java.targetversion" value = "1.4" />
 
         <!-- files.common: (Common) files used by all the TaxonDNA tools -->

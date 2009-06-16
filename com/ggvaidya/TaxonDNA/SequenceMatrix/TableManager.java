@@ -800,10 +800,6 @@ class ToolbarManager implements ActionListener {
 		btn = new JButton("Delete column");
 		btn.addActionListener(this);
 		toolbar.add(btn);
-
-		btn = new JButton("Do PDM");
-		btn.addActionListener(this);
-		toolbar.add(btn);
 		
 		tf_seqName.setEditable(false);
 //		toolbar.add(tf_seqName);
@@ -824,6 +820,11 @@ class ToolbarManager implements ActionListener {
                 btn = new JButton("Find 0% distances");
                 btn.addActionListener(this);
                 toolbar.add(btn);
+                
+		btn = new JButton("Display Pairwise Distances");
+		btn.addActionListener(this);
+		toolbar.add(btn);
+
 
 		setToolbarStatus("", "");
 
@@ -892,10 +893,23 @@ class ToolbarManager implements ActionListener {
 				tm.deleteColumn(currentCharsetName);
 		}
 
-		if(cmd.equals("Do PDM")) {
-			if(currentCharsetName != null)
-				tm.changeDisplayMode(TableManager.DISPLAY_DISTANCES, currentCharsetName);
+		if(cmd.equals("Display Pairwise Distances")) {
+			tm.changeDisplayMode(TableManager.DISPLAY_DISTANCES, currentCharsetName);
+
+                        // Rename the button so it can go the other way.
+                        JButton btn = (JButton) e.getSource();
+                        btn.setText("Display Sequences");
+                        btn.setActionCommand("Display Sequences");
 		}
+
+                if(cmd.equals("Display Sequences")) {
+                        tm.changeDisplayMode(TableManager.DISPLAY_SEQUENCES, null);
+
+                        // Rename the button so it can go the other way.
+                        JButton btn = (JButton) e.getSource();
+                        btn.setText("Display Pairwise Distances");
+                        btn.setActionCommand("Display Pairwise Distances");
+                }
 
 		if(cmd.equals("Delete taxon")) {
 			if(currentSeqName != null)

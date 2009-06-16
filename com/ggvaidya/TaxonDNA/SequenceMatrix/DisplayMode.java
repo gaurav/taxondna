@@ -327,6 +327,10 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 			int colIndex = table.columnAtPoint(e.getPoint());
 			int rowIndex = table.rowAtPoint(e.getPoint());
 
+                        // Hmm, doesn't seem to be in the table. Weird. Ignore.
+                        if(colIndex == -1 || rowIndex == -1)
+                            return;
+
 			// somehow, tablehandlers generate BOTH mouseClicked and mouseReleased,
 			// while tables don't. So ...
 			if(e.getSource().equals(table.getTableHeader())) {

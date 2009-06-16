@@ -440,7 +440,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		} else if(dist == DIST_SEQ_ON_TOP) {
 			return "(ON TOP)";
 		} else if(dist == DIST_CANCELLED) {
-			return "(CANCELLED)";
+			return "(EXCISED)";
 		} else {
 			return "(N/A - unknown)";
 		}

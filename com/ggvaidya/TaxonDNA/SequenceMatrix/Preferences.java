@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006 Gaurav Vaidya
+ *  Copyright (C) 2006, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -113,11 +113,19 @@ public class Preferences implements ActionListener {
 	}
 
 	/**
-	 * Returns the preference specified (as int)
+	 * Returns the preference specified (as int).
+         * You *have* to specify a min and max so we don't have a problem with returning an out-of-range
+         * value when the program's defaults change.
+         * 
 	 * @param def default value for this key
+         * @param min the lowest possible value for this option
+         * @param max the highest possible value for this option
 	 */
-	public int getPreference(String key, int def) {
-		return java.util.prefs.Preferences.userNodeForPackage(getClass()).getInt(key, def);
+	public int getPreference(String key, int def, int min, int max) {
+		int result = java.util.prefs.Preferences.userNodeForPackage(getClass()).getInt(key, def);
+                if(result < min || result > max)
+                    return def;
+                return result;
 	}
 
 	/** 
