@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.datatransfer.*; // For the Clipboard.
 import java.io.*;
 import java.util.*;
 
@@ -54,6 +55,7 @@ public class FindDistances implements WindowListener, ActionListener {
 
 	private Button			btn_Copy = new Button("Copy to clipboard");
 	private Button			btn_Export = new Button("Export as text");
+        private Button                  btn_Close = new Button("Close");
 
 	private Vector			pdColumns = null;
 
@@ -105,6 +107,8 @@ public class FindDistances implements WindowListener, ActionListener {
 		buttons.add(btn_Copy);
 		btn_Export.addActionListener(this);
 		buttons.add(btn_Export);
+                btn_Close.addActionListener(this);
+                buttons.add(btn_Close);
 		fr_findDistances.add(buttons, BorderLayout.SOUTH);
 
 		// register us as a 'listener'
@@ -175,7 +179,7 @@ public class FindDistances implements WindowListener, ActionListener {
 
 			// get a SequenceList for each column
 			TableManager tm = matrix.getTableManager();
-			Iterator i = tm.getColumns().iterator();
+			Iterator i = tm.getCharsets().iterator();
 			while(i.hasNext()) {
 				String colName = (String)i.next();
 				
@@ -274,6 +278,61 @@ public class FindDistances implements WindowListener, ActionListener {
 				return;
 			}
 		}
+
+                if(src.equals(btn_Close)) {
+                    // Reset this window.
+                    text_main.setText("");
+
+                    // and close it.
+                    fr_findDistances.setVisible(false);
+                }
+
+                // Don't do anything unless there's text to work with.
+                if(text_main.getText().length() > 0) {
+                    if(src.equals(btn_Copy)) {
+                        try {
+                            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+                            StringSelection selection = new StringSelection(text_main.getText());
+
+                            clip.setContents(selection, selection);
+                        } catch(IllegalStateException ex) {
+                            btn_Copy.setLabel("Oops, try again?");
+                        }
+                        btn_Copy.setLabel("Copy to Clipboard");
+                    }
+
+                    if(src.equals(btn_Export)) {
+                        File file = null;
+                        FileDialog dialog = new FileDialog(
+                                fr_findDistances,
+                                "Where would like to save these results?",
+                                FileDialog.SAVE
+                        );
+                        dialog.setVisible(true);
+
+                        if(dialog.getFile() == null)
+                            return;
+                        if(dialog.getDirectory() != null)
+                            file = new File(dialog.getDirectory() + dialog.getFile());
+                        else
+                            file = new File(dialog.getFile());
+
+                        try {
+                            PrintWriter pr = new PrintWriter(new FileWriter(file));
+                            pr.print(text_main.getText());
+                            pr.close();
+                        } catch(IOException ex) {
+                            MessageBox mb = new MessageBox(
+                                    fr_findDistances,
+                                    "There was an error writing to " + file,
+                                    "An error occured while writing to " + file + ": " + ex.getMessage(),
+                                    MessageBox.MB_ERROR
+                            );
+                            mb.go();
+                            return;
+                        }
+                    }
+                }
 	}
 
 	// 
