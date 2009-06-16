@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.awt.datatransfer.*; // For the Clipboard.
 import java.io.*;
 import java.util.*;
 
@@ -54,6 +55,7 @@ public class FindDistances implements WindowListener, ActionListener {
 
 	private Button			btn_Copy = new Button("Copy to clipboard");
 	private Button			btn_Export = new Button("Export as text");
+        private Button                  btn_Close = new Button("Close");
 
 	private Vector			pdColumns = null;
 
@@ -105,6 +107,8 @@ public class FindDistances implements WindowListener, ActionListener {
 		buttons.add(btn_Copy);
 		btn_Export.addActionListener(this);
 		buttons.add(btn_Export);
+                btn_Close.addActionListener(this);
+                buttons.add(btn_Close);
 		fr_findDistances.add(buttons, BorderLayout.SOUTH);
 
 		// register us as a 'listener'
@@ -162,93 +166,103 @@ public class FindDistances implements WindowListener, ActionListener {
 		}
 
 		//
-		// Step 2. Get the pairwiseDistances ready.
-		//
-		// We store the names of the columns in a different Vector
-		// note that both pdColumns.get(x) and pdColumns.get(x + 1) refer to vec_colNames.get((x + 1) / 2)	(really?)
+                // For every sequence in the set of columns to work on (by default, all of them), we need to 
+                // compare against *every* other sequence in the grid.
 		//
 		Vector vec_colNames = new Vector();
 
-		if(true || pdColumns == null) {	// since we don't reset pdColumns when the table changes
-						// we can't guarantee that the last pdColumns is still valid
-			pdColumns = new Vector();
+                if(colName_to_use == null)
+                    // Add all the column names
+                    vec_colNames = new Vector(matrix.getTableManager().getCharsets());
+                else
+                    // Add just the column we're interested in
+                    vec_colNames.add(colName_to_use);  
 
-			// get a SequenceList for each column
-			TableManager tm = matrix.getTableManager();
-			Iterator i = tm.getColumns().iterator();
-			while(i.hasNext()) {
-				String colName = (String)i.next();
-				
-				// if colName_to_use is available, skip this distance unless it's that particular colName
-				if(colName_to_use != null && !colName.equals(colName_to_use))
-					continue;
+                // Calculation time!
+                ProgressDialog pd = new ProgressDialog(
+                        fr_findDistances,
+                        "Please wait, calculating pairwise distances ...",
+                        "Calculating all pairwise distances, please wait! This will take a long time."
+                );
 
-				SequenceList sl = tm.getSequenceListByColumn(colName);
+                // get a SequenceList for each column
+                TableManager tm = matrix.getTableManager();
+                Iterator i = vec_colNames.iterator();
+                int count_results = 0;
+                int count = 0;
+                int total = // Very approximately 
+                    tm.getColumns().size() * tm.getSequencesCount()
+                        *
+                    tm.getColumns().size() * tm.getSequencesCount()
+                ;
 
-				vec_colNames.add(colName);
-			
-				//colNames.add(colName);
-				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTRA, 
-							new ProgressDialog(
-								fr_findDistances,	
-								"Please wait, calculating pairwise distances ...",
-								"Calculating intraspecific pairwise distances for " + colName)
-							));
+                // Results go here.
+                Vector results = new Vector();
 
-				pdColumns.add(new PairwiseDistances(sl, PairwiseDistances.PD_INTER, 
-							new ProgressDialog(
-								fr_findDistances,
-								"Please wait, calculating pairwise distances ...",
-								"Calculating interspecific, congeneric pairwise distances for " + colName)
-							)
-						);
-			}
-		}
+                pd.begin();
+                while(i.hasNext()) {
+                        String colName = (String)i.next();
+                        
+                        SequenceList sl = tm.getSequenceListByColumn(colName);
 
-		//
-		// Step 3. PairwiseDistances are all ready. All we need is to search 'em all ...
-		//
-		Vector results = new Vector();
-		ProgressDialog delay = new ProgressDialog(
-				fr_findDistances,
-				"Please wait, finalizing results ...",
-				"Searching for pairwise distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%. Sorry for the delay!");
-		delay.begin();
-		int count = 0;
-		boolean deleteThisTime = false;			// you won't believe what this does
+                        // Go through all the sequences.
+                        Iterator i_outer_seq = sl.iterator();
+                        while(i_outer_seq.hasNext()) {
+                            Sequence seq_outer = (Sequence) i_outer_seq.next();
 
-		StringBuffer buff = new StringBuffer();
+                            // Go through all the other columns.
+                            Iterator i_columns = vec_colNames.iterator();
+                            while(i_columns.hasNext()) {
+                                String compareTo_colName = (String) i_columns.next();
 
-		Iterator i = pdColumns.iterator();
-		while(i.hasNext()) {
-			delay.delay(count, pdColumns.size());
+                                SequenceList sl_compareTo = tm.getSequenceListByColumn(compareTo_colName);
 
-			String colName = (String) vec_colNames.get(0);	// this can compressed to 'String colName = vec_colNames.remove(0);'
-			if(deleteThisTime)
-				vec_colNames.remove(0);			// but why bother?
-			deleteThisTime = !deleteThisTime;
+                                Iterator i_inner_seq = sl_compareTo.iterator();
+                                while(i_inner_seq.hasNext()) {
+                                    Sequence seq_inner = (Sequence) i_inner_seq.next();
 
-			PairwiseDistances pds = (PairwiseDistances) i.next();
+                                    // Don't compare sequences to themselves.
+                                    if(seq_inner.equals(seq_outer))
+                                        continue;
 
-//			System.err.println("From/to: " + from + " to " + to + " (aka " + percentage(from, 1) + "% and " + percentage(to, 1) +"%");
+                                    count++;
+                                    pd.delay(count, total);
+                                    double pairwise = seq_outer.getPairwise(seq_inner);
 
-			Vector add = pds.getDistancesBetween(from, to);
-			Iterator i_dists = add.iterator();
-			while(i_dists.hasNext()) {
-				PairwiseDistance pd = (PairwiseDistance) i_dists.next();
-		
-				// simple whole-table-to-half-table splitter
-				//
-				if(pd.getSequenceA().getFullName().compareTo(pd.getSequenceB().getFullName()) < 0) {
-					count++;
-					buff.append(colName + "\t" + pd.getSequenceA().getFullName() + "\t" + pd.getSequenceB().getFullName() + "\t" + percentage(pd.getDistance(), 1) + "\n");
-				}
-			}
-		}
+                                    if(from <= pairwise && pairwise <= to) {
+                                        Sequence a, b;
 
-		text_main.setText(count + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
+                                        a = new Sequence(seq_outer);
+                                        b = new Sequence(seq_inner);
 
-		delay.end();
+                                        a.changeName(a.getDisplayName() + " (from " + colName + ")");
+                                        b.changeName(b.getDisplayName() + " (from " + compareTo_colName + ")");
+
+                                        PairwiseDistance pairdist = new PairwiseDistance(a, b);
+                                        results.add(pairdist);
+
+                                        count_results++;
+                                    }
+                                }
+                            }
+                        }
+                }
+
+                // Get rid of duplicates (X <-> Y and Y <-> X).
+
+                StringBuffer buff = new StringBuffer();
+                Collections.sort(results);
+
+                i = results.iterator();
+                while(i.hasNext()) {
+                    PairwiseDistance pairdist = (PairwiseDistance) i.next();
+
+                    buff.append(pairdist.getSequenceA().getFullName() + "\t" + pairdist.getSequenceB().getFullName() + "\t" + percentage(pairdist.getDistance(), 1) + "%\n");
+                }
+
+		text_main.setText(count_results + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
+
+		pd.end();
 	}
 
 	private double percentage(double x, double y) {
@@ -274,6 +288,61 @@ public class FindDistances implements WindowListener, ActionListener {
 				return;
 			}
 		}
+
+                if(src.equals(btn_Close)) {
+                    // Reset this window.
+                    text_main.setText("");
+
+                    // and close it.
+                    fr_findDistances.setVisible(false);
+                }
+
+                // Don't do anything unless there's text to work with.
+                if(text_main.getText().length() > 0) {
+                    if(src.equals(btn_Copy)) {
+                        try {
+                            Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+                            StringSelection selection = new StringSelection(text_main.getText());
+
+                            clip.setContents(selection, selection);
+                        } catch(IllegalStateException ex) {
+                            btn_Copy.setLabel("Oops, try again?");
+                        }
+                        btn_Copy.setLabel("Copy to Clipboard");
+                    }
+
+                    if(src.equals(btn_Export)) {
+                        File file = null;
+                        FileDialog dialog = new FileDialog(
+                                fr_findDistances,
+                                "Where would like to save these results?",
+                                FileDialog.SAVE
+                        );
+                        dialog.setVisible(true);
+
+                        if(dialog.getFile() == null)
+                            return;
+                        if(dialog.getDirectory() != null)
+                            file = new File(dialog.getDirectory() + dialog.getFile());
+                        else
+                            file = new File(dialog.getFile());
+
+                        try {
+                            PrintWriter pr = new PrintWriter(new FileWriter(file));
+                            pr.print(text_main.getText());
+                            pr.close();
+                        } catch(IOException ex) {
+                            MessageBox mb = new MessageBox(
+                                    fr_findDistances,
+                                    "There was an error writing to " + file,
+                                    "An error occured while writing to " + file + ": " + ex.getMessage(),
+                                    MessageBox.MB_ERROR
+                            );
+                            mb.go();
+                            return;
+                        }
+                    }
+                }
 	}
 
 	// 
