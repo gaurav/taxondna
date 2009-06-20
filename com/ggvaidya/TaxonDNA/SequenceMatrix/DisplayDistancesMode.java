@@ -70,8 +70,6 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 	private int		oldOverlap		=	0;
 	private int		oldDistanceMode		=	Sequence.PDM_UNCORRECTED;
 
-        private double          general_maximum         =       15;
-
 	private CheckboxMenuItem chmi_uncorrected	=	new CheckboxMenuItem("Uncorrected pairwise distances");
 	private CheckboxMenuItem chmi_k2p		=	new CheckboxMenuItem("K2P distances");
 	private CheckboxMenuItem chmi_trans		=	new CheckboxMenuItem("Transversions only");
@@ -294,11 +292,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		for(int x = 0; x < columnList.size(); x++) {
 			for(int y = 0; y < sequencesList.size(); y++) {
 				if(distances[x][y] >= 0) {
-                                    if(general_maximum > 0) {
-					norm_distances[x][y] = (distances[x][y] - min[x])/(general_maximum - min[x]);
-                                    } else {
-					norm_distances[x][y] = (distances[x][y] - min[x])/(max[x] - min[x]);
-                                    }
+				    norm_distances[x][y] = (distances[x][y] - min[x])/(max[x] - min[x]);
 				} else
 					norm_distances[x][y] = distances[x][y];	// save the <0's
 			}
