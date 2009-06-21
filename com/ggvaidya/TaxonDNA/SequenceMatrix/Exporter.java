@@ -544,6 +544,10 @@ public class Exporter implements SequencesHandler {
 				String taxonsetName = (String) i.next();
 				// TNT has offsets from '0'
 				String str = getTaxonset(taxonsetName, 0);
+
+                                // Sanitize taxonsetNames, just in case.
+                                taxonsetName = taxonsetName.replaceAll("[^\\w]", "_");
+
 				if(str != null) 
 				{
 					if(x == 31)
