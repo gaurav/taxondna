@@ -261,7 +261,17 @@ public class FindDistances implements WindowListener, ActionListener {
                     buff.append(pairdist.getSequenceA().getFullName() + "\t" + pairdist.getSequenceB().getFullName() + "\t" + percentage(pairdist.getDistance(), 1) + "%\n");
                 }
 
-		text_main.setText(count_results + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\n" + buff);
+                String pdm_method = "(unknown)";
+                int pdm_method_id = Sequence.getPairwiseDistanceMethod();
+                if(pdm_method_id == Sequence.PDM_UNCORRECTED) {
+                    pdm_method = "uncorrected pairwise distances";
+                } else if(pdm_method_id == Sequence.PDM_K2P) {
+                    pdm_method = "K2P distances";
+                } else if(pdm_method_id == Sequence.PDM_TRANS_ONLY) {
+                    pdm_method = "transversions only";
+                }
+
+		text_main.setText(count_results + " sequence pairs found with distances between " + percentage(from, 1) + "% and " + percentage(to, 1) + "%.\nNote that distances were calculated using " + pdm_method + " and sequence overlaps of less than " + Sequence.getMinOverlap() + " bp weren't counted.\n\n" + buff);
 
 		pd.end();
 	}
