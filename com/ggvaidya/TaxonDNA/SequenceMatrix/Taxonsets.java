@@ -357,8 +357,6 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			while(i.hasNext()) {
 				String colName = (String)i.next();
 				
-				colName = colName.replaceAll("[^\\w]", "_");
-
 				result.add(Taxonsets.prefix_TaxonsHaving + colName);
 			}
 		}
