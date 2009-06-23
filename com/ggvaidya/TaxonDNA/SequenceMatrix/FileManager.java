@@ -589,7 +589,7 @@ public class FileManager implements FormatListener {
 		rl.add(choice_exportAs, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
 		rl.add(new Label("Interleave at:"), RightLayout.NEXTLINE);
-		TextField tf_interleaveAt = new TextField();
+		TextField tf_interleaveAt = new TextField(40);
 		rl.add(tf_interleaveAt, RightLayout.BESIDE | RightLayout.STRETCH_X);
 
 		DefaultButton btn = new DefaultButton(frame, "Write files");
