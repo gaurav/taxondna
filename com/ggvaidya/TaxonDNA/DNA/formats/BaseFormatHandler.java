@@ -47,10 +47,6 @@ public class BaseFormatHandler implements FormatHandler {
 	{
 	}
 	
-	public void writeFile(File file, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
-		writeFile(file, grid.getSequenceList(), delay);
-	}
-
 	public boolean mightBe(File file) {
 		return false;
 	}
