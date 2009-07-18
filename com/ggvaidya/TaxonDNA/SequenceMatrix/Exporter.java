@@ -269,7 +269,7 @@ public class Exporter implements SequencesHandler {
 
 				File f = new File(f_dir, "group_" + (randomization + 1) + "_" + (group_id + 1) + "." + handler.getExtension());
 
-				handler.writeFile(f, sg, delay);
+				handler.writeFile(f, sg.getSequenceList(), delay);
 			}
 		}
 	}
