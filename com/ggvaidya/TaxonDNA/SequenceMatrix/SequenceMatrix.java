@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -109,23 +109,20 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * to do this IN a thread - otherwise when TaxonDNA exits,
 	 * we will automatically exit as well.
 	 *
-	 * @param files A vector of files to load in.
+	 * @param commands A list of commands to execute.
 	 */
-	public SequenceMatrix(Collection files) {
+	public SequenceMatrix(java.util.List cmds) {
                 // Set up DNA.Sequence to use 0 bp as the min overlap.
                 Sequence.setMinOverlap(0);
 
-		createUI();			// create our user interface
+                if(cmds.size() > 0) {
+                    // Command to run!
+                    Commands.executeCmdLine(this, cmds);
+                } else {
+		    createUI();			// create our user interface
 
-		// now load up all the files
-		Iterator i = files.iterator();
-		while(i.hasNext()) {
-			File f = new File((String) i.next());
-
-			fileManager.addFile(f);
-		}
-
-		resetFrameTitle();
+		    resetFrameTitle();
+                }
 	}
 
 //
