@@ -79,6 +79,8 @@ public class Commands {
             String filename = (String) arguments.remove(0);
 
             matrix.getFileManager().addFile(new File(filename));
+        } else if(cmd.equals("quit") || cmd.equals("exit")) {
+            System.exit(0);
         } else {
             output("Unable to understand command: " + cmd);
         }

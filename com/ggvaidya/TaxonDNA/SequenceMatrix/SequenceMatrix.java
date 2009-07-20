@@ -115,14 +115,15 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
                 // Set up DNA.Sequence to use 0 bp as the min overlap.
                 Sequence.setMinOverlap(0);
 
-                if(cmds.size() > 0) {
-                    // Command to run!
-                    Commands.executeCmdLine(this, cmds);
-                } else {
-		    createUI();			// create our user interface
+	        createUI();			// create our user interface
+                resetFrameTitle();
 
-		    resetFrameTitle();
+                if(cmds.size() > 0) {
+                    // Commands to run!
+                    Commands.executeCmdLine(this, cmds);
                 }
+	        
+                resetFrameTitle();
 	}
 
 //
