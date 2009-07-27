@@ -817,7 +817,7 @@ class ToolbarManager implements ActionListener {
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
-                btn = new JButton("Find 0% distances");
+                btn = new JButton("Find distances");
                 btn.addActionListener(this);
                 toolbar.add(btn);
                 
@@ -928,7 +928,7 @@ class ToolbarManager implements ActionListener {
 				tm.setReferenceSequence(currentSeqName);
 		}
 
-                if(cmd.equals("Find 0% distances")) {
+                if(cmd.equals("Find distances")) {
                     tm.matrix.findDistances.go();
                 }
 	}
