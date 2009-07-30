@@ -112,6 +112,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * @param files A vector of files to load in.
 	 */
 	public SequenceMatrix(Collection files) {
+                // Set up DNA.Sequence to use 0 bp as the min overlap.
+                Sequence.setMinOverlap(0);
+
 		createUI();			// create our user interface
 
 		// now load up all the files
