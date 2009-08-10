@@ -406,7 +406,7 @@ public class FileManager implements FormatListener {
 							matrix.getFrame(),
 							"Please wait, separating out set '" + name + "' ...",
 							"Please wait while I separate out '" + name + "'. Sorry for the wait!");
-						pd.begin();		// and the addSequenceList(..., pd) call will
+						// pd.begin();		// and the addSequenceList(..., pd) call will
 									// eventually call pd.end(). It's hacky, I know!
 									// I'm sorry, Grandpa!
 
@@ -470,7 +470,7 @@ public class FileManager implements FormatListener {
 							if(seq_out.getActualLength() > 0)
 								sl.add(seq_out);
 						}
-						pd.end();
+						// pd.end();
                                                 
                                                 // bisect: crashes if there's existing data. 
 
