@@ -358,6 +358,8 @@ public class FileManager implements FormatListener {
 			throw e;
 		}
 
+                // bisect: worked
+
 		// now, we're almost done with this file ... bbbut ... before we do
 		// do we have sets?
 		synchronized(hash_sets) {
@@ -411,23 +413,38 @@ public class FileManager implements FormatListener {
 
 						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
+                                                // bisect: 
+                                                //if(1 != 0)
+                                                //    return;
+
 						SequenceList sl = new SequenceList();
 
 						Iterator i_seq = sequences.iterator();
 						while(i_seq.hasNext()) {
 							Sequence seq = (Sequence) i_seq.next();
+
+                                                        System.err.println("[" + name + "/" + seq + "]");
+
 							Sequence seq_out = new Sequence();
 							seq_out.changeName(seq.getFullName());
 
 							Iterator i_coords = v.iterator();
 							while(i_coords.hasNext()) {
-								FromToPair ftp = (FromToPair)(i_coords.next());
+                                                                Object o = i_coords.next();
+								FromToPair ftp = null;
+                                                                if(o.getClass().equals(FromToPair.class)) {
+                                                                    ftp =  (FromToPair)(o);
+                                                                } else {
+                                                                    throw new RuntimeException("Bad cast: " + o + " is not a FromToPair; it is a " + o.getClass());
+                                                                }
+
 								int from = ftp.from; 
 								int to = ftp.to;
 
 								try {
-									// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-									Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
+									System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+                                                                        Sequence subseq = seq.getSubsequence(from, to);
+									Sequence s = BaseSequence.promoteSequence(subseq);
 									seq_out = seq_out.concatSequence(s);
 								} catch(SequenceException e) {
 									pd.end();
@@ -454,18 +471,27 @@ public class FileManager implements FormatListener {
 								sl.add(seq_out);
 						}
 						pd.end();
+                                                
+                                                // bisect: crashes if there's existing data. 
+
+                                                System.err.println("HereA " + name);
 
 						setupNamesToUse(sl);
 						checkGappingSituation(name, sl);
 
+                                                System.err.println("HereB " + name);
+
 						StringBuffer buff_complaints = new StringBuffer();
-						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
+						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
+
 						if(buff_complaints.length() > 0) {
 							new MessageBox(	matrix.getFrame(),
 									name + ": Some sequences weren't added!",
 									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
 							).go();
 						}
+
+                                                System.err.println("Done for [" + name + "]");
 					}
 
 					sequences.unlock();
@@ -500,6 +526,8 @@ public class FileManager implements FormatListener {
 				).go();
 			}
 		}
+
+                System.err.println("All clear!");
 	}
 
 	/**
