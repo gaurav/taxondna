@@ -14,8 +14,16 @@ use Test::More;
 
 plan(tests => 1);
 
-my $cmd = "java -jar ../Release/SequenceMatrix.jar ";
+sub exec_sequence_matrix {
+    system("/usr/bin/java",
+        "-jar" => "../Release/SequenceMatrix.jar",
+        @_
+    );
+}
 
-system($cmd . " --add \"files/Diptera\ COI.fasta\" --add files/coi_final.txt");
+exec_sequence_matrix(
+    "--add" => "files/Diptera COI.fasta", 
+    "--add" => "files/coi_final.txt"
+);
 
 pass("Added two fasta files.");
