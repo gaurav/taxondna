@@ -566,6 +566,52 @@ public class Exporter implements SequencesHandler {
 
                 // end and write the SETS block
                 buff_sets.append("END;");
+
+
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_nexus_positions = new StringBuffer();
+                
+                buff_nexus_positions.append("BEGIN NEXUSPOSITIONSBLOCK;\n");
+
+                // It's easier if we have a SequenceGrid to deal with.
+                SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
+
+                i = matrix.getTableManager().getColumns().iterator(); 
+                int horzOffset = 0;
+                while(i.hasNext()) {
+                    String colName = (String) i.next();
+
+                    Set seqNames = grid.getSequenceNamesByColumn(colName);
+                    if(seqNames.size() > 0) {
+                        // get the first sequence
+                        Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
+
+                        for(int x = 0; x <= 3; x++) {
+                            Vector v = (Vector) seq.getProperty("position_" + x);
+
+                            if(v != null) {
+                                buff_nexus_positions.append("\t" + x + ": ");
+
+                                Iterator i_v = v.iterator();
+                                while(i_v.hasNext()) {
+                                    FromToPair ftp = (FromToPair) i_v.next();
+
+                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + " ");
+                                }
+
+                                buff_nexus_positions.append("\n");
+                            }
+                        }
+                    }
+
+                    // Add to the horizontal offset.
+                    horzOffset += grid.getColumnLength(colName);
+                }
+
+                buff_nexus_positions.append("END;\n");
+                                    
+
+
                 
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.
@@ -582,6 +628,8 @@ public class Exporter implements SequencesHandler {
 
 
                         writer.println("");
+
+                        writer.println(buff_nexus_positions);
 
 
                         writer.println("BEGIN DATA;");

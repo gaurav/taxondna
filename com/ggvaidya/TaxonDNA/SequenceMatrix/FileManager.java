@@ -420,8 +420,6 @@ public class FileManager implements FormatListener {
                                                 //if(1 != 0)
                                                 //    return;
 
-						SequenceList sl = new SequenceList();
-
 						Iterator i_seq = sequences.iterator();
 						while(i_seq.hasNext()) {
 							Sequence seq = (Sequence) i_seq.next();
