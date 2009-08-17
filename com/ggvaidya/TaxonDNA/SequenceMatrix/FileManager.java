@@ -344,6 +344,8 @@ public class FileManager implements FormatListener {
 			throw e;
 		}
 
+                // bisect: worked
+
 		// now, we're almost done with this file ... bbbut ... before we do
 		// do we have sets?
                 boolean contains_codon_sets = false;
@@ -408,71 +410,91 @@ public class FileManager implements FormatListener {
 							matrix.getFrame(),
 							"Please wait, separating out set '" + name + "' ...",
 							"Please wait while I separate out '" + name + "'. Sorry for the wait!");
-						pd.begin();		// and the addSequenceList(..., pd) call will
+						// pd.begin();		// and the addSequenceList(..., pd) call will
 									// eventually call pd.end(). It's hacky, I know!
 									// I'm sorry, Grandpa!
 
 						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
-                                                //} else { 
-                                                {
-                                                    Iterator i_seq = sequences.iterator();
-                                                    while(i_seq.hasNext()) {
-                                                            Sequence seq = (Sequence) i_seq.next();
-                                                            Sequence seq_out = new Sequence();
-                                                            seq_out.changeName(seq.getFullName());
+                                                // bisect: 
+                                                //if(1 != 0)
+                                                //    return;
 
-                                                            Iterator i_coords = v.iterator();
-                                                            while(i_coords.hasNext()) {
-                                                                    FromToPair ftp = (FromToPair)(i_coords.next());
-                                                                    int from = ftp.from; 
-                                                                    int to = ftp.to;
+						SequenceList sl = new SequenceList();
 
-                                                                    try {
-                                                                            // System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-                                                                            Sequence s = BaseSequence.promoteSequence(seq.getSubsequence(from, to));
-                                                                            seq_out = seq_out.concatSequence(s);
-                                                                    } catch(SequenceException e) {
-                                                                            pd.end();
+						Iterator i_seq = sequences.iterator();
+						while(i_seq.hasNext()) {
+							Sequence seq = (Sequence) i_seq.next();
 
-                                                                            MessageBox mb_2 = new MessageBox(
-                                                                                            matrix.getFrame(),
-                                                                                            "Uh-oh: Error forming a set",
-                                                                                            "According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
-                                                                            mb_2.go();
-                                                                            sequences.unlock();
-                                                                            hash_sets.clear();
-                                                                            sets_were_added = true;
+                                                        System.err.println("[" + name + "/" + seq + "]");
 
-                                                                            // we're done here. I honestly don't remember why.
-                                                                            // but I have FAITH, and that is what matters.
-                                                                            return;
-                                                                    }
-                                                            }
+							Sequence seq_out = new Sequence();
+							seq_out.changeName(seq.getFullName());
 
-                                                            // WARNING: note that this will eliminate any deliberately gapped regions!
-                                                            // (which is, I guess, okay)
-                                                            //System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
-                                                            if(seq_out.getActualLength() > 0)
-                                                                    sl.add(seq_out);
-                                                    }
-                                                }
+							Iterator i_coords = v.iterator();
+							while(i_coords.hasNext()) {
+                                                                Object o = i_coords.next();
+								FromToPair ftp = null;
+                                                                if(o.getClass().equals(FromToPair.class)) {
+                                                                    ftp =  (FromToPair)(o);
+                                                                } else {
+                                                                    throw new RuntimeException("Bad cast: " + o + " is not a FromToPair; it is a " + o.getClass());
+                                                                }
 
-                                                pd.end();
+								int from = ftp.from; 
+								int to = ftp.to;
 
-                                                if(sl.count() > 0) {
-                                                    setupNamesToUse(sl);
-                                                    checkGappingSituation(name, sl);
+								try {
+									System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+                                                                        Sequence subseq = seq.getSubsequence(from, to);
+									Sequence s = BaseSequence.promoteSequence(subseq);
+									seq_out = seq_out.concatSequence(s);
+								} catch(SequenceException e) {
+									pd.end();
 
-                                                    StringBuffer buff_complaints = new StringBuffer();
-                                                    matrix.getTableManager().addSequenceList(name, sl, buff_complaints, pd);
-                                                    if(buff_complaints.length() > 0) {
-                                                            new MessageBox(	matrix.getFrame(),
-                                                                            name + ": Some sequences weren't added!",
-                                                                            "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
-                                                            ).go();
-                                                    }
-                                                }
+									MessageBox mb_2 = new MessageBox(
+											matrix.getFrame(),
+											"Uh-oh: Error forming a set",
+											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
+									mb_2.go();
+									sequences.unlock();
+									hash_sets.clear();
+									sets_were_added = true;
+
+									// we're done here. I honestly don't remember why.
+									// but I have FAITH, and that is what matters.
+									return;
+								}
+							}
+
+							// WARNING: note that this will eliminate any deliberately gapped regions!
+							// (which is, I guess, okay)
+							//System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+							if(seq_out.getActualLength() > 0)
+								sl.add(seq_out);
+						}
+						// pd.end();
+                                                
+                                                // bisect: crashes if there's existing data. 
+
+                                                System.err.println("HereA " + name);
+
+						setupNamesToUse(sl);
+						checkGappingSituation(name, sl);
+
+                                                System.err.println("HereB " + name);
+
+						StringBuffer buff_complaints = new StringBuffer();
+						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
+
+						if(buff_complaints.length() > 0) {
+							new MessageBox(	matrix.getFrame(),
+									name + ": Some sequences weren't added!",
+									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+							).go();
+						}
+
+                                                System.err.println("Done for [" + name + "]");
 					}
 
 					sequences.unlock();
@@ -507,6 +529,8 @@ public class FileManager implements FormatListener {
 				).go();
 			}
 		}
+
+                System.err.println("All clear!");
 	}
 
 	/**
