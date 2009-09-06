@@ -391,6 +391,10 @@ public class FileManager implements FormatListener {
 						Vector v = (Vector) hash_sets.get(name);
                                                 SequenceList sl = new SequenceList();
 
+                                                /*
+                                                 * At this point, \3s codonsets are jumped off
+                                                 * and handled specially.
+                                                 */
                                                 if(name.charAt(0) == ':') {
                                                     char pos = name.charAt(1);
 
@@ -406,6 +410,10 @@ public class FileManager implements FormatListener {
                                                     continue;
                                                 }
 
+                                                /* 
+                                                 * ONLY normal sets (NOT \3s) go pass here!
+                                                 */
+
 						ProgressDialog pd = new ProgressDialog(
 							matrix.getFrame(),
 							"Please wait, separating out set '" + name + "' ...",
@@ -414,11 +422,11 @@ public class FileManager implements FormatListener {
 									// eventually call pd.end(). It's hacky, I know!
 									// I'm sorry, Grandpa!
 
-						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
+                                                                        // Haha, the comment above probably took out SM development
+                                                                        // for a bunch of months. I guess Grandpa was right all
+                                                                        // along.
 
-                                                // bisect: 
-                                                //if(1 != 0)
-                                                //    return;
+						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
 						Iterator i_seq = sequences.iterator();
 						while(i_seq.hasNext()) {

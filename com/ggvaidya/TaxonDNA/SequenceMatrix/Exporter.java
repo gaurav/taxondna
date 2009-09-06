@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -567,11 +567,10 @@ public class Exporter implements SequencesHandler {
                 // end and write the SETS block
                 buff_sets.append("END;");
 
-
                 // Let's see if we can't calculate the nexus positions.
                 StringBuffer buff_nexus_positions = new StringBuffer();
                 
-                buff_nexus_positions.append("BEGIN NEXUSPOSITIONSBLOCK;\n");
+                buff_nexus_positions.append("BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n");
 
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
@@ -586,20 +585,26 @@ public class Exporter implements SequencesHandler {
                         // get the first sequence
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
+                        String position_names[] = { "N", "1", "2", "3" };
+                        String str_comma = ",\n";
+
                         for(int x = 0; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {
-                                buff_nexus_positions.append("\t" + x + ": ");
+                                buff_nexus_positions.append("\t\t" + position_names[x] + ": ");
 
                                 Iterator i_v = v.iterator();
                                 while(i_v.hasNext()) {
                                     FromToPair ftp = (FromToPair) i_v.next();
 
-                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + " ");
-                                }
+                                    if(x == 3) {
+                                        // Last way through, so turn off the comma
+                                        str_comma = "\n";
+                                    }
 
-                                buff_nexus_positions.append("\n");
+                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_comma);
+                                }
                             }
                         }
                     }
@@ -608,11 +613,10 @@ public class Exporter implements SequencesHandler {
                     horzOffset += grid.getColumnLength(colName);
                 }
 
+                buff_nexus_positions.append("\t;\n");
+                buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
                 buff_nexus_positions.append("END;\n");
                                     
-
-
-                
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.
                 //
