@@ -575,10 +575,12 @@ public class Exporter implements SequencesHandler {
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
 
-                i = matrix.getTableManager().getColumns().iterator(); 
+                i = matrix.getTableManager().getCharsets().iterator(); 
                 int horzOffset = 0;
                 while(i.hasNext()) {
                     String colName = (String) i.next();
+
+                    System.err.println("Column name: " + colName);
 
                     Set seqNames = grid.getSequenceNamesByColumn(colName);
                     if(seqNames.size() > 0) {
@@ -586,7 +588,7 @@ public class Exporter implements SequencesHandler {
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
                         String position_names[] = { "N", "1", "2", "3" };
-                        String str_comma = ",\n";
+                        String str_end = ",\n";
 
                         for(int x = 0; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
@@ -598,12 +600,16 @@ public class Exporter implements SequencesHandler {
                                 while(i_v.hasNext()) {
                                     FromToPair ftp = (FromToPair) i_v.next();
 
-                                    if(x == 3) {
-                                        // Last way through, so turn off the comma
-                                        str_comma = "\n";
+                                    if(x == 0)
+                                        str_end = ",\n";
+                                    else if(x == 1 || x == 2)
+                                        str_end = "\\3,\n";
+                                    else if(x == 3) {
+                                        str_end = "\\3\n";
                                     }
 
-                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_comma);
+                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
                                 }
                             }
                         }
