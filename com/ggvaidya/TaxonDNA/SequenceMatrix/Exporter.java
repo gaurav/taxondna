@@ -621,7 +621,10 @@ public class Exporter implements SequencesHandler {
 
                 buff_nexus_positions.append("\t;\n");
                 buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
-                buff_nexus_positions.append("END;\n");
+                buff_nexus_positions.append("END;\n\n");
+
+                // And add it to buff_sets.
+                buff_sets.insert(0, buff_nexus_positions);
                                     
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.
@@ -638,9 +641,6 @@ public class Exporter implements SequencesHandler {
 
 
                         writer.println("");
-
-                        writer.println(buff_nexus_positions);
-
 
                         writer.println("BEGIN DATA;");
                         writer.println("\tDIMENSIONS NTAX=" + tm.getSequencesCount() + " NCHAR=" + tm.getSequenceLength() + ";");
