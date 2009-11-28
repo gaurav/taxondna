@@ -52,7 +52,9 @@ public class FileManager implements FormatListener {
     private SequenceMatrix  matrix;
     private Hashtable       hash_sets = new Hashtable();
 
-    // CONFIGURATION OPTIONS
+//
+//      0.      CONFIGURATION OPTIONS
+//
     // Should we use the full name or the species name?
     public static final int PREF_NOT_SET_YET	    =	-1;	
     public static final int PREF_USE_FULL_NAME	    =	0;	
@@ -62,235 +64,223 @@ public class FileManager implements FormatListener {
 //
 // 	1.	CONSTRUCTORS.
 //
-	/**
-	 * Creates a FileManager. We need to know
-	 * where the SequenceMatrix is, so we can
-	 * talk to the user.
-	 */
-	public FileManager(SequenceMatrix matrix) {
-		this.matrix = matrix;	
-	}
+    /**
+     * Creates a FileManager. We need to know
+     * where the SequenceMatrix is, so we can
+     * talk to the user.
+     */
+    public FileManager(SequenceMatrix matrix) {
+            this.matrix = matrix;	
+    }
 
 //
 //	2.	COMMON CODE
 //
-	/**
-	 * Get a File from the user
-	 */
-	private File getFile(String title) {
-		File file = null;
+    /**
+     * Ask the user to pick a file to save to.
+     * @return The File object selected, or null if the user cancelled.
+     */
+    private File getFile(String title) {
+        FileDialog fd = new FileDialog(matrix.getFrame(), title, FileDialog.SAVE);
+        fd.setVisible(true);
 
-		FileDialog fd = new FileDialog(matrix.getFrame(), title, FileDialog.SAVE);
+        if(fd.getFile() != null) {
+                if(fd.getDirectory() != null) {
+                        return new File(fd.getDirectory() + fd.getFile());
+                } else {
+                        return new File(fd.getFile());
+                }
+        }
 
-		fd.setVisible(true);
+        return null;
+    }
 
-		if(fd.getFile() != null) {
-			if(fd.getDirectory() != null) {
-				file = new File(fd.getDirectory() + fd.getFile());
-			} else {
-				file = new File(fd.getFile());
-			}
-		}
+    // Types to use in reportIOException().
+    private static final int IOE_READING = 		0;
+    private static final int IOE_WRITING = 		1;
 
-		return file;
-	}
+    /**
+     * Report an IOException to the user. Since IOExceptions are so common
+     * in our code, this is a real time saver.
+     */
+    private void reportIOException(IOException e, File f, int type) {
+        String verb, preposition;
 
-	/**
-	 * Reports an IOException to the user
-	 */
-	private static final int IOE_READING = 		0;
-	private static final int IOE_WRITING = 		1;
-	private void reportIOException(IOException e, File f, int type) {
-		String verb = "";
+        if(type == IOE_READING) {
+            verb = "reading";
+            preposition = "from";
+        } else {
+            verb = "writing";
+            preposition = "to";
+        }
 
-		if(type == IOE_READING)
-			verb = "reading";
-		else
-			verb = "writing";
+        MessageBox mb = new MessageBox(
+            matrix.getFrame(),
+            "Error while " + verb + " file",
+            "There was an error while " + verb + " this set " + preposition + " '" + f + "'. " +
+                "Please ensure that you have adequate permissions and that your hard disk is not full.\n\n" + 
+                "The technical description of this error is: " + e
+        );
 
-		MessageBox mb = new MessageBox(
-				matrix.getFrame(),
-				"Error while " + verb + " file",
-				"There was an error while " + verb + " this set to '" + f + "'. Please ensure that you have adequate permissions and that your hard disk is not full.\n\nThe technical description of this error is: " + e);
-		mb.go();
-	}
+        mb.go();
+    }
 
-	/**
-	 * Reports an DelayAbortedException to the user
-	 */
-	private void reportDelayAbortedException(DelayAbortedException e, String task) {
-		MessageBox mb = new MessageBox(
-				matrix.getFrame(),
-				task + " cancelled",
-				task + " was cancelled midway. The task might be incomplete, and any files being generated might be incomplete.");
-		mb.go();
-	}
-	
+    /**
+     * Reports an DelayAbortedException to the user
+     */
+    private void reportDelayAbortedException(DelayAbortedException e, String task) {
+        MessageBox mb = new MessageBox(
+            matrix.getFrame(),
+            task + " cancelled",
+            task + " was cancelled midway. The task might be incomplete, and any files being generated might have been partially generated."
+        );
 
-	/**
-	 * Adds the file to this dataset, using the specified handler.
-	 */
-	public void addFile(File file, FormatHandler handler) {
-            try {
-                addNextFile(file, handler);
-            } catch(DelayAbortedException e) {
-                return;
-            }
-	}
+        mb.go();
+    }
 
-	/** 
-            A dialog box to check whether the user would like to use sequence names
-            or species names.
 
-            @return either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME 
-        */
-	public int checkNameToUse(String str_sequence_name, String str_species_name) {
-            if(str_sequence_name == null)	str_sequence_name = "(No sequence name identified)";
-            if(str_species_name == null)	str_species_name =  "(No species name identified)";
-            
-            // There's already a preference: return that.
-            if(pref_useWhichName != PREF_NOT_SET_YET) {
-                return pref_useWhichName;
-            }
+    /**
+     * Adds the file to Sequence Matrix, using the specified handler.
+     */
+    public void addFile(File file, FormatHandler handler) {
+        try {
+            addNextFile(file, handler);
+        } catch(DelayAbortedException e) {
+            return;
+        }
+    }
 
-            // Ask the user what they'd like to use.
-            Dialog dg = new Dialog(
-                matrix.getFrame(),
-                "Species names or sequence names?",
-                true    // modal!
-            );	
+    /** 
+        A dialog box to check whether the user would like to use sequence names
+        or species names during file import.
 
-            dg = (Dialog) CloseableWindow.wrap(dg);	// wrap it as a Closeable window
-
-            dg.setLayout(new BorderLayout());
-
-            TextArea ta = new TextArea("", 9, 60, TextArea.SCROLLBARS_VERTICAL_ONLY);
-            ta.setEditable(false);
-            ta.setText(
-                "Would you like to use the full sequence name? Sequence names from this file look like " +
-                "this:\n\t" + str_sequence_name + "\n\nI can also try to guess the species name, which " +
-                "looks like this:\n\t" + str_species_name +"\n\nNote that the species name might not be " +
-                "guessable for every sequence in this dataset."
-            );
-            dg.add(ta);
-
-            Panel buttons = new Panel();
-            buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
-
-            DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
-            buttons.add(btn_seq);
-
-            DefaultButton btn_species = new DefaultButton(dg, "Use species names");
-            buttons.add(btn_species);
-            dg.add(buttons, BorderLayout.SOUTH);
-
-            dg.pack();
-            dg.setVisible(true);
-    
-            if(btn_species.wasClicked())
-                pref_useWhichName = PREF_USE_SPECIES_NAME;
-            else
-                pref_useWhichName = PREF_USE_FULL_NAME;
-
+        @return either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME 
+    */
+    public int checkNameToUse(String str_sequence_name, String str_species_name) {
+        if(str_sequence_name == null)	str_sequence_name = "(No sequence name identified)";
+        if(str_species_name == null)	str_species_name =  "(No species name identified)";
+        
+        // There's already a preference: return that.
+        if(pref_useWhichName != PREF_NOT_SET_YET) {
             return pref_useWhichName;
-	}	
+        }
 
-	/**
-	 * Checks whether we:
-	 *	(1) leave the gaps as is
-	 *	(2) convert the external gaps to '?'s
-	 */
-	private void checkGappingSituation(String colName, SequenceList sl) {
-		MessageBox mb = new MessageBox(
-			matrix.getFrame(),
-			"Replace external gaps with missing characters during import?",
-			"Would you like to recode external gaps as question marks?",
-			MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
-		);
-		if(mb.showMessageBox() == MessageBox.MB_YES) {
-			// yes! do it!
-			Iterator i = sl.iterator();
-			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+        // Ask the user what they'd like to use.
+        Dialog dg = new Dialog(
+            matrix.getFrame(),
+            "Species names or sequence names?",
+            true    // modal!
+        );	
 
-				seq.convertExternalGapsToMissingChars();
-			}
-		}
-	}
+        dg = (Dialog) CloseableWindow.wrap(dg);	// wrap it as a Closeable window
 
-	/**
-	 * Sets up names to use by filling in INITIAL_SEQ_NAME in the
-	 * Sequence preferences, in-place. You ought to call this on 
-	 * a SequenceList before you send it in. Note that this function
-	 * works IN PLACE, but won't change names or anything - only
-	 * remove the old INITIAL_SEQ_NAME, and replace it with what
-	 * we think is the right initial seq name NOW. 
-	 */
-	private void setupNamesToUse(SequenceList list) {
-	    if (list.count() == 0) return;     // Don't handle empty sequence lists
-	    
-	    String str_sequence_name =  null; 
-	    String str_species_name =   null;
+        dg.setLayout(new BorderLayout());
 
-	    Iterator i_find_example = list.iterator();
-	    while (i_find_example.hasNext()) {
-		Sequence seq = (Sequence) i_find_example.next();
-		if (
-			seq.getFullName() != null &&
-			!seq.getFullName().equals("")
-                ) {
-		    // we have a full name
-		    str_sequence_name = seq.getFullName();
-		    
-		    if(
-			seq.getSpeciesName() != null &&
-                        !seq.getSpeciesName().equals("")
-		    )
-		    {
-			// we've got both!
-			str_species_name = seq.getSpeciesName();
-                        break;
-		    }
-		}
-	    }
+        TextArea ta = new TextArea("", 9, 60, TextArea.SCROLLBARS_VERTICAL_ONLY);
+        ta.setEditable(false);
+        ta.setText(
+            "Would you like to use the full sequence name? Sequence names from this file look like " +
+            "this:\n\t" + str_sequence_name + "\n\nI can also try to guess the species name, which " +
+            "looks like this:\n\t" + str_species_name +"\n\nNote that the species name might not be " +
+            "guessable for every sequence in this dataset."
+        );
+        dg.add(ta);
 
-            Iterator i = list.iterator();
+        Panel buttons = new Panel();
+        buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        // Why two default buttons? Because DefaultButtons know
+        // when they've been clicked. Closing the window directly
+        // will activate 
+        DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
+        buttons.add(btn_seq);
+
+        DefaultButton btn_species = new DefaultButton(dg, "Use species names");
+        buttons.add(btn_species);
+        dg.add(buttons, BorderLayout.SOUTH);
+
+        dg.pack();
+        dg.setVisible(true);
+
+        if(btn_species.wasClicked())
+            pref_useWhichName = PREF_USE_SPECIES_NAME;
+        else
+            pref_useWhichName = PREF_USE_FULL_NAME;
+
+        return pref_useWhichName;
+    }	
+
+    /**
+     * Checks whether the user would like to convert all external
+     * gaps to question marks, and - if so - does it.
+     */
+    private void checkGappingSituation(String colName, SequenceList sl) {
+        MessageBox mb = new MessageBox(
+            matrix.getFrame(),
+            "Replace external gaps with missing characters during import?",
+            "Would you like to recode external gaps as question marks?",
+            MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
+        );
+
+        if(mb.showMessageBox() == MessageBox.MB_YES) {
+            // yes! do it!
+            Iterator i = sl.iterator();
             while(i.hasNext()) {
                 Sequence seq = (Sequence) i.next();
-                
-                String sequence_name =  seq.getFullName();
-                String species_name =   seq.getSpeciesName();
-                String name;
 
-                // If the loader says there's a definite name which goes
-                // with this sequence, use that instead.
-                if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
-                    continue;
+                seq.convertExternalGapsToMissingChars();
+            }
+        }
+    }
 
-                // Check if the sequence name is different from the
-                // species name.
-                if(sequence_name.equals(species_name)) {
-                    name = sequence_name; 
-                } else {
-                    while(pref_useWhichName == PREF_NOT_SET_YET) {
-                        pref_useWhichName = checkNameToUse(   
-                            sequence_name,
-                            species_name
-                        );
-                    }
+    /**
+     * Sets up names to use by filling in INITIAL_SEQ_NAME in the
+     * Sequence preferences, in-place. You ought to call this on 
+     * a SequenceList before you process it. Note that this function
+     * works IN PLACE, but won't change names or anything - only
+     * remove the old INITIAL_SEQ_NAME, and replace it with what
+     * we think is the right initial seq name NOW. 
+     */
+    private void setupNamesToUse(SequenceList list) {
+        if (list.count() == 0) return;     // Don't handle empty sequence lists
+        
+        Iterator i = list.iterator();
+        while(i.hasNext()) {
+            Sequence seq = (Sequence) i.next();
+            
+            String sequence_name =  seq.getFullName();
+            String species_name =   seq.getSpeciesName();
+            String name;
 
-                    // By this point, we should have a value in pref_useWhichName.
-                    if(pref_useWhichName == PREF_USE_SPECIES_NAME) {
-                        name = species_name;
-                    } else {
-                        name = sequence_name;
-                    }
+            // If the loader says there's a definite name which goes
+            // with this sequence, use that instead.
+            if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
+                continue;
+
+            // Check if the sequence name is different from the
+            // species name.
+            if(sequence_name.equals(species_name)) {
+                name = sequence_name; 
+            } else {
+                while(pref_useWhichName == PREF_NOT_SET_YET) {
+                    checkNameToUse(   
+                        sequence_name,
+                        species_name
+                    );
                 }
 
-                // Now we have a name. Use that.
-                seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, name);
+                // By this point, we should have a value in pref_useWhichName.
+                if(pref_useWhichName == PREF_USE_SPECIES_NAME) {
+                    name = species_name;
+                } else {
+                    name = sequence_name;
+                }
             }
-	}
+
+            // Now we have a name. Use that.
+            seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, name);
+        }
+    }
 
 	/**
 	 * Loads the file and handler. This is *very* synchronous, so please
