@@ -527,8 +527,13 @@ public class Exporter implements SequencesHandler {
 
 
                                 String taxonsetName = (String) i.next();
+
                                 // Nexus has offsets from '1'
                                 String str = getTaxonset(taxonsetName, 1);
+
+                                // Sanitize taxonsetNames, just in case.
+                                taxonsetName = taxonsetName.replaceAll("[^\\w]", "_");
+
                                 if(str != null)
                                         buff_sets.append("\tTAXSET " + taxonsetName + " = " + str + ";\n");
                         }
@@ -973,11 +978,7 @@ public class Exporter implements SequencesHandler {
 
 	private String fixColumnName(String columnName) {
 		columnName = columnName.replaceAll("\\.nex", "");
-		columnName = columnName.replace('.', '_');
-		columnName = columnName.replace(' ', '_');
-		columnName = columnName.replace('-', '_');
-		columnName = columnName.replace('\\', '_');
-		columnName = columnName.replace('/', '_');
+		columnName = columnName.replaceAll("[^A-Za-z0-9\\_]", "_");
 		return columnName;
 	}	
 }
