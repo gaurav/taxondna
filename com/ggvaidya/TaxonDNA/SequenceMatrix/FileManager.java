@@ -8,13 +8,18 @@
  * that:
  * 1.	Two files are never loaded simultaneously.
  * 2.	The interface is locked up while files are being loaded.
+ * 
+ * Note that after commit e13ef06a09be this file was cleaned up for 
+ * pretty much the first time ever. This is directly to make it
+ * possible to make charactersets and codonpositions to work together
+ * in sensible ways; but 
  *
  */
 
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -35,14 +40,8 @@
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
-import java.awt.event.*;
-import java.awt.datatransfer.*;	// for drag-n-drop
-import java.awt.dnd.*;		// drag-n-drop
 import java.io.*;
 import java.util.*;
-
-import javax.swing.*;
-import javax.swing.table.*;	// for TableModel, which we use to slurp the info straight out the table
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -50,21 +49,15 @@ import com.ggvaidya.TaxonDNA.DNA.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class FileManager implements FormatListener {
-	private SequenceMatrix		matrix;
-	private Vector 		filesToLoad = new Vector();
-	private Hashtable 		hash_sets = new Hashtable();
+    private SequenceMatrix  matrix;
+    private Hashtable       hash_sets = new Hashtable();
 
-	// Should we use the full name or the species name?
-	//
-	public static final int		PREF_NOT_SET_YET	=	-1;	
-	public static final int		PREF_USE_FULL_NAME	=	0;	
-	public static final int		PREF_USE_SPECIES_NAME	=	1;
-	private static int		pref_useWhichName 	=	PREF_NOT_SET_YET;
-
-//
-//	0.	OUR CLASSES, WHO ART IN CORE
-//
-        // See FromToPair.java.
+    // CONFIGURATION OPTIONS
+    // Should we use the full name or the species name?
+    public static final int PREF_NOT_SET_YET	    =	-1;	
+    public static final int PREF_USE_FULL_NAME	    =	0;	
+    public static final int PREF_USE_SPECIES_NAME   =	1;
+    private static int      pref_useWhichName 	    =	PREF_NOT_SET_YET;
 
 //
 // 	1.	CONSTRUCTORS.
@@ -84,7 +77,7 @@ public class FileManager implements FormatListener {
 	/**
 	 * Get a File from the user
 	 */
-	private File getFile(String title, int flag) {
+	private File getFile(String title) {
 		File file = null;
 
 		FileDialog fd = new FileDialog(matrix.getFrame(), title, FileDialog.SAVE);
@@ -136,87 +129,70 @@ public class FileManager implements FormatListener {
 
 	/**
 	 * Adds the file to this dataset, using the specified handler.
-	 * How this works is a little non-logical: addFile() immediately
-	 * queues up the file for addition, spawns a thread
-	 * to handle the actual file loading, and returns immediately.
-	 *
-	 * The upshot of this is that addFile() is non-blocking:
-	 * you are NOT guaranteed that the file will be loaded
-	 * once addFile() returns.
-	 *
-	 * We will lock the interface, and only unlock it once the
-	 * files are loaded. This means that if you're waiting for
-	 * input (i.e. the user clicking on a menu option), you're
-	 * okay. But do NOT begin calculations immediately after
-	 * you've called addFile().
-	 *
-	 * This is a convenience function, since there are a lot
-	 * of functions (particularly the drag-drop system)
-	 * which needs asynchronous addition. They are also slightly
-	 * faster, since the difference SequenceLists can be
-	 * created independently.
-	 *
-	 * If you really need a synchronous add(), let me know
-	 * and I'll write one.
-	 *
 	 */
 	public void addFile(File file, FormatHandler handler) {
-		synchronized(filesToLoad) {
-			//filesToLoad.add(file);
-			//filesToLoad.add(handler);	// primitive two-variable list
-
-			//Thread t = new Thread(this);
-			//t.start();
-			try {
-				addNextFile(file, handler);
-			} catch(DelayAbortedException e) {
-				return;
-			}
-		}
+            try {
+                addNextFile(file, handler);
+            } catch(DelayAbortedException e) {
+                return;
+            }
 	}
 
-	/** Returns either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME */
-	public void checkNameToUse(String str_sequence_name, String str_species_name) {
-                // Don't ask if we can't read species names.
-                if(str_species_name == null)
-                    pref_useWhichName = PREF_USE_FULL_NAME;
+	/** 
+            A dialog box to check whether the user would like to use sequence names
+            or species names.
 
-		if(str_sequence_name == null)	str_sequence_name = "(No sequence name provided)";
-		if(str_species_name == null)	str_species_name =  "(No species name provided)";
-		
-		if(pref_useWhichName == PREF_NOT_SET_YET) {
-			Dialog dg = new Dialog(
-					matrix.getFrame(),
-					"Species names or sequence names?",
-					true);	// modal!
-			dg = (Dialog) CloseableWindow.wrap(dg);	// wrap it as a Closeable window
+            @return either PREF_USE_FULL_NAME or PREF_USE_SPECIES_NAME 
+        */
+	public int checkNameToUse(String str_sequence_name, String str_species_name) {
+            if(str_sequence_name == null)	str_sequence_name = "(No sequence name identified)";
+            if(str_species_name == null)	str_species_name =  "(No species name identified)";
+            
+            // There's already a preference: return that.
+            if(pref_useWhichName != PREF_NOT_SET_YET) {
+                return pref_useWhichName;
+            }
 
-			dg.setLayout(new BorderLayout());
+            // Ask the user what they'd like to use.
+            Dialog dg = new Dialog(
+                matrix.getFrame(),
+                "Species names or sequence names?",
+                true    // modal!
+            );	
 
-			TextArea ta = new TextArea("", 9, 60, TextArea.SCROLLBARS_VERTICAL_ONLY);
-			ta.setEditable(false);
-			ta.setText("Would you like to use the full sequence name? Sequence names from this file look like this:\n\t" + str_sequence_name + "\n\nI can also try to guess the species name, which looks like this:\n\t" + str_species_name +"\n\nNote that the species name might not be guessable for every sequence in this dataset.");
-			dg.add(ta);
+            dg = (Dialog) CloseableWindow.wrap(dg);	// wrap it as a Closeable window
 
-			Panel buttons = new Panel();
-			buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
+            dg.setLayout(new BorderLayout());
 
-			DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
-			buttons.add(btn_seq);
+            TextArea ta = new TextArea("", 9, 60, TextArea.SCROLLBARS_VERTICAL_ONLY);
+            ta.setEditable(false);
+            ta.setText(
+                "Would you like to use the full sequence name? Sequence names from this file look like " +
+                "this:\n\t" + str_sequence_name + "\n\nI can also try to guess the species name, which " +
+                "looks like this:\n\t" + str_species_name +"\n\nNote that the species name might not be " +
+                "guessable for every sequence in this dataset."
+            );
+            dg.add(ta);
 
-			// err ... wtf?
-			DefaultButton btn_species = new DefaultButton(dg, "Use species names");
-			buttons.add(btn_species);
-			dg.add(buttons, BorderLayout.SOUTH);
+            Panel buttons = new Panel();
+            buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-			dg.pack();
-			dg.setVisible(true);
-		
-			if(btn_seq.wasClicked())
-				pref_useWhichName = PREF_USE_FULL_NAME;
-			else
-				pref_useWhichName = PREF_USE_SPECIES_NAME;
-		}
+            DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
+            buttons.add(btn_seq);
+
+            DefaultButton btn_species = new DefaultButton(dg, "Use species names");
+            buttons.add(btn_species);
+            dg.add(buttons, BorderLayout.SOUTH);
+
+            dg.pack();
+            dg.setVisible(true);
+    
+            if(btn_species.wasClicked())
+                pref_useWhichName = PREF_USE_SPECIES_NAME;
+            else
+                pref_useWhichName = PREF_USE_FULL_NAME;
+
+            return pref_useWhichName;
 	}	
 
 	/**
@@ -278,25 +254,42 @@ public class FileManager implements FormatListener {
 		}
 	    }
 
-            if(pref_useWhichName == PREF_NOT_SET_YET)
-			checkNameToUse(
-                                    str_sequence_name,
-				    str_species_name
-                                );			
+            Iterator i = list.iterator();
+            while(i.hasNext()) {
+                Sequence seq = (Sequence) i.next();
+                
+                String sequence_name =  seq.getFullName();
+                String species_name =   seq.getSpeciesName();
+                String name;
 
-		Iterator i = list.iterator();
-		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
-			String seqName = seq.getFullName();
+                // If the loader says there's a definite name which goes
+                // with this sequence, use that instead.
+                if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
+                    continue;
 
-			if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
-				continue;
+                // Check if the sequence name is different from the
+                // species name.
+                if(sequence_name.equals(species_name)) {
+                    name = sequence_name; 
+                } else {
+                    while(pref_useWhichName == PREF_NOT_SET_YET) {
+                        pref_useWhichName = checkNameToUse(   
+                            sequence_name,
+                            species_name
+                        );
+                    }
 
-			if(pref_useWhichName == PREF_USE_SPECIES_NAME)
-				seqName = seq.getSpeciesName();
+                    // By this point, we should have a value in pref_useWhichName.
+                    if(pref_useWhichName == PREF_USE_SPECIES_NAME) {
+                        name = species_name;
+                    } else {
+                        name = sequence_name;
+                    }
+                }
 
-			seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, seqName);
-		}
+                // Now we have a name. Use that.
+                seq.setProperty(DataStore.INITIAL_SEQNAME_PROPERTY, name);
+            }
 	}
 
 	/**
@@ -540,34 +533,6 @@ public class FileManager implements FormatListener {
 	}
 
 	/**
-	 * The Thread responsible for the asynchronous addFile().
-	 
-	public void run() {
-		Thread.yield();		// wait until we've got nothing better to do ... i think =/
-		
-		synchronized(filesToLoad) {
-			Iterator i = filesToLoad.iterator();
-			while(i.hasNext()) {
-				File file = null;
-				FormatHandler handler = null;
-
-				file = (File) i.next();
-				i.remove();
-				handler = (FormatHandler) i.next();
-				i.remove();
-
-				try {
-					addNextFile(file, handler);
-				} catch(DelayAbortedException e) {
-					// stop right here.
-					return;
-				}
-			}
-		}
-	}
-	*/
-
-	/**
 	 * Tries to load a particular file into the present SequenceList. If successful, it will sequences the present
 	 * file to be whatever was specified. If not successful, it will leave the external situation (file, sequences)
 	 * unchanged.
@@ -707,7 +672,7 @@ public class FileManager implements FormatListener {
 		if(!checkCancelledBeforeExport())
 			return;
 
-		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
+		File f = getFile("Where would you like to export this set to?");
 		if(f == null)
 			return;
 
@@ -747,7 +712,7 @@ public class FileManager implements FormatListener {
 		//
 		// we don't need to check, since #sequences handles cancelled sequences fine.
 
-		File f = getFile("Where would you like to export this set to?", FileDialog.SAVE);
+		File f = getFile("Where would you like to export this set to?");
 		if(f == null)
 			return;
 
@@ -779,7 +744,7 @@ public class FileManager implements FormatListener {
 	 */
 	public void exportTableAsTabDelimited() {
 		// export the table to the file, etc.
-		File file = getFile("Where would you like to export this table to?", FileDialog.SAVE);
+		File file = getFile("Where would you like to export this table to?");
 		if(file == null)
 			return;
 
