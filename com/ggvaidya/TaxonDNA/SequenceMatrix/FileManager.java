@@ -138,18 +138,6 @@ public class FileManager implements FormatListener {
         mb.go();
     }
 
-
-    /**
-     * Adds the file to Sequence Matrix, using the specified handler.
-     */
-    public void addFile(File file, FormatHandler handler) {
-        try {
-            addNextFile(file, handler);
-        } catch(DelayAbortedException e) {
-            return;
-        }
-    }
-
     /** 
         A dialog box to check whether the user would like to use sequence names
         or species names during file import.
@@ -282,215 +270,236 @@ public class FileManager implements FormatListener {
         }
     }
 
-	/**
-	 * Loads the file and handler. This is *very* synchronous, so please
-	 * call only from the Thread.
-	 */
-	private void addNextFile(File file, FormatHandler handler) throws DelayAbortedException {
-		SequenceList sequences = null;
-		boolean sets_were_added = false;
+    /**
+     * Load the specified file with the provided FormatHandler (or null) and
+     * returns the loaded SequenceList (or null, if there was an error). This
+     * is really part of the addFile() system, so it will provide its own
+     * errors to the user if things go wrong.
+     * @return The SequenceList loaded, or null if it couldn't be loaded.
+     */
+    private Sequences loadFile(File file, FormatHandler handler) {
+        try {
+            // Apparently, there's two completely different ways of creating sequence lists,
+            // depending on whether we have a known handler or not. That's just bad API
+            // design, if you ask me.
 
-		try {
-			if(handler != null) {
-				handler.addFormatListener(this);
+            if(handler != null) {
+                handler.addFormatListener(this);        // Set up FormatHandler hooks.
 
-				sequences = new SequenceList(
-					file,	
-					handler,
-					new ProgressDialog(
-						matrix.getFrame(), 
-						"Loading file ...", 
-						"Loading '" + file + "' (of format " + handler.getShortName() + " into memory. Sorry for the delay!",
-						ProgressDialog.FLAG_NOCANCEL
-						)
-				);
-			} else {
-				sequences = SequenceList.readFile(
-					file, 
-					new ProgressDialog(
-						matrix.getFrame(), 
-						"Loading file ...", 
-						"Loading '" + file + "' into memory. Sorry for the delay!",
-						ProgressDialog.FLAG_NOCANCEL
-						),
-					this		// use us as the format listener
-					);
-			}
+                return new SequenceList(
+                    file,	
+                    handler,
+                    new ProgressDialog(
+                        matrix.getFrame(), 
+                        "Loading file ...", 
+                        "Loading '" + file + "' (of format " + handler.getShortName() + ") into memory. Sorry for the delay!",
+                        ProgressDialog.FLAG_NOCANCEL
+                    )
+                );
 
-		} catch(SequenceListException e) {
-			MessageBox mb = new MessageBox(matrix.getFrame(), "Could not read file!", "I could not understand a sequence in this file. Please fix any errors in the file.\n\nThe technical description of the error is: " + e);
-			mb.go();
+            } else {
+                return SequenceList.readFile(
+                    file, 
+                    new ProgressDialog(
+                        matrix.getFrame(), 
+                        "Loading file ...", 
+                        "Loading '" + file + "' into memory. Sorry for the delay!",
+                        ProgressDialog.FLAG_NOCANCEL
+                    ),
+                    this		// use us as the FormatListener 
+                );
+            }
 
-			return;
-		} catch(DelayAbortedException e) {
-			// pass it on, no returns
-			throw e;
-		}
+        } catch(SequenceListException e) {
+	    MessageBox mb = new MessageBox(
+                matrix.getFrame(), 
+                "Could not read file!", 
+                "I could not understand a sequence in this file. Please fix any errors in the file.\n\n" + 
+                    "The technical description of the error is: " + e
+            );
 
-                // bisect: worked
+	    mb.go();
 
-		// now, we're almost done with this file ... bbbut ... before we do
-		// do we have sets?
-                boolean contains_codon_sets = false;
-                System.err.println("hash_sets.size: " + hash_sets.size());
-		synchronized(hash_sets) {
-			if(hash_sets.size() > 0) {
-				// we do!
-				MessageBox mb = new MessageBox(
-						matrix.getFrame(),
-						"I see sets!",
-						"The file " + file + " contains character sets. Do you want me to split the file into character sets?",
-						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
+            return;
 
-				if(mb.showMessageBox() == MessageBox.MB_YES) {
-//					pd.begin();
+        } catch(DelayAbortedException e) {
+            return;
+	}
+    }
 
-					/////////////////////////////////////////////////////////////////////////////////
-					// TODO: This code is busted. Since we're not sure what ORDER the messages come
-					// in (or that they get entered into the vectors), we need to make sure we SORT
-					// the vectors before we start anything funky. Of course, we can't sort them as
-					// is, which means another layer of hacks.
-					// TODO.
-					/////////////////////////////////////////////////////////////////////////////////
+    /**
+     * The add-a-new-file-to-Sequence-Matrix method. This method is probably the single
+     * worst chunk of code in all of Sequence Matrix (and boy would I hate to be proved
+     * wrong). It is evil, evil, evil, and covered with hacks. Avoid if you can.
+     */
+    public void addFile(File file, FormatHandler handler) {
+        boolean sets_were_added = false;
 
-					// do stuff
-					//
-					// this is how it works:
-					// 1.	we will NEVER let anybody else see 'sequences' (our main SequenceList)
-					// 2.	we split sequences into subsequencelists. These, we will let people see.
-					// 3.	any characters remaining 'unmatched' are thrown into 'no sets'
-					// 4.	we split everything :(. this is the best solution, but, err, that
-					// 	means we have to figure out a delete column. Sigh.
-					//
-					sequences.lock();
+        // Load the files.
+        SequenceList sequences = loadFile(file, handler);
+        if(sequences == null)
+            return;
 
-					Iterator i_sets = hash_sets.keySet().iterator();
-					int set_count = 0;
-					while(i_sets.hasNext()) {
-						//pd.delay(set_count, hash_sets.size());
-						set_count++;
-						
-						String name = (String) i_sets.next();
-						Vector v = (Vector) hash_sets.get(name);
-                                                SequenceList sl = new SequenceList();
+        // Check for codon sets.
+        boolean contains_codon_sets = false;
+	synchronized(hash_sets) {
+	    if(hash_sets.size() > 0) {
+	        // we do!
+	        MessageBox mb = new MessageBox(
+	            matrix.getFrame(),
+	            "I see sets!",
+	            "The file " + file + " contains character sets. Do you want me to split the file into character sets?",
+	            MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE
+                );
 
-                                                /*
-                                                 * At this point, \3s codonsets are jumped off
-                                                 * and handled specially.
-                                                 */
-                                                if(name.charAt(0) == ':') {
-                                                    char pos = name.charAt(1);
+            if(mb.showMessageBox() == MessageBox.MB_YES) {
 
-                                                    Iterator i_seq = sequences.iterator();
-                                                    while(i_seq.hasNext()) {
-                                                        Sequence seq = (Sequence) i_seq.next();
-                    
-                                                        seq.setProperty("position_" + pos, v);
-                                                    }
+                /////////////////////////////////////////////////////////////////////////////////
+                // TODO: This code is busted. Since we're not sure what ORDER the messages come
+                // in (or that they get entered into the vectors), we need to make sure we SORT
+                // the vectors before we start anything funky. Of course, we can't sort them as
+                // is, which means another layer of hacks.
+                // TODO.
+                /////////////////////////////////////////////////////////////////////////////////
 
-                                                    contains_codon_sets = true;
+                // do stuff
+                //
+                // this is how it works:
+                // 1.	we will NEVER let anybody else see 'sequences' (our main SequenceList)
+                // 2.	we split sequences into subsequencelists. These, we will let people see.
+                // 3.	any characters remaining 'unmatched' are thrown into 'no sets'
+                // 4.	we split everything :(. this is the best solution, but, err, that
+                // 	means we have to figure out a delete column. Sigh.
+                //
+                sequences.lock();
 
-                                                    continue;
-                                                }
+                Iterator i_sets = hash_sets.keySet().iterator();
+                int set_count = 0;
+                while(i_sets.hasNext()) {
+                        //pd.delay(set_count, hash_sets.size());
+                        set_count++;
+                        
+                        String name = (String) i_sets.next();
+                        Vector v = (Vector) hash_sets.get(name);
+                        SequenceList sl = new SequenceList();
 
-                                                /* 
-                                                 * ONLY normal sets (NOT \3s) go pass here!
-                                                 */
+                        /*
+                         * At this point, \3s codonsets are jumped off
+                         * and handled specially.
+                         */
+                        if(name.charAt(0) == ':') {
+                            char pos = name.charAt(1);
 
-						ProgressDialog pd = new ProgressDialog(
-							matrix.getFrame(),
-							"Please wait, separating out set '" + name + "' ...",
-							"Please wait while I separate out '" + name + "'. Sorry for the wait!");
-						// pd.begin();		// and the addSequenceList(..., pd) call will
-									// eventually call pd.end(). It's hacky, I know!
-									// I'm sorry, Grandpa!
+                            Iterator i_seq = sequences.iterator();
+                            while(i_seq.hasNext()) {
+                                Sequence seq = (Sequence) i_seq.next();
 
-                                                                        // Haha, the comment above probably took out SM development
-                                                                        // for a bunch of months. I guess Grandpa was right all
-                                                                        // along.
+                                seq.setProperty("position_" + pos, v);
+                            }
 
-						Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
+                            contains_codon_sets = true;
 
-						Iterator i_seq = sequences.iterator();
-						while(i_seq.hasNext()) {
-							Sequence seq = (Sequence) i_seq.next();
+                            continue;
+                        }
 
-                                                        System.err.println("[" + name + "/" + seq + "]");
+                        /* 
+                         * ONLY normal sets (NOT \3s) go pass here!
+                         */
 
-							Sequence seq_out = new Sequence();
-							seq_out.changeName(seq.getFullName());
+                        ProgressDialog pd = new ProgressDialog(
+                                matrix.getFrame(),
+                                "Please wait, separating out set '" + name + "' ...",
+                                "Please wait while I separate out '" + name + "'. Sorry for the wait!");
+                        // pd.begin();		// and the addSequenceList(..., pd) call will
+                                                // eventually call pd.end(). It's hacky, I know!
+                                                // I'm sorry, Grandpa!
 
-							Iterator i_coords = v.iterator();
-							while(i_coords.hasNext()) {
-                                                                Object o = i_coords.next();
-								FromToPair ftp = null;
-                                                                if(o.getClass().equals(FromToPair.class)) {
-                                                                    ftp =  (FromToPair)(o);
-                                                                } else {
-                                                                    throw new RuntimeException("Bad cast: " + o + " is not a FromToPair; it is a " + o.getClass());
-                                                                }
+                                                // Haha, the comment above probably took out SM development
+                                                // for a bunch of months. I guess Grandpa was right all
+                                                // along.
 
-								int from = ftp.from; 
-								int to = ftp.to;
+                        Collections.sort(v);	// we sort the fromToPairs so that they are in left-to-right order.
 
-								try {
-									System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-                                                                        Sequence subseq = seq.getSubsequence(from, to);
-									Sequence s = BaseSequence.promoteSequence(subseq);
-									seq_out = seq_out.concatSequence(s);
-								} catch(SequenceException e) {
-									pd.end();
+                        Iterator i_seq = sequences.iterator();
+                        while(i_seq.hasNext()) {
+                                Sequence seq = (Sequence) i_seq.next();
 
-									MessageBox mb_2 = new MessageBox(
-											matrix.getFrame(),
-											"Uh-oh: Error forming a set",
-											"According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
-									mb_2.go();
-									sequences.unlock();
-									hash_sets.clear();
-									sets_were_added = true;
+                                System.err.println("[" + name + "/" + seq + "]");
 
-									// we're done here. I honestly don't remember why.
-									// but I have FAITH, and that is what matters.
-									return;
-								}
-							}
+                                Sequence seq_out = new Sequence();
+                                seq_out.changeName(seq.getFullName());
 
-							// WARNING: note that this will eliminate any deliberately gapped regions!
-							// (which is, I guess, okay)
-							//System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
-							if(seq_out.getActualLength() > 0)
-								sl.add(seq_out);
-						}
-						// pd.end();
-                                                
-                                                // bisect: crashes if there's existing data. 
+                                Iterator i_coords = v.iterator();
+                                while(i_coords.hasNext()) {
+                                        Object o = i_coords.next();
+                                        FromToPair ftp = null;
+                                        if(o.getClass().equals(FromToPair.class)) {
+                                            ftp =  (FromToPair)(o);
+                                        } else {
+                                            throw new RuntimeException("Bad cast: " + o + " is not a FromToPair; it is a " + o.getClass());
+                                        }
 
-                                                System.err.println("HereA " + name);
+                                        int from = ftp.from; 
+                                        int to = ftp.to;
 
-						setupNamesToUse(sl);
-						checkGappingSituation(name, sl);
+                                        try {
+                                                System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
+                                                Sequence subseq = seq.getSubsequence(from, to);
+                                                Sequence s = BaseSequence.promoteSequence(subseq);
+                                                seq_out = seq_out.concatSequence(s);
+                                        } catch(SequenceException e) {
+                                                pd.end();
 
-                                                System.err.println("HereB " + name);
+                                                MessageBox mb_2 = new MessageBox(
+                                                                matrix.getFrame(),
+                                                                "Uh-oh: Error forming a set",
+                                                                "According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
+                                                mb_2.go();
+                                                sequences.unlock();
+                                                hash_sets.clear();
+                                                sets_were_added = true;
 
-						StringBuffer buff_complaints = new StringBuffer();
-						matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
+                                                // we're done here. I honestly don't remember why.
+                                                // but I have FAITH, and that is what matters.
+                                                return;
+                                        }
+                                }
 
-						if(buff_complaints.length() > 0) {
-							new MessageBox(	matrix.getFrame(),
-									name + ": Some sequences weren't added!",
-									"Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
-							).go();
-						}
+                                // WARNING: note that this will eliminate any deliberately gapped regions!
+                                // (which is, I guess, okay)
+                                //System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+                                if(seq_out.getActualLength() > 0)
+                                        sl.add(seq_out);
+                        }
+                        // pd.end();
+                        
+                        // bisect: crashes if there's existing data. 
 
-                                                System.err.println("Done for [" + name + "]");
-					}
+                        System.err.println("HereA " + name);
 
-					sequences.unlock();
+                        setupNamesToUse(sl);
+                        checkGappingSituation(name, sl);
 
-					hash_sets.clear();
-					sets_were_added = true;
-				}
+                        System.err.println("HereB " + name);
+
+                        StringBuffer buff_complaints = new StringBuffer();
+                        matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
+
+                        if(buff_complaints.length() > 0) {
+                                new MessageBox(	matrix.getFrame(),
+                                                name + ": Some sequences weren't added!",
+                                                "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+                                ).go();
+                        }
+
+                        System.err.println("Done for [" + name + "]");
+                }
+
+                sequences.unlock();
+
+                hash_sets.clear();
+                sets_were_added = true;
+        }
 			}
 		}
 
