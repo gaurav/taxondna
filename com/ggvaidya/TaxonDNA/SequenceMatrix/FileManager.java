@@ -561,6 +561,28 @@ public class FileManager implements FormatListener {
             }
         }
         
+        // if we're here, we've only got one 'sequences'.
+        // so add it!
+        if(!sets_were_added || (sets_were_added && contains_codon_sets)) {
+
+                StringBuffer buff_complaints = new StringBuffer();
+                matrix.getTableManager().addSequenceList(sequences,
+                                buff_complaints,
+                                new ProgressDialog(
+                                        matrix.getFrame(),
+                                        "Please wait, adding sequences ...",
+                                        "The new sequences are being added to the table now. Sorry for the delay!"
+                                )
+                        );
+
+                if(buff_complaints.length() > 0) {
+                        new MessageBox(	
+                                matrix.getFrame(),
+                                file + ": Some sequences weren't added!",
+                                "Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
+                        ).go();
+                }
+        }
     }
 
 	/**
