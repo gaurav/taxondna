@@ -56,7 +56,6 @@ public class CloseableWindow implements WindowListener, KeyListener {
 	public void windowOpened(WindowEvent e) {}
 
 	public void keyPressed(KeyEvent e) {
-		System.err.println("Source: " + e.getSource());
 		if(Window.class.isAssignableFrom(e.getSource().getClass())) {
 			if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
 				((Window) e.getSource()).setVisible(false);

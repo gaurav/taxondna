@@ -12,7 +12,8 @@
  * Note that after commit e13ef06a09be this file was cleaned up for 
  * pretty much the first time ever. This is directly to make it
  * possible to make charactersets and codonpositions to work together
- * in sensible ways; but 
+ * in sensible ways; but this might well broken things in horrible,
+ * horrible ways. Let's see.
  *
  */
 
@@ -50,7 +51,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class FileManager implements FormatListener {
     private SequenceMatrix  matrix;
-    private Hashtable       hash_sets = new Hashtable();
+    private HashMap<String, ArrayList<FromToPair>> hashmap_codonsets = new HashMap<String, ArrayList<FromToPair>>();
 
 //
 //      0.      CONFIGURATION OPTIONS
@@ -178,8 +179,10 @@ public class FileManager implements FormatListener {
         buttons.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         // Why two default buttons? Because DefaultButtons know
-        // when they've been clicked. Closing the window directly
-        // will activate 
+        // when they've been clicked. If I'm reading this correctly,
+        // if _neither_ button is clicked (if the Window is closed
+        // directly), then _neither_ of the buttons will know that
+        // they've been clicked. In that case, we pick USE_FULL_NAME.
         DefaultButton btn_seq = new DefaultButton(dg, "Use sequence names");
         buttons.add(btn_seq);
 
@@ -222,12 +225,17 @@ public class FileManager implements FormatListener {
     }
 
     /**
-     * Sets up names to use by filling in INITIAL_SEQ_NAME in the
+     * Sets up names to use by filling in INITIAL_SEQNAME_PROPERTY in the
      * Sequence preferences, in-place. You ought to call this on 
      * a SequenceList before you process it. Note that this function
      * works IN PLACE, but won't change names or anything - only
-     * remove the old INITIAL_SEQ_NAME, and replace it with what
-     * we think is the right initial seq name NOW. 
+     * replace the INITIAL_SEQNAME_PROPERTY with what we think it
+     * we think is the right initial seq name NOW.
+     *
+     * Important note: if the INITIAL_SEQNAME_PROPERTY for a sequence 
+     * has already been set, we skip processing that sequence altogether. 
+     * The idea is that if the input file format already knows what
+     * name the user likes, we can go ahead and use that.
      */
     private void setupNamesToUse(SequenceList list) {
         if (list.count() == 0) return;     // Don't handle empty sequence lists
@@ -275,6 +283,7 @@ public class FileManager implements FormatListener {
      * returns the loaded SequenceList (or null, if there was an error). This
      * is really part of the addFile() system, so it will provide its own
      * errors to the user if things go wrong.
+     *
      * @return The SequenceList loaded, or null if it couldn't be loaded.
      */
     private Sequences loadFile(File file, FormatHandler handler) {
@@ -320,14 +329,14 @@ public class FileManager implements FormatListener {
 
 	    mb.go();
 
-            return;
+            return null;
 
         } catch(DelayAbortedException e) {
-            return;
+            return null;
 	}
     }
 
-    /** Reads the sets stored in hash_sets and splits the datasets into individual sequencelists
+    /** Reads the sets stored in hashmap_codonsets and splits the datasets into individual sequencelists
         for each non-overlapping character sets.
 
         (2009-Nov-28) I want to see codonposset information to be read into the file, and I'd love 
@@ -372,152 +381,158 @@ public class FileManager implements FormatListener {
                     }
 
 
+        @return -1 if there was a fatal error (which has already been shown to
+        the user), otherwise the number of character sets which have been successfully
+        extracted.
     */
 
-    private void incorporateSets(SequenceList sequences) {
-        // Storage areas
-        Vector positions_N =    null;
-        Vector positions_1 =    null;
-        Vector positions_2 =    null;
-        Vector positions_3 =    null;
+    private int incorporateSets(SequenceList sequences) {
+        // charset count.
+        int count_charsets = 0;
 
-        // We want to make sure nobody touches hash_sets while we're working. This
+        // Storage areas
+        ArrayList<FromToPair> positions_N =    null;
+        ArrayList<FromToPair> positions_1 =    null;
+        ArrayList<FromToPair> positions_2 =    null;
+        ArrayList<FromToPair> positions_3 =    null;
+
+        // We want to make sure nobody touches hashmap_codonsets while we're working. This
         // Should Never Happen (tm), but better safe than sorry.
-	synchronized(hash_sets) {
-            // Don't let anybody change these sequences.
+	synchronized(hashmap_codonsets) {
+            HashMap<String, ArrayList<FromToPair>> sets = hashmap_codonsets;
+
+            // Don't let anybody change these sequences, either.
             sequences.lock();
 
-            Iterator i_sets = hash_sets.keySet().iterator();
+            // Step one: extract the positional sets. These are named ':<position>'.
+            // We also remove them from hashmap_codonsets, since this makes subsequent
+            // processing a whole lot easier.
+            positions_N = sets.get(":N"); sets.remove(":N");
+            positions_1 = sets.get(":1"); sets.remove(":1");
+            positions_2 = sets.get(":2"); sets.remove(":2");
+            positions_3 = sets.get(":3"); sets.remove(":3");
 
-            // TODO: extract N123 here? Then we have the coordinates all ready to go.
+            // To simplify code, we'll set the positional data to empty datasets
+            // (so we don't have to keep testing for 'null', you understand).
+            if(positions_N == null)     positions_N = new ArrayList<FromToPair>();
+            if(positions_1 == null)     positions_1 = new ArrayList<FromToPair>();
+            if(positions_2 == null)     positions_2 = new ArrayList<FromToPair>();
+            if(positions_3 == null)     positions_3 = new ArrayList<FromToPair>();
+
+            // It would be nice if we could go through these sets and "compress"
+            // them down (i.e. 'position 1 = 1, 2, 3' => 'position 1 = 1-3'). But
+            // hopefully we'll be fast enough without.
+            //
+            // If not, you know what TODO.
+
+            // Okay, so now we have a set of positional data sets. Rest of this
+            // kinda runs the way it's always run.
+
+            Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
 
             while(i_sets.hasNext()) {
-                String charset_name =       (String) i_sets.next();
-                Vector charset_fromtos =    (Vector) hash_sets.get(name);
-                SequenceList sl =           new SequenceList();
+                String charset_name =                   i_sets.next();
+                ArrayList<FromToPair> charset_fromtos = hashmap_codonsets.get(name);
+                SequenceList sl_charset =               new SequenceList();
 
-                /*
-                 * At this point, \3s codonsets are jumped off
-                 * and handled specially.
-                 */
-                if(charset_name.charAt(0) == ':') {
-                    char pos = charset_name.charAt(1);      // Character sets are named ':N', ':1', ':2', ':3'.
-
-                    switch(pos) {
-                        case 'N':       positions_N.addAll(charset_fromtos); continue;
-                        case '1':       positions_1.addAll(charset_fromtos); continue;
-                        case '2':       positions_2.addAll(charset_fromtos); continue;
-                        case '3':       positions_3.addAll(charset_fromtos); continue;
-                    }
-
-                    // If we haven't "continue"d yet, we are in trouble.
-                    throw new RuntimeException("Unidentifiable character set found: " + charset_name + " could not be understood.");
-                }
-
-                /* 
-                 * If the dire comment above is correct, then this next bit is likely quite important.
-                 * We sort the fromToPairs so that they are in left-to-right order.
-                 */
+                // If the dire comment above is correct, then this next bit is likely quite important.
+                // We sort the fromToPairs so that they are in left-to-right order.
                 Collections.sort(charset_fromtos);
 
-                /*
-                 * This next bit is a little tricky: what we do is 
-                 * cut the sequences into chunks.
-                 * 
-                 * TODO: positions
-                 */
+                // Our goal here is to create a single SequenceList which consists of
+                // all the bits mentioned in charsets_fromtos. Note that these could be
+                // incomplete bits (0 .. 12, 14 .. 16) or, in an extreme case, (1, 2, 3, 4).
+                // We reassemble them into a sequence, figure out a name for it, and
+                // Our Job Here Is Done.
                 Iterator i_seq = sequences.iterator();
                 while(i_seq.hasNext()) {
                     Sequence seq = (Sequence) i_seq.next();
 
-                    System.err.println("[" + name + "/" + seq + "]");
-
+                    // The new, synthesized sequence we're going to generate.
                     Sequence seq_out = new Sequence();
                     seq_out.changeName(seq.getFullName());
 
-                    Iterator i_coords = v.iterator();
+                    // For every FromToPair, pull a single sequence.
+                    // This is why we sort it above - otherwise the
+                    // "assembled" sequence will be in the wrong order.
+                    Iterator<FromToPair> i_coords = charset_fromtos.iterator();
                     while(i_coords.hasNext()) {
-                            Object o = i_coords.next();
-                            FromToPair ftp = null;
-                            if(o.getClass().equals(FromToPair.class)) {
-                                ftp =  (FromToPair)(o);
-                            } else {
-                                throw new RuntimeException("Bad cast: " + o + " is not a FromToPair; it is a " + o.getClass());
-                            }
+                        FromToPair ftp = i_coords.next();
 
-                            int from = ftp.from; 
-                            int to = ftp.to;
+                        int from = ftp.from; 
+                        int to = ftp.to;
 
-                            try {
-                                    System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");										
-                                    Sequence subseq = seq.getSubsequence(from, to);
-                                    Sequence s = BaseSequence.promoteSequence(subseq);
-                                    seq_out = seq_out.concatSequence(s);
-                            } catch(SequenceException e) {
-                                    pd.end();
+                        try {
+                            // System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");
 
-                                    MessageBox mb_2 = new MessageBox(
-                                                    matrix.getFrame(),
-                                                    "Uh-oh: Error forming a set",
-                                                    "According to this file, character set " + name + " extends from " + from + " to " + to + ". While processing sequence '" + seq.getFullName() + "', I got the following problem:\n\t" + e.getMessage() + "\nI'm skipping this file.");
-                                    mb_2.go();
-                                    sequences.unlock();
-                                    hash_sets.clear();
-                                    sets_were_added = true;
+                            Sequence subseq = seq.getSubsequence(from, to);
+                            Sequence s = BaseSequence.promoteSequence(subseq);
+                            seq_out = seq_out.concatSequence(s);
 
-                                    // we're done here. I honestly don't remember why.
-                                    // but I have FAITH, and that is what matters.
-                                    return;
-                            }
+                        } catch(SequenceException e) {
+                            MessageBox mb_2 = new MessageBox(
+                                matrix.getFrame(),
+                                "Uh-oh: Error forming a set",
+                                "According to this file, character set " + name + " extends from " + from + " to " + to + ". " +
+                                "While processing sequence '" + seq.getFullName() + "', I got the following problem:\n" + 
+                                "\t" + e.getMessage() + "\nI'm skipping this file."
+                            );
+                            mb_2.go();
+
+                            sequences.unlock();
+                            hashmap_codonsets.clear();
+
+                            return -1;
+                        }
                     }
 
-                    // WARNING: note that this will eliminate any deliberately gapped regions!
-                    // (which is, I guess, okay)
-                    //System.err.println("Final sequence: " + seq_out + ", " + seq_out.getActualLength());
+                    // seq_out is ready for use! Add it to the sequence list.
                     if(seq_out.getActualLength() > 0)
-                            sl.add(seq_out);
-            }
-            // pd.end();
-            
-            // bisect: crashes if there's existing data. 
-
-            System.err.println("HereA " + name);
-
-            setupNamesToUse(sl);
-            checkGappingSituation(name, sl);
-
-            System.err.println("HereB " + name);
-
-            StringBuffer buff_complaints = new StringBuffer();
-            matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
-
-            if(buff_complaints.length() > 0) {
-                    new MessageBox(	matrix.getFrame(),
-                                    name + ": Some sequences weren't added!",
-                                    "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
-                    ).go();
-            }
-
-            System.err.println("Done for [" + name + "]");
+                        sl_charset.add(seq_out);
                 }
 
-                sequences.unlock();
+                // Sequence list is ready for use!
+                addSequenceListToTable(name, sl);
+                count_charsets++;
+            }
 
-                hash_sets.clear();
-                sets_were_added = true;
+            sequences.unlock();
+            hashmap_codonsets.clear();
         }
-			}
-		}
 
+        return count_charsets;
+    }
+
+    /**
+     * Adds a sequence list to Sequence Matrix's table.
+     * 
+     * @return Nothing. We report errors directly to the user. 
+     */
+    private void addSequenceListToTable(String name, SequenceList sl) {
+        setupNamesToUse(sl);
+        checkGappingSituation(name, sl);
+
+        StringBuffer buff_complaints = new StringBuffer();
+        matrix.getTableManager().addSequenceList(name, sl, buff_complaints, null);
+
+        if(buff_complaints.length() > 0) {
+            new MessageBox(	matrix.getFrame(),
+                    name + ": Some sequences weren't added!",
+                    "Some sequences in the taxonset " + name + " weren't added. These are:\n" + buff_complaints.toString()
+            ).go();
+        }
+    }
 
 
     /**
-     * The add-a-new-file-to-Sequence-Matrix method. This method is probably the single
-     * worst chunk of code in all of Sequence Matrix (and boy would I hate to be proved
-     * wrong). It is evil, evil, evil, and covered with hacks. Avoid if you can.
+     * Adds a new file to the table. All file loading for SequenceMatrix goes through here.
+     * This method should mostly coordinate the other methods around to get its work done.
+     * 
+     * There used to be dragons here, but they've moved out into other methods now.
+     *
+     * This method throws no exceptions; any errors are displayed to the user directly.
      */
     public void addFile(File file, FormatHandler handler) {
-        boolean sets_were_added = false;
 
         // Load the files.
         SequenceList sequences = loadFile(file, handler);
@@ -525,8 +540,8 @@ public class FileManager implements FormatListener {
             return;
 
         // Figure out the sets.
-        synchronized(hash_sets) {
-            if(hash_sets.count() > 0) {
+        synchronized(hashmap_codonsets) {
+            if(hashmap_codonsets.count() > 0) {
                 MessageBox mb = new MessageBox(
                     matrix.getFrame(),
                     "I see sets!",
@@ -535,35 +550,17 @@ public class FileManager implements FormatListener {
                 );
 
                 if(mb.showMessageBox() == MessageBox.MB_YES) {
-                    incorporateSets(sequences); 
+                    int count = incorporateSets(sequences); 
+                    
+                    hashmap_codonsets.clear();
+
+                    if(count <= -1) {
+                        return;     // We're not adding this file.
+                    }
                 }
             }
         }
         
-        // if we're here, we've only got one 'sequences'.
-        // so add it!
-        if(!sets_were_added || (sets_were_added && contains_codon_sets)) {
-                setupNamesToUse(sequences);
-                checkGappingSituation(file.toString(), sequences);
-
-                StringBuffer buff_complaints = new StringBuffer();
-                matrix.getTableManager().addSequenceList(sequences,
-                                buff_complaints,
-                                new ProgressDialog(
-                                        matrix.getFrame(),
-                                        "Please wait, adding sequences ...",
-                                        "The new sequences are being added to the table now. Sorry for the delay!"
-                                )
-                        );
-
-                if(buff_complaints.length() > 0) {
-                        new MessageBox(	
-                                matrix.getFrame(),
-                                file + ": Some sequences weren't added!",
-                                "Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
-                        ).go();
-                }
-        }
     }
 
 	/**
@@ -1018,51 +1015,44 @@ public class FileManager implements FormatListener {
 		}
 	}
 
-	/**
-	 * A format Listener for listening in to CHARACTER_SETS ... sigh.
-	 */
-	public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {
-		switch(evt.getId()) {
-			case FormatHandlerEvent.CHARACTER_SET_FOUND:
-				String name = evt.name;
-				int from = evt.from;
-				int to = evt.to;
+    /**
+     * A format Listener for listening in on character sets. Every time the FormatHandler
+     * sees a characterset it calls this method, which then stores the characterset into
+     * hashmap_codonsets. Once the file has finished loading, incorporateSets() will use
+     * this data to subdivide the input file.
+     */
+    public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {
+        switch(evt.getId()) {
 
-				// so now we know ... and knowing is half the battle!
-				// G-I-Joe! [tm]
+            // What happened?
+            case FormatHandlerEvent.CHARACTER_SET_FOUND:
+                String name = evt.name;
+                int from = evt.from;
+                int to = evt.to;
 
-				// celebration over, things are about to get somewhat hairy:
-				// 1.	we are in a synchronized, so it's okay to expect
-				// 	simplicity - nobody else should/would be doing
-				// 	*anything* at this point. so, we know which
-				// 	file/set we're talking about
-				//
-				// 2.	we need to let the loader know, so it can split
-				// 	up the sequence set.
-				//
-				// 3.	we need code to actually split up the sequence set
-				//
-				//
-				// All this will come.
-				//
-				synchronized(hash_sets) {
-					if(hash_sets.get(name) != null) {
-						Vector v = (Vector) hash_sets.get(name);
-						v.add(new FromToPair(from, to));
-					} else {
-						Vector v = new Vector();
-						v.add(new FromToPair(from, to));
-						hash_sets.put(name, v);
-					}
-				}
+                synchronized(hashmap_codonsets) {
+                    // If there's an ArrayList already in the dataset under this name,
+                    // add to it. If there isn't, make it.
 
-				// consumed, but we don't mind if anybody else knows
-				return false;
-		}
+                    // This is all very Perlish.
+    
+                    if(hashmap_codonsets.get(name) != null) {
+                        ArrayList<FromToPair> al = hashmap_codonsets.get(name);
+                        al.add(new FromToPair(from, to));
+                    } else {
+                        ArrayList<FromToPair> al = new ArrayList<FromToPair>();
+                        al.add(new FromToPair(from, to));
+                        hashmap_codonsets.put(name, al);
+                    }
+                }
 
-		// not consumed
-		return false;
-	}
+                // consumed, but we don't mind if anybody else knows
+                return false;
+        }
+
+        // not consumed
+        return false;
+    }
 
 	/**
 	 * Check to see whether any cancelled sequences exist; any data in such sequences
