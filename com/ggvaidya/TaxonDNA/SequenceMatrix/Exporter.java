@@ -101,7 +101,7 @@ public class Exporter implements SequencesHandler {
 		if(delay != null)
 			delay.begin();
 
-		Vector vec_sequences = new Vector( (Collection) tm.getSequenceNames());
+		Vector<String> vec_sequences = new Vector<String>( (Collection) tm.getSequenceNames());
 		int count_columns = tm.getCharsets().size();
 		Iterator i = tm.getCharsets().iterator();
 
@@ -248,7 +248,7 @@ public class Exporter implements SequencesHandler {
 				// now, remove 'taxa_to_randomly_delete' taxa from this DataStore.
 				// DO YOU HAVE ANY IDEA HOW FRIGGIN EASY THIS IS AFTER THE LAST
 				// PUSHAROUND?!?!
-				Vector v = new Vector(sg.getSequences());
+				Vector<String> v = new Vector<String>(sg.getSequences());
 				if(taxonToNeverDelete != null && taxonToNeverDelete.length() > 0)
 					v.remove(taxonToNeverDelete);
 
@@ -580,12 +580,29 @@ public class Exporter implements SequencesHandler {
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
 
+
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
+
                 i = matrix.getTableManager().getCharsets().iterator(); 
                 int horzOffset = 0;
                 while(i.hasNext()) {
                     String colName = (String) i.next();
-
-                    System.err.println("Column name: " + colName);
 
                     Set seqNames = grid.getSequenceNamesByColumn(colName);
                     if(seqNames.size() > 0) {
@@ -599,22 +616,25 @@ public class Exporter implements SequencesHandler {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {
-                                buff_nexus_positions.append("\t\t" + position_names[x] + ": ");
-
                                 Iterator i_v = v.iterator();
                                 while(i_v.hasNext()) {
                                     FromToPair ftp = (FromToPair) i_v.next();
+                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
 
                                     if(x == 0)
-                                        str_end = ",\n";
-                                    else if(x == 1 || x == 2)
-                                        str_end = "\\3,\n";
-                                    else if(x == 3) {
-                                        str_end = "\\3\n";
-                                    }
+                                        str_end = " ";
+                                    else if(x == 1 || x == 2 || x == 3)
+                                        str_end = "\\3 ";
 
-                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
-                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
+                                    if(ftp.from == ftp.to) {
+                                        array_strbuff_positions[x].append(
+                                            (horzOffset + ftp.from) + " "
+                                        );
+                                    } else { 
+                                        array_strbuff_positions[x].append(
+                                            (horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end
+                                        );
+                                    }
                                 }
                             }
                         }
@@ -623,6 +643,19 @@ public class Exporter implements SequencesHandler {
                     // Add to the horizontal offset.
                     horzOffset += grid.getColumnLength(colName);
                 }
+
+                // Now we're done, so combine 'em all.
+                if(array_strbuff_positions[0].length() > 0)
+                    buff_nexus_positions.append("\t\tN: " + array_strbuff_positions[0] + ",\n");
+
+                if(array_strbuff_positions[1].length() > 0)
+                    buff_nexus_positions.append("\t\t1: " + array_strbuff_positions[1] + ",\n");
+
+                if(array_strbuff_positions[2].length() > 0)
+                    buff_nexus_positions.append("\t\t2: " + array_strbuff_positions[2] + ",\n");
+
+                if(array_strbuff_positions[3].length() > 0)
+                    buff_nexus_positions.append("\t\t3: " + array_strbuff_positions[3] + "\n");
 
                 buff_nexus_positions.append("\t;\n");
                 buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
