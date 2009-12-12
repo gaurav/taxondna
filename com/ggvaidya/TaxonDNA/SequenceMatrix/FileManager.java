@@ -286,7 +286,7 @@ public class FileManager implements FormatListener {
      *
      * @return The SequenceList loaded, or null if it couldn't be loaded.
      */
-    private Sequences loadFile(File file, FormatHandler handler) {
+    private SequenceList loadFile(File file, FormatHandler handler) {
         try {
             // Apparently, there's two completely different ways of creating sequence lists,
             // depending on whether we have a known handler or not. That's just bad API
@@ -336,6 +336,55 @@ public class FileManager implements FormatListener {
 	}
     }
 
+    private Vector<FromToPair> positionalInformationFor(ArrayList<FromToPair> positionData, int index_in_sequence, int from, int to) {
+        Vector<FromToPair> results = new Vector<FromToPair>();
+
+        // I wonder if from-to has any positional information?
+        for(FromToPair to_check: positionData) {
+            // Check for any overlap whatsoever.
+            if(to_check.to >= from && to_check.from <= to) {
+                // We may have a match somewhere!
+                
+                int offset =    to_check.from - from;       // Where do we start from, relative 
+                                                            // to index_assembled_sequence?
+                int until =     to_check.to - to_check.from + offset;
+                                                            // How long do we go on for, relative
+                                                            // to index_assembled_sequence.
+
+                if(offset < 0) {
+                    // Negative offsets mean that this positional data started before us,
+                    // which is fine. We'd like to just chop it off at '0', but then we
+                    // lose the starting index. Instead, we need to turn it into '0', '1' or
+                    // '3', depending on where it's supposed to go.
+
+                    // Damnit I wish I could do maths.
+                    
+                    offset = -(offset % 3);
+                }
+
+                if(until > (to - from)) until = (to - from);
+                                                            // Similarily, don't let "until" go
+                                                            // past the end of this sequence.
+
+                // BUT! This needs to be relative to the start of the current sequence.
+                offset +=   index_in_sequence;
+                until +=    index_in_sequence;
+
+                FromToPair ftp_new = new FromToPair(
+                    offset,     // from
+                    until       // to
+                );
+
+                // System.err.println("Added position data: " + ftp_new);
+
+                results.add(ftp_new);
+            }
+        }
+
+        return results;
+    }
+
+
     /** Reads the sets stored in hashmap_codonsets and splits the datasets into individual sequencelists
         for each non-overlapping character sets.
 
@@ -365,22 +414,6 @@ public class FileManager implements FormatListener {
             // 	means we have to figure out a delete column. Sigh.
             //
 
-        (2009-Nov-28) This is the code for setting positional information on sequences. It will come
-            in handy at a later date.
-                
-                Iterator i_seq = sequences.iterator();
-                    while(i_seq.hasNext()) {
-                        Sequence seq = (Sequence) i_seq.next();
-
-                        seq.setProperty("position_" + pos, v);
-                    }
-
-                    contains_codon_sets = true;
-
-                    continue;
-                    }
-
-
         @return -1 if there was a fatal error (which has already been shown to
         the user), otherwise the number of character sets which have been successfully
         extracted.
@@ -407,7 +440,7 @@ public class FileManager implements FormatListener {
             // Step one: extract the positional sets. These are named ':<position>'.
             // We also remove them from hashmap_codonsets, since this makes subsequent
             // processing a whole lot easier.
-            positions_N = sets.get(":N"); sets.remove(":N");
+            positions_N = sets.get(":0"); sets.remove(":0");
             positions_1 = sets.get(":1"); sets.remove(":1");
             positions_2 = sets.get(":2"); sets.remove(":2");
             positions_3 = sets.get(":3"); sets.remove(":3");
@@ -427,12 +460,11 @@ public class FileManager implements FormatListener {
 
             // Okay, so now we have a set of positional data sets. Rest of this
             // kinda runs the way it's always run.
-
             Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
 
             while(i_sets.hasNext()) {
                 String charset_name =                   i_sets.next();
-                ArrayList<FromToPair> charset_fromtos = hashmap_codonsets.get(name);
+                ArrayList<FromToPair> charset_fromtos = hashmap_codonsets.get(charset_name);
                 SequenceList sl_charset =               new SequenceList();
 
                 // If the dire comment above is correct, then this next bit is likely quite important.
@@ -452,6 +484,19 @@ public class FileManager implements FormatListener {
                     Sequence seq_out = new Sequence();
                     seq_out.changeName(seq.getFullName());
 
+                    // Set up a vector to keep track of coordinates within this
+                    // sequence which have particular locational information.
+
+                    // For simplicity's sake, we'll just store this as integers.
+                    // So: these are zero-index based indexes into positional
+                    // information for this sequence.
+                    Vector<FromToPair> seq_positions_N = new Vector<FromToPair>();
+                    Vector<FromToPair> seq_positions_1 = new Vector<FromToPair>();
+                    Vector<FromToPair> seq_positions_2 = new Vector<FromToPair>();
+                    Vector<FromToPair> seq_positions_3 = new Vector<FromToPair>();
+
+                    int index_assembled_sequence = 0;
+
                     // For every FromToPair, pull a single sequence.
                     // This is why we sort it above - otherwise the
                     // "assembled" sequence will be in the wrong order.
@@ -466,14 +511,27 @@ public class FileManager implements FormatListener {
                             // System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");
 
                             Sequence subseq = seq.getSubsequence(from, to);
+
+                            // This is the ONLY point at which we know where subseq came from.
+                            // So this is the only place where we can correctly impose positional
+                            // data onto the sequence.
+
+                            seq_positions_N.addAll(positionalInformationFor(positions_N, index_assembled_sequence, from, to));
+                            seq_positions_1.addAll(positionalInformationFor(positions_1, index_assembled_sequence, from, to));
+                            seq_positions_2.addAll(positionalInformationFor(positions_2, index_assembled_sequence, from, to));
+                            seq_positions_3.addAll(positionalInformationFor(positions_3, index_assembled_sequence, from, to));
+
                             Sequence s = BaseSequence.promoteSequence(subseq);
                             seq_out = seq_out.concatSequence(s);
+
+                            // Increment the index along.
+                            index_assembled_sequence += subseq.getLength();
 
                         } catch(SequenceException e) {
                             MessageBox mb_2 = new MessageBox(
                                 matrix.getFrame(),
                                 "Uh-oh: Error forming a set",
-                                "According to this file, character set " + name + " extends from " + from + " to " + to + ". " +
+                                "According to this file, character set " + charset_name + " extends from " + from + " to " + to + ". " +
                                 "While processing sequence '" + seq.getFullName() + "', I got the following problem:\n" + 
                                 "\t" + e.getMessage() + "\nI'm skipping this file."
                             );
@@ -486,13 +544,25 @@ public class FileManager implements FormatListener {
                         }
                     }
 
+                    // Null out any seq_positions_N without information.
+                    if(seq_positions_N.size() == 0) seq_positions_N = null;
+                    if(seq_positions_1.size() == 0) seq_positions_1 = null;
+                    if(seq_positions_2.size() == 0) seq_positions_2 = null;
+                    if(seq_positions_3.size() == 0) seq_positions_3 = null;
+
+                    // Add any position information in.
+                    seq_out.setProperty("position_0", seq_positions_N);
+                    seq_out.setProperty("position_1", seq_positions_1);
+                    seq_out.setProperty("position_2", seq_positions_2);
+                    seq_out.setProperty("position_3", seq_positions_3);
+
                     // seq_out is ready for use! Add it to the sequence list.
                     if(seq_out.getActualLength() > 0)
                         sl_charset.add(seq_out);
                 }
 
                 // Sequence list is ready for use!
-                addSequenceListToTable(name, sl);
+                addSequenceListToTable(charset_name, sl_charset);
                 count_charsets++;
             }
 
@@ -541,7 +611,7 @@ public class FileManager implements FormatListener {
 
         // Figure out the sets.
         synchronized(hashmap_codonsets) {
-            if(hashmap_codonsets.count() > 0) {
+            if(hashmap_codonsets.size() > 0) {
                 MessageBox mb = new MessageBox(
                     matrix.getFrame(),
                     "I see sets!",
@@ -557,32 +627,15 @@ public class FileManager implements FormatListener {
                     if(count <= -1) {
                         return;     // We're not adding this file.
                     }
+
+                    // Otherwise, by this point, sets have *already been incorporated*.
+                    return;
                 }
             }
         }
         
-        // if we're here, we've only got one 'sequences'.
-        // so add it!
-        if(!sets_were_added || (sets_were_added && contains_codon_sets)) {
-
-                StringBuffer buff_complaints = new StringBuffer();
-                matrix.getTableManager().addSequenceList(sequences,
-                                buff_complaints,
-                                new ProgressDialog(
-                                        matrix.getFrame(),
-                                        "Please wait, adding sequences ...",
-                                        "The new sequences are being added to the table now. Sorry for the delay!"
-                                )
-                        );
-
-                if(buff_complaints.length() > 0) {
-                        new MessageBox(	
-                                matrix.getFrame(),
-                                file + ": Some sequences weren't added!",
-                                "Some sequences in the file " + file + " weren't added. These are:\n" + buff_complaints.toString()
-                        ).go();
-                }
-        }
+        // TODO: Replace file.fileName() with something more sensible.
+        addSequenceListToTable(file.getName(), sequences);
     }
 
 	/**

@@ -11,7 +11,13 @@
 
              But! This generates a lot of warnings. So nevermind, 1.4 it is.
         -->
-        <property name = "java.targetversion" value = "1.4" />
+        <!--
+            Idea rescinded as of Dec 12, 2009. Generics really makes
+            it a lot easier to keep disperate parts of the source in
+            sync. We'll ignore other warnings for now (or fix them when
+            nobody's looking).
+        -->
+        <property name = "java.targetversion" value = "1.5" />
 
         <!-- files.common: (Common) files used by all the TaxonDNA tools -->
 	<property name = "files.common" value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**" />

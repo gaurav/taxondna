@@ -20,5 +20,9 @@ public class FromToPair implements Comparable {
 
         return (this.from - ftp.from);
     }
+
+    public String toString() {
+        return "From: " + from + " to  " + to;
+    }
 }
 
