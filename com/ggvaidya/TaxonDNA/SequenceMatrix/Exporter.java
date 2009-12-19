@@ -602,7 +602,6 @@ public class Exporter implements SequencesHandler {
                         // get the first sequence
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
-                        String position_names[] = { "N", "1", "2", "3" };
                         String str_end = ",\n";
 
                         for(int x = 0; x <= 3; x++) {
@@ -619,13 +618,16 @@ public class Exporter implements SequencesHandler {
                                     else if(x == 1 || x == 2 || x == 3)
                                         str_end = "\\3 ";
 
+                                    // Note those +1s! They're to change our 0-index based calculations
+                                    // into 1-based Nexus coordinates.
+
                                     if(ftp.from == ftp.to) {
                                         array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from) + " "
+                                            (horzOffset + ftp.from + 1) + " "
                                         );
                                     } else { 
                                         array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end
+                                            (horzOffset + ftp.from + 1) + "-" + (horzOffset + ftp.to + 1) + str_end
                                         );
                                     }
                                 }
@@ -637,25 +639,42 @@ public class Exporter implements SequencesHandler {
                     horzOffset += grid.getColumnLength(colName);
                 }
 
-                // Now we're done, so combine 'em all.
-                if(array_strbuff_positions[0].length() > 0)
-                    buff_nexus_positions.append("\t\tN: " + array_strbuff_positions[0] + ",\n");
+                // Combine these bits in a way that makes sure the commas go into
+                // the right places (and ONLY the right places).
+                boolean flag_display_nexus_positions = false;
 
-                if(array_strbuff_positions[1].length() > 0)
-                    buff_nexus_positions.append("\t\t1: " + array_strbuff_positions[1] + ",\n");
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
 
-                if(array_strbuff_positions[2].length() > 0)
-                    buff_nexus_positions.append("\t\t2: " + array_strbuff_positions[2] + ",\n");
+                String position_names[] = { "N", "1", "2", "3" };
 
-                if(array_strbuff_positions[3].length() > 0)
-                    buff_nexus_positions.append("\t\t3: " + array_strbuff_positions[3] + "\n");
+                for(int x = 0; x <= 3; x++) {
+                    String str_end = "";
+
+                    // Check if there is any other string left; if not,
+                    // a comma is unnecessary.
+                    for(int y = x + 1; y <= 3; y++) {
+                        if(array_strbuff_positions[y] != null) {
+                            str_end = ",";
+                            break;
+                        }
+                    }
+                
+                    if(array_strbuff_positions[x] != null) {
+                        buff_nexus_positions.append("\t\t" + position_names[x] + ": " + array_strbuff_positions[x] + str_end + "\n");
+                        flag_display_nexus_positions = true;
+                    }
+                }
 
                 buff_nexus_positions.append("\t;\n");
                 buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
                 buff_nexus_positions.append("END;\n\n");
 
-                // And add it to buff_sets.
-                buff_sets.insert(0, buff_nexus_positions);
+                if(flag_display_nexus_positions)
+                    buff_sets.insert(0, buff_nexus_positions);
                                     
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.

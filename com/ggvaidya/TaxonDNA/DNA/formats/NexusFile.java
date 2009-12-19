@@ -1264,13 +1264,17 @@ public class NexusFile extends BaseFormatHandler {
                             else if(x == 1 || x == 2 || x == 3)
                                 str_end = "\\3 ";
 
+                            // Note the +1s! This is because we store these numbers as
+                            // 0-based indexes (so we can cut with them), but they need
+                            // to be outputted as 1-based indexes.
+
                             if(ftp.from == ftp.to) {
                                 array_strbuff_positions[x].append(
-                                    (ftp.from) + " "
+                                    (ftp.from + 1) + " "
                                 );
                             } else { 
                                 array_strbuff_positions[x].append(
-                                    (ftp.from) + "-" + (ftp.to) + str_end
+                                    (ftp.from + 1) + "-" + (ftp.to + 1) + str_end
                                 );
                             }
                         }
@@ -1285,15 +1289,25 @@ public class NexusFile extends BaseFormatHandler {
                 String position_names[] = { "N", "1", "2", "3" };
                 boolean flag_display_nexus_positions = false;
 
-                for(int x = 0; x < 3; x++) {
-                    str_end = ",";
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
 
-                    if(x == 3)
-                        str_end = "";
-                    else if(array_strbuff_positions[x + 1].length() == 0)
-                        str_end = "";
-                    
-                    if(array_strbuff_positions[x].length() > 0) {
+                for(int x = 0; x <= 3; x++) {
+                    str_end = "";
+
+                    // Check if there is any other string left; if not,
+                    // a comma is unnecessary.
+                    for(int y = x + 1; y <= 3; y++) {
+                        if(array_strbuff_positions[y] != null) {
+                            str_end = ",";
+                            break;
+                        }
+                    }
+                
+                    if(array_strbuff_positions[x] != null) {
                         buff_nexus_positions.append("\t\t" + position_names[x] + ": " + array_strbuff_positions[x] + str_end + "\n");
                         flag_display_nexus_positions = true;
                     }
