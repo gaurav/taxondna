@@ -1220,6 +1220,92 @@ public class NexusFile extends BaseFormatHandler {
 		
 		writer.println("END;\n");
 
+                // Insert in any CODONPOSSET information.
+
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+                
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
+
+                // We need a sequence to get values from. Let's just pick up
+                // the first sequence (see paragraph above to see why this
+                // might be helpful).
+                Sequence seq = (Sequence) set.get(0);    
+                String str_end = "";
+
+                for(int x = 0; x <= 3; x++) {
+                    Vector v = (Vector) seq.getProperty("position_" + x);
+
+                    if(v != null) {
+                        Iterator i_v = v.iterator();
+                        while(i_v.hasNext()) {
+                            FromToPair ftp = (FromToPair) i_v.next();
+                            // buff_nexus_positions.append("(" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+                            if(x == 0)
+                                str_end = " ";
+                            else if(x == 1 || x == 2 || x == 3)
+                                str_end = "\\3 ";
+
+                            if(ftp.from == ftp.to) {
+                                array_strbuff_positions[x].append(
+                                    (ftp.from) + " "
+                                );
+                            } else { 
+                                array_strbuff_positions[x].append(
+                                    (ftp.from) + "-" + (ftp.to) + str_end
+                                );
+                            }
+                        }
+                    }
+                }
+
+                StringBuffer buff_nexus_positions = new StringBuffer(
+                    "BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n"
+                );
+
+                // Now we're done, so combine 'em all.
+                String position_names[] = { "N", "1", "2", "3" };
+                boolean flag_display_nexus_positions = false;
+
+                for(int x = 0; x < 3; x++) {
+                    str_end = ",";
+
+                    if(x == 3)
+                        str_end = "";
+                    else if(array_strbuff_positions[x + 1].length() == 0)
+                        str_end = "";
+                    
+                    if(array_strbuff_positions[x].length() > 0) {
+                        buff_nexus_positions.append("\t\t" + position_names[x] + ": " + array_strbuff_positions[x] + str_end + "\n");
+                        flag_display_nexus_positions = true;
+                    }
+                }
+
+                buff_nexus_positions.append("\t;\n");
+                buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
+                buff_nexus_positions.append("END;\n\n");
+
+                if(flag_display_nexus_positions)
+                    writer.println(buff_nexus_positions);
+
 		// put in any other blocks
 		if(otherBlocks != null)
 			writer.println(otherBlocks);
@@ -1291,6 +1377,8 @@ public class NexusFile extends BaseFormatHandler {
 	/** 
 	 * A first stab at a Nexus/SequenceGrid writer. Most of the code has been 'borrowed' out of
 	 * SequenceMatrix.
+         *
+         * HUH? Does anybody use this code any more?
 	 */
 	public void writeNexusFile(File f, SequenceGrid grid, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
 		int countThisLoop = 0;

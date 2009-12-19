@@ -94,12 +94,12 @@ public class Exporter implements SequencesHandler {
 	/**
 	 * Exports the entire table as individual gene files (one per column) into a particular directory.
 	 * This really is kinda convoluted ... no, VERY convoluted. Hatred.
+         *
+         * Note: because of that bug where the "please wait" dialog opens and closes too quickly, I'm just
+         * going to ignore the 'delay' argument. Please reinsert if needed.
 	 */
 	public void exportSequencesByColumn(File dir, FormatHandler fh, boolean writeNASequences, DelayCallback delay) throws IOException, DelayAbortedException {
 		TableManager tm = matrix.getTableManager();
-
-		if(delay != null)
-			delay.begin();
 
 		Vector<String> vec_sequences = new Vector<String>( (Collection) tm.getSequenceNames());
 		int count_columns = tm.getCharsets().size();
@@ -107,8 +107,6 @@ public class Exporter implements SequencesHandler {
 
 		int count = 0;
 		while(i.hasNext()) {
-			if(delay != null)
-				delay.delay(count, count_columns);
 			count++;
 
 			String colName = (String) i.next();
@@ -145,29 +143,20 @@ public class Exporter implements SequencesHandler {
 			File writeTo = new File(dir, makeFileName(colName) + "." + fh.getExtension());
 			if(writeTo.exists()) {
 				// TODO: We need to do something sensible here!
-				if(delay != null)
-					delay.end();
 
 				throw new IOException("Can't create file '" + writeTo + "' - it already exists!");
 			}
 
 			if(writeTo.exists() && !writeTo.canWrite()) {
-				if(delay != null)
-					delay.end();
 				throw new IOException("Couldn't open '" + writeTo + "' for writing. Are you sure you have permissions to write into this directory?");
 			}
 
 			try {
 				fh.writeFile(writeTo, sl, null);
 			} catch(IOException e) {
-				if(delay != null)
-					delay.end();
 				throw e;
 			}
 		}
-
-		if(delay != null)
-			delay.end();
 	}
 
 	private String makeFileName(String name) {
