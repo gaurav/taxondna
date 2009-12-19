@@ -591,6 +591,10 @@ public class Exporter implements SequencesHandler {
                 // of positional data for the entire dataset. To simplify
                 // things, we create three strings, gradually build them
                 // up, and then combine them at the end.
+                
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
 
                 // This is very likely indeed to work!
                 StringBuffer[] array_strbuff_positions = new StringBuffer[4];
@@ -920,6 +924,7 @@ public class Exporter implements SequencesHandler {
 			else
 				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
 
+                        // Actually spell out charsets here.
 			for(int x = 0; x < tm.getColumnLength(colName); x++) {
 				if(colid <= 31)
 					buff_sets.append(at + " ");

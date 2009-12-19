@@ -253,6 +253,19 @@ public class FileManager implements FormatListener {
             if(seq.getProperty(DataStore.INITIAL_SEQNAME_PROPERTY) != null)
                 continue;
 
+            // We should never get this, but we might as well catch it
+            // here rather than letting it progress indefinitely.
+            if(sequence_name == null || sequence_name.equals("")) {
+                throw new RuntimeException("Sequence name not defined or blank. This should never happen.");
+            }
+
+            // Note that if we can't determine the species name, we have
+            // to use the sequence name. No two ways around that.
+            if(species_name == null || species_name.equals("")) {
+                name = sequence_name;
+                continue;
+            }
+
             // Check if the sequence name is different from the
             // species name.
             if(sequence_name.equals(species_name)) {
@@ -611,7 +624,19 @@ public class FileManager implements FormatListener {
 
         // Figure out the sets.
         synchronized(hashmap_codonsets) {
-            if(hashmap_codonsets.size() > 0) {
+
+            // If a file has CODONPOSSETs, but no CODONSETs, we
+            // CANNOT allow incorporateSets() to fire, because it
+            // won't have any codonsets to extract and we'll end
+            // up with nothing being added at all.
+            int no_of_sets = hashmap_codonsets.size();
+            
+            if(hashmap_codonsets.get(":0") != null)     no_of_sets--;
+            if(hashmap_codonsets.get(":1") != null)     no_of_sets--;
+            if(hashmap_codonsets.get(":2") != null)     no_of_sets--;
+            if(hashmap_codonsets.get(":3") != null)     no_of_sets--;
+
+            if(no_of_sets > 0) {
                 MessageBox mb = new MessageBox(
                     matrix.getFrame(),
                     "I see sets!",
@@ -632,6 +657,70 @@ public class FileManager implements FormatListener {
                     return;
                 }
             }
+        }
+
+        // If we're here, the user chose not to incorporate sets.
+        // However, we need to add in any CODONPOSSET information
+        // which might still be hanging around. 
+        synchronized(hashmap_codonsets) {
+            HashMap<String, ArrayList<FromToPair>> sets = hashmap_codonsets;
+
+            // Don't let anybody change these sequences, either.
+            sequences.lock();
+
+            // Step one: extract the positional sets. These are named ':<position>'.
+            // We also remove them from hashmap_codonsets, since this makes subsequent
+            // processing a whole lot easier.
+            Vector<FromToPair> positions_N = new Vector<FromToPair>();             
+            Vector<FromToPair> positions_1 = new Vector<FromToPair>();             
+            Vector<FromToPair> positions_2 = new Vector<FromToPair>();             
+            Vector<FromToPair> positions_3 = new Vector<FromToPair>();             
+
+            boolean nothing_to_do = true;
+
+            if(sets.containsKey(":0")) {
+                positions_N.addAll(sets.get(":0")); 
+                sets.remove(":0");
+                nothing_to_do = false;
+            }
+
+            if(sets.containsKey(":1")) {
+                positions_1.addAll(sets.get(":1")); 
+                sets.remove(":1");
+                nothing_to_do = false;
+            }
+
+            if(sets.containsKey(":2")) {
+                positions_2.addAll(sets.get(":2")); 
+                sets.remove(":2");
+                nothing_to_do = false;
+            }
+
+            if(sets.containsKey(":3")) {
+                positions_3.addAll(sets.get(":3")); 
+                sets.remove(":3");
+                nothing_to_do = false;
+            }
+
+            // Do we have ANY sort of codonposset information?
+            if(! nothing_to_do) {
+                // For every sequence in this file, we need to apply the CODONPOSSET
+                // information. Rather handily, this information doesn't need to be
+                // recalculated or anything and can go right in.
+                Iterator i_seq = sequences.iterator();
+                while(i_seq.hasNext()) {
+                    Sequence seq = (Sequence) i_seq.next();
+
+                    // Apply the positional information.
+                    seq.setProperty("position_0", positions_N);
+                    seq.setProperty("position_1", positions_1);
+                    seq.setProperty("position_2", positions_2);
+                    seq.setProperty("position_3", positions_3);
+                }
+            }
+
+            // We're done here.
+            sequences.unlock();
         }
         
         // TODO: Replace file.fileName() with something more sensible.
