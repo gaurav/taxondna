@@ -349,13 +349,16 @@ public class FileManager implements FormatListener {
 	}
     }
 
-    private Vector<FromToPair> positionalInformationFor(ArrayList<FromToPair> positionData, int index_in_sequence, int from, int to) {
+    private Vector<FromToPair> positionalInformationFor(ArrayList<FromToPair> positionData, int index_in_sequence, int from, int to, boolean goesInThirds) {
         Vector<FromToPair> results = new Vector<FromToPair>();
 
         // I wonder if from-to has any positional information?
         for(FromToPair to_check: positionData) {
             // Check for any overlap whatsoever.
             if(to_check.to >= from && to_check.from <= to) {
+
+                // System.err.println("Match while comparing [" + from + " to " + to + "] against to_check [" + to_check.from + " to " + to_check.to + "]");
+
                 // We may have a match somewhere!
                 
                 int offset =    to_check.from - from;       // Where do we start from, relative 
@@ -371,8 +374,12 @@ public class FileManager implements FormatListener {
                     // '3', depending on where it's supposed to go.
 
                     // Damnit I wish I could do maths.
-                    
-                    offset = -(offset % 3);
+                    if(goesInThirds) {
+                        offset = -(offset % 3);
+                    } else {
+                        offset = 0;     // If it doesn't go in thirds, just go
+                                        // back to the start.
+                    }
                 }
 
                 if(until > (to - from)) until = (to - from);
@@ -382,6 +389,13 @@ public class FileManager implements FormatListener {
                 // BUT! This needs to be relative to the start of the current sequence.
                 offset +=   index_in_sequence;
                 until +=    index_in_sequence;
+
+                // We get offset and until relative to zero; we need to rebase them
+                // to be relative to one.
+                offset++;
+                until++;
+
+                // System.err.println("\tWe obtain a sequence from " + offset + " to " + until + ".");
 
                 FromToPair ftp_new = new FromToPair(
                     offset,     // from
@@ -529,10 +543,10 @@ public class FileManager implements FormatListener {
                             // So this is the only place where we can correctly impose positional
                             // data onto the sequence.
 
-                            seq_positions_N.addAll(positionalInformationFor(positions_N, index_assembled_sequence, from, to));
-                            seq_positions_1.addAll(positionalInformationFor(positions_1, index_assembled_sequence, from, to));
-                            seq_positions_2.addAll(positionalInformationFor(positions_2, index_assembled_sequence, from, to));
-                            seq_positions_3.addAll(positionalInformationFor(positions_3, index_assembled_sequence, from, to));
+                            seq_positions_N.addAll(positionalInformationFor(positions_N, index_assembled_sequence, from, to, false));
+                            seq_positions_1.addAll(positionalInformationFor(positions_1, index_assembled_sequence, from, to, true));
+                            seq_positions_2.addAll(positionalInformationFor(positions_2, index_assembled_sequence, from, to, true));
+                            seq_positions_3.addAll(positionalInformationFor(positions_3, index_assembled_sequence, from, to, true));
 
                             Sequence s = BaseSequence.promoteSequence(subseq);
                             seq_out = seq_out.concatSequence(s);

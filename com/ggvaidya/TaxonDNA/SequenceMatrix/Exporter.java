@@ -561,11 +561,6 @@ public class Exporter implements SequencesHandler {
                 // end and write the SETS block
                 buff_sets.append("END;");
 
-                // Let's see if we can't calculate the nexus positions.
-                StringBuffer buff_nexus_positions = new StringBuffer();
-                
-                buff_nexus_positions.append("BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n");
-
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
 
@@ -623,11 +618,11 @@ public class Exporter implements SequencesHandler {
 
                                     if(ftp.from == ftp.to) {
                                         array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from + 1) + " "
+                                            (horzOffset + ftp.from) + " "
                                         );
                                     } else { 
                                         array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from + 1) + "-" + (horzOffset + ftp.to + 1) + str_end
+                                            (horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end
                                         );
                                     }
                                 }
@@ -638,6 +633,11 @@ public class Exporter implements SequencesHandler {
                     // Add to the horizontal offset.
                     horzOffset += grid.getColumnLength(colName);
                 }
+
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_nexus_positions = new StringBuffer();
+                
+                buff_nexus_positions.append("BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n");
 
                 // Combine these bits in a way that makes sure the commas go into
                 // the right places (and ONLY the right places).

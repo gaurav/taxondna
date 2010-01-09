@@ -1264,17 +1264,13 @@ public class NexusFile extends BaseFormatHandler {
                             else if(x == 1 || x == 2 || x == 3)
                                 str_end = "\\3 ";
 
-                            // Note the +1s! This is because we store these numbers as
-                            // 0-based indexes (so we can cut with them), but they need
-                            // to be outputted as 1-based indexes.
-
                             if(ftp.from == ftp.to) {
                                 array_strbuff_positions[x].append(
-                                    (ftp.from + 1) + " "
+                                    (ftp.from) + " "
                                 );
                             } else { 
                                 array_strbuff_positions[x].append(
-                                    (ftp.from + 1) + "-" + (ftp.to + 1) + str_end
+                                    (ftp.from) + "-" + (ftp.to) + str_end
                                 );
                             }
                         }
