@@ -395,7 +395,9 @@ public class FileManager implements FormatListener {
                 offset++;
                 until++;
 
-                // System.err.println("\tWe obtain a sequence from " + offset + " to " + until + ".");
+                System.err.println("\tOffset is wrong; expected 1, obtained " + offset + " by subtracting " + from + " from " + to_check.from + "\n");
+
+                System.err.println("\tWe obtain a sequence from " + offset + " to " + until + " from " + to_check.from+ " to " + to_check.to + ".");
 
                 FromToPair ftp_new = new FromToPair(
                     offset,     // from

@@ -20,7 +20,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2006-07 Gaurav Vaidya
+    Copyright (C) 2006-07, 2010 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -608,7 +608,7 @@ public class TNTFile extends BaseFormatHandler {
 								sequence_begin + 1,
 								sequence_end + 1)
 							);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							System.err.println("New multi-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 						}
 					}
 					
@@ -651,6 +651,23 @@ public class TNTFile extends BaseFormatHandler {
 
 				currentName = buff_name.toString();
 
+                                // But wait! Some names are extra-special.
+                                if(currentName.equalsIgnoreCase("posN"))
+                                    currentName = ":0";
+
+                                if(currentName.equalsIgnoreCase("pos1"))
+                                    currentName = ":1";
+
+                                if(currentName.equalsIgnoreCase("pos2"))
+                                    currentName = ":2";
+
+                                if(currentName.equalsIgnoreCase("pos3"))
+                                    currentName = ":3";
+
+                                // Now the rest of this method will keep
+                                // adding these positions into the special
+                                // codonsets. HAHA BRILLIANT.
+
 				continue;
 
 			} else if(type == StreamTokenizer.TT_WORD) {
@@ -686,7 +703,7 @@ public class TNTFile extends BaseFormatHandler {
 									sequence_begin + 1,
 									sequence_end + 1)
 								);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							System.err.println("New multicharacter sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
 						}
 						
@@ -711,7 +728,7 @@ public class TNTFile extends BaseFormatHandler {
 									sequence_begin + 1,
 									sequence_end + 1)
 								);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							System.err.println("New multicharacter sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
 						}
 						
@@ -751,6 +768,12 @@ public class TNTFile extends BaseFormatHandler {
 					if(which_group == GROUP_CHARSET) {
 						from++;		// convert from TNT loci (0-based) to normal loci (1-based)
 						to++;
+
+                                                // Multi-character blocks are POISON for situations where
+                                                // the sequences are supposed to move in thirds (i.e. ':1',
+                                                // ':2' and ':3'. This is because the algorithm for figuring
+                                                // out position information is designed to work with 
+
 						fireEvent(evt.makeCharacterSetFoundEvent(
 								currentName,
 								from,
@@ -775,7 +798,7 @@ public class TNTFile extends BaseFormatHandler {
 					sequence_begin + 1,
 					sequence_end + 1)
 				);
-				System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+				System.err.println("New multicharacter sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
 			}
 		}

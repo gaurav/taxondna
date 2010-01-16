@@ -564,7 +564,6 @@ public class Exporter implements SequencesHandler {
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
 
-
                 // Here's the thing: each sequence has its own positional
                 // information, which (we assume) is consistent within a
                 // column (which is a pretty safe assumption from now,
@@ -612,9 +611,6 @@ public class Exporter implements SequencesHandler {
                                         str_end = " ";
                                     else if(x == 1 || x == 2 || x == 3)
                                         str_end = "\\3 ";
-
-                                    // Note those +1s! They're to change our 0-index based calculations
-                                    // into 1-based Nexus coordinates.
 
                                     if(ftp.from == ftp.to) {
                                         array_strbuff_positions[x].append(
@@ -954,6 +950,109 @@ public class Exporter implements SequencesHandler {
 
 		if(colid > 31)
 			buff_title.append("\n;");
+
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+                
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
+
+                // It's easier if we have a SequenceGrid to deal with.
+                SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
+
+                i = matrix.getTableManager().getCharsets().iterator(); 
+                int horzOffset = 0;
+                while(i.hasNext()) {
+                    String colName = (String) i.next();
+
+                    Set seqNames = grid.getSequenceNamesByColumn(colName);
+                    if(seqNames.size() > 0) {
+                        // get the first sequence
+                        Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
+
+                        for(int x = 0; x <= 3; x++) {
+                            Vector v = (Vector) seq.getProperty("position_" + x);
+
+                            if(v != null) {
+                                Iterator i_v = v.iterator();
+                                while(i_v.hasNext()) {
+                                    FromToPair ftp = (FromToPair) i_v.next();
+                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+                                    int increment_by = 1;
+                                    if(x == 1 || x == 2 || x == 3)
+                                        increment_by = 3;
+
+                                    // Note those -1s! They're to change our 1-index based calculations
+                                    // into 0-based TNT coordinates.
+
+                                    if(ftp.from == ftp.to) {
+                                        array_strbuff_positions[x].append(
+                                            (horzOffset + ftp.from - 1) + " "
+                                        );
+                                    } else { 
+
+                                        // Iterate, iterate.
+                                        for(int y = (horzOffset + ftp.from); y <= (horzOffset + ftp.to); y += increment_by) {
+                                            array_strbuff_positions[x].append((y-1) + " ");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Add to the horizontal offset.
+                    horzOffset += grid.getColumnLength(colName);
+                }
+
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_tnt_positions = new StringBuffer();
+
+                buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
+                buff_tnt_positions.append("xgroup\n");
+                
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
+
+                String position_names[] = { "N", "1", "2", "3" };
+
+                boolean flag_display_tnt_positions = false;
+
+                int sequence_number = 0;
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x] != null) {
+                        buff_tnt_positions.append("=" + sequence_number + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+                        flag_display_tnt_positions = true;
+                        sequence_number++;
+                    }
+                }
+
+                buff_tnt_positions.append(";\n");
+                buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
+
+                if(flag_display_tnt_positions)
+                    buff_sets.insert(0, buff_tnt_positions);
+                 
 
 		// go!
 		if(delay != null)
