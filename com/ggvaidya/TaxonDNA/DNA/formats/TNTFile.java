@@ -686,31 +686,40 @@ public class TNTFile extends BaseFormatHandler {
 				if(word.indexOf('.') == -1) {
 					int locus = atoi(word, tok);
 
-					if(sequence_begin == -1) {
-						sequence_begin = locus;
-					}
+                                        if(currentName.charAt(0) == ':') {
+                                            // Sequence dataset! Do NOT do the usual sequencing nonsense.
+                                            fireEvent(evt.makeCharacterSetFoundEvent(
+                                                currentName,
+                                                locus + 1,
+                                                locus + 1
+                                            ));
+                                        } else {
+                                            if(sequence_begin == -1) {
+                                                    sequence_begin = locus;
+                                            }
 
-					if(sequence_end == -1 || sequence_end == locus - 1) {	// if sequence_end is pointing at the LAST locus,
-						sequence_end = locus;	// move it to the current position
+                                            if(sequence_end == -1 || sequence_end == locus - 1) {	// if sequence_end is pointing at the LAST locus,
+                                                    sequence_end = locus;	// move it to the current position
 
-						// the sequence continues, so we do NOT fire now
-					} else {
-						// the sequence ends here!
-						// fire the last 
-						if(which_group == GROUP_CHARSET) {
-							fireEvent(evt.makeCharacterSetFoundEvent(
-									currentName,
-									sequence_begin + 1,
-									sequence_end + 1)
-								);
-							System.err.println("New multicharacter sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+                                                    // the sequence continues, so we do NOT fire now
+                                            } else {
+                                                    // the sequence ends here!
+                                                    // fire the last 
+                                                    if(which_group == GROUP_CHARSET) {
+                                                            fireEvent(evt.makeCharacterSetFoundEvent(
+                                                                            currentName,
+                                                                            sequence_begin + 1,
+                                                                            sequence_end + 1)
+                                                                    );
+                                                            System.err.println("New multicharacter sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
-						}
-						
-						// then set up the next one
-						sequence_begin = locus;
-						sequence_end = locus;
-					}
+                                                    }
+                                                    
+                                                    // then set up the next one
+                                                    sequence_begin = locus;
+                                                    sequence_end = locus;
+                                            }
+                                        }
 
 					continue;
 				} else {

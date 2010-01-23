@@ -349,6 +349,16 @@ public class FileManager implements FormatListener {
 	}
     }
 
+    /**
+     * A helper method to remap global-coordinates (relative to the entire sequence) to sequence-only
+     * coordinates (relative to this sequence). This requires much mathematical thinking which is
+     * helpfully provided by this method. 
+     *
+     * One caveat: we assume ALL from-tos where 'goesInThirds' is true goes in thirds, which means we
+     * need to do some additional calculations to make sense. This is a little presumptive, but we'll
+     * do it anyway.
+     */
+
     private Vector<FromToPair> positionalInformationFor(ArrayList<FromToPair> positionData, int index_in_sequence, int from, int to, boolean goesInThirds) {
         Vector<FromToPair> results = new Vector<FromToPair>();
 
@@ -359,8 +369,6 @@ public class FileManager implements FormatListener {
 
                 // System.err.println("Match while comparing [" + from + " to " + to + "] against to_check [" + to_check.from + " to " + to_check.to + "]");
 
-                // We may have a match somewhere!
-                
                 int offset =    to_check.from - from;       // Where do we start from, relative 
                                                             // to index_assembled_sequence?
                 int until =     to_check.to - to_check.from + offset;
@@ -374,7 +382,15 @@ public class FileManager implements FormatListener {
                     // '3', depending on where it's supposed to go.
 
                     // Damnit I wish I could do maths.
-                    if(goesInThirds) {
+
+                    // NOTE: An important exception to this rule is that we DO NOT need to
+                    // do move-in-thirds calculations if 'from' == 'to'. If the file says
+                    // that position 'x' is third position, we can NOT claim that this
+                    // is not correctly moving in thirds relative to what we would expect.
+
+                    // Essentially, that paragraph above confirms that while RANGES can be
+                    // in thirds, SINGLE POSITIONS are NEVER in thirds.
+                    if(goesInThirds && (from != to)) {
                         offset = -(offset % 3);
                     } else {
                         offset = 0;     // If it doesn't go in thirds, just go
@@ -395,9 +411,9 @@ public class FileManager implements FormatListener {
                 offset++;
                 until++;
 
-                System.err.println("\tOffset is wrong; expected 1, obtained " + offset + " by subtracting " + from + " from " + to_check.from + "\n");
+                // System.err.println("\tOffset is wrong; expected 1, obtained " + offset + " by subtracting " + from + " from " + to_check.from + "\n");
 
-                System.err.println("\tWe obtain a sequence from " + offset + " to " + until + " from " + to_check.from+ " to " + to_check.to + ".");
+                // System.err.println("\tWe obtain a sequence from " + offset + " to " + until + " from " + to_check.from+ " to " + to_check.to + ".");
 
                 FromToPair ftp_new = new FromToPair(
                     offset,     // from
@@ -565,6 +581,16 @@ public class FileManager implements FormatListener {
                                 "\t" + e.getMessage() + "\nI'm skipping this file."
                             );
                             mb_2.go();
+
+                            sequences.unlock();
+                            hashmap_codonsets.clear();
+
+                            return -1;
+                        } catch(RuntimeException e) {
+                            new MessageBox(matrix.getFrame(),
+                                "Fatal internal error",
+                                "A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + "."
+                            ).go();
 
                             sequences.unlock();
                             hashmap_codonsets.clear();
