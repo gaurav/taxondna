@@ -602,6 +602,8 @@ public class Exporter implements SequencesHandler {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {
+								Collections.sort(v);
+
                                 Iterator i_v = v.iterator();
                                 while(i_v.hasNext()) {
                                     FromToPair ftp = (FromToPair) i_v.next();
@@ -901,55 +903,8 @@ public class Exporter implements SequencesHandler {
 				buff_title.append(";\n\n");
 		}
 		
-		// set up the 'sets' buffer
-		List cols = tm.getCharsets();
-		if(cols.size() >= 32) {
-			new MessageBox(
-					matrix.getFrame(),
-					"Too many character sets!",
-					"According to the manual, TNT can only handle 32 character sets. You have " + cols.size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
-
-		}
-		
+		// Time to do character sets!
 		StringBuffer buff_sets = new StringBuffer();
-		buff_sets.append("xgroup\n");
-
-		Iterator i = cols.iterator();	
-		int at = 0;
-		int colid = 0;
-		while(i.hasNext()) {
-			String colName = (String) i.next();
-
-			if(colid == 32)
-				buff_title.append("@xgroup\n");
-
-			if(colid <= 31)
-				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-			else
-				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-
-                        // Actually spell out charsets here.
-			for(int x = 0; x < tm.getColumnLength(colName); x++) {
-				if(colid <= 31)
-					buff_sets.append(at + " ");
-				else
-					buff_title.append(at + " ");
-				at++;
-			}
-
-			if(colid <= 31)
-				buff_sets.append("\n");
-			else
-				buff_title.append("\n");
-			
-			// increment the column id
-			colid++;
-		}
-		
-		buff_sets.append("\n;\n\n");
-
-		if(colid > 31)
-			buff_title.append("\n;");
 
                 // Here's the thing: each sequence has its own positional
                 // information, which (we assume) is consistent within a
@@ -961,7 +916,7 @@ public class Exporter implements SequencesHandler {
                 // of positional data for the entire dataset. To simplify
                 // things, we create three strings, gradually build them
                 // up, and then combine them at the end.
-                
+
                 // Note (this being an important point): we only use the
                 // FIRST taxon in the table to determine CODONPOSSET
                 // information to be emitted.
@@ -976,7 +931,7 @@ public class Exporter implements SequencesHandler {
                 array_strbuff_positions[2] = new StringBuffer();
                 array_strbuff_positions[3] = new StringBuffer();
 
-                i = matrix.getTableManager().getCharsets().iterator(); 
+                Iterator i = matrix.getTableManager().getCharsets().iterator();
                 int horzOffset = 0;
                 while(i.hasNext()) {
                     String colName = (String) i.next();
@@ -1006,7 +961,7 @@ public class Exporter implements SequencesHandler {
                                         array_strbuff_positions[x].append(
                                             (horzOffset + ftp.from - 1) + " "
                                         );
-                                    } else { 
+                                    } else {
 
                                         // Iterate, iterate.
                                         for(int y = (horzOffset + ftp.from); y <= (horzOffset + ftp.to); y += increment_by) {
@@ -1025,9 +980,9 @@ public class Exporter implements SequencesHandler {
                 // Let's see if we can't calculate the nexus positions.
                 StringBuffer buff_tnt_positions = new StringBuffer();
 
-                buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
+                // buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
                 buff_tnt_positions.append("xgroup\n");
-                
+
                 // Change zero-length strings to null.
                 for(int x = 0; x <= 3; x++) {
                     if(array_strbuff_positions[x].length() == 0)
@@ -1038,21 +993,73 @@ public class Exporter implements SequencesHandler {
 
                 boolean flag_display_tnt_positions = false;
 
+		List cols = tm.getCharsets();
+
                 int sequence_number = 0;
                 for(int x = 0; x <= 3; x++) {
                     if(array_strbuff_positions[x] != null) {
-                        buff_tnt_positions.append("=" + sequence_number + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+                        buff_tnt_positions.append("=" + (cols.size() + sequence_number) + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
                         flag_display_tnt_positions = true;
                         sequence_number++;
                     }
                 }
 
-                buff_tnt_positions.append(";\n");
-                buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
+		int number_of_columns = cols.size() + sequence_number;
+		if(number_of_columns >= 32) {
+		    new MessageBox(
+			matrix.getFrame(),
+			"Too many character sets!",
+			"According to the manual, TNT can only handle 32 character sets. You have " + number_of_columns + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed."
+		    ).go();
+		}
 
-                if(flag_display_tnt_positions)
+                //buff_tnt_positions.append(";\n");
+                //buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
+                int codonsets_go_into_title_at = 32 - sequence_number;
+		if(flag_display_tnt_positions) {
                     buff_sets.insert(0, buff_tnt_positions);
-                 
+		} else {
+		    // Get ready for the upcoming sets.
+		    buff_sets.append("xgroup\n");
+		}
+
+		// Now for normal sets
+		i = cols.iterator();	
+		int at = 0;
+		int colid = 0;
+		while(i.hasNext()) {
+			String colName = (String) i.next();
+
+			if(colid == codonsets_go_into_title_at)
+				buff_title.append("@xgroup\n");
+
+			if(colid < codonsets_go_into_title_at)
+				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+			else
+				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+
+                        // Actually spell out charsets here.
+			for(int x = 0; x < tm.getColumnLength(colName); x++) {
+				if(colid < codonsets_go_into_title_at)
+					buff_sets.append(at + " ");
+				else
+					buff_title.append(at + " ");
+				at++;
+			}
+
+			if(colid < codonsets_go_into_title_at)
+				buff_sets.append("\n");
+			else
+				buff_title.append("\n");
+			
+			// increment the column id
+			colid++;
+		}
+		
+		buff_sets.append("\n;\n\n");
+
+		if(colid > (codonsets_go_into_title_at - 1))
+			buff_title.append("\n;");
 
 		// go!
 		if(delay != null)

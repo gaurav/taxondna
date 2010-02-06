@@ -367,57 +367,64 @@ public class FileManager implements FormatListener {
             // Check for any overlap whatsoever.
             if(to_check.to >= from && to_check.from <= to) {
 
+				int start_at, end_at;
+
+				if(!goesInThirds) {
+					// If we're not going in thirds, this is dead easy.
+					start_at = from;
+					if(start_at < to_check.from)
+						start_at = to_check.from;
+
+					end_at = to;				// End as far right as you can.
+					if(end_at > to_check.to)
+						end_at = to_check.to;
+					
+				} else {
+					// If we're going in thirds, this is much more complicated.
+
+					start_at = to_check.from;
+					if(to_check.from < from) {
+						// If to_check starts up before from,
+						// we need to come up with the first
+						// starting position for this position
+						// which comes after the position at
+						// which we end.
+						int offset =	(from - to_check.from);
+						offset =		(3 - (offset % 3)) % 3;	 // What madness is this?
+						start_at =		from + offset;
+					}
+
+					end_at = to_check.to;		// Don't go past the end.
+					if(to_check.to > to) {
+						// If to_check ends after we do,
+						// we need to come up with the first
+						// ending position for this position
+						// which comes before the position
+						// at which we end.
+
+						// This is exactly identical to the 'start_at'
+						// calculation, except that we floor instead of
+						// ceil.
+						int offset =	(to - start_at);
+						offset =		(3 - (offset % 3)) % 3;
+						end_at =		to + offset;
+					}
+				}
+
                 // System.err.println("Match while comparing [" + from + " to " + to + "] against to_check [" + to_check.from + " to " + to_check.to + "]");
-
-                int offset =    to_check.from - from;       // Where do we start from, relative 
-                                                            // to index_assembled_sequence?
-                int until =     to_check.to - to_check.from + offset;
-                                                            // How long do we go on for, relative
-                                                            // to index_assembled_sequence.
-
-                if(offset < 0) {
-                    // Negative offsets mean that this positional data started before us,
-                    // which is fine. We'd like to just chop it off at '0', but then we
-                    // lose the starting index. Instead, we need to turn it into '0', '1' or
-                    // '3', depending on where it's supposed to go.
-
-                    // Damnit I wish I could do maths.
-
-                    // NOTE: An important exception to this rule is that we DO NOT need to
-                    // do move-in-thirds calculations if 'from' == 'to'. If the file says
-                    // that position 'x' is third position, we can NOT claim that this
-                    // is not correctly moving in thirds relative to what we would expect.
-
-                    // Essentially, that paragraph above confirms that while RANGES can be
-                    // in thirds, SINGLE POSITIONS are NEVER in thirds.
-                    if(goesInThirds && (from != to)) {
-                        offset = -(offset % 3);
-                    } else {
-                        offset = 0;     // If it doesn't go in thirds, just go
-                                        // back to the start.
-                    }
-                }
-
-                if(until > (to - from)) until = (to - from);
-                                                            // Similarily, don't let "until" go
-                                                            // past the end of this sequence.
-
-                // BUT! This needs to be relative to the start of the current sequence.
-                offset +=   index_in_sequence;
-                until +=    index_in_sequence;
-
-                // We get offset and until relative to zero; we need to rebase them
-                // to be relative to one.
-                offset++;
-                until++;
 
                 // System.err.println("\tOffset is wrong; expected 1, obtained " + offset + " by subtracting " + from + " from " + to_check.from + "\n");
 
-                // System.err.println("\tWe obtain a sequence from " + offset + " to " + until + " from " + to_check.from+ " to " + to_check.to + ".");
+                // System.err.println("\tWe obtain a " + (goesInThirds ? "goes in thirds" : "goes sequentially" ) + " sequence from " + start_at + " to " + end_at + " from " + from + " to " + to + " comparing against " + to_check.from + " to " + to_check.to + ".");
+
+                // BUT! This needs to be relative to the start of the current sequence.
+                // Hang on, don't we return per-sequence data? So why rebase?
+				start_at +=		index_in_sequence - from + 1;
+                end_at +=		index_in_sequence - from + 1;
 
                 FromToPair ftp_new = new FromToPair(
-                    offset,     // from
-                    until       // to
+                    start_at,     // from
+                    end_at        // to
                 );
 
                 // System.err.println("Added position data: " + ftp_new);
@@ -589,7 +596,7 @@ public class FileManager implements FormatListener {
                         } catch(RuntimeException e) {
                             new MessageBox(matrix.getFrame(),
                                 "Fatal internal error",
-                                "A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + "."
+                                "A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + ": " + e.getMessage()
                             ).go();
 
                             sequences.unlock();
