@@ -7,12 +7,12 @@
  * *little* more difficulty reading Nexus files than it does writing
  * them. Also, to simplify things, we always "write fresh" - we
  * forget that we read out of a file, and write back exactly
- * whatever we got out of it. 
+ * whatever we got out of it.
  *
  * TODO:
  * 1.	Nexus has a different way of handling polymorphisms: [AT]
  * 	instead of one letter shortages. So we need to convert
- * 	it both ways (right now, we convert NEITHER) 
+ * 	it both ways (right now, we convert NEITHER)
  * 2.	'block CHARACTERS: FORMAT symbols'
  *
  */
@@ -20,7 +20,7 @@
 /*
     TaxonDNA
     Copyright (C) 2005-09 Gaurav Vaidya
-    
+
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -49,20 +49,20 @@ public class NexusFile extends BaseFormatHandler {
 	public static final int EXPORT_AS_BLOCKS = 		1;
 	public static final int EXPORT_AS_SINGLE_LINE = 	2;
 	public static final int EXPORT_AS_INTERLEAVED =	        3;
-	
+
 	// what is the maximum lengh of taxon names allowed?
 	private int MAX_TAXON_LENGTH = 	32;
 
 	// when sequences get bigger than INTERLEAVE_AT, we'll
 	// interlace to avoid confusion. Of course, we can't
 	// interlace unless we interlace EVERYTHING, so we
-	private int INTERLEAVE_AT = 	80;	
+	private int INTERLEAVE_AT = 	80;
 
 	/** Returns the extension. We'll go with '.nex', our most common extension */
 	public String getExtension() {
 		return "nex";
-	}	
-	
+	}
+
 	/**
 	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name. Note that this function isn't actually being used. Freaky.
 	 */
@@ -82,12 +82,12 @@ public class NexusFile extends BaseFormatHandler {
 			name = "_" + name;
 		}
 
-		// Rule #2: strange characters we'll turn into '_' 
+		// Rule #2: strange characters we'll turn into '_'
 		name = name.replaceAll("[^a-zA-Z0-9\\-\\+\\.\\_\\*\\:\\(\\)\\|\\\\\\/]", "_");
 
 		// Rule #3: spaces we'll turn into '_'
 		name = name.replace(' ', '_');
-		
+
 		// Rule #4: truncate to 'len'
 		int size = name.length();
 		if(size <= len)
@@ -107,11 +107,11 @@ public class NexusFile extends BaseFormatHandler {
 	 * But not too long: think about whether you could display it in a list.
 	 */
 	public  String getFullName() {		return "Partial NEXUS support"; 	}
-	
+
 	/**
 	 * Read this file into the specified SequenceList. This will read all the files straight into
 	 * this sequence list, in the correct order.
-	 * 
+	 *
 	 * @throws IOException if there was an error doing I/O
 	 * @throws SequenceException if a Sequence is malformed - incorrect bases, etc.
 	 * @throws FormatException if there was an error in the format of the file.
@@ -173,7 +173,7 @@ public class NexusFile extends BaseFormatHandler {
 				throw new FormatException("This file does not have a Nexus header (it doesn't start with '#nexus')! Are you sure it's a Nexus file?");
 			}
 
-		
+
 			// states
 			int 		commentLevel = 		0;
 			boolean		inStrangeBlock =	false;		// strange -> i.e. unknown to us, foreign.
@@ -184,16 +184,16 @@ public class NexusFile extends BaseFormatHandler {
 			// 		command (including the ';')
 			while(true) {
 				/* Before anything else, do the delay */
-				if(delay != null) 
+				if(delay != null)
 					delay.delay(tok.lineno(), count_lines);
 
 				/* Now ... to business! */
 				int type = tok.nextToken();
-				
+
 				// break at end of file
 				if(type == NexusTokenizer.TT_EOF)
 					break;
-				
+
 				// is it a comment?
 				if(type == '[')
 					commentLevel++;
@@ -205,7 +205,7 @@ public class NexusFile extends BaseFormatHandler {
 					continue;
 
 				// semi-colons indicate end of line.
-				// some commands use this to determine the end of command 
+				// some commands use this to determine the end of command
 				if(type == ';') {
 					newCommand = true;
 					continue;
@@ -223,14 +223,14 @@ public class NexusFile extends BaseFormatHandler {
 							inStrangeBlock = false;
 
 							continue;
-//						} 
+//						}
 					}
 
 					// the BEGIN command
 					else if(str.equalsIgnoreCase("BEGIN")) {
 						// begin what?
 						if(tok.nextToken() == NexusTokenizer.TT_WORD) {
-							String beginWhat = tok.sval;	
+							String beginWhat = tok.sval;
 							int nextChar = tok.nextToken();
 
 							if(nextChar != ';')
@@ -251,7 +251,7 @@ public class NexusFile extends BaseFormatHandler {
 								// warn the user!
 								delay.addWarning("Block '" + beginWhat + "' cannot be read by TaxonDNA yet! This block will NOT be imported, and therefore cannot be re-exported.");
 							}
-						
+
 						} else {
 							// something is wrong!
 							throw formatException(tok, "BEGIN is specified without a valid block name.");
@@ -259,7 +259,7 @@ public class NexusFile extends BaseFormatHandler {
 					}
 
 					else {
-						if(!inStrangeBlock) 
+						if(!inStrangeBlock)
 							throw formatException(tok, "Strange word '" + str + "' found! Is it one of yours?");
 					}
 				} else {
@@ -273,7 +273,7 @@ public class NexusFile extends BaseFormatHandler {
 				delay.end();
 			appendTo.unlock();
 		}
-		
+
 		appendTo.setFile(fileFrom);
 		appendTo.setFormatHandler(this);
 	}
@@ -289,10 +289,10 @@ public class NexusFile extends BaseFormatHandler {
 	 * 1.	Change the definition of ' such that:
 	 * 	'x y z' == x_y_z
 	 * 	'Test''s testing' == Test''s_testing == [Test's testing]
-	 * 2.	
+	 * 2.
 	 *
 	 */
-	public void blockData(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	public void blockData(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines)
 		throws FormatException, DelayAbortedException, IOException
 	{
 		boolean isDatasetInterleaved = false;
@@ -305,7 +305,7 @@ public class NexusFile extends BaseFormatHandler {
 							// default for us. NEXUS says there is NO default,
 							// but we're going to have one anyway, because
 							// we're Radical and all.
-		
+
 		tok.setGapChar(gapChar);
 		tok.setMissingChar(missingChar);
 
@@ -339,7 +339,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				continue;
 			}
-				
+
 			if(commentLevel > 0)
 				continue;
 
@@ -362,12 +362,12 @@ public class NexusFile extends BaseFormatHandler {
 						str = getValueOfKey(tok);
 
 						if(str == null) {
-							// just INTERLEAVE; as per standard, 
+							// just INTERLEAVE; as per standard,
 							// this means INTERLEAVE is ON
 							isDatasetInterleaved = true;
 						} else {
 							// now, str is either 'YES' or 'NO' or, err, something else
-							// 
+							//
 							// we'll try to be careful about it - you explicitly need
 							// a 'YES' to activate this
 							if(str.equalsIgnoreCase("YES"))
@@ -376,13 +376,13 @@ public class NexusFile extends BaseFormatHandler {
 								isDatasetInterleaved = false;
 						}
 					}
-		
+
 					else if(str.equalsIgnoreCase("DATATYPE")) {
 						str = getValueOfKey(tok);
 						if(str == null)
 							throw formatException(tok, "'DATATYPE' is misformed (or there's a comment in there somewhere. I can't abide comments in FORMAT).");
 
-						/* 
+						/*
 						 * Okay, the Nexus specification defines six 'datatype's:
 						 * 1.	STANDARD (default): 	'discrete character data'. Sounds okay.
 						 * 2.	DNA:			We were BORN for this.
@@ -395,7 +395,7 @@ public class NexusFile extends BaseFormatHandler {
 						 * 6.	CONTINUOUS:		Nope. Not happening.
 						 *
 						 * There's a lot of weirdness in STANDARD, which we really don't have the
-						 * time to write complete support for just yet. 
+						 * time to write complete support for just yet.
 						 *
 						 * So: for now, EVERYTHING's okay - except CONTINUOUS, because we'll be
 						 * able to handle it, one way or another. But RNA and PROTEIN might not
@@ -417,7 +417,7 @@ public class NexusFile extends BaseFormatHandler {
 						gapChar = str.charAt(0);
 						tok.setGapChar(gapChar);
 					}
-						
+
 					else if(str.equalsIgnoreCase("MISSING")) {
 						str = getValueOfKey(tok);
 						if(str == null)
@@ -426,7 +426,7 @@ public class NexusFile extends BaseFormatHandler {
 						if(str.length() > 1)
 							throw formatException(tok, "I can't use more than one character as the MISSING character. The file specifies: '" + str + "'");
 
-						missingChar = str.charAt(0); 
+						missingChar = str.charAt(0);
 						tok.setMissingChar(missingChar);
 					} else if(str.equalsIgnoreCase("SYMBOLS")) {
 						String throwaway = getValueOfKey(tok);
@@ -488,8 +488,8 @@ public class NexusFile extends BaseFormatHandler {
 					} else {
 						// direct copy from below
                                                 // please translate bugs, too!
-                                                String strseq = "[" + chars.toString() + "]";                                                
-                                                
+                                                String strseq = "[" + chars.toString() + "]";
+
 						try {
 							Sequence seq = null;
 							if(!isDatasetInterleaved || hash_names.get(name) == null) {
@@ -540,7 +540,7 @@ public class NexusFile extends BaseFormatHandler {
 				if(type == NexusTokenizer.TT_WORD) {
 
 					if(str.equalsIgnoreCase("FORMAT")) {
-						inFormatCommand = true;	
+						inFormatCommand = true;
 					}
 
 					if(str.equalsIgnoreCase("MATRIX")) {
@@ -548,7 +548,7 @@ public class NexusFile extends BaseFormatHandler {
 							missingChar = 0;	// ha! find *this* character!
 							delay.addWarning("This Nexus file defines BOTH the gap character and the missing character as '" + gapChar + "'. I will use this as the gap character only; no missing data will be recognized for this dataset.");
 						}
-							
+
 						tok.reportNewlines(true);
 						inMatrix = true;
 					}
@@ -595,7 +595,7 @@ public class NexusFile extends BaseFormatHandler {
 					throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the DATA/CHARACTERS block! Are you sure it's supposed to be here?");
 				}
 			}
-			
+
 			newCommand = false;
 		}
 
@@ -619,7 +619,7 @@ public class NexusFile extends BaseFormatHandler {
 	/**
 	 * Processes the 'SETS' block.
 	 */
-	public void blockSets(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	public void blockSets(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines)
 		throws FormatException, DelayAbortedException, IOException
 	{
 		int commentLevel = 0;
@@ -651,7 +651,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				continue;
 			}
-			
+
 			if(commentLevel > 0)
 				continue;
 
@@ -675,7 +675,7 @@ public class NexusFile extends BaseFormatHandler {
 //						throw formatException(tok, "I found something strange after the END! I can't just ignore it. I'm sorry.");
 //					}
 				} else if(str.equalsIgnoreCase("CHARSET")) {
-					if((type = tok.nextToken()) != NexusTokenizer.TT_WORD) 
+					if((type = tok.nextToken()) != NexusTokenizer.TT_WORD)
 						throw formatException(tok, "Unexpected symbol '" + (char)type + "' found after 'CHARSET'. This doesn't look like the name of a CHARSET to me!");
 
 					String name = tok.sval;
@@ -699,11 +699,11 @@ public class NexusFile extends BaseFormatHandler {
 							throw formatException(tok, "Unexpected '" + str + "' after the '=' in CHARSET " + name + ".");
 						}
 					}
-					
+
 					// now we have to start 'picking up' the ranges in the CHARSET
 					// and there might be more than one!
 					//
-					// basic format: 
+					// basic format:
 					// 	1.	(\d+)\s :		$1 belongs to charset X
 					// 	2.	(\d+)\s*\-\s*(\d+)\s :	$1,$1+1,..$2 belongs to charset X
 					// 	3.	;			It's all over!
@@ -725,10 +725,10 @@ public class NexusFile extends BaseFormatHandler {
 						} else if(type == NexusTokenizer.TT_WORD) {
 							str = tok.sval;
 							int num = 0;
-					
+
 							// are we a number? non-numbers are teh ENEMYIES
 							try {
-								num = Integer.parseInt(str);	
+								num = Integer.parseInt(str);
 							} catch(NumberFormatException e) {
 								throw formatException(tok, "I found a non-number in CHARSET " + name + " (the non-number is '" + str + "'). I can't currently understand 'ALL' or 'REMAINDER' commands. Can you please remove them from the source file if that's at all possible?");
 							}
@@ -744,8 +744,8 @@ public class NexusFile extends BaseFormatHandler {
 								// we are NOT expecting a to
 								// i.e. from is a single character event, UNLESS it's just -1!
 								if(from != -1)
-									fireEvent(evt.makeCharacterSetFoundEvent(name, from, from));	
-								
+									fireEvent(evt.makeCharacterSetFoundEvent(name, from, from));
+
 								// now, we don't know if 'num' is a character or a section
 								// so ...
 								from = num;
@@ -772,7 +772,7 @@ public class NexusFile extends BaseFormatHandler {
  			} else {
 				throw formatException(tok, "Unexpected symbol '" + (char)type + "' found in the SETS block.");
 			}
-			
+
 			newCommand = false;
 		}
 
@@ -783,12 +783,14 @@ public class NexusFile extends BaseFormatHandler {
          * Extracts a single CodonPosSet range for a particular codon position.
          * I suppose we'll eventually be generating events for this, but for now we
          * need to consume all that information.
-         * 
+         *
          * Note that the first argument is 0 for 'N', and 1, 2, 3 for the three positions respectively.
          */
         private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok) throws FormatException, IOException {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
+
+			System.err.println("CodonPosSet detected at " + pos);
 
             int token = tok.nextToken();
             if(token != ':')
@@ -800,7 +802,7 @@ public class NexusFile extends BaseFormatHandler {
 
                 if(token == ',')
                     return;
-                    
+
                 if(token == ';') {
                     tok.pushBack();
                     return;
@@ -820,32 +822,30 @@ public class NexusFile extends BaseFormatHandler {
                     from = Integer.parseInt(tok.sval);
 
                     token = tok.nextToken();
-                    if(token == '-') {
-                        if(tok.nextToken() != NexusTokenizer.TT_WORD) {
-                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
-                            tok.pushBack();
-                            continue;
-                        }
 
-                        to = Integer.parseInt(tok.sval);
+					// Catch single values (i.e. "3 6 9")
+					if(token != '-') {
+						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
+						tok.pushBack();
+						continue;
+					}
 
-                        if(tok.nextToken() != '\\') {
-                            fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+					// So 'token' is a hyphen. Get next.
+					token = tok.nextToken();
+					to = Integer.parseInt(tok.sval);
 
-                            tok.pushBack();
-                            continue;
-                        }
+					if(tok.nextToken() != '\\') {
+						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
-                        if(tok.nextToken() != NexusTokenizer.TT_WORD || !tok.sval.equalsIgnoreCase("3")) {
-                            throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!"); 
-                        }
+						tok.pushBack();
+						continue;
+					}
 
-                        fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+					if(tok.nextToken() != NexusTokenizer.TT_WORD || !tok.sval.equalsIgnoreCase("3")) {
+						throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!");
+					}
 
-                    } else {
-                        tok.pushBack();
-                        continue;
-                    }
+					fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
                 } catch(NumberFormatException e) {
                     throw formatException(tok, "One of the values in CodonPosSet position " + position + " wasn't a number: " + e);
@@ -856,7 +856,7 @@ public class NexusFile extends BaseFormatHandler {
 	/**
 	 * Processes the 'CODONS' block.
 	 */
-	public void blockCodons(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines) 
+	public void blockCodons(SequenceList appendTo, NexusTokenizer tok, FormatHandlerEvent evt, DelayCallback delay, int count_lines)
 		throws FormatException, DelayAbortedException, IOException
 	{
 		int commentLevel = 0;
@@ -888,7 +888,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				continue;
 			}
-			
+
 			if(commentLevel > 0)
 				continue;
 
@@ -924,11 +924,11 @@ public class NexusFile extends BaseFormatHandler {
                                         if(tok.nextToken() != '=')
                                             throw formatException(tok, "Expecting a '=', but got something else altogether.");
 
-                                        // Now apparently, the standard (or it's copy at 
+                                        // Now apparently, the standard (or it's copy at
                                         // https://www.nescent.org/wg/phyloinformatics/index.php?title=NEXUS_Specification&oldid=2978
                                         // says there *must* be three. We'll put that code elsewhere,
                                         // so it's easier to deal with. This is HOP-learning at work,
-                                        // peoples. 
+                                        // peoples.
                                         String[] str_positions = new String[4];
                                         str_positions[0] = "N";
                                         str_positions[1] = "1";
@@ -953,7 +953,7 @@ public class NexusFile extends BaseFormatHandler {
                                         if(token != ';')
                                             throw formatException(tok, "Wait, the CODONPOSSET didn't end with ';' (it ended with " + (char) token + "/" + tok.sval + "). I wasn't expecting that. Ouch.");
 
-				// commands we ignore in CODONS 
+				// commands we ignore in CODONS
 				} else if(
 						str.equalsIgnoreCase("GENETICCODE") ||
 						str.equalsIgnoreCase("CODESET")
@@ -966,7 +966,7 @@ public class NexusFile extends BaseFormatHandler {
  			} else {
 				throw formatException(tok, "Unexpected symbol '" + (char)type + "' found in the CODONS block.");
 			}
-			
+
 			newCommand = false;
 		}
 
@@ -1001,11 +1001,11 @@ public class NexusFile extends BaseFormatHandler {
 				throw formatException(tok, "Unexpected value '" + (char) type + "' found when looking for the value of a KEY=VALUE pair.");
 			}
 		} else {
-			tok.pushBack();	// push the last token back in	
+			tok.pushBack();	// push the last token back in
 			return null;
 		}
 	}
-	
+
 	/**
 	 * Writes the content of this sequence list into a file. The file is
 	 * overwritten. The order of the sequences written into the file is
@@ -1017,7 +1017,7 @@ public class NexusFile extends BaseFormatHandler {
 	public void writeFile(File file, SequenceList set, DelayCallback delay) throws IOException, DelayAbortedException {
 		writeNexusFile(file, set, INTERLEAVE_AT, "", delay);
 	}
-	
+
 	/**
 	 * A species NexusFile-only method to have a bit more control over how
 	 * the Nexus file gets written.
@@ -1027,12 +1027,12 @@ public class NexusFile extends BaseFormatHandler {
 	 */
 	public void writeNexusFile(File file, SequenceList set, int interleaveAt, String otherBlocks, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean interleaved = false;
-		
+
 		if(interleaveAt > 0)
 			interleaved = true;
 
 		set.lock();
-		
+
 		// it has begun ...
 		if(delay != null)
 			delay.begin();
@@ -1047,7 +1047,7 @@ public class NexusFile extends BaseFormatHandler {
 		/*
 		 * The following piece of code has to:
 		 * 1.	Figure out VALID, UNIQUE names to output.
-		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
+		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll
 		 * 	assume 32 chars for now - see MAX_TAXON_LENGTH - and work
 		 * 	around things when we need to).
 		 * 3.	Do interlacing, something no other part of the program does yet.
@@ -1089,15 +1089,15 @@ public class NexusFile extends BaseFormatHandler {
 					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
-			
+
 			names.put(name, seq);
 			vec_names.add(name);
 		}
 
 		writer.println("BEGIN DATA;");		// DATA because I *think* CHARACTERS is not allowed
 							// to define its own Taxa, and I really can't be arsed.
-							// Maybe later ... ? 
-							
+							// Maybe later ... ?
+
 							// the following is actually somewhat controversial
 							// this *will* mess things up if all strings AREN'T
 							// 'maxLength()' long.
@@ -1120,18 +1120,18 @@ public class NexusFile extends BaseFormatHandler {
 			Sequence seq = (Sequence) i_seqs.next();
 
 			if(seq.getClass().isAssignableFrom(BaseSequence.class)) {
-				dataType = "STANDARD";		
+				dataType = "STANDARD";
 				break;			// even one is good enough
 			}
 		}
-		
+
 		// We need fixups in here (i.e. TODO)
 		// Most importantly, we need to convert Sequences 'segments' to [ACTG], etc.
 		// While BaseSequences can remain in whatever form the raw data is.
 		// This seems to be pretty complicated, and I'm far too sleepy today
 		// to work on this. But I'm not committing this comment in until I know
 		// what to do.
-		// 
+		//
 		writer.print("\tFORMAT DATATYPE=" + dataType + " MISSING=? GAP=- ");
 		if(set.getMaxLength() > interleaveAt) {
 			interleaved = true;
@@ -1184,7 +1184,7 @@ public class NexusFile extends BaseFormatHandler {
 						throw e;
 					}
 
-				// go over all the taxa 
+				// go over all the taxa
 				while(i_names.hasNext()) {
 					String name = (String) i_names.next();
 					Sequence seq = (Sequence) names.get(name);
@@ -1197,7 +1197,7 @@ public class NexusFile extends BaseFormatHandler {
 					try {
 						until = x + interleaveAt;
 
-						// thanks to the loop, we *will* walk off the end of this 
+						// thanks to the loop, we *will* walk off the end of this
 						if(until > seq.getLength()) {
 							until = seq.getLength();
 						}
@@ -1217,7 +1217,7 @@ public class NexusFile extends BaseFormatHandler {
 
 		// wrap up.
 		writer.println(";");
-		
+
 		writer.println("END;\n");
 
                 // Insert in any CODONPOSSET information.
@@ -1232,7 +1232,7 @@ public class NexusFile extends BaseFormatHandler {
                 // of positional data for the entire dataset. To simplify
                 // things, we create three strings, gradually build them
                 // up, and then combine them at the end.
-                
+
                 // Note (this being an important point): we only use the
                 // FIRST taxon in the table to determine CODONPOSSET
                 // information to be emitted.
@@ -1247,7 +1247,7 @@ public class NexusFile extends BaseFormatHandler {
                 // We need a sequence to get values from. Let's just pick up
                 // the first sequence (see paragraph above to see why this
                 // might be helpful).
-                Sequence seq = (Sequence) set.get(0);    
+                Sequence seq = (Sequence) set.get(0);
                 String str_end = "";
 
                 for(int x = 0; x <= 3; x++) {
@@ -1268,7 +1268,7 @@ public class NexusFile extends BaseFormatHandler {
                                 array_strbuff_positions[x].append(
                                     (ftp.from) + " "
                                 );
-                            } else { 
+                            } else {
                                 array_strbuff_positions[x].append(
                                     (ftp.from) + "-" + (ftp.to) + str_end
                                 );
@@ -1302,7 +1302,7 @@ public class NexusFile extends BaseFormatHandler {
                             break;
                         }
                     }
-                
+
                     if(array_strbuff_positions[x] != null) {
                         buff_nexus_positions.append("\t\t" + position_names[x] + ": " + array_strbuff_positions[x] + str_end + "\n");
                         flag_display_nexus_positions = true;
@@ -1332,7 +1332,7 @@ public class NexusFile extends BaseFormatHandler {
 	/* Pad a string to a size */
 	private String pad_string(String x, int size) {
 		StringBuffer buff = new StringBuffer();
-		
+
 		if(x.length() < size) {
 			buff.append(x);
 			for(int c = 0; c < (size - x.length()); c++)
@@ -1347,9 +1347,9 @@ public class NexusFile extends BaseFormatHandler {
 
 	/**
 	 * Checks to see if this file *might* be of this format. Good for internal loops.
-	 * 
+	 *
 	 * No exceptions: implementors, please swallow them all up. If the file does not
-	 * exist, it's not very likely to be of this format, is it? 
+	 * exist, it's not very likely to be of this format, is it?
 	 */
 	public boolean mightBe(File file) {
 		try {
@@ -1383,8 +1383,8 @@ public class NexusFile extends BaseFormatHandler {
 	public void writeFile(File f, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
 		writeNexusFile(f, grid, EXPORT_AS_INTERLEAVED, INTERLEAVE_AT, delay);
 	}
-	
-	/** 
+
+	/**
 	 * A first stab at a Nexus/SequenceGrid writer. Most of the code has been 'borrowed' out of
 	 * SequenceMatrix.
          *
@@ -1400,17 +1400,17 @@ public class NexusFile extends BaseFormatHandler {
                     throw new IOException("Internal program error: incorrect 'how', " + how);
                 }
 
-		// set up delay 
+		// set up delay
 		if(delay != null)
 			delay.begin();
-		
+
 		StringBuffer buff_sets = new StringBuffer();		// used to store the 'SETS' block
 		buff_sets.append("BEGIN SETS;\n");
 
 		// let's get this party started, etc.
 		// we begin by obtaining the Taxonsets (if any).
-		/* NO TAXONSETS AS YET WE'LL IMPLEMENT THIS LATER WHEN WE FEEL LIKE IT 
-		Taxonsets tx = matrix.getTaxonsets(); 
+		/* NO TAXONSETS AS YET WE'LL IMPLEMENT THIS LATER WHEN WE FEEL LIKE IT
+		Taxonsets tx = matrix.getTaxonsets();
 		if(tx.getTaxonsetList() != null) {
 			Vector v = tx.getTaxonsetList();
 			Iterator i = v.iterator();
@@ -1437,7 +1437,7 @@ public class NexusFile extends BaseFormatHandler {
 		// 	at all, but DOES need the SETS block.
 		//
 
-		// Calculate the SETS blocks, with suitable widths etc.	
+		// Calculate the SETS blocks, with suitable widths etc.
 		int widthThusFar = 0;
 		Iterator i = grid.getColumns().iterator();
 
@@ -1459,7 +1459,7 @@ public class NexusFile extends BaseFormatHandler {
 
                 // Let's see if we can't calculate the nexus positions.
                 StringBuffer buff_nexus_positions = new StringBuffer();
-                
+
                 buff_nexus_positions.append("BEGIN NEXUSPOSITIONSBLOCK;\n");
 
                 i = grid.getColumns().iterator();
@@ -1495,7 +1495,7 @@ public class NexusFile extends BaseFormatHandler {
                 }
 
                 buff_nexus_positions.append("END;\n");
-		
+
 		// Now that the blocks are set, we can get down to the real work: writing out
 		// all the sequences. This is highly method specific.
 		//
@@ -1543,7 +1543,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				String colName = (String) i_cols.next();
 				int colLength = grid.getColumnLength(colName);
-				
+
 				// first of all, write the column name in as a comment (if in block mode)
 				writer.println("[beginning " + fixColumnName(colName) + "]");
 
@@ -1551,14 +1551,14 @@ public class NexusFile extends BaseFormatHandler {
 				Iterator i_seqs = grid.getSequences().iterator();
 				while(i_seqs.hasNext()) {
 					String seqName = (String) i_seqs.next();
-					Sequence seq = grid.getSequence(colName, seqName); 
+					Sequence seq = grid.getSequence(colName, seqName);
 
 					if(seq == null)
 						seq = Sequence.makeEmptySequence(seqName, colLength);
 
-					writer.println(getNexusName(seqName, MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
+					writer.println(getNexusName(seqName, MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + colLength + " bp]");
 				}
-				
+
 				writer.println("[end of " + fixColumnName(colName) + "]");
 				writer.println("");	// leave a blank line
 			}
@@ -1615,13 +1615,13 @@ public class NexusFile extends BaseFormatHandler {
 			// end the DATA block
 			writer.println(";");
 			writer.println("END;");
-		
+
 			writer.println(buff_sets);
 
 			writer.close();
 		}
-		
-		// shut down delay 
+
+		// shut down delay
 		if(delay != null)
 			delay.end();
 
@@ -1630,9 +1630,9 @@ public class NexusFile extends BaseFormatHandler {
 			NexusFile nf = new NexusFile();
 			nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString() + "\n" + buff_nexus_positions.toString(), delay);
 		}
-		
+
 	}
-  
+
 	private String fixColumnName(String columnName) {
 		columnName = columnName.replaceAll("\\.nex", "");
 		columnName = columnName.replace('.', '_');
