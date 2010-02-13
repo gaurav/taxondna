@@ -32,6 +32,6 @@ public class Versions {
 	 * Returns the common version string for the entire TaxonDNA package. 
 	 */
 	public static String getTaxonDNA() {
-		return "1.6.3-dev8-Jan23-2010-DO-NOT-USE";
+		return "1.6.3-dev9-Feb-13-2010-DO-NOT-USE";
 	}
 }
