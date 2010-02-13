@@ -601,30 +601,38 @@ public class Exporter implements SequencesHandler {
                         for(int x = 0; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
-                            if(v != null) {
-								Collections.sort(v);
+							if(v == null)
+								continue;
 
-                                Iterator i_v = v.iterator();
-                                while(i_v.hasNext()) {
-                                    FromToPair ftp = (FromToPair) i_v.next();
-                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+							// 'v' is now a List of FromToPairs.
+							// Let's combine them up if possible.
+							if (x == 0) {
+								v = new Vector(combineFTPs(v, 1));
+							} else {
+								v = new Vector(combineFTPs(v, 3));
+							}
 
-                                    if(x == 0)
-                                        str_end = " ";
-                                    else if(x == 1 || x == 2 || x == 3)
-                                        str_end = "\\3 ";
+							Collections.sort(v);
 
-                                    if(ftp.from == ftp.to) {
-                                        array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from) + " "
-                                        );
-                                    } else { 
-                                        array_strbuff_positions[x].append(
-                                            (horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end
-                                        );
-                                    }
-                                }
-                            }
+							Iterator i_v = v.iterator();
+							while (i_v.hasNext()) {
+								FromToPair ftp = (FromToPair) i_v.next();
+								// buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+								if (x == 0) {
+									str_end = " ";
+								} else if (x == 1 || x == 2 || x == 3) {
+									str_end = "\\3 ";
+								}
+
+								if (ftp.from == ftp.to) {
+									array_strbuff_positions[x].append(
+											(horzOffset + ftp.from) + " ");
+								} else {
+									array_strbuff_positions[x].append(
+											(horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
+								}
+							}
                         }
                     }
 
@@ -1132,5 +1140,40 @@ public class Exporter implements SequencesHandler {
 		columnName = columnName.replaceAll("\\.nex", "");
 		columnName = columnName.replaceAll("[^A-Za-z0-9\\_]", "_");
 		return columnName;
-	}	
+	}
+
+	/** Combines the list of FromToPairs.
+	 * @param movesIn Should be '0' for sequences which move in 3s, and '3' for
+	 * sequences which move in 3s.
+	 */
+	private List<FromToPair> combineFTPs(List<FromToPair> list, int movesIn) {
+		Stack<FromToPair> results = new Stack<FromToPair>();
+
+		Collections.sort(list);
+
+		FromToPair current_sequence = null;
+		for(FromToPair ftp: list) {
+
+			if(current_sequence != null) {
+
+				// A sequence is in progress
+				if(ftp.from == (current_sequence.to + movesIn)) {
+					// This FTP is also in the sequence.
+					current_sequence.to = ftp.to;
+				} else {
+					// End the last sequence, start a new sequence.
+					results.add(current_sequence);
+					current_sequence = ftp;
+				}
+			} else {
+				// A sequence is not in progress.
+				current_sequence = ftp;
+			}
+		}
+
+		if(current_sequence != null)
+			results.add(current_sequence);
+
+		return results;
+	}
 }
