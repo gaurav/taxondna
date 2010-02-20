@@ -406,9 +406,12 @@ public class FileManager implements FormatListener {
 						// calculation, except that we floor instead of
 						// ceil.
 						int offset =	(to - start_at);
-						offset =		(3 - (offset % 3)) % 3;
+						offset =		- (offset % 3);
 						end_at =		to + offset;
 					}
+
+					// Sanity checks should go here. But what is truely sane
+					// in this insane world of ours.
 				}
 
                 // System.err.println("Match while comparing [" + from + " to " + to + "] against to_check [" + to_check.from + " to " + to_check.to + "]");
