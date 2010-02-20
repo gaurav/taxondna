@@ -293,9 +293,9 @@ public class TableManager implements ActionListener {
 		}
 	}
 
-	public void deleteRow(String seqName) {
-		if(warned("Delete this row?", "Are you sure you wish to delete sequence '" + seqName + "'?")) {
-			dataStore.deleteRow(seqName);
+	public void deleteRow(String taxonName) {
+		if(warned("Delete this taxon?", "Are you sure you wish to delete the taxon '" + taxonName + "'?")) {
+			dataStore.deleteRow(taxonName);
 			updateDisplay();
 		}
 	}
