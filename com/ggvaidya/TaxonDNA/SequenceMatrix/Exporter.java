@@ -94,21 +94,19 @@ public class Exporter implements SequencesHandler {
 	/**
 	 * Exports the entire table as individual gene files (one per column) into a particular directory.
 	 * This really is kinda convoluted ... no, VERY convoluted. Hatred.
+         *
+         * Note: because of that bug where the "please wait" dialog opens and closes too quickly, I'm just
+         * going to ignore the 'delay' argument. Please reinsert if needed.
 	 */
 	public void exportSequencesByColumn(File dir, FormatHandler fh, boolean writeNASequences, DelayCallback delay) throws IOException, DelayAbortedException {
 		TableManager tm = matrix.getTableManager();
 
-		if(delay != null)
-			delay.begin();
-
-		Vector vec_sequences = new Vector( (Collection) tm.getSequenceNames());
+		Vector<String> vec_sequences = new Vector<String>( (Collection) tm.getSequenceNames());
 		int count_columns = tm.getCharsets().size();
 		Iterator i = tm.getCharsets().iterator();
 
 		int count = 0;
 		while(i.hasNext()) {
-			if(delay != null)
-				delay.delay(count, count_columns);
 			count++;
 
 			String colName = (String) i.next();
@@ -145,29 +143,20 @@ public class Exporter implements SequencesHandler {
 			File writeTo = new File(dir, makeFileName(colName) + "." + fh.getExtension());
 			if(writeTo.exists()) {
 				// TODO: We need to do something sensible here!
-				if(delay != null)
-					delay.end();
 
 				throw new IOException("Can't create file '" + writeTo + "' - it already exists!");
 			}
 
 			if(writeTo.exists() && !writeTo.canWrite()) {
-				if(delay != null)
-					delay.end();
 				throw new IOException("Couldn't open '" + writeTo + "' for writing. Are you sure you have permissions to write into this directory?");
 			}
 
 			try {
 				fh.writeFile(writeTo, sl, null);
 			} catch(IOException e) {
-				if(delay != null)
-					delay.end();
 				throw e;
 			}
 		}
-
-		if(delay != null)
-			delay.end();
 	}
 
 	private String makeFileName(String name) {
@@ -248,7 +237,7 @@ public class Exporter implements SequencesHandler {
 				// now, remove 'taxa_to_randomly_delete' taxa from this DataStore.
 				// DO YOU HAVE ANY IDEA HOW FRIGGIN EASY THIS IS AFTER THE LAST
 				// PUSHAROUND?!?!
-				Vector v = new Vector(sg.getSequences());
+				Vector<String> v = new Vector<String>(sg.getSequences());
 				if(taxonToNeverDelete != null && taxonToNeverDelete.length() > 0)
 					v.remove(taxonToNeverDelete);
 
@@ -572,51 +561,78 @@ public class Exporter implements SequencesHandler {
                 // end and write the SETS block
                 buff_sets.append("END;");
 
-                // Let's see if we can't calculate the nexus positions.
-                StringBuffer buff_nexus_positions = new StringBuffer();
-                
-                buff_nexus_positions.append("BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n");
-
                 // It's easier if we have a SequenceGrid to deal with.
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
+
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+                
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
 
                 i = matrix.getTableManager().getCharsets().iterator(); 
                 int horzOffset = 0;
                 while(i.hasNext()) {
                     String colName = (String) i.next();
 
-                    System.err.println("Column name: " + colName);
-
                     Set seqNames = grid.getSequenceNamesByColumn(colName);
                     if(seqNames.size() > 0) {
                         // get the first sequence
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
-                        String position_names[] = { "N", "1", "2", "3" };
                         String str_end = ",\n";
 
                         for(int x = 0; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
-                            if(v != null) {
-                                buff_nexus_positions.append("\t\t" + position_names[x] + ": ");
+							if(v == null)
+								continue;
 
-                                Iterator i_v = v.iterator();
-                                while(i_v.hasNext()) {
-                                    FromToPair ftp = (FromToPair) i_v.next();
+							// 'v' is now a List of FromToPairs.
+							// Let's combine them up if possible.
+							if (x == 0) {
+								v = new Vector(combineFTPs(v, 1));
+							} else {
+								v = new Vector(combineFTPs(v, 3));
+							}
 
-                                    if(x == 0)
-                                        str_end = ",\n";
-                                    else if(x == 1 || x == 2)
-                                        str_end = "\\3,\n";
-                                    else if(x == 3) {
-                                        str_end = "\\3\n";
-                                    }
+							Collections.sort(v);
 
-                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
-                                    buff_nexus_positions.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
-                                }
-                            }
+							Iterator i_v = v.iterator();
+							while (i_v.hasNext()) {
+								FromToPair ftp = (FromToPair) i_v.next();
+								// buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+								if (x == 0) {
+									str_end = " ";
+								} else if (x == 1 || x == 2 || x == 3) {
+									str_end = "\\3 ";
+								}
+
+								if (ftp.from == ftp.to) {
+									array_strbuff_positions[x].append(
+											(horzOffset + ftp.from) + " ");
+								} else {
+									array_strbuff_positions[x].append(
+											(horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
+								}
+							}
                         }
                     }
 
@@ -624,12 +640,47 @@ public class Exporter implements SequencesHandler {
                     horzOffset += grid.getColumnLength(colName);
                 }
 
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_nexus_positions = new StringBuffer();
+                
+                buff_nexus_positions.append("BEGIN CODONS;\n\tCODONPOSSET * CodonPositions = \n");
+
+                // Combine these bits in a way that makes sure the commas go into
+                // the right places (and ONLY the right places).
+                boolean flag_display_nexus_positions = false;
+
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
+
+                String position_names[] = { "N", "1", "2", "3" };
+
+                for(int x = 0; x <= 3; x++) {
+                    String str_end = "";
+
+                    // Check if there is any other string left; if not,
+                    // a comma is unnecessary.
+                    for(int y = x + 1; y <= 3; y++) {
+                        if(array_strbuff_positions[y] != null) {
+                            str_end = ",";
+                            break;
+                        }
+                    }
+                
+                    if(array_strbuff_positions[x] != null) {
+                        buff_nexus_positions.append("\t\t" + position_names[x] + ": " + array_strbuff_positions[x] + str_end + "\n");
+                        flag_display_nexus_positions = true;
+                    }
+                }
+
                 buff_nexus_positions.append("\t;\n");
                 buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
                 buff_nexus_positions.append("END;\n\n");
 
-                // And add it to buff_sets.
-                buff_sets.insert(0, buff_nexus_positions);
+                if(flag_display_nexus_positions)
+                    buff_sets.insert(0, buff_nexus_positions);
                                     
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.
@@ -860,42 +911,151 @@ public class Exporter implements SequencesHandler {
 				buff_title.append(";\n\n");
 		}
 		
-		// set up the 'sets' buffer
-		List cols = tm.getCharsets();
-		if(cols.size() >= 32) {
-			new MessageBox(
-					matrix.getFrame(),
-					"Too many character sets!",
-					"According to the manual, TNT can only handle 32 character sets. You have " + cols.size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.").go();
-
-		}
-		
+		// Time to do character sets!
 		StringBuffer buff_sets = new StringBuffer();
-		buff_sets.append("xgroup\n");
 
-		Iterator i = cols.iterator();	
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
+
+                // It's easier if we have a SequenceGrid to deal with.
+                SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
+
+                Iterator i = matrix.getTableManager().getCharsets().iterator();
+                int horzOffset = 0;
+                while(i.hasNext()) {
+                    String colName = (String) i.next();
+
+                    Set seqNames = grid.getSequenceNamesByColumn(colName);
+                    if(seqNames.size() > 0) {
+                        // get the first sequence
+                        Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
+
+                        for(int x = 0; x <= 3; x++) {
+                            Vector v = (Vector) seq.getProperty("position_" + x);
+
+                            if(v != null) {
+                                Iterator i_v = v.iterator();
+                                while(i_v.hasNext()) {
+                                    FromToPair ftp = (FromToPair) i_v.next();
+                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+                                    int increment_by = 1;
+                                    if(x == 1 || x == 2 || x == 3)
+                                        increment_by = 3;
+
+                                    // Note those -1s! They're to change our 1-index based calculations
+                                    // into 0-based TNT coordinates.
+
+                                    if(ftp.from == ftp.to) {
+                                        array_strbuff_positions[x].append(
+                                            (horzOffset + ftp.from - 1) + " "
+                                        );
+                                    } else {
+
+                                        // Iterate, iterate.
+                                        for(int y = (horzOffset + ftp.from); y <= (horzOffset + ftp.to); y += increment_by) {
+                                            array_strbuff_positions[x].append((y-1) + " ");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Add to the horizontal offset.
+                    horzOffset += grid.getColumnLength(colName);
+                }
+
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_tnt_positions = new StringBuffer();
+
+                // buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
+                buff_tnt_positions.append("xgroup\n");
+
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
+
+                String position_names[] = { "N", "1", "2", "3" };
+
+                boolean flag_display_tnt_positions = false;
+
+		List cols = tm.getCharsets();
+
+                int sequence_number = 0;
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x] != null) {
+                        buff_tnt_positions.append("=" + (cols.size() + sequence_number) + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+                        flag_display_tnt_positions = true;
+                        sequence_number++;
+                    }
+                }
+
+		int number_of_columns = cols.size() + sequence_number;
+		if(number_of_columns >= 32) {
+		    new MessageBox(
+			matrix.getFrame(),
+			"Too many character sets!",
+			"According to the manual, TNT can only handle 32 character sets. You have " + number_of_columns + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed."
+		    ).go();
+		}
+
+                //buff_tnt_positions.append(";\n");
+                //buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
+                int codonsets_go_into_title_at = 32 - sequence_number;
+		if(flag_display_tnt_positions) {
+                    buff_sets.insert(0, buff_tnt_positions);
+		} else {
+		    // Get ready for the upcoming sets.
+		    buff_sets.append("xgroup\n");
+		}
+
+		// Now for normal sets
+		i = cols.iterator();	
 		int at = 0;
 		int colid = 0;
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
-			if(colid == 32)
+			if(colid == codonsets_go_into_title_at)
 				buff_title.append("@xgroup\n");
 
-			if(colid <= 31)
+			if(colid < codonsets_go_into_title_at)
 				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
 			else
 				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
 
+                        // Actually spell out charsets here.
 			for(int x = 0; x < tm.getColumnLength(colName); x++) {
-				if(colid <= 31)
+				if(colid < codonsets_go_into_title_at)
 					buff_sets.append(at + " ");
 				else
 					buff_title.append(at + " ");
 				at++;
 			}
 
-			if(colid <= 31)
+			if(colid < codonsets_go_into_title_at)
 				buff_sets.append("\n");
 			else
 				buff_title.append("\n");
@@ -906,7 +1066,7 @@ public class Exporter implements SequencesHandler {
 		
 		buff_sets.append("\n;\n\n");
 
-		if(colid > 31)
+		if(colid > (codonsets_go_into_title_at - 1))
 			buff_title.append("\n;");
 
 		// go!
@@ -980,5 +1140,40 @@ public class Exporter implements SequencesHandler {
 		columnName = columnName.replaceAll("\\.nex", "");
 		columnName = columnName.replaceAll("[^A-Za-z0-9\\_]", "_");
 		return columnName;
-	}	
+	}
+
+	/** Combines the list of FromToPairs.
+	 * @param movesIn Should be '0' for sequences which move in 3s, and '3' for
+	 * sequences which move in 3s.
+	 */
+	private List<FromToPair> combineFTPs(List<FromToPair> list, int movesIn) {
+		Stack<FromToPair> results = new Stack<FromToPair>();
+
+		Collections.sort(list);
+
+		FromToPair current_sequence = null;
+		for(FromToPair ftp: list) {
+
+			if(current_sequence != null) {
+
+				// A sequence is in progress
+				if(ftp.from == (current_sequence.to + movesIn)) {
+					// This FTP is also in the sequence.
+					current_sequence.to = ftp.to;
+				} else {
+					// End the last sequence, start a new sequence.
+					results.add(current_sequence);
+					current_sequence = ftp;
+				}
+			} else {
+				// A sequence is not in progress.
+				current_sequence = ftp;
+			}
+		}
+
+		if(current_sequence != null)
+			results.add(current_sequence);
+
+		return results;
+	}
 }

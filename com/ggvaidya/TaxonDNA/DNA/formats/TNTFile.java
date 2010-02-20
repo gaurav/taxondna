@@ -20,7 +20,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2006-07 Gaurav Vaidya
+    Copyright (C) 2006-07, 2010 Gaurav Vaidya
     
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class TNTFile extends BaseFormatHandler {
-	private static final int MAX_TAXON_LENGTH =	31;		// TNT truncates at 32 characters, but it gives a warning at 32
+	private static final int MAX_TAXON_LENGTH =	31;	// TNT truncates at 32 characters, but it gives a warning at 32
 								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
@@ -608,7 +608,7 @@ public class TNTFile extends BaseFormatHandler {
 								sequence_begin + 1,
 								sequence_end + 1)
 							);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							System.err.println("New multi-character sequence [2]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 						}
 					}
 					
@@ -651,6 +651,23 @@ public class TNTFile extends BaseFormatHandler {
 
 				currentName = buff_name.toString();
 
+                                // But wait! Some names are extra-special.
+                                if(currentName.equalsIgnoreCase("posN"))
+                                    currentName = ":0";
+
+                                if(currentName.equalsIgnoreCase("pos1"))
+                                    currentName = ":1";
+
+                                if(currentName.equalsIgnoreCase("pos2"))
+                                    currentName = ":2";
+
+                                if(currentName.equalsIgnoreCase("pos3"))
+                                    currentName = ":3";
+
+                                // Now the rest of this method will keep
+                                // adding these positions into the special
+                                // codonsets. HAHA BRILLIANT.
+
 				continue;
 
 			} else if(type == StreamTokenizer.TT_WORD) {
@@ -667,6 +684,8 @@ public class TNTFile extends BaseFormatHandler {
 				//
 			
 				if(word.indexOf('.') == -1) {
+					// We've got a single number.
+
 					int locus = atoi(word, tok);
 
 					if(sequence_begin == -1) {
@@ -679,17 +698,28 @@ public class TNTFile extends BaseFormatHandler {
 						// the sequence continues, so we do NOT fire now
 					} else {
 						// the sequence ends here!
-						// fire the last 
+						// fire the last
 						if(which_group == GROUP_CHARSET) {
+						    if(currentName.charAt(0) == ':') {
+							for(int d = sequence_begin + 1; d <= (sequence_end + 1); d++) {
+							    fireEvent(evt.makeCharacterSetFoundEvent(
+									currentName,
+									d,
+									d)
+								);
+							    System.err.println("New multicharacter sequence [6]: " + currentName + " from " + d + " to " + d);
+							}
+						    } else {
 							fireEvent(evt.makeCharacterSetFoundEvent(
 									currentName,
 									sequence_begin + 1,
 									sequence_end + 1)
 								);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							System.err.println("New multicharacter sequence [3]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
+						    }
 						}
-						
+
 						// then set up the next one
 						sequence_begin = locus;
 						sequence_end = locus;
@@ -711,8 +741,7 @@ public class TNTFile extends BaseFormatHandler {
 									sequence_begin + 1,
 									sequence_end + 1)
 								);
-							System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
-
+							System.err.println("New multicharacter sequence [1]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 						}
 						
 						// then set up the next one
@@ -751,11 +780,17 @@ public class TNTFile extends BaseFormatHandler {
 					if(which_group == GROUP_CHARSET) {
 						from++;		// convert from TNT loci (0-based) to normal loci (1-based)
 						to++;
+
+                                                // Multi-character blocks are POISON for situations where
+                                                // the sequences are supposed to move in thirds (i.e. ':1',
+                                                // ':2' and ':3'. This is because the algorithm for figuring
+                                                // out position information is designed to work with 
+
 						fireEvent(evt.makeCharacterSetFoundEvent(
 								currentName,
 								from,
 								to));
-						System.err.println("New multi-character block: " + currentName + " from " + from + " to " + to);
+						System.err.println("New multi-character block [4]: " + currentName + " from " + from + " to " + to);
 					}
 
 					continue;
@@ -770,13 +805,23 @@ public class TNTFile extends BaseFormatHandler {
 		if(sequence_begin != -1 && sequence_end != -1) {
 			// fire the last 
 			if(which_group == GROUP_CHARSET) {
-				fireEvent(evt.makeCharacterSetFoundEvent(
-					currentName,
-					sequence_begin + 1,
-					sequence_end + 1)
-				);
-				System.err.println("New single-character sequence: " + currentName + " from " + sequence_begin + " to " + sequence_end);
-
+			    if(currentName.charAt(0) == ':') {
+				for(int d = sequence_begin + 1; d <= sequence_end + 1; d++) {
+				    fireEvent(evt.makeCharacterSetFoundEvent(
+					    currentName,
+					    d,
+					    d)
+				    );
+				    System.err.println("New multicharacter sequence [7]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+				}
+			    } else {
+				    fireEvent(evt.makeCharacterSetFoundEvent(
+					    currentName,
+					    sequence_begin + 1,
+					    sequence_end + 1)
+				    );
+				    System.err.println("New multicharacter sequence [5]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+			    }
 			}
 		}
 
