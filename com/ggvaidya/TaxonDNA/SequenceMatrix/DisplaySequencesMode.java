@@ -215,7 +215,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	public java.util.List getAdditionalColumns() {
 		Vector v = new Vector();
 
-		v.add(0, "Sequence name");
+		v.add(0, "Taxon");
 		v.add(1, "Total length");
 		v.add(2, "No of charsets");
 
