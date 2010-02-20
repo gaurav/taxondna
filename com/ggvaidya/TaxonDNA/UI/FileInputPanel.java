@@ -107,11 +107,12 @@ public class FileInputPanel extends Panel implements ActionListener, TextListene
 	 */
 	public void actionPerformed(ActionEvent e) {
 		if(e.getSource().equals(browse)) {
-			String message = "Please select a file ";
+			String message = "Please select a file";
 			if(mode == MODE_FILE_READ)
-				message += "for loading ...";
+				message = "Please select a file to load";
+			
 			if(mode == MODE_FILE_WRITE)
-				message += "for saving ...";
+				message = "Please name the file you are about to save";
 
 			File f = getFileFromFileDialog(message);
 
