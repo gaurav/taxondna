@@ -919,7 +919,7 @@ public class FileManager implements FormatListener {
 		if(!checkCancelledBeforeExport())
 			return;
 
-		File f = getFile("Where would you like to export this set to?");
+		File f = getFile("Export as TNT ...");
 		if(f == null)
 			return;
 
@@ -959,7 +959,7 @@ public class FileManager implements FormatListener {
 		//
 		// we don't need to check, since #sequences handles cancelled sequences fine.
 
-		File f = getFile("Where would you like to export this set to?");
+		File f = getFile("Export as Sequences ...");
 		if(f == null)
 			return;
 
