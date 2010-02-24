@@ -1119,7 +1119,7 @@ public class NexusFile extends BaseFormatHandler {
 		while(i_seqs.hasNext()) {
 			Sequence seq = (Sequence) i_seqs.next();
 
-			if(seq.getClass().isAssignableFrom(BaseSequence.class)) {
+			if(seq.getClass().equals(BaseSequence.class)) {
 				dataType = "STANDARD";
 				break;			// even one is good enough
 			}
@@ -1131,6 +1131,8 @@ public class NexusFile extends BaseFormatHandler {
 		// This seems to be pretty complicated, and I'm far too sleepy today
 		// to work on this. But I'm not committing this comment in until I know
 		// what to do.
+                //
+                // (Feb 25, 2010) Obviously, I lied.
 		//
 		writer.print("\tFORMAT DATATYPE=" + dataType + " MISSING=? GAP=- ");
 		if(set.getMaxLength() > interleaveAt) {
