@@ -51,7 +51,7 @@ import com.ggvaidya.TaxonDNA.UI.*;
 
 public class FileManager implements FormatListener {
     private SequenceMatrix  matrix;
-    private HashMap<String, ArrayList<FromToPair>> hashmap_codonsets = new HashMap<String, ArrayList<FromToPair>>();
+    private final HashMap<String, ArrayList<FromToPair>> hashmap_codonsets = new HashMap<String, ArrayList<FromToPair>>();
 
 //
 //      0.      CONFIGURATION OPTIONS
@@ -474,7 +474,7 @@ public class FileManager implements FormatListener {
         extracted.
     */
 
-    private int incorporateSets(SequenceList sequences) {
+    private int incorporateSets(File file, SequenceList sequences) {
         // charset count.
         int count_charsets = 0;
 
@@ -486,7 +486,7 @@ public class FileManager implements FormatListener {
 
         // We want to make sure nobody touches hashmap_codonsets while we're working. This
         // Should Never Happen (tm), but better safe than sorry.
-	synchronized(hashmap_codonsets) {
+		synchronized(hashmap_codonsets) {
             HashMap<String, ArrayList<FromToPair>> sets = hashmap_codonsets;
 
             // Don't let anybody change these sequences, either.
@@ -515,8 +515,26 @@ public class FileManager implements FormatListener {
 
             // Okay, so now we have a set of positional data sets. Rest of this
             // kinda runs the way it's always run.
-            Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
+			// BUT FIRST! Make sure we don't have any overlapping sets.
+			HashMap<String, FromToPair> overlappers = containsOverlappedSets(sets);
+			if(overlappers.size() > 0) {
+				MessageBox mb = new MessageBox(
+						matrix.getFrame(),
+						"SequenceMatrix does not support overlapping character sets",
+						"Overlapping character sets were detected in " + file + ". " +
+						"The following sets have overlapping sets: " +
+							overlappers.keySet().toString()
+				);
+				mb.go();
 
+				sequences.unlock();
+				hashmap_codonsets.clear();
+
+				return -1;
+			}
+
+			// Okay, now proceed with the rest of our algorithm.
+            Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
             while(i_sets.hasNext()) {
                 String charset_name =                   i_sets.next();
                 ArrayList<FromToPair> charset_fromtos = hashmap_codonsets.get(charset_name);
@@ -697,7 +715,7 @@ public class FileManager implements FormatListener {
                 );
 
                 if(mb.showMessageBox() == MessageBox.MB_YES) {
-                    int count = incorporateSets(sequences); 
+                    int count = incorporateSets(file, sequences);
                     
                     hashmap_codonsets.clear();
 
@@ -1299,5 +1317,43 @@ public class FileManager implements FormatListener {
 			return true;
 		else
 			return false;
+	}
+
+	/***
+	 * Returns a list of overlapping datasets from the set => list of fromtopairs
+	 * data structure we use to store overlapping datasets.
+	 * 
+	 * This is all pretty weird. We'll clean it up later as we need to.
+	 * 
+	 * @param sets A list of character set data, stored as name mapped to an
+	 *	arraylist of from-to pairs.
+	 * @return A list of FTPs corresponding to character set pairs which show
+	 *	overlap. The string is separated by pipes. For instance, the string 
+	 *  might read "coi|cytb" and point to an FTP from 100-200, meaning those
+	 *  loci are defined belonging to both coi and cytb.
+	 */
+	private HashMap<String, FromToPair> containsOverlappedSets(HashMap<String, ArrayList<FromToPair>> sets) {
+		HashMap<String, FromToPair> results = new HashMap<String, FromToPair>();
+
+		// For now, do nothing
+		if(0==0)
+			return results;
+
+		// Okay, we are almost certainly going to fill this up. So might as well
+		// make it a dense array.
+		int from = -1, to = -1;
+		for(ArrayList<FromToPair> list: sets.values()) {
+			for(FromToPair ftp: list) {
+				if( (from == -1) || (ftp.from < from) ) {
+					from = ftp.from;
+				}
+
+				// TODO: The rest of this algorithm.
+			}
+		}
+
+		// TODO: The rest of this algorithm
+
+		return results;
 	}
 }

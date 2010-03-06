@@ -199,7 +199,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the citation used by SequenceMatrix.
 	 */
 	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
+		return "No citation as yet.";
 	}
 
 //
@@ -634,6 +634,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the name of this program, i.e. "SequenceMatrix" with appropriate versioning information.
 	 */
 	public String getName() {
-		return "TaxonDNA/SequenceMatrix " + Versions.getTaxonDNA();
+		return "SequenceMatrix " + Versions.getTaxonDNA();
 	}
 }
