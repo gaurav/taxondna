@@ -562,6 +562,7 @@ public class NexusFile extends BaseFormatHandler {
 							str.equalsIgnoreCase("CHARSTATELABELS") ||
 							str.equalsIgnoreCase("CHARLABELS") ||
 							str.equalsIgnoreCase("STATELABELS") ||
+							str.equalsIgnoreCase("TITLE") ||
 							str.equalsIgnoreCase("OPTIONS")
 					) {
 						inIgnoredCommand = true;
