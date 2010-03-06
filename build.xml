@@ -100,7 +100,7 @@
 			basedir =       "../"
 			includes =      "TaxonDNA/**"
 			excludes =      "**/.svn, TaxonDNA/Releases"
-			comment =       "(c) Gaurav Vaidya, 2006, 2009"
+			comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
 		/>
                 <move file = "../TaxonDNA-src-${taxondna.version}.zip" todir = "Releases" />
 	</target>
@@ -134,12 +134,12 @@
 	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
 	<target name = "release"    depends = "build, SequenceMatrix.app">
 		<zip 
-			destfile =      "../TaxonDNA-${taxondna.version}.zip"
+			destfile =      "../SequenceMatrix-${taxondna.version}.zip"
 			basedir =       "Release/"
 			comment =       "(c) Gaurav Vaidya, 2007, 2009"
 			update =        "false"
 		/>
-                <move file = "../TaxonDNA-${taxondna.version}.zip" todir = "Releases" />
+                <move file = "../SequenceMatrix-${taxondna.version}.zip" todir = "Releases" />
 	</target>
 
         <!--
