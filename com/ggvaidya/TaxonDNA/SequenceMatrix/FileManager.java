@@ -668,7 +668,7 @@ public class FileManager implements FormatListener {
      * This method throws no exceptions; any errors are displayed to the user directly.
      */
     public void addFile(File file, FormatHandler handler) {
-
+		
         // Load the files.
         SequenceList sequences = loadFile(file, handler);
         if(sequences == null)
@@ -774,9 +774,19 @@ public class FileManager implements FormatListener {
             // We're done here.
             sequences.unlock();
         }
-        
-        // TODO: Replace file.fileName() with something more sensible.
-        addSequenceListToTable(file.getName(), sequences);
+
+		// Reformat the name so we know what to call this sequencelist.
+		String filename = file.getName();
+
+		// Remove the extension, if there is one.
+		// Note that this does almost-Windows style extensions
+		// (one to FOUR characters at the end, separated
+		// from the rest with a single fullstop), so this
+		// should leave funky names like "test.sequences"
+		// alone.
+		filename = filename.replaceFirst("\\.\\w{1,4}$", "");
+
+        addSequenceListToTable(filename, sequences);
     }
 
 	/**
