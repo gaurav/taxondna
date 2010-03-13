@@ -290,8 +290,18 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		// Export -> Export as NEXUS.
 		//
-		if(cmd.equals("Export sequences as NEXUS"))
-			fileManager.exportAsNexus();
+		if(cmd.equals("Export sequences as NEXUS (interleaved, 1000 bp)"))
+			fileManager.quickExportAsNexus();
+		
+		if(cmd.equals("Export sequences as NEXUS (non-interleaved)"))
+			fileManager.quickExportAsNexusNonInterleaved();
+
+		if(cmd.equals("Export sequences as NEXUS (naked)"))
+			fileManager.quickExportAsNakedNexus();
+
+		// Here if it's ever needed.
+		//if(cmd.equals("Export sequences as NEXUS (advanced)"))
+		//	fileManager.exportAsNexus();
 
 		//
 		// Export -> Export as TNT.
@@ -565,7 +575,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		export.add(new MenuItem("Export table as tab-delimited"));
 		export.add(new MenuItem("Export table as sequences (one file per column)"));
 		export.add(new MenuItem("Export columns grouped randomly"));
-		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
+		export.add(new MenuItem("Export sequences as NEXUS (naked)"));
+		//export.add(new MenuItem("Export sequences as NEXUS (advanced)"));
 		export.add(new MenuItem("Export sequences as TNT"));
 		export.addActionListener(this);
 		file.add(export);

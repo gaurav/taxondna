@@ -1007,6 +1007,111 @@ public class FileManager implements FormatListener {
 	}
 
 	/**
+	 * Quick-export as a plain Nexus file.
+	 */
+	public void quickExportAsNexus() {
+		if (!checkCancelledBeforeExport())
+			return;
+
+		File file = getFile("Export as Nexus ...");
+		if (file == null)
+			return;
+
+		try {
+			matrix.getExporter().exportAsNexus(
+					file,
+					Preferences.PREF_NEXUS_INTERLEAVED,
+					1000,
+					new ProgressDialog(
+					matrix.getFrame(),
+					"Please wait, exporting sequences ...",
+					"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!"));
+		} catch (IOException e) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Error writing sequences to file!",
+					"The following error occured while writing sequences to file: " + e);
+			mb.go();
+
+			return;
+		} catch (DelayAbortedException e) {
+			return;
+		}
+
+		new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a Nexus file.").go();
+	}
+
+		/**
+	 * Quick-export as a plain Nexus file.
+	 */
+	public void quickExportAsNexusNonInterleaved() {
+		if (!checkCancelledBeforeExport())
+			return;
+
+		File file = getFile("Export as Nexus (non-interleaved) ...");
+		if (file == null)
+			return;
+
+		try {
+			matrix.getExporter().exportAsNexus(
+					file,
+					Preferences.PREF_NEXUS_SINGLE_LINE,
+					100,
+					new ProgressDialog(
+					matrix.getFrame(),
+					"Please wait, exporting sequences ...",
+					"All your sequences are being exported as a single, non-interleaved Nexus file into '" + file + "'. Sorry for the wait!"));
+		} catch (IOException e) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Error writing sequences to file!",
+					"The following error occured while writing sequences to file: " + e);
+			mb.go();
+
+			return;
+		} catch (DelayAbortedException e) {
+			return;
+		}
+
+		new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a non-interleaved Nexus file.").go();
+	}
+
+			/**
+	 * Quick-export as a plain Nexus file.
+	 */
+	public void quickExportAsNakedNexus() {
+		if (!checkCancelledBeforeExport())
+			return;
+
+		File file = getFile("Export as naked Nexus ...");
+		if (file == null)
+			return;
+
+		try {
+			matrix.getExporter().exportAsNexus(
+					file,
+					Preferences.PREF_NEXUS_SINGLE_LINE | Preferences.PREF_NEXUS_NAKED_FORMAT,
+					100,
+					new ProgressDialog(
+					matrix.getFrame(),
+					"Please wait, exporting sequences ...",
+					"All your sequences are being exported as a naked Nexus file into '" + file + "'. Sorry for the wait!"));
+		} catch (IOException e) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Error writing sequences to file!",
+					"The following error occured while writing sequences to file: " + e);
+			mb.go();
+
+			return;
+		} catch (DelayAbortedException e) {
+			return;
+		}
+
+		new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a naked Nexus file.").go();
+	}
+
+	/**
 	 * 	Export the current set as a TNT file. Be warned that File 'f' will be
 	 * 	completely overwritten.
 	 *

@@ -484,7 +484,25 @@ public class Exporter implements SequencesHandler {
          *
          * @throws IOException if there was a problem writing this file
          */
-        public void exportAsNexus(File f, int exportAs, int interleaveAt, DelayCallback delay) throws IOException, DelayAbortedException {
+        public void exportAsNexus(
+			File	f,
+			int		exportAs,
+			int		interleaveAt,
+			DelayCallback delay)
+		throws IOException, DelayAbortedException
+		{
+			boolean nakedNexusMode = false;
+
+			// Check for the 'NAKED_FORMAT' flag, and if so,
+			// activate our own flag.
+			if((exportAs & Preferences.PREF_NEXUS_NAKED_FORMAT) != 0) {
+				nakedNexusMode = true;
+
+				// Important: get RID of the NAKED_FORMAT bit!
+				exportAs -= Preferences.PREF_NEXUS_NAKED_FORMAT;
+
+			}
+
                 TableManager tm = matrix.getTableManager();
                 int countThisLoop = 0;
 
@@ -821,8 +839,9 @@ public class Exporter implements SequencesHandler {
                         // end the DATA block
                         writer.println(";");
                         writer.println("END;");
-                
-                        writer.println(buff_sets);
+
+						if(!nakedNexusMode)
+							writer.println(buff_sets);
 
 
                         writer.close();
@@ -835,12 +854,15 @@ public class Exporter implements SequencesHandler {
 
                 // otherwise, err ... actually write the darn file out to begin with :p
                 if(how == Preferences.PREF_NEXUS_INTERLEAVED) {
-                        NexusFile nf = new NexusFile();
-                        nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(), 
-                                        new ProgressDialog(
-                                                matrix.getFrame(),
-                                                "Please wait, writing file ...",
-                                                "Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
+					if(nakedNexusMode)
+						buff_sets = new StringBuffer();	// Blank out the sets.
+
+					NexusFile nf = new NexusFile();
+					nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(),
+									new ProgressDialog(
+											matrix.getFrame(),
+											"Please wait, writing file ...",
+											"Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
                 }
                 
         }
