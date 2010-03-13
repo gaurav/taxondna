@@ -249,7 +249,7 @@ public class NexusFile extends BaseFormatHandler {
 							else {
 								inStrangeBlock = true;
 								// warn the user!
-								delay.addWarning("Block '" + beginWhat + "' cannot be read by TaxonDNA yet! This block will NOT be imported, and therefore cannot be re-exported.");
+								// delay.addWarning("Block '" + beginWhat + "' cannot be read by TaxonDNA yet! This block will NOT be imported, and therefore cannot be re-exported.");
 							}
 
 						} else {
@@ -431,7 +431,7 @@ public class NexusFile extends BaseFormatHandler {
 					} else if(str.equalsIgnoreCase("SYMBOLS")) {
 						String throwaway = getValueOfKey(tok);
 						// okay, ignore this for now, since we can do ANY symbol.
-						delay.addWarning("FORMAT SYMBOLS=... in the DATA/CHARACTERS block cannot be read by TaxonDNA yet. There is no guarantee that illegal symbols are not being used in your sequences.");
+						//delay.addWarning("FORMAT SYMBOLS=... in the DATA/CHARACTERS block cannot be read by TaxonDNA yet. There is no guarantee that illegal symbols are not being used in your sequences.");
 					} else {
 						throw formatException(tok, "I found '" + str + "' in the FORMAT line of the DATA (or CHARACTERS) block. I don't understand " + str + " at the moment - I can only comprehend 'MISSING=x', 'GAP=x', 'DATATYPE=DNA' and 'INTERLEAVE'. Sorry!");
 					}
@@ -566,7 +566,7 @@ public class NexusFile extends BaseFormatHandler {
 							str.equalsIgnoreCase("OPTIONS")
 					) {
 						inIgnoredCommand = true;
-						delay.addWarning("Ignoring command '" + str + "' in the CHARACTERS/DATA block; TaxonDNA cannot interpret this at present.");
+						//delay.addWarning("Ignoring command '" + str + "' in the CHARACTERS/DATA block; TaxonDNA cannot interpret this at present.");
 					}
 
 					if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
@@ -766,7 +766,7 @@ public class NexusFile extends BaseFormatHandler {
 						str.equalsIgnoreCase("TREEPARTITION")
 				) {
 					inIgnoredCommand = true;
-					delay.addWarning("Command '" + str + "' in the SETS block cannot be read by TaxonDNA, and will be ignored.");
+					//delay.addWarning("Command '" + str + "' in the SETS block cannot be read by TaxonDNA, and will be ignored.");
 				} else {
  					throw formatException(tok, "Unknown word/command '" + str + "' found in the SETS block.");
 				}
@@ -960,7 +960,7 @@ public class NexusFile extends BaseFormatHandler {
 						str.equalsIgnoreCase("CODESET")
 				) {
 					inIgnoredCommand = true;
-					delay.addWarning("Command '" + str + "' in the CODONS block cannot be read by TaxonDNA, and will be ignored.");
+					//delay.addWarning("Command '" + str + "' in the CODONS block cannot be read by TaxonDNA, and will be ignored.");
 				} else {
  					throw formatException(tok, "Unknown word/command '" + str + "' found in the CODONS block.");
 				}

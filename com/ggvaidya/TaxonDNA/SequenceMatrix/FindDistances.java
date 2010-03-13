@@ -249,7 +249,7 @@ public class FindDistances implements WindowListener, ActionListener {
                         }
                 }
 
-                // Get rid of duplicates (X <-> Y and Y <-> X).
+                // TODO: Get rid of duplicates (X <-> Y and Y <-> X).
 
                 StringBuffer buff = new StringBuffer();
                 Collections.sort(results);
