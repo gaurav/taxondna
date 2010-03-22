@@ -711,8 +711,8 @@ public class Exporter implements SequencesHandler {
 
 
                         writer.println("#NEXUS");
-                        writer.println("[Written by " + matrix.getName() + " on " + new Date() + "]");
-
+						if(!nakedNexusMode)
+							writer.println("[Written by " + matrix.getName() + " on " + new Date() + "]");
 
                         writer.println("");
 
