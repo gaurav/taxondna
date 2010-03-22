@@ -259,10 +259,10 @@ public class BaseSequence extends Sequence {
 		}
 
 		String seq_str = output.toString();
-		System.err.println("What've we got: " + seq_str);
+		//System.err.println("What've we got: " + seq_str);
 		Sequence seq = BaseSequence.createSequence(getFullName() + " (segment:" + from + "-" + to + ":inclusive)", seq_str);
 		
-		System.err.println("Ended up with: " + seq);
+		//System.err.println("Ended up with: " + seq);
 		
 		return seq;
 	}
