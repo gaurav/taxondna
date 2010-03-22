@@ -2,4 +2,4 @@
 # 1.	The version used in 'TaxonDNA-$VERSION$.zip'
 # 2.	The version used in 'TaxonDNA-src-$VERSION$.zip'
 #
-taxondna.version = 1.6.4-dev1-Mar-06-2010
+taxondna.version = 1.6.4-dev2-Mar-13-2010
