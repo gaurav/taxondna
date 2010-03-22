@@ -204,7 +204,7 @@ public class BaseSequence extends Sequence {
 		java.io.StringReader r = new java.io.StringReader(getSequence());
 		StringBuffer output = new StringBuffer();
 
-		System.err.println("Base.cut: from: " + from + " to: " + to);
+		//System.err.println("Base.cut: from: " + from + " to: " + to);
 
 		boolean writing = false;
 		int char_at = 0;
