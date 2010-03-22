@@ -1412,6 +1412,10 @@ public class FileManager implements FormatListener {
 		dg.pack();
 		dg.setVisible(true);
 
+		// Can't do anything if no directory was selected.
+		if(dinp.getFile() == null)
+			return;
+
 		if (btn.wasClicked()) {
 			matrix.getPrefs().setPreference("exportSequencesByColumn_choice", choice_formats.getSelectedIndex());
 			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getParent());
