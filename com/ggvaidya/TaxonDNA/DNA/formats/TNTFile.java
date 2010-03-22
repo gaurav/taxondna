@@ -247,7 +247,7 @@ public class TNTFile extends BaseFormatHandler {
 						} else {
 							// well, okay we can baseSequence it, UNLESS:
 							if(tok.sval.equalsIgnoreCase("cont"))
-								throw formatException(tok, "TaxonDNA can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by 'nstates " + tok.sval + "').");
+								throw formatException(tok, "This program can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by 'nstates " + tok.sval + "').");
 						}
 					}
 
@@ -462,7 +462,7 @@ public class TNTFile extends BaseFormatHandler {
 				}
 
 				if(word.equalsIgnoreCase("[cont]")) {
-					throw formatException(tok, "TaxonDNA can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by '[cont]').");
+					throw formatException(tok, "This program can currently only load files which contain discrete sequences. This file does not (it contains continuous data, as indicated by '[cont]').");
 
 				}
 

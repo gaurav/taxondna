@@ -1889,7 +1889,7 @@ public class Sequence  implements Comparable, Testable {
 		for(int x = 0; x < len; x++) {
 			if(seq[x] == 'U' || seq[x] == 'u')
 				throw new SequenceException(getFullName(),
-						"Currently, TaxonDNA only supports DNA sequences! I found a Uracil at index " + x);
+						"This program currently supports only DNA sequences! I found a Uracil at index " + x);
 			if(!isValid(seq[x]))
 				throw new SequenceException(getFullName(), 
 						"An illegal base '" + seq[x] + "' was found in sequence '" + 
