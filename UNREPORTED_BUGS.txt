@@ -1,0 +1,7 @@
+>>[1] Multiple "CODONPOSSETs" may be contradictory; we should only read the first one.
+
+Ideally, the first one.
+
+Unfortunately, our code is bizarre, and might require the 0/1/2/3 positions to be in order. This would be a bigger issue. It should all be fixed, of course.
+
+See branch prevent-multiple-codonpossets to see how.
