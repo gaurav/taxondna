@@ -183,7 +183,8 @@ public class Sequence  implements Comparable, Testable {
 		try {
 			changeName(seq.getFullName());
 			changeSequence(seq.getSequence());
-                        properties = (Properties) seq.properties.clone();
+			if(seq.properties != null)
+				properties = (Properties) seq.properties.clone();
 		} catch(SequenceException e) {
 			throw new RuntimeException("Can't 'clone' sequence seq: " + e.getMessage());
 		}

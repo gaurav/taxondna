@@ -9,3 +9,10 @@ See branch prevent-multiple-codonpossets to see how.
 >>[2] Nexus sequence names should allow for '(' characters
 
 Unfortunately, Nexus file import is crazy. So there's not an awful lot we can do about that.
+
+>>[3] "Export -> One file per column" should use the last used directory name, not one level up
+Which it only uses because it's descended from the advanced Nexus export, which does this.
+
+>>[4] "Export -> One file per column" fails when two columns have the same name, or they have different names on a case-insensitive operating system (like most of them).
+
+
