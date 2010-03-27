@@ -137,9 +137,6 @@ public class NexusFile extends BaseFormatHandler {
 	public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException {
 		FormatHandlerEvent evt = new FormatHandlerEvent(fileFrom, this, appendTo);
 
-		// Reset some processing flags.
-		codonposset_already_defined = false;
-
 		// set up the delay
 		if(delay != null)
 			delay.begin();
@@ -789,10 +786,8 @@ public class NexusFile extends BaseFormatHandler {
          * need to consume all that information.
          *
          * Note that the first argument is 0 for 'N', and 1, 2, 3 for the three positions respectively.
-		 *
-		 * @argument actuallyAdd Should we actually add this codonposset (if true), or merely parse it (if false)?
          */
-        private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok, boolean actuallyAdd) throws FormatException, IOException {
+        private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok) throws FormatException, IOException {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
 
@@ -831,8 +826,7 @@ public class NexusFile extends BaseFormatHandler {
 
 					// Catch single values (i.e. "3 6 9")
 					if(token != '-') {
-						if(actuallyAdd)
-							fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
+						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
 						tok.pushBack();
 						continue;
 					}
@@ -842,8 +836,7 @@ public class NexusFile extends BaseFormatHandler {
 					to = Integer.parseInt(tok.sval);
 
 					if(tok.nextToken() != '\\') {
-						if(actuallyAdd)
-							fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
 						tok.pushBack();
 						continue;
@@ -853,16 +846,13 @@ public class NexusFile extends BaseFormatHandler {
 						throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!");
 					}
 
-					if(actuallyAdd)
-						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+					fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
                 } catch(NumberFormatException e) {
                     throw formatException(tok, "One of the values in CodonPosSet position " + position + " wasn't a number: " + e);
                 }
             }
         }
-
-	private boolean codonposset_already_defined = false;
 
 	/**
 	 * Processes the 'CODONS' block.
@@ -916,63 +906,56 @@ public class NexusFile extends BaseFormatHandler {
 				if(str.equalsIgnoreCase("END") || str.equalsIgnoreCase("ENDBLOCK")) {
 					break;
 				} else if(str.equalsIgnoreCase("CODONPOSSET")) {
-					// okay, the line looks like 'CODONPOSSET * \w+ = N: {desc}+, 1: {desc}+, 2: {desc}+, 3: {desc}+;'. And hopefully that's all we'll have to process.
-					// where:
-					//      desc = ((\d+)-(\d+)(\\3))*
-					// let's just be strict for now, and pretend that anything even slightly off (except
-					// for whitespace and comments) is wrong.
+                                        // okay, the line looks like 'CODONPOSSET * \w+ = N: {desc}+, 1: {desc}+, 2: {desc}+, 3: {desc}+;'. And hopefully that's all we'll have to process.
+                                        // where:
+                                        //      desc = ((\d+)-(\d+)(\\3))*
+                                        // let's just be strict for now, and pretend that anything even slightly off (except
+                                        // for whitespace and comments) is wrong.
 
-					// Okay, expecting a '*', but it's actually optional.
-					if (tok.nextToken() != '*') // If it's not '*' ...
-					{
-						tok.pushBack();             // ... it must be the CondonPosSet name.
-					}
-					// Now the CodonPosSet name.
-					if (tok.nextToken() != NexusTokenizer.TT_WORD) {
-						throw formatException(tok, "Expecting the name of the CodonPosSet, but got " + tok + " instead");
-					}
-					// Notice how we completely ignore the name here.
+                                        // Okay, expecting a '*', but it's actually optional.
+                                        if(tok.nextToken() != '*')      // If it's not '*' ...
+                                            tok.pushBack();             // ... it must be the CondonPosSet name.
 
-					// Now the '='. Sigh.
-					if (tok.nextToken() != '=') {
-						throw formatException(tok, "Expecting a '=', but got something else altogether.");
-					}
+                                        // Now the CodonPosSet name.
+                                        if(tok.nextToken() != NexusTokenizer.TT_WORD)
+                                            throw formatException(tok, "Expecting the name of the CodonPosSet, but got " + tok + " instead");
+                                        // Notice how we completely ignore the name here.
 
-					// Now apparently, the standard (or it's copy at
-					// https://www.nescent.org/wg/phyloinformatics/index.php?title=NEXUS_Specification&oldid=2978
-					// says there *must* be three. We'll put that code elsewhere,
-					// so it's easier to deal with. This is HOP-learning at work,
-					// peoples.
-					String[] str_positions = new String[4];
-					str_positions[0] = "N";
-					str_positions[1] = "1";
-					str_positions[2] = "2";
-					str_positions[3] = "3";
+                                        // Now the '='. Sigh.
+                                        if(tok.nextToken() != '=')
+                                            throw formatException(tok, "Expecting a '=', but got something else altogether.");
 
-					int token = tok.nextToken();
-					for (int x = 0; x < str_positions.length; x++) {
-						if (token != NexusTokenizer.TT_WORD
-								|| !tok.sval.equalsIgnoreCase(str_positions[x])) //throw formatException(tok, "I expect '" + str_positions[x] + "' to be in the correct order in CODONPOSSET. The standard says so!");
-						// On second thoughts: keep going.
-						{
-							continue;
-						}
+                                        // Now apparently, the standard (or it's copy at
+                                        // https://www.nescent.org/wg/phyloinformatics/index.php?title=NEXUS_Specification&oldid=2978
+                                        // says there *must* be three. We'll put that code elsewhere,
+                                        // so it's easier to deal with. This is HOP-learning at work,
+                                        // peoples.
+                                        String[] str_positions = new String[4];
+                                        str_positions[0] = "N";
+                                        str_positions[1] = "1";
+                                        str_positions[2] = "2";
+                                        str_positions[3] = "3";
 
-						if(codonposset_already_defined) {
-							delay.addWarning("More than one CODONPOSSET command was found in this file. Only the first one will be added.");
-						}
-						addCodonPosSet(x, evt, tok, codonposset_already_defined);
-						codonposset_already_defined = true;
-						token = tok.nextToken();
-					}
+                                        int token = tok.nextToken();
+                                        for(int x = 0; x < str_positions.length; x++) {
+                                            if(
+                                                token != NexusTokenizer.TT_WORD ||
+                                                !tok.sval.equalsIgnoreCase(str_positions[x])
+                                            )
+                                                //throw formatException(tok, "I expect '" + str_positions[x] + "' to be in the correct order in CODONPOSSET. The standard says so!");
+                                                // On second thoughts: keep going.
+                                                continue;
 
-					// Consume the last ';'
-					if (token != ';') {
-						throw formatException(tok, "Wait, the CODONPOSSET didn't end with ';' (it ended with " + (char) token + "/" + tok.sval + "). I wasn't expecting that. Ouch.");
-					}
+                                            addCodonPosSet(x, evt, tok);
+                                            token = tok.nextToken();
+                                        }
 
-					// commands we ignore in CODONS
-				} else if (
+                                        // Consume the last ';'
+                                        if(token != ';')
+                                            throw formatException(tok, "Wait, the CODONPOSSET didn't end with ';' (it ended with " + (char) token + "/" + tok.sval + "). I wasn't expecting that. Ouch.");
+
+				// commands we ignore in CODONS
+				} else if(
 						str.equalsIgnoreCase("GENETICCODE") ||
 						str.equalsIgnoreCase("CODESET")
 				) {
