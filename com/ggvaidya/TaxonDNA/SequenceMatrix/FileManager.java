@@ -20,7 +20,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -1416,10 +1416,19 @@ public class FileManager implements FormatListener {
 		dg.setVisible(true);
 
 		// Can't do anything if no directory was selected.
-		if(dinp.getFile() == null)
-			return;
-
 		if (btn.wasClicked()) {
+			if(dinp.getFile() == null) {
+				MessageBox.messageBox(
+					matrix.getFrame(),
+					"No file selected",
+					"No file was selected for this export. This is probably an " +
+					"internal problem: in particular, SequenceMatrix has problems " +
+					"writing to the root folder on Windows drives. Please choose " +
+					"another folder, or report this bug to us."
+				);
+				return;
+			}
+
 			matrix.getPrefs().setPreference("exportSequencesByColumn_choice", choice_formats.getSelectedIndex());
 			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getParent());
 			matrix.getPrefs().setPreference("exportSequencesByColumn_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
