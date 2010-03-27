@@ -944,7 +944,7 @@ public class TNTFile extends BaseFormatHandler {
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + seq.getSequence());
+				writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + seq.getSequence());
 
 				x++;
 			}

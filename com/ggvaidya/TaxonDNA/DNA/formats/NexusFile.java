@@ -1068,7 +1068,7 @@ public class NexusFile extends BaseFormatHandler {
 
 			String name = seq.getFullName(MAX_TAXON_LENGTH);
 			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
-			name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+			//name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
 			int no = 2;
 			while(names.get(name) != null) {
@@ -1080,7 +1080,7 @@ public class NexusFile extends BaseFormatHandler {
 
 				name = seq.getFullName(MAX_TAXON_LENGTH - digits - 1);
 				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
-				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+				//name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
 
 				no++;
@@ -1164,7 +1164,7 @@ public class NexusFile extends BaseFormatHandler {
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + seq.getLength() + "]");
+				writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + seq.getLength() + "]");
 
 				x++;
 			}
@@ -1211,7 +1211,7 @@ public class NexusFile extends BaseFormatHandler {
 						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error. The reason given was: " + e.getMessage());
 					}
 
-					writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
+					writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
 				}
 
 				writer.println("");	// print a blank line
