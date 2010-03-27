@@ -140,7 +140,7 @@ public class Exporter implements SequencesHandler {
 				}
 			}
 
-			int attempts = 0;
+			int attempts = 1;	// Start with x_1.txt.
 			String offset;
 
 			offset = "";

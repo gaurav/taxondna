@@ -506,7 +506,7 @@ public class FileManager implements FormatListener {
 	the user), otherwise the number of character sets which have been successfully
 	extracted.
 	 */
-	private int incorporateSets(File file, SequenceList sequences, ProgressDialog pd) {
+	private int incorporateSets(File file, SequenceList sequences) {
 		// charset count.
 		int count_charsets = 0;
 
@@ -590,7 +590,16 @@ public class FileManager implements FormatListener {
 				// If the dire comment above is correct, then this next bit is likely quite important.
 				// We sort the fromToPairs so that they are in left-to-right order.
 				Collections.sort(charset_fromtos);
-				
+
+				// You can move this out of this method quite easily
+				// if you really want to.
+				DelayCallback pd = ProgressDialog.create(
+					matrix.getFrame(),
+					"Splitting file by character set",
+					"The character set " + charset_name + " is being split from " +
+					file + ". We apologize for the delay."
+				);
+
 				if(pd != null)
 					pd.begin();
 
@@ -722,7 +731,7 @@ public class FileManager implements FormatListener {
 						
 					}
 				}
-				
+
 				if(pd != null)
 					pd.end();
 
@@ -808,12 +817,7 @@ public class FileManager implements FormatListener {
 						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
 
 				if (mb.showMessageBox() == MessageBox.MB_YES) {
-					int count = incorporateSets(file, sequences, ProgressDialog.create(
-						matrix.getFrame(),
-						"Splitting file by character set",
-						file + " is being split up into its character sets. We apologize for the delay."
-						)
-					);
+					int count = incorporateSets(file, sequences);
 
 					hashmap_codonsets.clear();
 
