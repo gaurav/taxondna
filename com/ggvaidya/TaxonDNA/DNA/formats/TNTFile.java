@@ -529,6 +529,8 @@ public class TNTFile extends BaseFormatHandler {
 	        tok.ordinaryChar(missingChar);
 	}
 
+	int last_group_id_used = 10000;
+
 	/**
 	 * Parses a 'group' command. Group commands are relatively easy to work with; they go like this:
 	 * 	(=\d+ (\(\w+\))* (\d+)*)*
@@ -617,16 +619,22 @@ public class TNTFile extends BaseFormatHandler {
 					sequence_end = -1;
 
 				// okay, the next token ought to be a unique group id
+				String group_id;
 				if(tok.nextToken() != StreamTokenizer.TT_WORD) {
-					throw formatException(tok, "Expecting the group id, but found '" + (char)tok.ttype + "' instead!");
-				} else {
-					if(hash_group_ids.get(tok.sval) != null)
-						throw formatException(tok, "Duplicate group id '" + tok.sval + "' found!");
+					tok.pushBack();
 
-					// okay, set the new group id!
-					hash_group_ids.put(tok.sval, new Integer(0));
-					currentName = "Group #" + tok.sval;
+					// throw formatException(tok, "Expecting the group id, but found '" + (char)tok.ttype + "' instead!");
+					group_id = new Integer(++last_group_id_used).toString();
+				} else {
+					group_id = tok.sval;
 				}
+
+				if(hash_group_ids.get(group_id) != null)
+					throw formatException(tok, "Duplicate group id '" + tok.sval + "' found!");
+
+				// okay, set the new group id!
+				hash_group_ids.put(group_id, new Integer(0));
+				currentName = "Group #" + group_id;
 
 				continue;
 			} 
