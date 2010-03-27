@@ -796,7 +796,7 @@ public class NexusFile extends BaseFormatHandler {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
 
-			System.err.println("CodonPosSet detected at " + pos);
+			System.err.println("CodonPosSet detected at " + pos + (actuallyAdd ? " and will be added." : " which will not be added."));
 
             int token = tok.nextToken();
             if(token != ':')
@@ -938,6 +938,10 @@ public class NexusFile extends BaseFormatHandler {
 						throw formatException(tok, "Expecting a '=', but got something else altogether.");
 					}
 
+					if(codonposset_already_defined) {
+						delay.addWarning("More than one CODONPOSSET command was found in this file. Only the first one will be added.");
+					}
+
 					// Now apparently, the standard (or it's copy at
 					// https://www.nescent.org/wg/phyloinformatics/index.php?title=NEXUS_Specification&oldid=2978
 					// says there *must* be three. We'll put that code elsewhere,
@@ -958,13 +962,11 @@ public class NexusFile extends BaseFormatHandler {
 							continue;
 						}
 
-						if(codonposset_already_defined) {
-							delay.addWarning("More than one CODONPOSSET command was found in this file. Only the first one will be added.");
-						}
-						addCodonPosSet(x, evt, tok, codonposset_already_defined);
-						codonposset_already_defined = true;
+						addCodonPosSet(x, evt, tok, !codonposset_already_defined); // Only add the first one.
 						token = tok.nextToken();
 					}
+
+					codonposset_already_defined = true;
 
 					// Consume the last ';'
 					if (token != ';') {
