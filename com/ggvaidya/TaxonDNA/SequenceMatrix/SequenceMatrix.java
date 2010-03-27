@@ -199,7 +199,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the citation used by SequenceMatrix.
 	 */
 	public String getCitation() {
-		return "No citation as yet.";
+		return "Vaidya, G., D. J. Lohman, R. Meier. SequenceMatrix: concatenation software for the fast assembly of multigene datasets with character set and codon information. Cladistics, submitted.";
 	}
 
 //
