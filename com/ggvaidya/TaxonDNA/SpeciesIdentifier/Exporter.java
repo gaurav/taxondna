@@ -707,7 +707,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			else
 				f = new File(fd.getDirectory() + fd.getFile());
 
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 					seqId.getFrame(),
 					"Please wait, exporting sequences ...",
 					"Sequences are being exported into the file(s) you requested.",

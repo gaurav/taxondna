@@ -31,7 +31,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005, 2006	Gaurav Vaidya
+    Copyright (C) 2005, 2006, 2010	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
