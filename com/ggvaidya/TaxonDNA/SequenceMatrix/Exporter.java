@@ -922,7 +922,7 @@ public class Exporter implements SequencesHandler {
 					if(x <= 31)
 						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
 					else
-						buff_title.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
+						buff_title.append("=(" + taxonsetName + ") " + str + "\n");
 					x++;
 				}
 			}
@@ -1025,16 +1025,18 @@ public class Exporter implements SequencesHandler {
 
 		List cols = tm.getCharsets();
 
-                int sequence_number = 0;
+		// Store the positional information into the first three xgroups.
+		// Then let everything else fall below them.
+		int colid = 0;
                 for(int x = 0; x <= 3; x++) {
                     if(array_strbuff_positions[x] != null) {
-                        buff_tnt_positions.append("=" + (cols.size() + sequence_number) + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+                        buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
                         flag_display_tnt_positions = true;
-                        sequence_number++;
+                        colid++;
                     }
                 }
 
-		int number_of_columns = cols.size() + sequence_number;
+		int number_of_columns = cols.size() + colid;
 		if(number_of_columns >= 32) {
 		    new MessageBox(
 			matrix.getFrame(),
@@ -1045,7 +1047,7 @@ public class Exporter implements SequencesHandler {
 
                 //buff_tnt_positions.append(";\n");
                 //buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
-                int codonsets_go_into_title_at = 32 - sequence_number;
+                int codonsets_go_into_title_at = 32;
 		if(flag_display_tnt_positions) {
                     buff_sets.insert(0, buff_tnt_positions);
 		} else {
@@ -1054,19 +1056,23 @@ public class Exporter implements SequencesHandler {
 		}
 
 		// Now for normal sets
+		boolean now_in_the_title = false;
+
 		i = cols.iterator();	
 		int at = 0;
-		int colid = 0;
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 
-			if(colid == codonsets_go_into_title_at)
-				buff_title.append("@xgroup\n");
 
 			if(colid < codonsets_go_into_title_at)
 				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-			else
-				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
+			else {
+				if(!now_in_the_title)
+					buff_title.append("@xgroup\n");
+				now_in_the_title = true;
+
+				buff_title.append("=(" + fixColumnName(colName) + ")\t");
+			}
 
                         // Actually spell out charsets here.
 			for(int x = 0; x < tm.getColumnLength(colName); x++) {
@@ -1083,7 +1089,8 @@ public class Exporter implements SequencesHandler {
 				buff_title.append("\n");
 			
 			// increment the column id
-			colid++;
+			if(colid < codonsets_go_into_title_at)
+				colid++;
 		}
 		
 		buff_sets.append("\n;\n\n");

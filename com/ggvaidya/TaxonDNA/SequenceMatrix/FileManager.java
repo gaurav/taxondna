@@ -679,9 +679,11 @@ public class FileManager implements FormatListener {
 							return -1;
 						} catch (RuntimeException e) {
 							if(pd != null)
-								new MessageBox(matrix.getFrame(),
-									"Fatal internal error",
-									"A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + ": " + e.getMessage()).go();
+								pd.end();
+
+							new MessageBox(matrix.getFrame(),
+								"Fatal internal error",
+								"A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + ": " + e.getMessage()).go();
 
 							sequences.unlock();
 							hashmap_codonsets.clear();
@@ -729,9 +731,8 @@ public class FileManager implements FormatListener {
 				count_charsets++;
 			}
 
-
-			sequences.unlock();
 			hashmap_codonsets.clear();
+			sequences.unlock();
 		}
 
 		return count_charsets;
