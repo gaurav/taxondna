@@ -1313,7 +1313,7 @@ public class NexusFile extends BaseFormatHandler {
                 }
 
                 buff_nexus_positions.append("\t;\n");
-                buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
+                //buff_nexus_positions.append("\tCODESET * UNTITLED = Universal: all ;\n");
                 buff_nexus_positions.append("END;\n\n");
 
                 if(flag_display_nexus_positions)

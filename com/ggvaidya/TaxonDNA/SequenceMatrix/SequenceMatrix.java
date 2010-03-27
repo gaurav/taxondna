@@ -316,6 +316,16 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			taxonSets.go();
 
 		//
+		// Citation -> Citing SequenceMatrix
+		//
+		if(cmd.equals("Citing SequenceMatrix")) {
+			MessageBox mb = new MessageBox(mainFrame,
+					"Citing SequenceMatrix",
+					"You may cite this program as follows:\n\t" + getCitation()
+			);
+			mb.showMessageBox();
+		}
+
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
@@ -576,6 +586,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		file.addActionListener(this);
 		menubar.add(file);
 
+		// Citation menu
+		Menu	citation	=	new Menu("Citation");
+		citation.add("Citing SequenceMatrix");
+		citation.addActionListener(this);
+		menubar.add(citation);
+
 		// Import menu
 		Menu importMenu = new Menu("Import");
 		importMenu.add(new MenuItem("Add sequences"));
@@ -634,7 +650,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 */
 		view.addActionListener(this);
 		menubar.add(view);
-
 		
 		// Help menu
 		Menu	help		=	new Menu("Help");
