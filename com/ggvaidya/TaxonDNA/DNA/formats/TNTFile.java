@@ -570,6 +570,11 @@ public class TNTFile extends BaseFormatHandler {
 		// not '23' '.' '26')
 		tok.wordChars('.', '.');
 
+		// brackets are word chars in xread. We need them to be non-word chars
+		// here.
+		tok.ordinaryChar('(');
+		tok.ordinaryChar(')');
+
 		// okay, we pop into the loop. we're looking for:
 		// 	';'	-> exit
 		// 	'='	-> start new group (slurp group id)
@@ -619,7 +624,7 @@ public class TNTFile extends BaseFormatHandler {
 								sequence_begin + 1,
 								sequence_end + 1)
 							);
-							System.err.println("New multi-character sequence [2]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							//System.err.println("New multi-character sequence [2]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 						}
 					}
 					
@@ -639,7 +644,7 @@ public class TNTFile extends BaseFormatHandler {
 				}
 
 				if(hash_group_ids.get(group_id) != null)
-					throw formatException(tok, "Duplicate group id '" + tok.sval + "' found!");
+					throw formatException(tok, "Duplicate group id '" + group_id + "' found!");
 
 				// okay, set the new group id!
 				hash_group_ids.put(group_id, new Integer(0));
@@ -724,14 +729,14 @@ public class TNTFile extends BaseFormatHandler {
 									d,
 									d)
 								);
-							    System.err.println("New multicharacter sequence [6]: " + currentName + " from " + d + " to " + d);
+							    //System.err.println("New multicharacter sequence [6]: " + currentName + " from " + d + " to " + d);
 							}
 						    } else {
 								fireEvent(evt.makeCharacterSetFoundEvent(
 										currentName,
 										sequence_begin + 1,
 										sequence_end + 1));
-								System.err.println("New multicharacter sequence [3]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+								//System.err.println("New multicharacter sequence [3]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
 							}
 						}
@@ -757,7 +762,7 @@ public class TNTFile extends BaseFormatHandler {
 									sequence_begin + 1,
 									sequence_end + 1)
 								);
-							System.err.println("New multicharacter sequence [1]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+							//System.err.println("New multicharacter sequence [1]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 						}
 						
 						// then set up the next one
@@ -806,7 +811,7 @@ public class TNTFile extends BaseFormatHandler {
 								currentName,
 								from,
 								to));
-						System.err.println("New multi-character block [4]: " + currentName + " from " + from + " to " + to);
+						//System.err.println("New multi-character block [4]: " + currentName + " from " + from + " to " + to);
 					}
 
 					continue;
@@ -828,7 +833,7 @@ public class TNTFile extends BaseFormatHandler {
 					    d,
 					    d)
 				    );
-				    System.err.println("New multicharacter sequence [7]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+				    //System.err.println("New multicharacter sequence [7]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 				}
 			    } else {
 				    fireEvent(evt.makeCharacterSetFoundEvent(
@@ -836,13 +841,17 @@ public class TNTFile extends BaseFormatHandler {
 					    sequence_begin + 1,
 					    sequence_end + 1)
 				    );
-				    System.err.println("New multicharacter sequence [5]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+				    //System.err.println("New multicharacter sequence [5]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 			    }
 			}
 		}
 
 		// Restore '.' to its usual position as a character. 
 		tok.ordinaryChar('.');
+
+		// Restore brackets to their magical significance in the xread.
+		tok.wordChars('(', ')');
+		tok.wordChars(')', ')');
 	}
 
 	private int atoi(String word, StreamTokenizer tok) throws FormatException {
