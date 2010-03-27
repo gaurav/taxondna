@@ -429,7 +429,7 @@ class SequencesColorRenderer extends DefaultTableCellRenderer
 		// okay, our mission here is ridiculously simple
 		// we make all 'cancelled' cells slightly gray
 //		System.err.println("Wokay: '" + value + "', isSelected = " + isSelected + ", hasFocus = " + hasFocus);
-		if(((String)value).equalsIgnoreCase("(CANCELLED)")) {
+		if(((String)value).equalsIgnoreCase("(EXCISED)")) {
 			comp.setBackground(Color.GRAY);
 		}
 
