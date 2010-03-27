@@ -140,12 +140,23 @@ public class Exporter implements SequencesHandler {
 				}
 			}
 
-			File writeTo = new File(dir, makeFileName(colName) + "." + fh.getExtension());
-			if(writeTo.exists()) {
-				// TODO: We need to do something sensible here!
+			int attempts = 0;
+			String offset;
 
-				throw new IOException("Can't create file '" + writeTo + "' - it already exists!");
-			}
+			offset = "";
+			File writeTo;
+			do {
+				writeTo = new File(dir, makeFileName(colName) + offset + "." + fh.getExtension());
+				if(writeTo.exists()) {
+					writeTo = null;
+					offset = "_" + attempts;
+
+					if(attempts > 100)
+						throw new IOException("Can't create file '" + writeTo + "' - it already exists!");
+					
+					attempts++;
+				}
+			} while(writeTo == null);
 
 			if(writeTo.exists() && !writeTo.canWrite()) {
 				throw new IOException("Couldn't open '" + writeTo + "' for writing. Are you sure you have permissions to write into this directory?");
