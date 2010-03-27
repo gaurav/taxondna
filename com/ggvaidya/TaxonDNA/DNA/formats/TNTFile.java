@@ -327,12 +327,17 @@ public class TNTFile extends BaseFormatHandler {
 							// own defaults, to be tweaked as required.	
 
 		tok.wordChars(gapChar,gapChar);
-	        tok.wordChars(missingChar,missingChar);
+	    tok.wordChars(missingChar,missingChar);
 		tok.wordChars('[', '[');		// for [ACTG] -> N type stuff
-		tok.wordChars(']', ']');	
+		tok.wordChars(']', ']');
 
 		Hashtable hash_names = new Hashtable();			// String name -> Sequence
 		String name = null;
+
+		// '.', '(' and ')' should be read as part of sequence names.
+		tok.wordChars('.', '.');
+		tok.wordChars('(', ')');
+		tok.wordChars(')', ')');
 
 		// okay, 'xread' has started.
 		if(tok.ttype == StreamTokenizer.TT_WORD && tok.sval.equalsIgnoreCase("xread"))
@@ -527,6 +532,10 @@ public class TNTFile extends BaseFormatHandler {
 		// only important in the xread section
 	        tok.ordinaryChar(gapChar);
 	        tok.ordinaryChar(missingChar);
+
+		tok.ordinaryChar('.');
+		tok.ordinaryChar('(');
+		tok.ordinaryChar(')');
 	}
 
 	int last_group_id_used = 10000;
@@ -718,14 +727,13 @@ public class TNTFile extends BaseFormatHandler {
 							    System.err.println("New multicharacter sequence [6]: " + currentName + " from " + d + " to " + d);
 							}
 						    } else {
-							fireEvent(evt.makeCharacterSetFoundEvent(
-									currentName,
-									sequence_begin + 1,
-									sequence_end + 1)
-								);
-							System.err.println("New multicharacter sequence [3]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
+								fireEvent(evt.makeCharacterSetFoundEvent(
+										currentName,
+										sequence_begin + 1,
+										sequence_end + 1));
+								System.err.println("New multicharacter sequence [3]: " + currentName + " from " + sequence_begin + " to " + sequence_end);
 
-						    }
+							}
 						}
 
 						// then set up the next one
