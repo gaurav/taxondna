@@ -217,7 +217,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		SpeciesDetails sd = null;
 		try {
 			sd = set.getSpeciesDetails(
-					new ProgressDialog(
+					ProgressDialog.create(
 						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
@@ -229,7 +229,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		}
 
 		// set up us the ProgressDialog
-		ProgressDialog pd = new ProgressDialog(seqId.getFrame(), "Please wait, doing all species barcodes analysis ...", "The all species barcodes analysis is being performed. Sorry for the wait!", 0);
+		ProgressDialog pd = ProgressDialog.create(seqId.getFrame(), "Please wait, doing all species barcodes analysis ...", "The all species barcodes analysis is being performed. Sorry for the wait!", 0);
 
 		pd.begin();
 

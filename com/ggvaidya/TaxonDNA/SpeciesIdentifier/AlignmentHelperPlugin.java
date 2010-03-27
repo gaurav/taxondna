@@ -149,7 +149,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			filename += fd.getFile();
 			SequenceList other = seqId.loadSequenceListFromFile(fd.getDirectory() + fd.getFile());
 			if(other != null) {
-				ProgressDialog pd = new ProgressDialog(seqId.getFrame(), "Please wait, inserting information ...", "I am inserting species information from '" + filename + "' into the currently loaded file. Please note that DATA IN THE CURRENT FILE WILL BE OVERWRITTEN if you save your file. Only the species information will be used; all sequence data in this file can be deleted without any problems.");
+				ProgressDialog pd = ProgressDialog.create(seqId.getFrame(), "Please wait, inserting information ...", "I am inserting species information from '" + filename + "' into the currently loaded file. Please note that DATA IN THE CURRENT FILE WILL BE OVERWRITTEN if you save your file. Only the species information will be used; all sequence data in this file can be deleted without any problems.");
 				// TODO: magic binding code. dark, evil magic. be warned.
 				set = seqId.lockSequenceSet();
 
@@ -225,7 +225,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		error_occured_in = inputFile.toString();
 		try {
 			set_final = new SequenceList(inputFile, ff,
-					new ProgressDialog(
+					ProgressDialog.create(
 						seqId.getFrame(),
 						"Loading '" + inputFile + "' ...",
 						"Loading the sequences from '" + inputFile + "', please wait."

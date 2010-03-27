@@ -249,7 +249,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 				try {
 					handler.writeFile(new File(filename),
 							sequences,
-							new ProgressDialog(mainFrame,
+							ProgressDialog.create(mainFrame,
 								"Exporting to '" + filename + "' ...",
 								getMessage(Messages.SAVE_FILE_FORMAT, filename, handler.getShortName()), 
 								0)
@@ -384,7 +384,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 				try {
 					SequenceList sequences = SequenceList.readFile(
 						file, 
-						new ProgressDialog(
+						ProgressDialog.create(
 							getFrame(), 
 							"Loading file ...", 
 							"Loading '" + file + "' into a new window. Sorry for the delay!",
@@ -451,7 +451,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 			sequences.setFormatHandler(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
 
 		try {
-			sequences.writeToFile(new ProgressDialog(
+			sequences.writeToFile(ProgressDialog.create(
 						mainFrame,
 						"Please wait, saving file ...",
 						"Saving sequences into '" + sequences.getFile().getAbsolutePath() + "' in " + sequences.getFormatHandler().getShortName() + " format",
@@ -499,7 +499,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 				sequences = new SequenceList(
 						file,	
 						handler,
-						new ProgressDialog(
+						ProgressDialog.create(
 							getFrame(), 
 							"Loading file ...", 
 							"Loading '" + file + "' (of format " + handler.getShortName() + " into memory. Sorry for the delay!",
@@ -509,7 +509,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 			else 
 				sequences = SequenceList.readFile(
 						file, 
-						new ProgressDialog(
+						ProgressDialog.create(
 							getFrame(), 
 							"Loading file ...", 
 							"Loading '" + file + "' into memory. Sorry for the delay!",

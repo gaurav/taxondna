@@ -144,7 +144,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 				query = new Sequence("Query", buff.toString());
 				seqId.lockSequenceList();
 				try {
-					sset.sortAgainst(query, new ProgressDialog(seqId.getFrame(), "Please wait, calculating distances ...", "All the pairwise distances are being calculated. Please wait.", 0));
+					sset.sortAgainst(query, ProgressDialog.create(seqId.getFrame(), "Please wait, calculating distances ...", "All the pairwise distances are being calculated. Please wait.", 0));
 					seqId.unlockSequenceList();
 				} catch(DelayAbortedException e) {
 					seqId.unlockSequenceList();

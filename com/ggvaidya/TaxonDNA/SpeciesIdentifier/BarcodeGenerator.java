@@ -141,7 +141,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 
 //		System.err.println("Number of sequences which should match: " + num_sequences_should_match);
 		
-		ProgressDialog delay = new ProgressDialog(seqId.getFrame(), "Please wait, generating sequence barcodes ...", "Please wait, sequence barcodes are being generated. This may take a while.", 0);
+		ProgressDialog delay = ProgressDialog.create(seqId.getFrame(), "Please wait, generating sequence barcodes ...", "Please wait, sequence barcodes are being generated. This may take a while.", 0);
 
 		delay.begin();
 

@@ -325,7 +325,7 @@ public class FileManager implements FormatListener {
 				list = new SequenceList(
 						file,
 						handler,
-						new ProgressDialog(
+						ProgressDialog.create(
 						matrix.getFrame(),
 						"Loading file ...",
 						"Loading '" + file + "' (of format " + handler.getShortName() + ") into memory. Sorry for the delay!",
@@ -334,7 +334,7 @@ public class FileManager implements FormatListener {
 			} else {
 				list = SequenceList.readFile(
 						file,
-						new ProgressDialog(
+						ProgressDialog.create(
 						matrix.getFrame(),
 						"Loading file ...",
 						"Loading '" + file + "' into memory. Sorry for the delay!",
@@ -506,7 +506,7 @@ public class FileManager implements FormatListener {
 	the user), otherwise the number of character sets which have been successfully
 	extracted.
 	 */
-	private int incorporateSets(File file, SequenceList sequences) {
+	private int incorporateSets(File file, SequenceList sequences, ProgressDialog pd) {
 		// charset count.
 		int count_charsets = 0;
 
@@ -590,6 +590,9 @@ public class FileManager implements FormatListener {
 				// If the dire comment above is correct, then this next bit is likely quite important.
 				// We sort the fromToPairs so that they are in left-to-right order.
 				Collections.sort(charset_fromtos);
+				
+				if(pd != null)
+					pd.begin();
 
 				// Our goal here is to create a single SequenceList which consists of
 				// all the bits mentioned in charsets_fromtos. Note that these could be
@@ -597,8 +600,19 @@ public class FileManager implements FormatListener {
 				// We reassemble them into a sequence, figure out a name for it, and
 				// Our Job Here Is Done.
 				Iterator i_seq = sequences.iterator();
+				int total = sequences.count();
+				int count = 0;
 				while (i_seq.hasNext()) {
 					Sequence seq = (Sequence) i_seq.next();
+
+					try {
+						if(pd != null)
+							pd.delay(count, total);
+					} catch(DelayAbortedException e) {
+						return -1;	// A fatal error already shown to the user.
+					}
+
+					count++;
 
 					// The new, synthesized sequence we're going to generate.
 					Sequence seq_out = new Sequence();
@@ -648,6 +662,9 @@ public class FileManager implements FormatListener {
 							index_assembled_sequence += subseq.getLength();
 
 						} catch (SequenceException e) {
+							if(pd != null)
+								pd.end();
+
 							MessageBox mb_2 = new MessageBox(
 									matrix.getFrame(),
 									"Uh-oh: Error forming a set",
@@ -661,7 +678,8 @@ public class FileManager implements FormatListener {
 
 							return -1;
 						} catch (RuntimeException e) {
-							new MessageBox(matrix.getFrame(),
+							if(pd != null)
+								new MessageBox(matrix.getFrame(),
 									"Fatal internal error",
 									"A fatal internal error occured while processing " + charset_name + ", extending from " + from + " to " + to + ": " + e.getMessage()).go();
 
@@ -702,11 +720,15 @@ public class FileManager implements FormatListener {
 						
 					}
 				}
+				
+				if(pd != null)
+					pd.end();
 
 				// Sequence list is ready for use!
 				addSequenceListToTable(charset_name, sl_charset);
 				count_charsets++;
 			}
+
 
 			sequences.unlock();
 			hashmap_codonsets.clear();
@@ -785,7 +807,12 @@ public class FileManager implements FormatListener {
 						MessageBox.MB_YESNOTOALL | MessageBox.MB_TITLE_IS_UNIQUE);
 
 				if (mb.showMessageBox() == MessageBox.MB_YES) {
-					int count = incorporateSets(file, sequences);
+					int count = incorporateSets(file, sequences, ProgressDialog.create(
+						matrix.getFrame(),
+						"Splitting file by character set",
+						file + " is being split up into its character sets. We apologize for the delay."
+						)
+					);
 
 					hashmap_codonsets.clear();
 
@@ -986,7 +1013,7 @@ public class FileManager implements FormatListener {
 						file,
 						exportAs,
 						interleaveAt,
-						new ProgressDialog(
+						ProgressDialog.create(
 						matrix.getFrame(),
 						"Please wait, exporting sequences ...",
 						"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!"));
@@ -1022,7 +1049,7 @@ public class FileManager implements FormatListener {
 					file,
 					Preferences.PREF_NEXUS_INTERLEAVED,
 					1000,
-					new ProgressDialog(
+					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting sequences ...",
 					"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!"));
@@ -1057,7 +1084,7 @@ public class FileManager implements FormatListener {
 					file,
 					Preferences.PREF_NEXUS_SINGLE_LINE,
 					100,
-					new ProgressDialog(
+					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting sequences ...",
 					"All your sequences are being exported as a single, non-interleaved Nexus file into '" + file + "'. Sorry for the wait!"));
@@ -1092,7 +1119,7 @@ public class FileManager implements FormatListener {
 					file,
 					Preferences.PREF_NEXUS_SINGLE_LINE | Preferences.PREF_NEXUS_NAKED_FORMAT,
 					100,
-					new ProgressDialog(
+					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting sequences ...",
 					"All your sequences are being exported as a naked Nexus file into '" + file + "'. Sorry for the wait!"));
@@ -1132,7 +1159,7 @@ public class FileManager implements FormatListener {
 		}
 		try {
 			matrix.getExporter().exportAsTNT(f,
-					new ProgressDialog(
+					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting dataset ...",
 					"The dataset is being exported. Sorry for the delay."));
@@ -1171,7 +1198,7 @@ public class FileManager implements FormatListener {
 		}
 		try {
 			matrix.getExporter().exportAsSequences(f,
-					new ProgressDialog(
+					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting dataset ...",
 					"The dataset is being exported. Sorry for the delay."));
@@ -1349,7 +1376,7 @@ public class FileManager implements FormatListener {
 						ref_taxon,
 						(FormatHandler) fhs.get(choice_formats.getSelectedIndex()),
 						check_writeNASequences.getState(),
-						new ProgressDialog(
+						ProgressDialog.create(
 						matrix.getFrame(),
 						"Please wait, exporting sequences ...",
 						"All your sequences are being exported as individual files into '" + dinp.getFile() + "'. Please wait!"));
@@ -1439,7 +1466,7 @@ public class FileManager implements FormatListener {
 						dinp.getFile(),
 						(FormatHandler) fhs.get(choice_formats.getSelectedIndex()),
 						check_writeNASequences.getState(),
-						new ProgressDialog(
+						ProgressDialog.create(
 						matrix.getFrame(),
 						"Please wait, exporting sequences ...",
 						"All your sequences are being exported as individual files into '" + dinp.getFile() + "'. Please wait!"));

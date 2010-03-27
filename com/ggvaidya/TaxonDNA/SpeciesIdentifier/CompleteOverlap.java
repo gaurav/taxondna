@@ -323,7 +323,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 
 			// so the segment is [from] to [to] inclusive
 			SequenceList sl = seqId.lockSequenceList();
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 					seqId.getFrame(),
 					"Please wait, writing out overlapping regions ...",
 					"Writing out all overlaping regions between " + from + " and " + to + " now. Please be patient!"
@@ -552,7 +552,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			ambiguous_percent = 0.01;
 		}
 
-		ProgressDialog pd = new ProgressDialog(
+		ProgressDialog pd = ProgressDialog.create(
 				seqId.getFrame(),
 				"Please wait, determining largest complete block ...",
 				"I am attempting to determine the largest complete block right now. Sorry for the inconvenience!");

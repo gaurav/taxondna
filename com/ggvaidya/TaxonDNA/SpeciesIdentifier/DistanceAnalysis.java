@@ -169,7 +169,7 @@ public class DistanceAnalysis extends Panel implements UIExtension, ActionListen
 
 		// First off, we need SSLs. Lots of SSLs.
 		// That means PairwiseDistances
-		ProgressDialog delay = new ProgressDialog(
+		ProgressDialog delay = ProgressDialog.create(
 				seqId.getFrame(),
 				"Please wait, calculating distances ...",
 				"Distances for this dataset are being calculated. Sorry for the delay!");

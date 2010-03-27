@@ -139,7 +139,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				return;
 				
 			try {
-				SpeciesDetails sd = sl.getSpeciesDetails(new ProgressDialog(
+				SpeciesDetails sd = sl.getSpeciesDetails(ProgressDialog.create(
 						seqId.getFrame(),
 						"Please wait, determining sequences with conspecifics ...",
 						"Please wait, I'm looking through the sequences to determine which ones have conspecific sequences. Give me a second!"));
@@ -415,7 +415,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 		try {
 			species = list.getSpeciesDetails(
-					new ProgressDialog(seqId.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
+					ProgressDialog.create(seqId.getFrame(), "Please wait, calculating species information ...", "Species summary information is being calculated. Sorry for the wait.", 0)
 				);
 		} catch(DelayAbortedException e) {
 			seqId.unlockSequenceList();
@@ -552,7 +552,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			try {
 				Checkbox ch_selected = check_group.getSelectedCheckbox();
 				if(ch_selected == ch_species) {
-					exportSpeciesRandomly(dir, species, rands, new ProgressDialog(
+					exportSpeciesRandomly(dir, species, rands, ProgressDialog.create(
 							seqId.getFrame(),
 							"Please wait, exporting species ...",
 							"Now exporting species to " + dir + ", sorry for the delay!"));
@@ -562,7 +562,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 				}
 				else {
-					exportSpecimensRandomly(dir, specimens, rands, new ProgressDialog(
+					exportSpecimensRandomly(dir, specimens, rands, ProgressDialog.create(
 							seqId.getFrame(),
 							"Please wait, exporting specimens ...",
 							"Now exporting specimens to " + dir + ", sorry for the delay!"));

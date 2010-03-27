@@ -859,7 +859,7 @@ public class Exporter implements SequencesHandler {
 
 					NexusFile nf = new NexusFile();
 					nf.writeNexusFile(f, list, interleaveAt, buff_sets.toString(),
-									new ProgressDialog(
+									ProgressDialog.create(
 											matrix.getFrame(),
 											"Please wait, writing file ...",
 											"Writing out the compiled sequences. Sorry for not warning you about this before. Almost done!"));
