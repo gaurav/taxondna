@@ -157,7 +157,7 @@ public class SequenceList implements List, Testable {
 			
 		} catch(SequenceException e) {
 			throw new SequenceListException(
-					"Atleast one of the sequences in the file (with the name '" + 
+					"At least one of the sequences in the file (with the name '" +
 					e.getMalformedSequenceName() + "') has a problem with it. " +
 					"Please check the sequence and ensure that it does not contain " +
 					"illegal characters (such as '_').\nThe error reported is: " + e, e);
