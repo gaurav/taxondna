@@ -46,7 +46,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 public class TNTFile extends BaseFormatHandler {
-	private static final int MAX_TAXON_LENGTH =	31;	// TNT truncates at 32 characters, but it gives a warning at 32
+	public static final int MAX_TAXON_LENGTH =	31;	// TNT truncates at 32 characters, but it gives a warning at 32
 								// I don't like warnings
 	private static final int INTERLEAVE_AT = 80;		// default interleave length
 
@@ -1044,6 +1044,105 @@ public class TNTFile extends BaseFormatHandler {
 
 		writer.println(";");	// the semicolon ends the 'xread' command.
 
+		// Put in the CODONPOSSETs, off by themselves.
+		// This may conflict with otherBlocks, but ... hopefully, not.
+		// Time to do character sets!
+		
+                // Here's the thing: each sequence has its own positional
+                // information, which (we assume) is consistent within a
+                // column (which is a pretty safe assumption from now,
+                // as we only accept positional data from Nexus and TNT,
+                // neither of which support per-sequence positional data).
+
+                // Unfortunately, we'd like to produce only a single set
+                // of positional data for the entire dataset. To simplify
+                // things, we create three strings, gradually build them
+                // up, and then combine them at the end.
+
+                // Note (this being an important point): we only use the
+                // FIRST taxon in the table to determine CODONPOSSET
+                // information to be emitted.
+
+                // This is very likely indeed to work!
+                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+                array_strbuff_positions[0] = new StringBuffer();
+                array_strbuff_positions[1] = new StringBuffer();
+                array_strbuff_positions[2] = new StringBuffer();
+                array_strbuff_positions[3] = new StringBuffer();
+
+				Iterator iter = set.iterator();
+				while(iter.hasNext()) {
+
+                        // get the first sequence
+                        Sequence seq = (Sequence) iter.next();
+
+						// Note: if you change this x = 0, you'll get 'N' as
+						// well. Since we don't want this right now, we're
+						// turning it off. Turn it on whenever.
+                        for(int x = 1; x <= 3; x++) {
+                            Vector v = (Vector) seq.getProperty("position_" + x);
+
+                            if(v != null) {
+                                Iterator i_v = v.iterator();
+                                while(i_v.hasNext()) {
+                                    FromToPair ftp = (FromToPair) i_v.next();
+                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+
+                                    int increment_by = 1;
+                                    if(x == 1 || x == 2 || x == 3)
+                                        increment_by = 3;
+
+                                    // Note those -1s! They're to change our 1-index based calculations
+                                    // into 0-based TNT coordinates.
+
+                                    if(ftp.from == ftp.to) {
+                                        array_strbuff_positions[x].append(
+                                             (ftp.from - 1) + " "
+                                        );
+                                    } else {
+
+                                        // Iterate, iterate.
+                                        for(int y = (ftp.from); y <= (ftp.to); y += increment_by) {
+                                            array_strbuff_positions[x].append((y-1) + " ");
+                                        }
+                                    }
+                                }
+                            }
+                    }
+
+                }
+
+                // Let's see if we can't calculate the nexus positions.
+                StringBuffer buff_tnt_positions = new StringBuffer();
+
+                // buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
+                buff_tnt_positions.append("xgroup\n");
+
+                // Change zero-length strings to null.
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x].length() == 0)
+                        array_strbuff_positions[x] = null;
+                }
+
+                String position_names[] = { "N", "1", "2", "3" };
+
+                boolean flag_display_tnt_positions = false;
+
+
+		// Store the positional information into the first three xgroups.
+		// Then let everything else fall below them.
+		int colid = 0;
+                for(int x = 0; x <= 3; x++) {
+                    if(array_strbuff_positions[x] != null) {
+                        buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+                        flag_display_tnt_positions = true;
+                        colid++;
+                    }
+                }
+
+		if(flag_display_tnt_positions)
+            writer.println(buff_tnt_positions.toString() + "\n;\n\n");
+
 		// put in any other blocks
 		if(otherBlocks != null)
 			writer.println(otherBlocks);
@@ -1117,163 +1216,5 @@ public class TNTFile extends BaseFormatHandler {
 		return columnName;
 	}
 
-	/**
-	 * Export a SequenceGrid as a TNT file. 
-	 */
-	public void writeFile(File file, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
-		writeTNTFile(file, grid, delay);
-	}
-	
-	/**
-	 * Export a SequenceGrid as a TNT file.
-	 */
-	public void writeTNTFile(File f, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException {
-		// We want to put some stuff into the title
-		StringBuffer buff_title = new StringBuffer();
-
-		/*
-		// we begin by obtaining the Taxonsets (if any).
-		Taxonsets tx = matrix.getTaxonsets(); 
-		StringBuffer buff_taxonsets = new StringBuffer();
-		if(tx.getTaxonsetList() != null) {
-			if(tx.getTaxonsetList().size() >= 32) {
-				new MessageBox(
-					matrix.getFrame(),
-					"Too many taxonsets!",
-					"According to the manual, TNT can only handle 32 taxonsets. You have " + tx.getTaxonsetList().size() + " taxonsets. I will write the remaining taxonsets into the file title, from where you can copy it into the correct position in the file as needed.").go();
-			}
-
-			buff_taxonsets.append("agroup\n");
-
-			Vector v = tx.getTaxonsetList();
-			Iterator i = v.iterator();
-			int x = 0;
-			while(i.hasNext()) {
-				String taxonsetName = (String) i.next();
-				// TNT has offsets from '0'
-				String str = getTaxonset(taxonsetName, 0);
-				if(str != null) 
-				{
-					if(x == 31)
-						buff_title.append("@agroup\n");
-
-					if(x <= 31)
-						buff_taxonsets.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
-					else
-						buff_title.append("=" + x + " (" + taxonsetName + ") " + str + "\n");
-					x++;
-				}
-			}
-
-			buff_taxonsets.append(";\n\n\n");
-
-			if(x >= 32)
-				buff_title.append(";\n\n");
-		}
-		*/
-		
-		// set up the 'sets' buffer
-		Set cols = grid.getColumns();
-		if(cols.size() >= 32) {
-			delay.addWarning("TOO MANY CHARACTER SETS: According to the manual, TNT can only handle 32 character sets. You have " + cols.size() + " character sets. I will write out the remaining character sets into the file title, from where you can copy it into the correct position in the file as needed.");
-		}
-		
-		StringBuffer buff_sets = new StringBuffer();
-		buff_sets.append("xgroup\n");
-
-		Iterator i = cols.iterator();	
-		int at = 0;
-		int colid = 0;
-		while(i.hasNext()) {
-			String colName = (String) i.next();
-
-			if(colid == 32)
-				buff_title.append("@xgroup\n");
-
-			if(colid <= 31)
-				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-			else
-				buff_title.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-
-			for(int x = 0; x < grid.getColumnLength(colName); x++) {
-				if(colid <= 31)
-					buff_sets.append(at + " ");
-				else
-					buff_title.append(at + " ");
-				at++;
-			}
-
-			if(colid <= 31)
-				buff_sets.append("\n");
-			else
-				buff_title.append("\n");
-			
-			// increment the column id
-			colid++;
-		}
-		
-		buff_sets.append("\n;\n\n");
-
-		if(colid > 31)
-			buff_title.append("\n;");
-
-		// go!
-		if(delay != null)
-			delay.begin();		
-
-		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(f)));
-
-		writer.println("nstates dna;");
-		writer.println("xread\n'Exported by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + ".");
-		if(buff_title.length() > 0) {
-			writer.println("Additional taxonsets and character sets will be placed below this line.");
-			writer.println(buff_title.toString());
-			writer.println("Additional taxonsets and character sets end here.");
-		}
-		writer.println("'");
-		writer.println(grid.getCompleteSequenceLength() + " " + grid.getSequencesCount());
-
-		Iterator i_rows = grid.getSequences().iterator();
-		int count_rows = 0;
-		while(i_rows.hasNext()) {
-			if(delay != null)
-				delay.delay(count_rows, grid.getSequencesCount());
-
-			count_rows++;
-
-			String seqName = (String) i_rows.next();
-			Sequence seq_interleaved = null;
-			int length = 0;
-
-			writer.print(getTNTName(seqName, MAX_TAXON_LENGTH) + " ");
-
-			Iterator i_cols = cols.iterator();
-			while(i_cols.hasNext()) {
-				String colName = (String) i_cols.next();
-				Sequence seq = grid.getSequence(colName, seqName); 
-				
-				if(seq == null)
-					seq = Sequence.makeEmptySequence(colName, grid.getColumnLength(colName));
-
-				length += seq.getLength();
-
-				writer.print(seq.getSequence());
-			}
-
-			writer.println();
-		}
-
-		writer.println(";\n");
-		
-		writer.println(buff_sets);
-		//writer.println(buff_taxonsets);
-
-		writer.flush();
-		writer.close();
-
-		// shut down delay 
-		if(delay != null)
-			delay.end();
-	}	
 }
 

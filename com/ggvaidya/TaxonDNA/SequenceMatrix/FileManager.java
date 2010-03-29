@@ -1462,7 +1462,7 @@ public class FileManager implements FormatListener {
 			}
 
 			matrix.getPrefs().setPreference("exportSequencesByColumn_choice", choice_formats.getSelectedIndex());
-			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().getParent());
+			matrix.getPrefs().setPreference("exportSequencesByColumn_fileName", dinp.getFile().toString());
 			matrix.getPrefs().setPreference("exportSequencesByColumn_writeNASequences", check_writeNASequences.getState() ? 1 : 0);
 
 			// phew ... go!

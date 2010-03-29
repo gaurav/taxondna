@@ -782,7 +782,7 @@ public class Exporter implements SequencesHandler {
                                                 seq = Sequence.makeEmptySequence(seqName, colLength);
 
 
-                                        writer.println(getNexusName(seqName) + " " + seq.getSequence() + " [" + colLength + " bp]"); 
+                                        writer.println("'" + getNexusName(seqName) + "' " + seq.getSequence() + " [" + colLength + " bp]");
                                 }
                                 
                                 writer.println("[end of " + fixColumnName(colName) + "]");
@@ -809,7 +809,7 @@ public class Exporter implements SequencesHandler {
 
 
                                 if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
-                                        writer.print(getNexusName(seqName) + " ");
+                                        writer.print("'" + getNexusName(seqName) + "' ");
                                 else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
                                         seq_interleaved = new Sequence();
 
@@ -838,7 +838,6 @@ public class Exporter implements SequencesHandler {
 
                                 if(how == Preferences.PREF_NEXUS_INTERLEAVED)
                                         seq_interleaved.changeName(seqName);
-
 
                                 if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
                                         writer.println(" [" + length + " bp]");
@@ -886,7 +885,7 @@ public class Exporter implements SequencesHandler {
 		// 1.	we don't particularly care about taxon name lengths (atleast, not right now)
 		// 2.	
 		//
-		return x.replaceAll("'", "''").replace(' ', '_');
+		return x.replaceAll("'", "''");
 	}
 
 	/**
@@ -1143,7 +1142,7 @@ public class Exporter implements SequencesHandler {
 			Sequence seq_interleaved = null;
 			int length = 0;
 
-			writer.print(getNexusName(seqName) + " ");
+			writer.print(getTNTName(seqName) + " ");
 
 			Iterator i_cols = cols.iterator();
 			while(i_cols.hasNext()) {
@@ -1174,12 +1173,34 @@ public class Exporter implements SequencesHandler {
 			delay.end();
 	}	
 
-	private String getTNTName(String x) {
-		// we don't worry about duplicates because:
-		// 1.	we don't particularly care about taxon name lengths (atleast, not right now)
-		// 2.	
-		//
-		return x.replace(' ', '_');
+	private String getTNTName(String name) {
+		int len = TNTFile.MAX_TAXON_LENGTH;
+
+// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
+		char first = name.charAt(0);
+		if(
+		 	(first >= 'A' && first <= 'Z') ||
+			(first >= 'a' && first <= 'z') ||
+			(first >= '0' && first <= '9') ||
+			(first == '_')
+		) {
+			// it's all good!
+		} else {
+			name = "_" + name;
+		}
+
+		// Rule #2: strange characters we'll turn into '_'
+		name = name.replaceAll("[^a-zA-Z0-9\\-\\+\\.\\_\\*\\:\\(\\)\\|\\\\\\/]", "_");
+
+		// Rule #3: spaces we'll turn into '_'
+		name = name.replace(' ', '_');
+
+		// Rule #4: truncate to 'len'
+		int size = name.length();
+		if(size <= len)
+			return name;
+		else
+			return name.substring(0, len);
 	}
 
 	private String fixColumnName(String columnName) {

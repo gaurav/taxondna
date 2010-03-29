@@ -813,7 +813,7 @@ class ToolbarManager implements ActionListener {
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
-		btn = new JButton("Cancel entire taxon");
+		btn = new JButton("Excise entire taxon");
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
@@ -918,7 +918,7 @@ class ToolbarManager implements ActionListener {
 			// TODO: Use table.changeSelection() to move to the next row
 		}
 
-		if(cmd.equals("Cancel entire taxon")) {
+		if(cmd.equals("Excise entire taxon")) {
 			if(currentSeqName != null)
 				tm.cancelRow(currentSeqName);
 		}

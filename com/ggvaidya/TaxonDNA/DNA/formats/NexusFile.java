@@ -106,7 +106,7 @@ public class NexusFile extends BaseFormatHandler {
 	 * You ought to put in something about what versions of the software you support.
 	 * But not too long: think about whether you could display it in a list.
 	 */
-	public  String getFullName() {		return "Partial NEXUS support"; 	}
+	public  String getFullName() {		return "NEXUS format"; 	}
 
 	/**
 	 * Read this file into the specified SequenceList. This will read all the files straight into
@@ -791,7 +791,7 @@ public class NexusFile extends BaseFormatHandler {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
 
-			System.err.println("CodonPosSet detected at " + pos);
+			//System.err.println("CodonPosSet detected at " + pos);
 
             int token = tok.nextToken();
             if(token != ':')
@@ -1163,8 +1163,8 @@ public class NexusFile extends BaseFormatHandler {
 
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
-
-				writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + seq.getSequence() + " [" + seq.getLength() + "]");
+				String display_name = pad_string("'" + name + "'", MAX_TAXON_LENGTH);
+				writer.println(display_name + " " + seq.getSequence() + " [" + seq.getLength() + "]");
 
 				x++;
 			}
@@ -1211,7 +1211,9 @@ public class NexusFile extends BaseFormatHandler {
 						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error. The reason given was: " + e.getMessage());
 					}
 
-					writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
+					String display_name = pad_string("'" + name + "'", MAX_TAXON_LENGTH);
+					//System.err.println("'" + name + "' became <" + display_name + ">");
+					writer.println(display_name + " " + subseq.getSequence() + " [" + subseq.getLength() + ":" + (x + 1) + "-" + (until) + "]");
 				}
 
 				writer.println("");	// print a blank line
@@ -1334,6 +1336,10 @@ public class NexusFile extends BaseFormatHandler {
 
 	/* Pad a string to a size */
 	private String pad_string(String x, int size) {
+		// Err, no.
+		return x;
+
+		/*
 		StringBuffer buff = new StringBuffer();
 
 		if(x.length() < size) {
@@ -1346,6 +1352,7 @@ public class NexusFile extends BaseFormatHandler {
 			return x.substring(x.length() - 3) + "___";
 
 		return buff.toString();
+		 */
 	}
 
 	/**
