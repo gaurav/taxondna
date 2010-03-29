@@ -414,6 +414,10 @@ public class TNTFile extends BaseFormatHandler {
 		
 		// okay, all done ... sigh.
 		// now we can fingally go into the big loop
+
+		// In the big loop, '.'s are part of th string.
+		tok.wordChars('.', '.');
+
 		int lineno = tok.lineno();
 
 		while(true) {
@@ -505,6 +509,9 @@ public class TNTFile extends BaseFormatHandler {
 				throw formatException(tok, "I found '" + (char)type + "' rather unexpectedly in the xread block! Are you sure it's supposed to be here?");
 			}
 		}
+
+		// Okay, done with this. Back to ordinaryChar with you!
+		tok.ordinaryChar('.');
 
 		// now, let's 'unwind' the interleaver and 
 		// check that the numbers we get match up with
