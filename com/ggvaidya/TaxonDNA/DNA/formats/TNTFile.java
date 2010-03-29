@@ -922,7 +922,6 @@ public class TNTFile extends BaseFormatHandler {
 			Sequence seq = (Sequence) i.next();
 
 			String name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH), MAX_TAXON_LENGTH);
-			name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
 			int no = 2;
@@ -934,7 +933,6 @@ public class TNTFile extends BaseFormatHandler {
 				if(no >= 1000 && no < 10000)	digits = 4;
 
 				name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH - digits - 1), MAX_TAXON_LENGTH - digits - 1);
-				name = name.replaceAll("\'", "\'\'");	// ' is reserved, so we 'hide' them
 				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
 				name += "_" + no;
 

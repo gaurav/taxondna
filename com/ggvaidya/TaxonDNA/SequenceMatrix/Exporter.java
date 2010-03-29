@@ -627,7 +627,10 @@ public class Exporter implements SequencesHandler {
 
                         String str_end = ",\n";
 
-                        for(int x = 0; x <= 3; x++) {
+						// NOTE: If you start with x = 0, you'll get the 'N'
+						// as well. But we don't want them. Turn them on, any
+						// time.
+                        for(int x = 1; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
 							if(v == null)
@@ -982,7 +985,10 @@ public class Exporter implements SequencesHandler {
                         // get the first sequence
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
-                        for(int x = 0; x <= 3; x++) {
+						// Note: if you change this x = 0, you'll get 'N' as
+						// well. Since we don't want this right now, we're
+						// turning it off. Turn it on whenever.
+                        for(int x = 1; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {
@@ -1173,7 +1179,7 @@ public class Exporter implements SequencesHandler {
 		// 1.	we don't particularly care about taxon name lengths (atleast, not right now)
 		// 2.	
 		//
-		return x.replaceAll("'", "''").replace(' ', '_');
+		return x.replace(' ', '_');
 	}
 
 	private String fixColumnName(String columnName) {
