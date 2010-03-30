@@ -147,15 +147,15 @@
                 that's a bad idea.
         -->
         <target name="run_spid" depends="SpeciesIdentifier"> 
-            <java jar="Release/SpeciesIdentifier.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/SpeciesIdentifier.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
         <target name="run_seqmat" depends="SequenceMatrix"> 
-            <java jar="Release/SequenceMatrix.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/SequenceMatrix.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
         <target name="run_gbx" depends="GenBankExplorer"> 
-            <java jar="Release/GenBankExplorer.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
 
