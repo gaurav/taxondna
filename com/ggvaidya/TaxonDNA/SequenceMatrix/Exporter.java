@@ -1195,12 +1195,9 @@ public class Exporter implements SequencesHandler {
 		// Rule #3: spaces we'll turn into '_'
 		name = name.replace(' ', '_');
 
-		// Rule #4: truncate to 'len'
-		int size = name.length();
-		if(size <= len)
-			return name;
-		else
-			return name.substring(0, len);
+		// Done! We would ordinarily truncate here, but
+		// that would be complicated.
+		return name;
 	}
 
 	private String fixColumnName(String columnName) {

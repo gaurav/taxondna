@@ -1255,7 +1255,7 @@ public class NexusFile extends BaseFormatHandler {
                 Sequence seq = (Sequence) set.get(0);
                 String str_end = "";
 
-                for(int x = 0; x <= 3; x++) {
+                for(int x = 1; x <= 3; x++) {
                     Vector v = (Vector) seq.getProperty("position_" + x);
 
                     if(v != null) {
@@ -1482,7 +1482,7 @@ public class NexusFile extends BaseFormatHandler {
                         // get the first sequence
                         Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
-                        for(int x = 0; x <= 3; x++) {
+                        for(int x = 1; x <= 3; x++) {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {

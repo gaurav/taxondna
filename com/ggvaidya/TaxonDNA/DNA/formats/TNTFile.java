@@ -950,6 +950,8 @@ public class TNTFile extends BaseFormatHandler {
 					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
+
+			System.err.println("In TNTFile export: replaced '" + seq.getFullName() + "' with '" + name + "'");
 			
 			names.put(name, seq);
 			vec_names.add(name);
@@ -974,7 +976,7 @@ public class TNTFile extends BaseFormatHandler {
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(pad_string("'" + name + "'", MAX_TAXON_LENGTH) + " " + seq.getSequence());
+				writer.println(name + " " + seq.getSequence());
 
 				x++;
 			}
@@ -1035,7 +1037,7 @@ public class TNTFile extends BaseFormatHandler {
 					)
 						delay.addWarning("Sequence '" + subseq.getFullName() + "' contains the letter 'Z'. This letter might not work in TNT.");
 
-					writer.println(pad_string(name, MAX_TAXON_LENGTH) + " " + subseq.getSequence());
+					writer.println(name + " " + subseq.getSequence());
 				}
 
 				//writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
@@ -1132,7 +1134,7 @@ public class TNTFile extends BaseFormatHandler {
 		// Store the positional information into the first three xgroups.
 		// Then let everything else fall below them.
 		int colid = 0;
-                for(int x = 0; x <= 3; x++) {
+                for(int x = 1; x <= 3; x++) {
                     if(array_strbuff_positions[x] != null) {
                         buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
                         flag_display_tnt_positions = true;
@@ -1154,22 +1156,6 @@ public class TNTFile extends BaseFormatHandler {
 			delay.end();
 
 		set.unlock();
-	}
-
-	/* Pad a string to a size */
-	private String pad_string(String x, int size) {
-		StringBuffer buff = new StringBuffer();
-		
-		if(x.length() < size) {
-			buff.append(x);
-			for(int c = 0; c < (size - x.length()); c++)
-				buff.append(' ');
-		} else if(x.length() == size)
-			return x;
-		else	// length is LESS than size, so we actually need to 'play tricks'
-			return x.substring(x.length() - 3) + "___";
-
-		return buff.toString();
 	}
 
 	/**
