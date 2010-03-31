@@ -147,7 +147,8 @@ public class PhylipFile extends BaseFormatHandler {
 					// TODO: This is a bad idea when we're generating custom
 					// sets or whatever. In SequenceMatrix, though, this is
 					// perfectly fine.
-			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
+			name = name.replaceAll("[^\\w]", "_");
+			//name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
 			/*
 			int no = 2;
@@ -196,7 +197,7 @@ public class PhylipFile extends BaseFormatHandler {
 				String name = (String) i_names.next();
 				Sequence seq = (Sequence) names.get(name);
 
-				writer.println(name + "\n" + seq.getSequence());
+				writer.println(name + " " + seq.getSequence());
 
 				x++;
 			}

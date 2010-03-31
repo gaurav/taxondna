@@ -260,7 +260,7 @@ public class NexusFile extends BaseFormatHandler {
 
 					else {
 						if(!inStrangeBlock)
-							throw formatException(tok, "Strange word '" + str + "' found! Is it one of yours?");
+							throw formatException(tok, "Unknown command '" + str + "' found.");
 					}
 				} else {
 					// strange symbol (or ';') found
