@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07, 2009 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009, 2010 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

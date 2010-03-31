@@ -143,6 +143,9 @@ public class NexusFile extends BaseFormatHandler {
 
 		appendTo.lock();
 
+		// Reset the codonposset-already-defined flag.
+		codonposset_already_defined = false;
+
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(fileFrom));
 
@@ -787,7 +790,7 @@ public class NexusFile extends BaseFormatHandler {
          *
          * Note that the first argument is 0 for 'N', and 1, 2, 3 for the three positions respectively.
          */
-        private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok) throws FormatException, IOException {
+        private void addCodonPosSet(int pos, FormatHandlerEvent evt, NexusTokenizer tok, boolean actuallyAdd) throws FormatException, IOException {
             // I can't remember if 1.5 does autoboxing, so I'll manualbox.
             String position =   new Integer(pos).toString();
 
@@ -826,7 +829,8 @@ public class NexusFile extends BaseFormatHandler {
 
 					// Catch single values (i.e. "3 6 9")
 					if(token != '-') {
-						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
+						if(actuallyAdd)
+							fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, from));
 						tok.pushBack();
 						continue;
 					}
@@ -836,7 +840,8 @@ public class NexusFile extends BaseFormatHandler {
 					to = Integer.parseInt(tok.sval);
 
 					if(tok.nextToken() != '\\') {
-						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+						if(actuallyAdd)
+							fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
 						tok.pushBack();
 						continue;
@@ -846,13 +851,16 @@ public class NexusFile extends BaseFormatHandler {
 						throw formatException(tok, "I'm sorry, I can deal with CodonPosSets ending with /" + tok.sval + " - I only support 3!");
 					}
 
-					fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
+					if(actuallyAdd)
+						fireEvent(evt.makeCharacterSetFoundEvent(":" + pos, from, to));
 
                 } catch(NumberFormatException e) {
                     throw formatException(tok, "One of the values in CodonPosSet position " + position + " wasn't a number: " + e);
                 }
             }
         }
+
+		private boolean codonposset_already_defined = false;
 
 	/**
 	 * Processes the 'CODONS' block.
