@@ -128,18 +128,29 @@
 
         <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
         <target name = "SequenceMatrix.app"     depends = "build">
-            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/Sequence Matrix.app/Contents/Resources/Java" />
+            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/MacOSX/Sequence Matrix.app/Contents/Resources/Java" />
         </target>
 
 	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
 	<target name = "release"    depends = "build, SequenceMatrix.app">
+        <copy file="Release/SequenceMatrix.jar" todir="Release/Windows" />
+
 		<zip 
-			destfile =      "../SequenceMatrix-${taxondna.version}.zip"
-			basedir =       "Release/"
-			comment =       "(c) Gaurav Vaidya, 2007, 2009"
+			destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
+			basedir =       "Release/Windows/"
+			comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
 			update =        "false"
 		/>
-                <move file = "../SequenceMatrix-${taxondna.version}.zip" todir = "Releases" />
+                <move file = "../SequenceMatrix-Windows-${taxondna.version}.zip" todir = "Releases" />
+        <mkdir dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}" />
+        <copy overwrite="yes" todir="Releases/SequenceMatrix-MacOSX-${taxondna.version}">
+            <fileset dir="Release/MacOSX" />
+        </copy>
+        <chmod
+            file="Releases/SequenceMatrix-MacOSX-${taxondna.version}/Sequence Matrix.app/Contents/MacOS/JavaApplicationStub"
+            perm="755"
+        />
+        <!-- It's now up to the user to compress this -->
 	</target>
 
         <!--

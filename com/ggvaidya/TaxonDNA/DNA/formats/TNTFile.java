@@ -62,7 +62,7 @@ public class TNTFile extends BaseFormatHandler {
 	/**
 	 * Returns a valid OTU (Operation Taxonomic Unit); that is, a taxon name.
 	 */
-	public String getTNTName(String name, int len) {
+	public String getTNTName(String name) {
 		// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
 		char first = name.charAt(0);
 		if(
@@ -83,11 +83,7 @@ public class TNTFile extends BaseFormatHandler {
 		name = name.replace(' ', '_');
 		
 		// Rule #4: truncate to 'len'
-		int size = name.length();
-		if(size <= len)
-			return name;
-		else
-			return name.substring(0, len);
+		return name;
 	}
 
 	/**
@@ -928,9 +924,14 @@ public class TNTFile extends BaseFormatHandler {
 		while(i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
 
-			String name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH), MAX_TAXON_LENGTH);
+			String name = getTNTName(seq.getFullName());
+					//seq.getFullName(MAX_TAXON_LENGTH), MAX_TAXON_LENGTH);
+					// TODO: This is a bad idea when we're generating custom
+					// sets or whatever. In SequenceMatrix, though, this is
+					// perfectly fine.
 			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
+			/*
 			int no = 2;
 			while(names.get(name) != null) {
 				int digits = 5;
@@ -950,8 +951,9 @@ public class TNTFile extends BaseFormatHandler {
 					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
+			*/
 
-			System.err.println("In TNTFile export: replaced '" + seq.getFullName() + "' with '" + name + "'");
+			//System.err.println("In TNTFile export: replaced '" + seq.getFullName() + "' with '" + name + "'");
 			
 			names.put(name, seq);
 			vec_names.add(name);
