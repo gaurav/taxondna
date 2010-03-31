@@ -147,10 +147,9 @@ public class PhylipFile extends BaseFormatHandler {
 					// TODO: This is a bad idea when we're generating custom
 					// sets or whatever. In SequenceMatrix, though, this is
 					// perfectly fine.
-			name = name.replaceAll("[^\\w]", "_");
+			name = name.replaceAll("[^\\w]+", "_");
 			//name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
 
-			/*
 			int no = 2;
 			while(names.get(name) != null) {
 				int digits = 5;
@@ -159,18 +158,17 @@ public class PhylipFile extends BaseFormatHandler {
 				if(no >= 100 && no < 1000)	digits = 3;
 				if(no >= 1000 && no < 10000)	digits = 4;
 
-				name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH - digits - 1), MAX_TAXON_LENGTH - digits - 1);
-				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
+				name = seq.getFullName();
+				name = name.replaceAll("[^\\w]+", "_");		// we do NOT support '. Pfft.
 				name += "_" + no;
 
 				no++;
 
 				if(no == 10000) {
 					// this has gone on long enough!
-					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
+					throw new IOException("There are 9999 sequences named '" + seq.getFullName() + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
 				}
 			}
-			*/
 
 			//System.err.println("In TNTFile export: replaced '" + seq.getFullName() + "' with '" + name + "'");
 
