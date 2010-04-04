@@ -683,19 +683,19 @@ public class TNTFile extends BaseFormatHandler {
 				// resplitting the entire file.
 				String originalName = currentName;
 
-				if (currentName.matches("^.*_posN$")) {
+				if (currentName.matches("^.*_posN$") || currentName.equals("posN")) {
 					currentName = ":0";
 				}
 
-				if (currentName.matches("^.*_pos1$")) {
+				if (currentName.matches("^.*_pos1$") || currentName.equals("pos1")) {
 					currentName = ":1";
 				}
 
-				if (currentName.matches("^.*_pos2$")) {
+				if (currentName.matches("^.*_pos2$") || currentName.equals("pos2")) {
 					currentName = ":2";
 				}
 
-				if (currentName.matches("^.*_pos3$")) {
+				if (currentName.matches("^.*_pos3$") || currentName.equals("pos3")) {
 					currentName = ":3";
 				}
 
