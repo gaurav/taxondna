@@ -29,7 +29,7 @@
 		<key>MainClass</key>
 		<string>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</string>
 		<key>VMOptions</key>
-		<string>-Xmx1024m</string>
+		<string>-Xmx1000m</string>
 	</dict>
 </dict>
 </plist>
