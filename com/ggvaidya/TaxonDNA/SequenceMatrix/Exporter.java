@@ -529,7 +529,8 @@ public class Exporter implements SequencesHandler {
 
                 // let's get this party started, etc.
                 // we begin by obtaining the Taxonsets (if any).
-                Taxonsets tx = matrix.getTaxonsets(); 
+                Taxonsets tx = matrix.getTaxonsets();
+
                 StringBuffer buff_sets = new StringBuffer();            // used to store the 'SETS' block
                 buff_sets.append("BEGIN SETS;\n");
                 if(tx.getTaxonsetList() != null) {
@@ -569,7 +570,6 @@ public class Exporter implements SequencesHandler {
                 // Calculate the SETS blocks, with suitable widths etc. 
                 int widthThusFar = 0;
                 Iterator i = tm.getCharsets().iterator();
-
 
                 countThisLoop = 0;
                 while(i.hasNext()) {
@@ -615,6 +615,10 @@ public class Exporter implements SequencesHandler {
                 array_strbuff_positions[2] = new StringBuffer();
                 array_strbuff_positions[3] = new StringBuffer();
 
+                String position_names[] = { "N", "1", "2", "3" };
+
+				StringBuffer buff_pergene_codonpossets = new StringBuffer();
+
                 i = matrix.getTableManager().getCharsets().iterator(); 
                 int horzOffset = 0;
                 while(i.hasNext()) {
@@ -631,10 +635,12 @@ public class Exporter implements SequencesHandler {
 						// as well. But we don't want them. Turn them on, any
 						// time.
                         for(int x = 1; x <= 3; x++) {
-                            Vector v = (Vector) seq.getProperty("position_" + x);
+							Vector v = (Vector) seq.getProperty("position_" + x);
 
 							if(v == null)
 								continue;
+
+							StringBuffer buff_this_gene = new StringBuffer();
 
 							// 'v' is now a List of FromToPairs.
 							// Let's combine them up if possible.
@@ -660,10 +666,20 @@ public class Exporter implements SequencesHandler {
 								if (ftp.from == ftp.to) {
 									array_strbuff_positions[x].append(
 											(horzOffset + ftp.from) + " ");
+									buff_this_gene.append((horzOffset + ftp.from) + " ");
 								} else {
 									array_strbuff_positions[x].append(
 											(horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
+									buff_this_gene.append((horzOffset + ftp.from) + "-" + (horzOffset + ftp.to) + str_end);
 								}
+							}
+
+							if(buff_this_gene.length() > 0) {
+								// Woah! Content!
+								buff_this_gene.insert(0, "\tCHARSET " + fixColumnName(colName) + "_pos" + position_names[x] + " = ");
+								buff_this_gene.append(";\n");
+
+								buff_pergene_codonpossets.append(buff_this_gene);
 							}
                         }
                     }
@@ -687,7 +703,6 @@ public class Exporter implements SequencesHandler {
                         array_strbuff_positions[x] = null;
                 }
 
-                String position_names[] = { "N", "1", "2", "3" };
 
                 for(int x = 0; x <= 3; x++) {
                     String str_end = "";
@@ -713,6 +728,15 @@ public class Exporter implements SequencesHandler {
 
                 if(flag_display_nexus_positions)
                     buff_sets.insert(0, buff_nexus_positions);
+
+				if(buff_pergene_codonpossets.length() > 0) {
+					buff_sets.append("\n\nBEGIN ASSUMPTIONS;\n\t[ This section contains " +
+							"per-charset positional data. It will not be read by " +
+							"SequenceMatrix when this file is read. ]\n" +
+							buff_pergene_codonpossets +
+							"\nEND;\n\n"
+					);
+				}
                                     
                 // Now that the blocks are set, we can get down to the real work: writing out
                 // all the sequences. This is highly method specific.
