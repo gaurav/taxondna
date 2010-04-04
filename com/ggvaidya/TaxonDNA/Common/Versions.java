@@ -34,4 +34,16 @@ public class Versions {
 	public static String getTaxonDNA() {
 		return "1.6.8-dev1";
 	}
+	
+	/**
+	 * Returns the application name - name and version number - of the current
+	 * application
+	 */
+	public static String getApplicationName() {
+		return "SequenceMatrix " + getTaxonDNA();
+	}
+
+	/**
+	 * Returns the citation for SequencMatrix.
+	 */
 }

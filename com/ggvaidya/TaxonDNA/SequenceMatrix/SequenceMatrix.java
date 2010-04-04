@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,6 @@ import java.awt.datatransfer.*;	// for drag-n-drop
 
 // Swing stuff
 import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.table.*;
 
 // TaxonDNA stuff
 import com.ggvaidya.TaxonDNA.Common.*;
@@ -677,6 +676,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the name of this program, i.e. "SequenceMatrix" with appropriate versioning information.
 	 */
 	public String getName() {
-		return "SequenceMatrix " + Versions.getTaxonDNA();
+		return Versions.getApplicationName();
 	}
 }

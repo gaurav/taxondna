@@ -7,7 +7,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006-07, 2009, 2010 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -750,7 +750,7 @@ public class Exporter implements SequencesHandler {
 
                         writer.println("#NEXUS");
 						if(!nakedNexusMode)
-							writer.println("[Written by " + matrix.getName() + " on " + new Date() + "]");
+							writer.println("[Written by " + matrix.getName() + " on " + new Date() + "\nYou should cite " + matrix.getName() + " as:\n\t" + matrix.getCitation() + "\n]");
 
                         writer.println("");
 
