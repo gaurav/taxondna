@@ -676,22 +676,34 @@ public class TNTFile extends BaseFormatHandler {
 
 				currentName = buff_name.toString();
 
-                                // But wait! Some names are extra-special.
-                                if(currentName.equalsIgnoreCase("posN"))
-                                    currentName = ":0";
+				// But wait! Some names are extra-special.
+				// Note that we discard the charset name
+				// at this point: any positional data is
+				// collected together and used while
+				// resplitting the entire file.
+				String originalName = currentName;
 
-                                if(currentName.equalsIgnoreCase("pos1"))
-                                    currentName = ":1";
+				if (currentName.matches("^.*_posN$")) {
+					currentName = ":0";
+				}
 
-                                if(currentName.equalsIgnoreCase("pos2"))
-                                    currentName = ":2";
+				if (currentName.matches("^.*_pos1$")) {
+					currentName = ":1";
+				}
 
-                                if(currentName.equalsIgnoreCase("pos3"))
-                                    currentName = ":3";
+				if (currentName.matches("^.*_pos2$")) {
+					currentName = ":2";
+				}
 
-                                // Now the rest of this method will keep
-                                // adding these positions into the special
-                                // codonsets. HAHA BRILLIANT.
+				if (currentName.matches("^.*_pos3$")) {
+					currentName = ":3";
+				}
+
+				// System.err.println("Converted '" + originalName + "' -> '" + currentName + "'");
+
+				// Now the rest of this method will keep
+				// adding these positions into the special
+				// codonsets. HAHA BRILLIANT.
 
 				continue;
 

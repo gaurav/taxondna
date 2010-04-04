@@ -968,11 +968,8 @@ public class Exporter implements SequencesHandler {
                 SequenceGrid grid = (SequenceGrid) (matrix.getTableManager().getDataStore());
 
                 // This is very likely indeed to work!
-                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
-                array_strbuff_positions[0] = new StringBuffer();
-                array_strbuff_positions[1] = new StringBuffer();
-                array_strbuff_positions[2] = new StringBuffer();
-                array_strbuff_positions[3] = new StringBuffer();
+                String position_names[] = { "N", "1", "2", "3" };
+				HashMap<String, StringBuffer> positionalData = new HashMap<String, StringBuffer>();
 
                 Iterator i = matrix.getTableManager().getCharsets().iterator();
                 int horzOffset = 0;
@@ -991,6 +988,9 @@ public class Exporter implements SequencesHandler {
                             Vector v = (Vector) seq.getProperty("position_" + x);
 
                             if(v != null) {
+								String charsetName = fixColumnName(colName) + "_pos" + position_names[x];
+								positionalData.put(charsetName, new StringBuffer());
+
                                 Iterator i_v = v.iterator();
                                 while(i_v.hasNext()) {
                                     FromToPair ftp = (FromToPair) i_v.next();
@@ -1004,17 +1004,21 @@ public class Exporter implements SequencesHandler {
                                     // into 0-based TNT coordinates.
 
                                     if(ftp.from == ftp.to) {
-                                        array_strbuff_positions[x].append(
+                                        positionalData.get(charsetName).append(
                                             (horzOffset + ftp.from - 1) + " "
                                         );
                                     } else {
 
                                         // Iterate, iterate.
                                         for(int y = (horzOffset + ftp.from); y <= (horzOffset + ftp.to); y += increment_by) {
-                                            array_strbuff_positions[x].append((y-1) + " ");
+                                            positionalData.get(charsetName).append((y-1) + " ");
                                         }
                                     }
                                 }
+
+								// Wipe it out if there's nothing there.
+								if(positionalData.get(charsetName).length() == 0)
+									positionalData.put(charsetName, null);
                             }
                         }
                     }
@@ -1023,34 +1027,48 @@ public class Exporter implements SequencesHandler {
                     horzOffset += grid.getColumnLength(colName);
                 }
 
-                // Let's see if we can't calculate the nexus positions.
-                StringBuffer buff_tnt_positions = new StringBuffer();
-
-                // buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
-                buff_tnt_positions.append("xgroup\n");
-
-                // Change zero-length strings to null.
-                for(int x = 0; x <= 3; x++) {
-                    if(array_strbuff_positions[x].length() == 0)
-                        array_strbuff_positions[x] = null;
-                }
-
-                String position_names[] = { "N", "1", "2", "3" };
-
-                boolean flag_display_tnt_positions = false;
+		// Get ready for the upcoming sets.
+		buff_sets.append("xgroup\n");
 
 		List cols = tm.getCharsets();
+
+		int codonsets_go_into_title_at = 32;
 
 		// Store the positional information into the first three xgroups.
 		// Then let everything else fall below them.
 		int colid = 0;
-                for(int x = 0; x <= 3; x++) {
-                    if(array_strbuff_positions[x] != null) {
-                        buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
-                        flag_display_tnt_positions = true;
-                        colid++;
-                    }
-                }
+		Object[] charsetNames = (Object[]) positionalData.keySet().toArray();
+		Arrays.sort(charsetNames);
+
+		// Are we in the title yet.
+		boolean now_in_the_title = false;
+
+		// TODO: I assume, eventually, charsets will move into the
+		// positionalData structure too, and then we'll just have a
+		// single loop emitting them. Not for now, though. Not for
+		// now.
+		for (Object a : charsetNames) {
+			String x = a.toString();
+			
+			if (positionalData.get(x) == null)
+				continue;
+
+			if (colid < codonsets_go_into_title_at) {
+				buff_sets.append("=" + colid + " (" + x + ") " + positionalData.get(x) + "\n");
+			} else {
+				if (!now_in_the_title) {
+					buff_title.append("@xgroup\n");
+				}
+				now_in_the_title = true;
+
+				buff_title.append("=(" + x + ") " + positionalData.get(x) + "\n");
+			}
+
+			// increment the column id
+			if (colid < codonsets_go_into_title_at) {
+				colid++;
+			}
+		}
 
 		int number_of_columns = cols.size() + colid;
 		if(number_of_columns >= 32) {
@@ -1063,52 +1081,50 @@ public class Exporter implements SequencesHandler {
 
                 //buff_tnt_positions.append(";\n");
                 //buff_tnt_positions.append("*** Positional data for this dataset ends here. ***'\n");
-                int codonsets_go_into_title_at = 32;
-		if(flag_display_tnt_positions) {
-                    buff_sets.insert(0, buff_tnt_positions);
-		} else {
-		    // Get ready for the upcoming sets.
-		    buff_sets.append("xgroup\n");
-		}
+
 
 		// Now for normal sets
-		boolean now_in_the_title = false;
-
-		i = cols.iterator();	
+		i = cols.iterator();
 		int at = 0;
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			String colName = (String) i.next();
 
 
-			if(colid < codonsets_go_into_title_at)
+			if (colid < codonsets_go_into_title_at) {
 				buff_sets.append("=" + colid + " (" + fixColumnName(colName) + ")\t");
-			else {
-				if(!now_in_the_title)
+			} else {
+				if (!now_in_the_title) {
 					buff_title.append("@xgroup\n");
+				}
 				now_in_the_title = true;
 
 				buff_title.append("=(" + fixColumnName(colName) + ")\t");
 			}
 
-                        // Actually spell out charsets here.
-			for(int x = 0; x < tm.getColumnLength(colName); x++) {
-				if(colid < codonsets_go_into_title_at)
+			// Actually spell out charsets here.
+			for (int x = 0; x < tm.getColumnLength(colName); x++) {
+				if (colid < codonsets_go_into_title_at) {
 					buff_sets.append(at + " ");
-				else
+				} else {
 					buff_title.append(at + " ");
+				}
 				at++;
 			}
 
-			if(colid < codonsets_go_into_title_at)
+			// Generate positional data for
+
+			if (colid < codonsets_go_into_title_at) {
 				buff_sets.append("\n");
-			else
+			} else {
 				buff_title.append("\n");
-			
+			}
+
 			// increment the column id
-			if(colid < codonsets_go_into_title_at)
+			if (colid < codonsets_go_into_title_at) {
 				colid++;
+			}
 		}
-		
+
 		buff_sets.append("\n;\n\n");
 
 		if(colid > (codonsets_go_into_title_at - 1))
