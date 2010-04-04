@@ -2,4 +2,4 @@
 # 1.	The version used in 'TaxonDNA-$VERSION$.zip'
 # 2.	The version used in 'TaxonDNA-src-$VERSION$.zip'
 #
-taxondna.version = 1.6.8
+taxondna.version = 1.6.8-2
