@@ -99,11 +99,11 @@ public class SequenceList implements List, Testable {
 	private static void initFormatHandlers() {
 		if(formatHandlers.size() == 0) {
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
-			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
+			//formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.NexusFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.TNTFile());
 //			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.SequencesFile());
-			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.PhylipFile());
+			//formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.PhylipFile());
 
 			formatsHandled = "Fasta, Mega, Nexus, TNT and Sequences";
 		}
