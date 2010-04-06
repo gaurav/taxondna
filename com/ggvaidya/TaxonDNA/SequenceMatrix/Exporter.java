@@ -415,6 +415,38 @@ public class Exporter implements SequencesHandler {
 			delay.end();
 	}
 
+	public void exportAsPhylip(File f, DelayCallback delay) throws IOException, DelayAbortedException {
+		TableManager tm = matrix.getTableManager();
+
+		// Construct a SequenceList of concatenated sequences to output,
+		// then let the PhylipFile routines handle it.
+		SequenceList list = new SequenceList();
+
+		// Make sure we add the sequences in the correct order.
+		List seqNames = tm.getSequenceNames();
+		for(Object o_seqName: seqNames) {
+			String sequenceName = o_seqName.toString();
+
+			Sequence seq_row = new Sequence();
+			seq_row.changeName(sequenceName);
+			for(Object o_charsetName: tm.getCharsets()) {
+				String charsetName = o_charsetName.toString();
+
+				Sequence seq = tm.getSequence(charsetName, sequenceName);
+				if(seq == null)
+					seq = Sequence.makeEmptySequence(sequenceName, tm.getColumnLength(charsetName));
+
+				seq_row.concatSequence(seq);
+			}
+
+			list.add(seq_row);
+		}
+
+		// 'list' is now ready for export!
+		PhylipFile pf = new PhylipFile();
+		pf.writePhylipFile(f, list, delay);
+	}
+
 //
 // EXPERIMENTAL SEQUENCES HANDLER
 //

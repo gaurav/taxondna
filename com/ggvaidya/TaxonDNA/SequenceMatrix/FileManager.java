@@ -1073,6 +1073,39 @@ public class FileManager implements FormatListener {
 		new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a Nexus file.").go();
 	}
 
+	/**
+	 * Quick-export as a plain Nexus file.
+	 */
+	public void quickExportAsPhylip() {
+		if (!checkCancelledBeforeExport())
+			return;
+
+		File file = getFile("Export as Phylip ...");
+		if (file == null)
+			return;
+
+		try {
+			matrix.getExporter().exportAsPhylip(file,
+					ProgressDialog.create(
+					matrix.getFrame(),
+					"Please wait, exporting sequences ...",
+					"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!")
+			);
+		} catch (IOException e) {
+			MessageBox mb = new MessageBox(
+					matrix.getFrame(),
+					"Error writing sequences to file!",
+					"The following error occured while writing sequences to file: " + e);
+			mb.go();
+
+			return;
+		} catch (DelayAbortedException e) {
+			return;
+		}
+
+		new MessageBox(matrix.getFrame(), "All done!", "All your sequences were exported into '" + file + "' as a Phylip file.").go();
+	}
+
 		/**
 	 * Quick-export as a plain Nexus file.
 	 */
@@ -1322,7 +1355,7 @@ public class FileManager implements FormatListener {
 		DefaultButton btn = new DefaultButton(dg, "Write files");
 		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choice", 2, 0, choice_formats.getItemCount())); // 2 == NexusFile, at some point of time
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choice", 2, 0, choice_formats.getItemCount() - 1)); // 2 == NexusFile, at some point of time
 		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_fileName", "")));
 		if (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_writeNASequences", 0, 0, 1) == 0) {
 			check_writeNASequences.setState(false);
@@ -1332,8 +1365,8 @@ public class FileManager implements FormatListener {
 			
 		}
 		tf_rands.setText(matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_noOfRands", "10"));
-		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0, 0, choice_per_group.getItemCount())));
-		choice_random_taxa.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0, 0, choice_random_taxa.getItemCount())));
+		choice_per_group.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choicePerGroup", 0, 0, choice_per_group.getItemCount() - 1)));
+		choice_random_taxa.select("" + (matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRandomTaxa", 0, 0, choice_random_taxa.getItemCount() - 1)));
 		int index_sel = list_seqNames.indexOf(
 				matrix.getPrefs().getPreference("exportSequencesByColumnsInGroups_choiceRefTaxon", "None"));
 
@@ -1434,7 +1467,7 @@ public class FileManager implements FormatListener {
 		DefaultButton btn = new DefaultButton(dg, "Write files");
 		rl.add(btn, RightLayout.NEXTLINE | RightLayout.FILL_2);
 
-		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumn_choice", 0, 0, choice_formats.getItemCount()));
+		choice_formats.select(matrix.getPrefs().getPreference("exportSequencesByColumn_choice", 0, 0, choice_formats.getItemCount() - 1));
 		dinp.setFile(new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
 		if (matrix.getPrefs().getPreference("exportSequencesByColumn_writeNASequences", 0, 0, 1) == 0) {
 			check_writeNASequences.setState(false);

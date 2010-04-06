@@ -124,7 +124,7 @@ public class PhylipFile extends BaseFormatHandler {
 		 *
 		 * Headers should go in here, but I don't know how to do Phylip comments.
 		 */
-		writer.println(set.getMaxLength() + " " + set.count());
+		writer.println(set.count() + " " + set.getMaxLength());
 
 		/*
 		 * The following piece of code has to:

@@ -310,6 +310,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileManager.exportAsTNT();
 
 		//
+		// Export -> Export as PHYLIP
+		if(cmd.equals("Export sequences as PHYLIP"))
+			fileManager.quickExportAsPhylip();
+
+		//
 		// Settings -> Taxonsets. Allows you to manipulate taxonsets. 
 		//
 		if(cmd.equals("Taxonset settings"))
@@ -609,6 +614,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
 		export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. Garli)"));
+		export.add(new MenuItem("Export sequences as PHYLIP"));
 
 		export.addSeparator();
 
