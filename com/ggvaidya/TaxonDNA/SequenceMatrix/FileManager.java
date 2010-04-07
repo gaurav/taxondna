@@ -1080,7 +1080,7 @@ public class FileManager implements FormatListener {
 		if (!checkCancelledBeforeExport())
 			return;
 
-		File file = getFile("Export as Phylip ...");
+		File file = getFile("Export for RAxML analyses on CIPRES ...");
 		if (file == null)
 			return;
 

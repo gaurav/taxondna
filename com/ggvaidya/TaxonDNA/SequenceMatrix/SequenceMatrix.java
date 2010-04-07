@@ -311,7 +311,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		//
 		// Export -> Export as PHYLIP
-		if(cmd.equals("Export sequences as PHYLIP"))
+		if(cmd.equals("Export sequences for RAxML analyses on CIPRES"))
 			fileManager.quickExportAsPhylip();
 
 		//
@@ -614,7 +614,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
 		export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. Garli)"));
-		export.add(new MenuItem("Export sequences as PHYLIP"));
+		export.add(new MenuItem("Export sequences for RAxML analyses on CIPRES"));
 
 		export.addSeparator();
 
