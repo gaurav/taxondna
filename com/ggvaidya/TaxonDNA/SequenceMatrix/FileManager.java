@@ -1089,7 +1089,7 @@ public class FileManager implements FormatListener {
 					ProgressDialog.create(
 					matrix.getFrame(),
 					"Please wait, exporting sequences ...",
-					"All your sequences are being exported as a single Nexus file into '" + file + "'. Sorry for the wait!")
+					"All your sequences are being exported for RAxML analyses as '" + file + "'. Sorry for the wait!")
 			);
 		} catch (IOException e) {
 			MessageBox mb = new MessageBox(

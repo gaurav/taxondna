@@ -824,7 +824,8 @@ public class Exporter implements SequencesHandler {
                                 int colLength = tm.getColumnLength(colName);
                                 
                                 // first of all, write the column name in as a comment (if in block mode)
-                                writer.println("[beginning " + fixColumnName(colName) + "]");
+								if(!nakedNexusMode)
+									writer.println("[beginning " + fixColumnName(colName) + "]");
 
 
                                 // then loop over all the sequences
@@ -838,10 +839,14 @@ public class Exporter implements SequencesHandler {
                                                 seq = Sequence.makeEmptySequence(seqName, colLength);
 
 
-                                        writer.println("'" + getNexusName(seqName) + "' " + seq.getSequence() + " [" + colLength + " bp]");
+                                        writer.print("'" + getNexusName(seqName) + "' " + seq.getSequence());
+										if(!nakedNexusMode)
+											writer.print(" [" + colLength + " bp]");
+										writer.println("");	// Blank line to end the row.
                                 }
-                                
-                                writer.println("[end of " + fixColumnName(colName) + "]");
+
+								if(!nakedNexusMode)
+									writer.println("[end of " + fixColumnName(colName) + "]");
                                 writer.println("");     // leave a blank line
                         }
 
@@ -895,8 +900,12 @@ public class Exporter implements SequencesHandler {
                                 if(how == Preferences.PREF_NEXUS_INTERLEAVED)
                                         seq_interleaved.changeName(seqName);
 
-                                if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
+                                if(how == Preferences.PREF_NEXUS_SINGLE_LINE) {
+									if(nakedNexusMode)
+										writer.println("");
+									else
                                         writer.println(" [" + length + " bp]");
+								}
                                 else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
                                         list.add(seq_interleaved);
                         }

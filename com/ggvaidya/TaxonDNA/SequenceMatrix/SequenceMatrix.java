@@ -296,7 +296,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		if(cmd.equals("Export sequences as NEXUS (non-interleaved)"))
 			fileManager.quickExportAsNexusNonInterleaved();
 
-		if(cmd.equals("Export sequences as NEXUS (\"naked\", e.g. Garli)"))
+		if(cmd.equals("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"))
 			fileManager.quickExportAsNakedNexus();
 
 		// Here if it's ever needed.
@@ -613,7 +613,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		export.add(new MenuItem("Export sequences as TNT"));
 		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
-		export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. Garli)"));
+		export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"));
 		export.add(new MenuItem("Export sequences for RAxML analyses on CIPRES"));
 
 		export.addSeparator();
