@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the citation used by SequenceMatrix.
 	 */
 	public String getCitation() {
-		return "Vaidya, G., D. J. Lohman, R. Meier. SequenceMatrix: concatenation software for the fast assembly of multigene datasets with character set and codon information. Cladistics, submitted.";
+		return "Vaidya, G., D. J. Lohman, R. Meier. SequenceMatrix: concatenation software for the fast assembly of multigene datasets with character set and codon information. Cladistics, accepted.";
 	}
 
 //
