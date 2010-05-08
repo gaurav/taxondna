@@ -35,7 +35,21 @@ public class FromToPair implements Comparable {
     }
 
     public String toString() {
-        return "From: " + from + " to  " + to;
+        return from + " to  " + to;
     }
+
+	/***
+	 * Checks for overlap between us and another FromToPair.
+	 * @param ftp The FTP to compare against
+	 * @return True if there is even a single digit of overlap, false otherwise.
+	 */
+	public boolean overlaps(FromToPair ftp) {
+		return
+			// Check whether ftp.from intersects with us.
+			((ftp.from >= from) && (ftp.from <= to)) ||
+			// Check whether ftp.to intersects with us.
+			((ftp.to >= from) && (ftp.to <= to))
+		;
+	}
 }
 

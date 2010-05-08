@@ -352,9 +352,19 @@ public class FileManager implements FormatListener {
 
 			mb.go();
 
+			// Clear any incomplete hashmap_codonsets which might have been set.
+			synchronized(hashmap_codonsets) {
+				hashmap_codonsets.clear();
+			}
+
 			return null;
 
 		} catch (DelayAbortedException e) {
+			// Clear any incomplete hashmap_codonsets which might have been set.
+			synchronized(hashmap_codonsets) {
+				hashmap_codonsets.clear();
+			}
+
 			return null;
 		}
 
@@ -553,32 +563,18 @@ public class FileManager implements FormatListener {
 			if (positions_3 == null) {
 				positions_3 = new ArrayList<FromToPair>();
 
-				// It would be nice if we could go through these sets and "compress"
-				// them down (i.e. 'position 1 = 1, 2, 3' => 'position 1 = 1-3'). But
-				// hopefully we'll be fast enough without.
-				//
-				// If not, you know what TODO.
-
-				// Okay, so now we have a set of positional data sets. Rest of this
-				// kinda runs the way it's always run.
-				// BUT FIRST! Make sure we don't have any overlapping sets.
-				
 			}
-			HashMap<String, FromToPair> overlappers = containsOverlappedSets(sets);
-			if (overlappers.size() > 0) {
-				MessageBox mb = new MessageBox(
-						matrix.getFrame(),
-						"SequenceMatrix does not support overlapping character sets",
-						"Overlapping character sets were detected in " + file + ". "
-						+ "The following sets have overlapping sets: "
-						+ overlappers.keySet().toString());
-				mb.go();
 
-				sequences.unlock();
-				hashmap_codonsets.clear();
+			// It would be nice if we could go through these sets and "compress"
+			// them down (i.e. 'position 1 = 1, 2, 3' => 'position 1 = 1-3'). But
+			// hopefully we'll be fast enough without.
+			//
+			// If not, you know what TODO.
 
-				return -1;
-			}
+			// Okay, so now we have a set of positional data sets. Rest of this
+			// kinda runs the way it's always run.
+			// BUT FIRST! Make sure we don't have any overlapping sets.
+
 
 			// Okay, now proceed with the rest of our algorithm.
 			Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
@@ -1539,8 +1535,40 @@ public class FileManager implements FormatListener {
 				String name = evt.name;
 				int from = evt.from;
 				int to = evt.to;
+				FromToPair ftp = new FromToPair(from, to);
 
 				synchronized (hashmap_codonsets) {
+					// Make sure characters aren't double-counted. This is a
+					// somewhat complex set of rules:
+					//	1.	CodonPosSets can overlap with all other datasets
+					//		*except* other CPSs.
+					//	2.	Other characters cannot overlap with any other
+					//		non-CPS datasets.
+					if(name.startsWith(":")) {
+						// CodonPosSet!
+
+					} else {
+						// Not a codonposset.
+						for(String compare_to: hashmap_codonsets.keySet()) {
+							// Don't compare against codonpossets.
+							if(compare_to.startsWith(":"))
+								continue;
+
+							ArrayList<FromToPair> compare_list =
+									hashmap_codonsets.get(compare_to);
+							for(FromToPair compare_ftp: compare_list) {
+								System.err.println("Comparing " + name + ":" + ftp + " with " + compare_to + ":" + compare_ftp + " -> " + ftp.overlaps(compare_ftp));
+								if(compare_ftp.overlaps(ftp)) {
+									throw new FormatException(
+										"Overlapping sequence sets detected: " +
+											name + ":" + ftp + " overlaps with " +
+											compare_to + ":" + compare_ftp
+									);
+								}
+							}
+						}
+					}
+
 					// If there's an ArrayList already in the dataset under this name,
 					// add to it. If there isn't, make it.
 
@@ -1548,10 +1576,10 @@ public class FileManager implements FormatListener {
 
 					if (hashmap_codonsets.get(name) != null) {
 						ArrayList<FromToPair> al = hashmap_codonsets.get(name);
-						al.add(new FromToPair(from, to));
+						al.add(ftp);
 					} else {
 						ArrayList<FromToPair> al = new ArrayList<FromToPair>();
-						al.add(new FromToPair(from, to));
+						al.add(ftp);
 						hashmap_codonsets.put(name, al);
 					}
 				}
@@ -1588,36 +1616,5 @@ public class FileManager implements FormatListener {
 			return false;
 			
 		}
-	}
-
-	/***
-	 * Returns a list of overlapping datasets from the set => list of fromtopairs
-	 * data structure we use to store overlapping datasets.
-	 * 
-	 * This is all pretty weird. We'll clean it up later as we need to.
-	 * 
-	 * @param sets A list of character set data, stored as name mapped to an
-	 *	arraylist of from-to pairs.
-	 * @return A list of overlapping positions, along with a pipe-separated
-	 *  list of po
-	 */
-	private HashMap<Integer, String> containsOverlappedSets(HashMap<String, ArrayList<FromToPair>> sets) {
-		HashMap<Integer, String> results = new HashMap<String, FromToPair>();
-
-		// Okay, let's try the Simplest Possible Thing.
-		HashMap<Integer, String> map = new HashMap<Integer, String>();
-		
-		for(String gene: sets.keySet()) {
-			for(FromToPair ftp: sets[gene]) {
-				for(int x = ftp.from; x <= ftp.to; x++) {
-					if(map.containsKey(new Integer(x))) {
-						if(results.containsKey(x))
-					}
-
-				}
-			}
-		}
-
-		return results;
 	}
 }
