@@ -1546,7 +1546,24 @@ public class FileManager implements FormatListener {
 					//		non-CPS datasets.
 					if(name.startsWith(":")) {
 						// CodonPosSet!
+						for(String compare_to: hashmap_codonsets.keySet()) {
+							// Only compare against other codonpossets.
+							if(!compare_to.startsWith(":"))
+								continue;
 
+							ArrayList<FromToPair> compare_list =
+									hashmap_codonsets.get(compare_to);
+							for(FromToPair compare_ftp: compare_list) {
+								System.err.println("Comparing position " + name + ":" + ftp + " with position " + compare_to + ":" + compare_ftp + " -> " + ftp.overlapsMovesInThrees(compare_ftp));
+								if(compare_ftp.overlapsMovesInThrees(ftp)) {
+									throw new FormatException(
+										"Overlapping sequence sets detected: " +
+											name + ":" + ftp + " overlaps with " +
+											compare_to + ":" + compare_ftp
+									);
+								}
+							}
+						}
 					} else {
 						// Not a codonposset.
 						for(String compare_to: hashmap_codonsets.keySet()) {

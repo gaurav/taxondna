@@ -51,5 +51,29 @@ public class FromToPair implements Comparable {
 			((ftp.to >= from) && (ftp.to <= to))
 		;
 	}
+	
+	/***
+	 * Checks for overlap, but assumes both FTPs move in threes.
+	 * (i.e. they were marked with \3s). Note that there is at
+	 * present no way for this code to confirm that both FTPs
+	 * move in threes: please make sure they do before calling
+	 * this method.
+	 * 
+	 * @param ftp The FTP to compare against.
+	 * @return True if there is any overlap, false otherwise.
+	 */
+	public boolean overlapsMovesInThrees(FromToPair ftp) {
+		// All of this is meaningless with real overlap.
+		// So:
+		if(!this.overlaps(ftp))
+			return false;
+
+		int our_from =		from;
+		int our_to =		to;
+		int their_from =	ftp.from;
+		int their_to =		ftp.to;
+
+		throw new RuntimeException("TODO - Not completed");
+	}
 }
 
