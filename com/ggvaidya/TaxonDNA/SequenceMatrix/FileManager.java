@@ -1598,34 +1598,25 @@ public class FileManager implements FormatListener {
 	 * 
 	 * @param sets A list of character set data, stored as name mapped to an
 	 *	arraylist of from-to pairs.
-	 * @return A list of FTPs corresponding to character set pairs which show
-	 *	overlap. The string is separated by pipes. For instance, the string 
-	 *  might read "coi|cytb" and point to an FTP from 100-200, meaning those
-	 *  loci are defined belonging to both coi and cytb.
+	 * @return A list of overlapping positions, along with a pipe-separated
+	 *  list of po
 	 */
-	private HashMap<String, FromToPair> containsOverlappedSets(HashMap<String, ArrayList<FromToPair>> sets) {
-		HashMap<String, FromToPair> results = new HashMap<String, FromToPair>();
+	private HashMap<Integer, String> containsOverlappedSets(HashMap<String, ArrayList<FromToPair>> sets) {
+		HashMap<Integer, String> results = new HashMap<String, FromToPair>();
 
-		// For now, do nothing
-		if (0 == 0) {
-			return results;
+		// Okay, let's try the Simplest Possible Thing.
+		HashMap<Integer, String> map = new HashMap<Integer, String>();
+		
+		for(String gene: sets.keySet()) {
+			for(FromToPair ftp: sets[gene]) {
+				for(int x = ftp.from; x <= ftp.to; x++) {
+					if(map.containsKey(new Integer(x))) {
+						if(results.containsKey(x))
+					}
 
-			// Okay, we are almost certainly going to fill this up. So might as well
-			// make it a dense array.
-			
-		}
-		int from = -1, to = -1;
-		for (ArrayList<FromToPair> list : sets.values()) {
-			for (FromToPair ftp : list) {
-				if ((from == -1) || (ftp.from < from)) {
-					from = ftp.from;
 				}
-
-				// TODO: The rest of this algorithm.
 			}
 		}
-
-		// TODO: The rest of this algorithm
 
 		return results;
 	}
