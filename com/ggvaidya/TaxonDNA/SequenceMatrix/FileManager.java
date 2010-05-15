@@ -1545,7 +1545,8 @@ public class FileManager implements FormatListener {
 					//	2.	Other characters cannot overlap with any other
 					//		non-CPS datasets.
 					if(name.startsWith(":")) {
-						// CodonPosSet!
+						// CodonPosSet! Compare against all other codonpossets.
+
 						for(String compare_to: hashmap_codonsets.keySet()) {
 							// Only compare against other codonpossets.
 							if(!compare_to.startsWith(":"))
@@ -1564,8 +1565,10 @@ public class FileManager implements FormatListener {
 								}
 							}
 						}
+
 					} else {
-						// Not a codonposset.
+						// Not a codonposset. Compare against all other
+						// non-codonpossets.
 						for(String compare_to: hashmap_codonsets.keySet()) {
 							// Don't compare against codonpossets.
 							if(compare_to.startsWith(":"))
