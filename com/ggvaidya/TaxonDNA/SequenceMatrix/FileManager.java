@@ -573,8 +573,6 @@ public class FileManager implements FormatListener {
 
 			// Okay, so now we have a set of positional data sets. Rest of this
 			// kinda runs the way it's always run.
-			// BUT FIRST! Make sure we don't have any overlapping sets.
-
 
 			// Okay, now proceed with the rest of our algorithm.
 			Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
