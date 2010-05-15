@@ -1544,23 +1544,30 @@ public class FileManager implements FormatListener {
 					//		*except* other CPSs.
 					//	2.	Other characters cannot overlap with any other
 					//		non-CPS datasets.
-					if(name.startsWith(":")) {
+					//	3.	'N' can overlap with anything (TODO: make this compare).
+					if(name.startsWith(":") && !name.equals(":0")) {
 						// CodonPosSet! Compare against all other codonpossets.
 
 						for(String compare_to: hashmap_codonsets.keySet()) {
 							// Only compare against other codonpossets.
-							if(!compare_to.startsWith(":"))
+							if(!compare_to.startsWith(":") || compare_to.equals(":0"))
 								continue;
 
 							ArrayList<FromToPair> compare_list =
 									hashmap_codonsets.get(compare_to);
 							for(FromToPair compare_ftp: compare_list) {
-								System.err.println("Comparing position " + name + ":" + ftp + " with position " + compare_to + ":" + compare_ftp + " -> " + ftp.overlapsMovesInThrees(compare_ftp));
+								//System.err.println("Comparing position " + name + ":" + ftp + " with position " + compare_to + ":" + compare_ftp + " -> " + ftp.overlapsMovesInThrees(compare_ftp));
 								if(compare_ftp.overlapsMovesInThrees(ftp)) {
+									String pos = name.substring(1);				// Eliminate the leading ':'.
+									String compare_pos = compare_to.substring(1);		// Eliminate the leading ':'.
+
 									throw new FormatException(
-										"Overlapping sequence sets detected: " +
-											name + ":" + ftp + " overlaps with " +
-											compare_to + ":" + compare_ftp
+										"Sequence Matrix cannot handle overlapping character sets, including " +
+										"in codon positional data. In this file, " +
+										"position #" + pos + " (" + ftp + ") overlaps with " +
+										"position #" + compare_pos + " (" + compare_ftp + ").\n\n" +
+										"Please rectify this in the input file, or report a bug if " +
+										"there is no overlap between these two codon positions."
 									);
 								}
 							}
@@ -1577,12 +1584,14 @@ public class FileManager implements FormatListener {
 							ArrayList<FromToPair> compare_list =
 									hashmap_codonsets.get(compare_to);
 							for(FromToPair compare_ftp: compare_list) {
-								System.err.println("Comparing " + name + ":" + ftp + " with " + compare_to + ":" + compare_ftp + " -> " + ftp.overlaps(compare_ftp));
+								//System.err.println("Comparing " + name + ":" + ftp + " with " + compare_to + ":" + compare_ftp + " -> " + ftp.overlaps(compare_ftp));
 								if(compare_ftp.overlaps(ftp)) {
 									throw new FormatException(
-										"Overlapping sequence sets detected: " +
-											name + ":" + ftp + " overlaps with " +
-											compare_to + ":" + compare_ftp
+										"Sequence Matrix cannot handle overlapping datasets. In this file, " +
+										"character set " + name + " (" + ftp + ") overlaps with " +
+										"character set " + compare_to + " (" + compare_ftp + ").\n\n" +
+										"Please rectify this in the input file, or report a bug if " +
+										"there is no overlap between these character sets."
 									);
 								}
 							}

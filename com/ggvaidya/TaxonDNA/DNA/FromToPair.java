@@ -40,7 +40,10 @@ public class FromToPair implements Comparable {
     }
 
     public String toString() {
-        return from + " to  " + to;
+		if(from == to)
+			return from + "";	// String convert on the fly.
+		else
+			return from + " to " + to;
     }
 
 	/***
