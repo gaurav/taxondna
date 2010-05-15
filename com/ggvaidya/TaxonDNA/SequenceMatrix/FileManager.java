@@ -564,21 +564,6 @@ public class FileManager implements FormatListener {
 				// BUT FIRST! Make sure we don't have any overlapping sets.
 				
 			}
-			HashMap<String, FromToPair> overlappers = containsOverlappedSets(sets);
-			if (overlappers.size() > 0) {
-				MessageBox mb = new MessageBox(
-						matrix.getFrame(),
-						"SequenceMatrix does not support overlapping character sets",
-						"Overlapping character sets were detected in " + file + ". "
-						+ "The following sets have overlapping sets: "
-						+ overlappers.keySet().toString());
-				mb.go();
-
-				sequences.unlock();
-				hashmap_codonsets.clear();
-
-				return -1;
-			}
 
 			// Okay, now proceed with the rest of our algorithm.
 			Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
@@ -1588,36 +1573,5 @@ public class FileManager implements FormatListener {
 			return false;
 			
 		}
-	}
-
-	/***
-	 * Returns a list of overlapping datasets from the set => list of fromtopairs
-	 * data structure we use to store overlapping datasets.
-	 * 
-	 * This is all pretty weird. We'll clean it up later as we need to.
-	 * 
-	 * @param sets A list of character set data, stored as name mapped to an
-	 *	arraylist of from-to pairs.
-	 * @return A list of overlapping positions, along with a pipe-separated
-	 *  list of po
-	 */
-	private HashMap<Integer, String> containsOverlappedSets(HashMap<String, ArrayList<FromToPair>> sets) {
-		HashMap<Integer, String> results = new HashMap<String, FromToPair>();
-
-		// Okay, let's try the Simplest Possible Thing.
-		HashMap<Integer, String> map = new HashMap<Integer, String>();
-		
-		for(String gene: sets.keySet()) {
-			for(FromToPair ftp: sets[gene]) {
-				for(int x = ftp.from; x <= ftp.to; x++) {
-					if(map.containsKey(new Integer(x))) {
-						if(results.containsKey(x))
-					}
-
-				}
-			}
-		}
-
-		return results;
 	}
 }
