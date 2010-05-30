@@ -898,274 +898,245 @@ public class TNTFile extends BaseFormatHandler {
 	 */
 	public void writeTNTFile(File file, SequenceList set, int interleaveAt, String otherBlocks, DelayCallback delay) throws IOException, DelayAbortedException {
 		boolean interleaved = false;
-		
+
+		// Check if interleaveAt is valid.
 		if(interleaveAt > 0 && interleaveAt < set.getMaxLength())
 			interleaved = true;
 
+		// Time to start working.
 		set.lock();
-		
-		// it has begun ...
 		if(delay != null)
 			delay.begin();
 
-		// write out a 'preamble'
+		// Start writing to file.
 		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
+		// First, we write out the TNT preamble.
 		writer.println("nstates 32;");		// give our data the best possible chance
-		writer.println("xread");		// begin sequence output
+		// TODO: Replace '32' with 'dna' once we properly support molecular data.
+		
+		writer.println("xread");			// begin sequence output
 		writer.println("'Written by TaxonDNA " + Versions.getTaxonDNA() + " on " + new Date() + "'");
-							// commented string
-		// write the maxlength/sequence count
-		writer.println(set.getMaxLength() + " " + set.count());
 
+		// Write out the maximum length and sequence count
+		writer.println(set.getMaxLength() + " " + set.count());
 		writer.println("");			// leave a blank line for the prettyness
 
 		/*
-		 * The following piece of code has to:
-		 * 1.	Figure out VALID, UNIQUE names to output.
-		 * 2.	Without hitting up against PAUP* and MacClade's specs (we'll 
-		 * 	assume 32 chars for now - see MAX_TAXON_LENGTH - and work
-		 * 	around things when we need to).
-		 *
-		 * Interleaving will be handled later.
+		 * Time to write out some sequences.
 		 */
-		Hashtable names = new Hashtable();		// Hashtable(Strings) -> Sequence	
-								//	hash of all the names currently in use
-		Vector vec_names = new Vector();		// Vector(String)
+
+		/*
+		 * First, we need to ensure that every sequence in this file is actually unique.
+		 * For now, we've gotten rid of the make-sure-sequence-names-are-less-than-X-chars
+		 * code, but this is the place to reintroduce them if necessary.
+		 */
+		HashMap<String, Sequence> names = new HashMap<String, Sequence>();
+		// HashMap(String name) -> Sequence
+		//	hash of all the names currently in use
+		Vector vec_names = new Vector(); // Vector(String)
 		Iterator i = set.iterator();
-		while(i.hasNext()) {
+		while (i.hasNext()) {
 			Sequence seq = (Sequence) i.next();
-
 			String name = getTNTName(seq.getFullName());
-					//seq.getFullName(MAX_TAXON_LENGTH), MAX_TAXON_LENGTH);
-					// TODO: This is a bad idea when we're generating custom
-					// sets or whatever. In SequenceMatrix, though, this is
-					// perfectly fine.
-			name = name.replace(' ', '_');		// we do NOT support ' '. Pfft.
-
-			/*
-			int no = 2;
-			while(names.get(name) != null) {
-				int digits = 5;
-				if(no > 0 && no < 10)		digits = 1;
-				if(no >= 10 && no < 100)	digits = 2;
-				if(no >= 100 && no < 1000)	digits = 3;
-				if(no >= 1000 && no < 10000)	digits = 4;
-
-				name = getTNTName(seq.getFullName(MAX_TAXON_LENGTH - digits - 1), MAX_TAXON_LENGTH - digits - 1);
-				name = name.replace(' ', '_');		// we do NOT support '. Pfft.
-				name += "_" + no;
-
-				no++;
-
-				if(no == 10000) {
-					// this has gone on long enough!
-					throw new IOException("There are 9999 sequences named '" + seq.getFullName(MAX_TAXON_LENGTH) + "', which is the most I can handle. Sorry. This is an arbitary limit: please let us know if you think we set it too low.");
-				}
+			name = name.replace(' ', '_'); // we do NOT support ' '. Pfft.
+			String new_name = name;
+			int name_index = 1;
+			while (names.containsKey(new_name)) {
+				// Uhoh, duplicate name. Put _1, _2, etc. at the end.
+				new_name = name + "_" + name_index;
+				name_index++;
 			}
-			*/
-
-			//System.err.println("In TNTFile export: replaced '" + seq.getFullName() + "' with '" + name + "'");
-			
-			names.put(name, seq);
-			vec_names.add(name);
+			names.put(new_name, seq);
+			vec_names.add(new_name);
 		}
 
-		if(!interleaved) {
+		// TODO: On the subject of writing out sequences:
+		// With nstates=32, we can use upto 32 states: 0-9 and A-V.
+		// So we should probably check for W,X,Y,Z, and produce an
+		// error.
+
+		// Now that we have the names (and their order), time to write them out.
+		if (!interleaved) {
+			// In this case, we just need to write them out in the order of
+			// vec_names.
+
 			Iterator i_names = vec_names.iterator();
 
 			int x = 0;
-			while(i_names.hasNext()) {
+			while (i_names.hasNext()) {
 				// report the delay
-				if(delay != null) {
+				if (delay != null) {
 					try {
 						delay.delay(x, vec_names.size());
-					} catch(DelayAbortedException e) {
+					} catch (DelayAbortedException e) {
 						writer.close();
 						set.unlock();
 						throw e;
 					}
 				}
 
-				String name = (String) i_names.next();
-				Sequence seq = (Sequence) names.get(name);
-
+				String name =	(String)	i_names.next();
+				Sequence seq =	(Sequence)	names.get(name);
 				writer.println(name + " " + seq.getSequence());
-
 				x++;
 			}
 		} else {
-			// go over all the 'segments'
-			for(int x = 0; x < set.getMaxLength(); x+= interleaveAt) {
+			// Ah, interleaved. We need to write out each segment.
+			
+			for (int x = 0; x < set.getMaxLength(); x += interleaveAt) {
 				Iterator i_names = vec_names.iterator();
-
+				
 				// report the delay
-				if(delay != null)
+				if (delay != null) {
 					try {
 						delay.delay(x, set.getMaxLength());
-					} catch(DelayAbortedException e) {
+					} catch (DelayAbortedException e) {
 						writer.close();
 						set.unlock();
 						throw e;
 					}
+				}
+
+				// the TNT standard (ha!) requires an '&' in between blocks.
+				writer.println("&");
 				
-				// before each segment, we *ought* to enter the type of the next 'chunk'.
-				// as far as i know, we have four 'options':
-				// 1.	[cont]inous:	nope.
-				// 2.	[pro]tein:	we can't distinguish this now, anyway.
-				// 3.	[dna]:		yes, if it's class is Sequence
-				// 4.	[num]:		err, maybe, if it's class is BaseSequence.
-				//
-				//
-				// With nstates=32, we can use upto 32 states: 0-9 and A-V.
-				// So we should probably check for W,X,Y,Z, and produce an
-				// error.
-				// TODO
-				writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
-
-				// go over all the taxa 
-				while(i_names.hasNext()) {
-					String name = (String) i_names.next();
-					Sequence seq = (Sequence) names.get(name);
+				// go over all the taxa
+				while (i_names.hasNext()) {
+					String name =	(String)	i_names.next();
+					Sequence seq =	(Sequence)	names.get(name);
 					Sequence subseq = null;
-
 					int until = 0;
-
 					try {
 						until = x + interleaveAt;
-
-						// thanks to the loop, we *will* walk off the end of this 
-						if(until > seq.getLength()) {
+						// thanks to the loop, we *will* walk off the end of this
+						if (until > seq.getLength()) {
 							until = seq.getLength();
 						}
-
 						subseq = seq.getSubsequence(x + 1, until);
-					} catch(SequenceException e) {
+
+					} catch (SequenceException e) {
+
 						delay.end();
 						throw new IOException("Could not get subsequence (" + (x + 1) + ", " + until + ") from sequence " + seq + ". This is most likely a programming error.");
-					}
 
-					if(
-						subseq.getSequence().indexOf('Z') != -1 ||
-						subseq.getSequence().indexOf('z') != -1
-					)
-						delay.addWarning("Sequence '" + subseq.getFullName() + "' contains the letter 'Z'. This letter might not work in TNT.");
+					}
 
 					writer.println(name + " " + subseq.getSequence());
 				}
-
-				//writer.println("&");	// the TNT standard (ha!) requires an '&' in between blocks.
 			}
 		}
 
-		writer.println(";");	// the semicolon ends the 'xread' command.
+		writer.println(";"); // the semicolon ends the 'xread' command.
 
-		// Put in the CODONPOSSETs, off by themselves.
-		// This may conflict with otherBlocks, but ... hopefully, not.
-		// Time to do character sets!
-		
-                // Here's the thing: each sequence has its own positional
-                // information, which (we assume) is consistent within a
-                // column (which is a pretty safe assumption from now,
-                // as we only accept positional data from Nexus and TNT,
-                // neither of which support per-sequence positional data).
+		/*
+		 * Writing of sequences completed! Now let's write out CODONPOSSETs.
+		 */
 
-                // Unfortunately, we'd like to produce only a single set
-                // of positional data for the entire dataset. To simplify
-                // things, we create three strings, gradually build them
-                // up, and then combine them at the end.
+		// Here's the thing: each sequence has its own positional
+		// information, which (we assume) is consistent within a
+		// column (which is a pretty safe assumption from now,
+		// as we only accept positional data from Nexus and TNT,
+		// neither of which support per-sequence positional data).
 
-                // Note (this being an important point): we only use the
-                // FIRST taxon in the table to determine CODONPOSSET
-                // information to be emitted.
+		// Unfortunately, we'd like to produce only a single set
+		// of positional data for the entire dataset. To simplify
+		// things, we create three strings, one for each position;
+		// concatenate each column's positional information, and
+		// then combine them at the end.
 
-                // This is very likely indeed to work!
-                StringBuffer[] array_strbuff_positions = new StringBuffer[4];
-                array_strbuff_positions[0] = new StringBuffer();
-                array_strbuff_positions[1] = new StringBuffer();
-                array_strbuff_positions[2] = new StringBuffer();
-                array_strbuff_positions[3] = new StringBuffer();
+		// Note (this being an important point): we only use the
+		// FIRST taxon in the table to determine CODONPOSSET
+		// information to be emitted.
 
-				Iterator iter = set.iterator();
-				while(iter.hasNext()) {
+		// This is very likely indeed to work!
+		StringBuffer[] array_strbuff_positions = new StringBuffer[4];
+		array_strbuff_positions[0] = new StringBuffer();
+		array_strbuff_positions[1] = new StringBuffer();
+		array_strbuff_positions[2] = new StringBuffer();
+		array_strbuff_positions[3] = new StringBuffer();
 
-                        // get the first sequence
-                        Sequence seq = (Sequence) iter.next();
+		// get the first sequence
+		Sequence seq = (Sequence) set.get(0);
 
-						// Note: if you change this x = 0, you'll get 'N' as
-						// well. Since we don't want this right now, we're
-						// turning it off. Turn it on whenever.
-                        for(int x = 1; x <= 3; x++) {
-                            Vector v = (Vector) seq.getProperty("position_" + x);
+		// Note: if you change this x = 0, you'll get 'N' as
+		// well. Since we don't want this right now, we're
+		// turning it off. Turn it on whenever.
+		for(int x = 1; x <= 3; x++) {
+			// For each position (1..3), create a vector of loci in
+			// that position.
+			Vector v = (Vector) seq.getProperty("position_" + x);
 
-                            if(v != null) {
-                                Iterator i_v = v.iterator();
-                                while(i_v.hasNext()) {
-                                    FromToPair ftp = (FromToPair) i_v.next();
-                                    // buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
+			if(v != null) {
+				// Iterate over every FromToPair and add it to
+				// array_strbuff_positions[x].
 
-                                    int increment_by = 1;
-                                    if(x == 1 || x == 2 || x == 3)
-                                        increment_by = 3;
+				Iterator i_v = v.iterator();
+				while(i_v.hasNext()) {
+					FromToPair ftp = (FromToPair) i_v.next();
+					// buff_nexus_positions.append("[" + horzOffset + "] (" + ftp.from + ") - (" + ftp.to + ")" + str_end);
 
-                                    // Note those -1s! They're to change our 1-index based calculations
-                                    // into 0-based TNT coordinates.
+					// How much do we increment by? '1' for N, '3' for 1,2,3.
+					int increment_by = 1;
+					if(x == 1 || x == 2 || x == 3)
+						increment_by = 3;
 
-                                    if(ftp.from == ftp.to) {
-                                        array_strbuff_positions[x].append(
-                                             (ftp.from - 1) + " "
-                                        );
-                                    } else {
+					// Note those -1s! They're to change our 1-index based calculations
+					// into 0-based TNT coordinates.
 
-                                        // Iterate, iterate.
-                                        for(int y = (ftp.from); y <= (ftp.to); y += increment_by) {
-                                            array_strbuff_positions[x].append((y-1) + " ");
-                                        }
-                                    }
-                                }
-                            }
-                    }
+					if(ftp.from == ftp.to) {
+						//array_strbuff_positions[x].append("single(" + ftp + ")->[");
+						// Single position loci. Write them out.
+						array_strbuff_positions[x].append(
+							 (ftp.from - 1) + " "
+						);
+						//array_strbuff_positions[x].append("]nosingle ");
+					} else {
+						// Multiloci. Count from 'from' to 'to', displaying each one.
+						//array_strbuff_positions[x].append("multi(" + ftp + ")->[");
+						for(int y = (ftp.from); y <= (ftp.to); y += increment_by) {
+							array_strbuff_positions[x].append((y-1) + " ");
+						}
+						//array_strbuff_positions[x].append("]nomulti ");
+					}
+				}
+			}
+		}
 
-                }
+		// Now write them all out for later writing.
+		StringBuffer buff_tnt_positions = new StringBuffer();
 
-                // Let's see if we can't calculate the nexus positions.
-                StringBuffer buff_tnt_positions = new StringBuffer();
+		// Change zero-length strings to null.
+		for(int x = 0; x <= 3; x++) {
+			if(array_strbuff_positions[x].length() == 0)
+				array_strbuff_positions[x] = null;
+		}
 
-                // buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
-                buff_tnt_positions.append("xgroup\n");
+		String position_names[] = { "N", "1", "2", "3" };
 
-                // Change zero-length strings to null.
-                for(int x = 0; x <= 3; x++) {
-                    if(array_strbuff_positions[x].length() == 0)
-                        array_strbuff_positions[x] = null;
-                }
-
-                String position_names[] = { "N", "1", "2", "3" };
-
-                boolean flag_display_tnt_positions = false;
-
-
-		// Store the positional information into the first three xgroups.
-		// Then let everything else fall below them.
+		// Write out positional information as xgroups, skipping any position
+		// without any information.
 		int colid = 0;
-                for(int x = 1; x <= 3; x++) {
-                    if(array_strbuff_positions[x] != null) {
-                        buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
-                        flag_display_tnt_positions = true;
-                        colid++;
-                    }
-                }
+		for(int x = 1; x <= 3; x++) {
+			if(array_strbuff_positions[x] != null) {
+				buff_tnt_positions.append("=" + colid + " (pos" + position_names[x] + ") " + array_strbuff_positions[x] + "\n");
+				colid++;
+			}
+		}
 
-		if(flag_display_tnt_positions)
-            writer.println(buff_tnt_positions.toString() + "\n;\n\n");
+		// Write out buff_tnt_positions, but only if there is anything in it.
+		if(buff_tnt_positions.length() > 0) {
+			// buff_tnt_positions.append("'*** The following is positional information for this dataset. ***\n");
+			writer.println("xgroup\n" + buff_tnt_positions.toString() + "\n;\n\n");
+		}
 
-		// put in any other blocks
+		// Write out any other blocks.
 		if(otherBlocks != null)
 			writer.println(otherBlocks);
 
 		writer.close();
 
-		// it's over ...
+		// Processing complete. Time to cleanup.
 		if(delay != null)
 			delay.end();
 
@@ -1204,7 +1175,14 @@ public class TNTFile extends BaseFormatHandler {
 			return false;
 		}
 	}
-	
+
+	/**
+	 * Given a column name, this code will turn it into a valid CODONPOSSET (or
+	 * filename).
+	 *
+	 * @param columnName The column name you'd like to fix.
+	 * @return A sanitized, cleaned-up version of this column name.
+	 */
 	private String fixColumnName(String columnName) {
 		columnName = columnName.replaceAll("\\.nex", "");
 		columnName = columnName.replaceAll("\\.tnt", "");
