@@ -1,0 +1,5 @@
+SequenceMatrix Changelog
+========================
+
+- development
+    - Added code to detect overlapping codonsets on input (#19).
