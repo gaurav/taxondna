@@ -352,9 +352,19 @@ public class FileManager implements FormatListener {
 
 			mb.go();
 
+			// Clear any incomplete hashmap_codonsets which might have been set.
+			synchronized(hashmap_codonsets) {
+				hashmap_codonsets.clear();
+			}
+
 			return null;
 
 		} catch (DelayAbortedException e) {
+			// Clear any incomplete hashmap_codonsets which might have been set.
+			synchronized(hashmap_codonsets) {
+				hashmap_codonsets.clear();
+			}
+
 			return null;
 		}
 
@@ -553,17 +563,16 @@ public class FileManager implements FormatListener {
 			if (positions_3 == null) {
 				positions_3 = new ArrayList<FromToPair>();
 
-				// It would be nice if we could go through these sets and "compress"
-				// them down (i.e. 'position 1 = 1, 2, 3' => 'position 1 = 1-3'). But
-				// hopefully we'll be fast enough without.
-				//
-				// If not, you know what TODO.
-
-				// Okay, so now we have a set of positional data sets. Rest of this
-				// kinda runs the way it's always run.
-				// BUT FIRST! Make sure we don't have any overlapping sets.
-				
 			}
+
+			// It would be nice if we could go through these sets and "compress"
+			// them down (i.e. 'position 1 = 1, 2, 3' => 'position 1 = 1-3'). But
+			// hopefully we'll be fast enough without.
+			//
+			// If not, you know what TODO.
+
+			// Okay, so now we have a set of positional data sets. Rest of this
+			// kinda runs the way it's always run.
 
 			// Okay, now proceed with the rest of our algorithm.
 			Iterator<String> i_sets = hashmap_codonsets.keySet().iterator();
@@ -1524,8 +1533,69 @@ public class FileManager implements FormatListener {
 				String name = evt.name;
 				int from = evt.from;
 				int to = evt.to;
+				FromToPair ftp = new FromToPair(from, to);
 
 				synchronized (hashmap_codonsets) {
+					// Make sure characters aren't double-counted. This is a
+					// somewhat complex set of rules:
+					//	1.	CodonPosSets can overlap with all other datasets
+					//		*except* other CPSs.
+					//	2.	Other characters cannot overlap with any other
+					//		non-CPS datasets.
+					//	3.	'N' can overlap with anything (TODO: make this compare).
+					if(name.startsWith(":") && !name.equals(":0")) {
+						// CodonPosSet! Compare against all other codonpossets.
+
+						for(String compare_to: hashmap_codonsets.keySet()) {
+							// Only compare against other codonpossets.
+							if(!compare_to.startsWith(":") || compare_to.equals(":0"))
+								continue;
+
+							ArrayList<FromToPair> compare_list =
+									hashmap_codonsets.get(compare_to);
+							for(FromToPair compare_ftp: compare_list) {
+								//System.err.println("Comparing position " + name + ":" + ftp + " with position " + compare_to + ":" + compare_ftp + " -> " + ftp.overlapsMovesInThrees(compare_ftp));
+								if(compare_ftp.overlapsMovesInThrees(ftp)) {
+									String pos = name.substring(1);				// Eliminate the leading ':'.
+									String compare_pos = compare_to.substring(1);		// Eliminate the leading ':'.
+
+									throw new FormatException(
+										"Sequence Matrix cannot handle overlapping character sets, including " +
+										"in codon positional data. In this file, " +
+										"position #" + pos + " (" + ftp + ") overlaps with " +
+										"position #" + compare_pos + " (" + compare_ftp + ").\n\n" +
+										"Please rectify this in the input file, or report a bug if " +
+										"there is no overlap between these two codon positions."
+									);
+								}
+							}
+						}
+
+					} else {
+						// Not a codonposset. Compare against all other
+						// non-codonpossets.
+						for(String compare_to: hashmap_codonsets.keySet()) {
+							// Don't compare against codonpossets.
+							if(compare_to.startsWith(":"))
+								continue;
+
+							ArrayList<FromToPair> compare_list =
+									hashmap_codonsets.get(compare_to);
+							for(FromToPair compare_ftp: compare_list) {
+								//System.err.println("Comparing " + name + ":" + ftp + " with " + compare_to + ":" + compare_ftp + " -> " + ftp.overlaps(compare_ftp));
+								if(compare_ftp.overlaps(ftp)) {
+									throw new FormatException(
+										"Sequence Matrix cannot handle overlapping datasets. In this file, " +
+										"character set " + name + " (" + ftp + ") overlaps with " +
+										"character set " + compare_to + " (" + compare_ftp + ").\n\n" +
+										"Please rectify this in the input file, or report a bug if " +
+										"there is no overlap between these character sets."
+									);
+								}
+							}
+						}
+					}
+
 					// If there's an ArrayList already in the dataset under this name,
 					// add to it. If there isn't, make it.
 
@@ -1533,10 +1603,10 @@ public class FileManager implements FormatListener {
 
 					if (hashmap_codonsets.get(name) != null) {
 						ArrayList<FromToPair> al = hashmap_codonsets.get(name);
-						al.add(new FromToPair(from, to));
+						al.add(ftp);
 					} else {
 						ArrayList<FromToPair> al = new ArrayList<FromToPair>();
-						al.add(new FromToPair(from, to));
+						al.add(ftp);
 						hashmap_codonsets.put(name, al);
 					}
 				}
