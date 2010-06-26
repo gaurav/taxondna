@@ -78,6 +78,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	// analyses
 	public FindDistances	findDistances		= new FindDistances(this); // helps you find distances
 
+	// webhandler
+	public WebHandler		webHandler = new WebHandler(this);
+
 	// CheckboxMenuItems corresponding to the possible 'views' the program can be in.
 	private CheckboxMenuItem chmi_displaySequences	= null;
 	private CheckboxMenuItem chmi_displayDistances 	= null;

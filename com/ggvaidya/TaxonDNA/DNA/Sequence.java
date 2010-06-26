@@ -2216,4 +2216,12 @@ public class Sequence  implements Comparable, Testable {
 
 		Sequence.setMinOverlap(oldMinOverlap);
 	}
+
+	/**
+	 * All 'Sequence' objects are DNA only.
+	 * @return True.
+	 */
+	public boolean isDNA() {
+		return true;
+	}
 }

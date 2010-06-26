@@ -825,6 +825,9 @@ class ToolbarManager implements ActionListener {
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
+		btn = new JButton("BLAST this sequence");
+		btn.addActionListener(this);
+		toolbar.add(btn);
 
 		setToolbarStatus("", "");
 
@@ -931,6 +934,15 @@ class ToolbarManager implements ActionListener {
                 if(cmd.equals("Find distances")) {
                     tm.matrix.findDistances.go();
                 }
+
+		if(cmd.equals("BLAST this sequence")) {
+			if(currentSeqName != null && currentCharsetName != null)
+				tm.matrix.webHandler.BLASTSequence(
+					tm.getSequence(currentCharsetName, currentSeqName),
+					currentSeqName,
+					currentCharsetName
+				);
+		}
 	}
 
 	public String getCurrentColumn() {

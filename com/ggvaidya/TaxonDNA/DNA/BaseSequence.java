@@ -342,4 +342,13 @@ public class BaseSequence extends Sequence {
 
 		// done!
 	}
+
+	/**
+	 * BaseSequences (and their children) do not ordinarily contain
+	 * DNA.
+	 * @returns False.
+	 */
+	public @Override boolean isDNA() {
+		return false;
+	}
 }
