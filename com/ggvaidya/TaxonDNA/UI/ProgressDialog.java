@@ -31,7 +31,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2005, 2006	Gaurav Vaidya
+    Copyright (C) 2005, 2006, 2010	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -69,12 +69,41 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	private boolean		abort = false;
 
 	private ProgressBar	pi;
-	
+
+	private static ProgressDialog singleton;
+
+	/**
+	 *
+	 * @param f
+	 * @param title
+	 * @param message
+	 * @param flags (currently ignored) Can be FLAG_NOMODAL or FLAG_NOCANCEL or both OR'd together.
+	 * @return
+	 */
+	public static ProgressDialog create(Frame f, String title, String message, int flags) {
+		if(singleton == null)
+			singleton = new ProgressDialog(f, title, message, 0);
+		else {
+			singleton.setTitle(title);
+			singleton.setMessage(message);
+
+			singleton.reset();
+
+			singleton.pack();
+		}
+
+		return singleton;
+	}
+
+	public static ProgressDialog create(Frame f, String title, String message) {
+		return ProgressDialog.create(f, title, message, 0);
+	}
+
 	/**
 	 * Creates a ProgressDialog, which, like any dialog, doesn't actually do
 	 * anything magical until you call begin().
 	 */
-	public ProgressDialog(Frame f, String title, String message, int flags) {
+	private ProgressDialog(Frame f, String title, String message, int flags) {
 		super(f, title, ((flags & FLAG_NOMODAL) == 0));
 
 		frame = f;
@@ -96,12 +125,13 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 		pi = new ProgressBar("Please wait ...");
 		south.add(pi);
 
+		/*
 		if((flags & FLAG_NOCANCEL) == 0) {
 			Button btnAbort = new Button("Cancel");
 			btnAbort.setActionCommand("Cancel");
 			btnAbort.addActionListener(this);
 			south.add(btnAbort, BorderLayout.EAST);
-		}
+		}*/
 
 		addWindowListener(this);
 
@@ -109,12 +139,20 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 
 		pack();
 	}
+	
+	public void setTitle(String title) {
+		super.setTitle(title);
+		this.title = title;
+	}
 
-	/**
-	 * Constructor without the flags. For those who don't have anything special to add.
-	 */
-	public ProgressDialog(Frame f, String title, String message) {
-		this(f, title, message, 0);
+	public void setMessage(String message) {
+		textarea.setText(message);
+		this.message = message;
+	}
+
+	public void reset() {
+		pi.changeIndicator(0, 0);
+		lastPercentage = 0;
 	}
 
 	/**
@@ -129,6 +167,7 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	 * Our begin() creates a new thread for the ProgressDialog to run in.
 	 */
 	public void begin() {
+		//System.err.println("begin() called");
 		new Thread(this, "Progress Dialog").start();
 	}
 
@@ -138,7 +177,9 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 	 * modal (and blocking input to the mainFrame).
 	 */
 	public void run() {
+		//System.err.println("run() began");
 		setVisible(true);
+		//System.err.println("run() ended");
 	}
 
 	/**
@@ -152,7 +193,7 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 		while(!isVisible())
 			;
 		setVisible(false);
-		dispose();
+		//dispose(); -- TODO: Don't dispose of it! Leave it in 'singleton' for us to find.
 
 		if(warnings_added) {
 			MessageBox mb = new MessageBox(frame,
@@ -160,6 +201,9 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 				"The following warnings were generated:\n" + buff_warnings.toString(),
 				MessageBox.MB_OK | MessageBox.MB_TITLE_IS_UNIQUE);
 			mb.go();
+
+			warnings_added = false;
+			buff_warnings = new StringBuffer();
 		}
 	}
 
@@ -177,9 +221,11 @@ public class ProgressDialog extends Dialog implements DelayCallback, ActionListe
 		if(!isVisible())
 			return;
 
+		//System.err.println("delay(" + done + ", " + total + " called");
+
 		float percentage = (float)done / total * 100;
 		if(percentage == 0 || Math.abs(percentage - lastPercentage) > 0.5) {
-			textarea.setText(message + "\n\nPercentage done: " + percentage + "%");	
+			textarea.setText(message + "\n\nPercentage done: " + percentage + "%");
 			pi.changeIndicator(done, total);
 			lastPercentage = percentage;
 		}

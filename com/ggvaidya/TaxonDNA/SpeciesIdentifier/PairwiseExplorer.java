@@ -128,7 +128,7 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 					intra = new PairwiseDistances(
 						list, 
 						PairwiseDistances.PD_INTRA, 
-						new ProgressDialog(
+						ProgressDialog.create(
 							identifier.getFrame(), 
 							"Calculating pairwise distances", 
 							"All intraspecific pairwise distances are being calculated. Sorry for the delay!", 0
@@ -141,7 +141,7 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 					inter = new PairwiseDistances(
 						list, 
 						PairwiseDistances.PD_INTER, 
-						new ProgressDialog(
+						ProgressDialog.create(
 							identifier.getFrame(), 
 							"Calculating pairwise distances", 
 							"All interspecific, congeneric pairwise distances are being calculated. Sorry for the delay!", 0

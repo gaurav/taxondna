@@ -140,7 +140,7 @@ public class ViewManager implements MouseListener {
 		clear();
 
 		try {
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 					explorer.getFrame(),
 					"Please wait, loading file ...",
 					"Loading GenBank file " + f.getAbsolutePath() + ". Sorry for the delay!");
@@ -218,7 +218,7 @@ public class ViewManager implements MouseListener {
 	}
 
 	public ProgressDialog makeProgressDialog(String title, String message) {
-		return new ProgressDialog(explorer.getFrame(), title, message);
+		return ProgressDialog.create(explorer.getFrame(), title, message);
 	}
 
 // 	DISPLAY MODE SWITCHING/HANDLING CODE

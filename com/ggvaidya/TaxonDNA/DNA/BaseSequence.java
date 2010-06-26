@@ -204,7 +204,7 @@ public class BaseSequence extends Sequence {
 		java.io.StringReader r = new java.io.StringReader(getSequence());
 		StringBuffer output = new StringBuffer();
 
-		System.err.println("Base.cut: from: " + from + " to: " + to);
+		//System.err.println("Base.cut: from: " + from + " to: " + to);
 
 		boolean writing = false;
 		int char_at = 0;
@@ -259,10 +259,10 @@ public class BaseSequence extends Sequence {
 		}
 
 		String seq_str = output.toString();
-		System.err.println("What've we got: " + seq_str);
+		//System.err.println("What've we got: " + seq_str);
 		Sequence seq = BaseSequence.createSequence(getFullName() + " (segment:" + from + "-" + to + ":inclusive)", seq_str);
 		
-		System.err.println("Ended up with: " + seq);
+		//System.err.println("Ended up with: " + seq);
 		
 		return seq;
 	}

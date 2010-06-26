@@ -193,6 +193,8 @@ public class DirectoryInputPanel extends Panel implements ActionListener, TextLi
 
 					tf.setText(f.getAbsolutePath());
 					return f;
+				} else {
+					return null;
 				}
 			}
 		}

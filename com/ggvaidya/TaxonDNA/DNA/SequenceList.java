@@ -99,10 +99,11 @@ public class SequenceList implements List, Testable {
 	private static void initFormatHandlers() {
 		if(formatHandlers.size() == 0) {
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
-			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
+			//formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.MegaFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.NexusFile());
 			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.TNTFile());
 //			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.SequencesFile());
+//			formatHandlers.add(new com.ggvaidya.TaxonDNA.DNA.formats.PhylipFile());
 
 			formatsHandled = "Fasta, Mega, Nexus, TNT and Sequences";
 		}
@@ -157,7 +158,7 @@ public class SequenceList implements List, Testable {
 			
 		} catch(SequenceException e) {
 			throw new SequenceListException(
-					"Atleast one of the sequences in the file (with the name '" + 
+					"At least one of the sequences in the file (with the name '" +
 					e.getMalformedSequenceName() + "') has a problem with it. " +
 					"Please check the sequence and ensure that it does not contain " +
 					"illegal characters (such as '_').\nThe error reported is: " + e, e);

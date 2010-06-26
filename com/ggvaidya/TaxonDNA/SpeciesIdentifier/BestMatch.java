@@ -215,7 +215,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		SpeciesDetails sd = null;
 		try {
 			sd = set.getSpeciesDetails(
-					new ProgressDialog(
+					ProgressDialog.create(
 						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
@@ -228,7 +228,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		*/
 
 		// set up us the ProgressDialog
-		ProgressDialog pd = new ProgressDialog(
+		ProgressDialog pd = ProgressDialog.create(
 				seqId.getFrame(), 
 				"Please wait, doing best match analysis ...", 
 				"The best match analysis is being performed. Sorry for the wait!", 

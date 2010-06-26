@@ -74,7 +74,7 @@ public class Commands {
         cmd = cmd.toLowerCase();
 
         if(cmd.equals("version")) {
-            output("This is TaxonDNA/SequenceMatrix v" + Versions.getTaxonDNA());
+            output("This is SequenceMatrix v" + Versions.getTaxonDNA());
         } else if(cmd.equals("add")) {
             String filename = (String) arguments.remove(0);
 

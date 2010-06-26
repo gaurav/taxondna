@@ -179,7 +179,7 @@ public class FindDistances implements WindowListener, ActionListener {
                     vec_colNames.add(colName_to_use);  
 
                 // Calculation time!
-                ProgressDialog pd = new ProgressDialog(
+                ProgressDialog pd = ProgressDialog.create(
                         fr_findDistances,
                         "Please wait, calculating pairwise distances ...",
                         "Calculating all pairwise distances, please wait! This will take a long time."
@@ -249,7 +249,7 @@ public class FindDistances implements WindowListener, ActionListener {
                         }
                 }
 
-                // Get rid of duplicates (X <-> Y and Y <-> X).
+                // TODO: Get rid of duplicates (X <-> Y and Y <-> X).
 
                 StringBuffer buff = new StringBuffer();
                 Collections.sort(results);

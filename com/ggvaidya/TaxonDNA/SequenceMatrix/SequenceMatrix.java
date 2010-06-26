@@ -19,7 +19,7 @@
 /*
  *
  *  SequenceMatrix
- *  Copyright (C) 2006, 2007, 2009 Gaurav Vaidya
+ *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
  *  
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -199,7 +199,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the citation used by SequenceMatrix.
 	 */
 	public String getCitation() {
-		return "Meier, R., Kwong, S., Vaidya, G., Ng, Peter K. L. DNA Barcoding and Taxonomy in Diptera: a Tale of High Intraspecific Variability and Low Identification Success. Systematic Biology, 55: 715-728.";
+		return "Vaidya, G., D. J. Lohman, R. Meier. SequenceMatrix: concatenation software for the fast assembly of multigene datasets with character set and codon information. Cladistics, accepted.";
 	}
 
 //
@@ -215,7 +215,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		// File -> New. Just close the present file. 
 		// 
-		if(cmd.equals("Clear all"))
+		if(cmd.equals("Clear all sequences"))
 			tableManager.clear();
 
 		//
@@ -280,7 +280,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileManager.exportTableAsTabDelimited();
 		
 		// Export -> One file per column. 
-		if(cmd.equals("Export table as sequences (one file per column)"))
+		if(cmd.equals("Export sequences (one file per column)"))
 			fileManager.exportSequencesByColumn();
 
 		// Export -> Group columns randomly in groups of X
@@ -290,8 +290,18 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		// Export -> Export as NEXUS.
 		//
-		if(cmd.equals("Export sequences as NEXUS"))
-			fileManager.exportAsNexus();
+		if(cmd.equals("Export sequences as NEXUS (interleaved, 1000 bp)"))
+			fileManager.quickExportAsNexus();
+		
+		if(cmd.equals("Export sequences as NEXUS (non-interleaved)"))
+			fileManager.quickExportAsNexusNonInterleaved();
+
+		if(cmd.equals("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"))
+			fileManager.quickExportAsNakedNexus();
+
+		// Here if it's ever needed.
+		//if(cmd.equals("Export sequences as NEXUS (advanced)"))
+		//	fileManager.exportAsNexus();
 
 		//
 		// Export -> Export as TNT.
@@ -300,12 +310,27 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileManager.exportAsTNT();
 
 		//
+		// Export -> Export as PHYLIP
+		if(cmd.equals("Export sequences for RAxML analyses on CIPRES"))
+			fileManager.quickExportAsPhylip();
+
+		//
 		// Settings -> Taxonsets. Allows you to manipulate taxonsets. 
 		//
-		if(cmd.equals("Taxonsets"))
+		if(cmd.equals("Taxonset settings"))
 			taxonSets.go();
 
 		//
+		// Citation -> Citing SequenceMatrix
+		//
+		if(cmd.equals("Citing SequenceMatrix")) {
+			MessageBox mb = new MessageBox(mainFrame,
+					"Citing SequenceMatrix",
+					"You may cite this program as follows:\n\t" + getCitation()
+			);
+			mb.showMessageBox();
+		}
+
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
@@ -538,12 +563,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 
 		// File menu
 		Menu 	file		=	new Menu("File");
-		file.add(new MenuItem("Clear all"));
-		file.add(new MenuItem("Add sequences"));
+		file.add(new MenuItem("Clear all sequences"));
+		
 		//file.add(new MenuItem("Save"));
-                file.addSeparator();
-        
-                // Import submenu
+                
+        // Import submenu
 		Menu	imports		= 	new Menu("Import");
 
    		Iterator i = SequenceList.getFormatHandlers().iterator();
@@ -558,25 +582,56 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		}
 		
 		imports.addActionListener(this);
-		file.add(imports);
+		// Turn off imports menu.
+		//file.add(imports);
 
-                // Export submenu
-		Menu	export 		= 	new Menu("Export");
-		export.add(new MenuItem("Export table as tab-delimited"));
-		export.add(new MenuItem("Export table as sequences (one file per column)"));
-		export.add(new MenuItem("Export columns grouped randomly"));
-		export.add(new MenuItem("Export sequences as NEXUS", new MenuShortcut(KeyEvent.VK_N)));
-		export.add(new MenuItem("Export sequences as TNT"));
-		export.addActionListener(this);
-		file.add(export);
 
                 // And back to the File menu proper.
-		file.addSeparator();
 		file.add(new MenuItem("Exit", new MenuShortcut(KeyEvent.VK_X)));
 		file.addActionListener(this);
 		menubar.add(file);
+
+		// Citation menu
+		Menu	citation	=	new Menu("Citation");
+		citation.add("Citing SequenceMatrix");
+		citation.addActionListener(this);
+		menubar.add(citation);
+
+		// Import menu
+		Menu importMenu = new Menu("Import");
+		importMenu.add(new MenuItem("Add sequences"));
+		importMenu.addActionListener(this);
+		menubar.add(importMenu);
+
+
+		// Export menu
+		Menu	export 		= 	new Menu("Export");
+		export.add(new MenuItem("Taxonset settings"));
+
+		export.addSeparator();
 		
-		// View menu
+		export.add(new MenuItem("Export sequences as TNT"));
+		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
+		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
+		export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"));
+		export.add(new MenuItem("Export sequences for RAxML analyses on CIPRES"));
+
+		export.addSeparator();
+
+		export.add(new MenuItem("Export sequences (one file per column)"));
+
+		export.addSeparator();
+
+		export.add(new MenuItem("Export table as tab-delimited"));
+
+
+		//export.add(new MenuItem("Export columns grouped randomly"));
+
+		//export.add(new MenuItem("Export sequences as NEXUS (advanced)"));
+		export.addActionListener(this);
+		menubar.add(export);
+
+				// View menu
 		Menu	view		=	new Menu("View");
 
 		// New view menu
@@ -601,18 +656,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 */
 		view.addActionListener(this);
 		menubar.add(view);
-
-		// Settings menu
-		Menu 	settings	=	new Menu("Settings");
-		settings.add(new MenuItem("Taxonsets"));
-		settings.addActionListener(this);
-		menubar.add(settings);
-
+		
 		// Help menu
 		Menu	help		=	new Menu("Help");
 		help.add("About SequenceMatrix");
 		help.addActionListener(this);
-		menubar.add(help);
+		//menubar.add(help);
 		
 		return menubar;
 	}
@@ -634,6 +683,6 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 * Returns the name of this program, i.e. "SequenceMatrix" with appropriate versioning information.
 	 */
 	public String getName() {
-		return "TaxonDNA/SequenceMatrix " + Versions.getTaxonDNA();
+		return "SequenceMatrix " + Versions.getTaxonDNA();
 	}
 }

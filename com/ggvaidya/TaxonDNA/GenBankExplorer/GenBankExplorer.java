@@ -192,7 +192,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 			try {
 				PrintWriter pw = new PrintWriter(new FileWriter(f));
 
-				ProgressDialog pd = new ProgressDialog(
+				ProgressDialog pd = ProgressDialog.create(
 						mainFrame,
 						"Please wait, exporting file ...",
 						"I'm exporting the current file to '" + f.getAbsolutePath() + "'. Sorry for making you wait!");
