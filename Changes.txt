@@ -2,6 +2,7 @@ SequenceMatrix Changelog
 ========================
 
 - development
+    - Basic BLAST single sequence (#50).
 
 - 1.7.6 (June 6, 2010)
     - Added code to detect overlapping codonsets on input (#19).
