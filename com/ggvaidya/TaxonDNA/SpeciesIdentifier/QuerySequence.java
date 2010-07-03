@@ -121,7 +121,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 	private void query(String string_sequence) {
 		text_sequence.setText(string_sequence);
 
-			Sequence query = null;
+			DNASequence query = null;
 			map_index = new Hashtable();
 			
 		SequenceList set = seqId.lockSequenceList();
@@ -141,7 +141,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 						buff.append(x.charAt(c));
 				}
 				
-				query = new Sequence("Query", buff.toString());
+				query = new DNASequence("Query", buff.toString());
 				seqId.lockSequenceList();
 				try {
 					sset.sortAgainst(query, ProgressDialog.create(seqId.getFrame(), "Please wait, calculating distances ...", "All the pairwise distances are being calculated. Please wait.", 0));
@@ -189,7 +189,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 	/**
 	 * Selects the QuerySequence panel, and performs a query of Sequence 'seq'.
 	 */
-	public void query(Sequence seq) {
+	public void query(DNASequence seq) {
 		text_sequence.setText(seq.getSequence());
 		seqId.goToExtension(getShortName());
 		query(seq.getSequence());
@@ -223,11 +223,11 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 		text_score.setText(str);
 	}
 
-	private void displayDetails(Sequence seq) {
+	private void displayDetails(DNASequence seq) {
 		StringBuffer str = new StringBuffer();
 		
 		if(seq != null && sset != null) {
-			Sequence query = sset.getQuery();
+			DNASequence query = sset.getQuery();
 			double pairwise = seq.getPairwise(query);
 			String str_pairwise = new String("" + percentage(seq.getPairwise(query), 1));
 					
@@ -286,7 +286,7 @@ public class QuerySequence extends Panel implements UIExtension, ActionListener,
 					ch2 = seq.getSequence().charAt(x);
 				}
 
-				str_compare.append(Sequence.getmatch(ch1, ch2));
+				str_compare.append(DNASequence.getmatch(ch1, ch2));
 			}
 			text_compare.setText("Query:   " + query.getSequence() + "\n" + "         " + str_compare.toString() + "\n" + "Compare: " + seq.getSequence());
 		}	

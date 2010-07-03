@@ -204,7 +204,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			Iterator i = list.iterator();
 			Hashtable species = new Hashtable();
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 	
 				Integer integer = (Integer) species.get(seq.getSpeciesName());
 				if(integer == null) {
@@ -217,7 +217,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 
 			i = list.iterator();
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 
 				Integer integ = (Integer) species.get(seq.getSpeciesName());
 
@@ -354,10 +354,10 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			// TODO: Make this faster, if I ever get the time to.
 			SequenceList list = seqId.lockSequenceList();
 			list.resort(SequenceList.SORT_BYNAME);
-			Sequence seq = null;
+			DNASequence seq = null;
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
-				Sequence seq_x = (Sequence) i.next();	
+				DNASequence seq_x = (DNASequence) i.next();
 
 				if(seq_x.getSpeciesName().equals(seqName)) {
 					seq = seq_x;
@@ -432,7 +432,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 		str.append("Number of species: " + species.count() + "\n\n");			// check
 		str.append("Number of sequences without a species name: " + species.getSequencesWithoutASpeciesNameCount()+ "\n\n");
 												// check
-		str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
+		str.append("Number of sequences shorter than " + DNASequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
 		
 		str.append("Number of sequences with atleast one valid conspecific sequence: " + species.getSequencesWithValidConspecificsCount() + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(species.getSequencesWithValidConspecificsCount(), list.count()) + "%)\n");
 		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all species)\n");
@@ -628,7 +628,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 				System.err.println("cons found");
 
 				while(i_sp.hasNext()) {
-					Sequence seq = (Sequence) i_sp.next();
+					DNASequence seq = (DNASequence) i_sp.next();
 					sl_exp.add(seq);
 				}
 

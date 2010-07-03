@@ -317,7 +317,7 @@ public class ClustalMapping implements ActionListener {
 		Pattern pSequenceDDD = Pattern.compile("^seq(.*)$");
 		Iterator i = set_final.iterator();
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 			String name = seq.getFullName();
 
 			Matcher m = pSequenceDDD.matcher(name);
@@ -333,7 +333,7 @@ public class ClustalMapping implements ActionListener {
 					Iterator iMap = set_map.iterator();
 
 					while(iMap.hasNext()) {
-						Sequence seq2 = (Sequence) iMap.next();
+						DNASequence seq2 = (DNASequence) iMap.next();
 						
 						// gi number? 
 						String compareTo = "gi|" + no + "|";
@@ -411,7 +411,7 @@ public class ClustalMapping implements ActionListener {
 		Iterator i = list.iterator();
 
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 
 			String id = seq.getGI();
 			if(id == null || id.equals("")) {
@@ -504,7 +504,7 @@ public class ClustalMapping implements ActionListener {
 			Iterator i = set.iterator();
 			int no = 0;			
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 				String id = seq.getGI();
 
 				if(id == null || id.equals("")) {

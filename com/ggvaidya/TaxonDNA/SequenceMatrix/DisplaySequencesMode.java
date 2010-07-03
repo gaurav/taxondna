@@ -245,7 +245,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		return (java.util.List ) v;
 	}
 
-        public String getValueAt(String colName, String seqName, Sequence seq) {
+        public String getValueAt(String colName, String seqName, DNASequence seq) {
 		// if it's the total length column, return the total length columns
 		if(colName.equalsIgnoreCase("Total length"))
 			return tableManager.getSequenceLength(seqName) + " bp";

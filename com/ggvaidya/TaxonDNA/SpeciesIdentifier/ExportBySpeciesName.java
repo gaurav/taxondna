@@ -120,7 +120,7 @@ public class ExportBySpeciesName extends Panel implements UIExtension, ActionLis
 			
 			Iterator i = list.iterator();
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 				
 				Iterator i_names = vec_species_names.iterator();
 				int x = 0;

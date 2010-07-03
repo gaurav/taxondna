@@ -235,8 +235,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			for(int y = 0; y < sequencesList.size(); y++) {
 				String seqName = (String) sequencesList.get(y);
 
-				Sequence seq = tableManager.getSequence(colName, seqName);
-				Sequence seq_compare = tableManager.getSequence(colName, seqName_top);
+				DNASequence seq = tableManager.getSequence(colName, seqName);
+				DNASequence seq_compare = tableManager.getSequence(colName, seqName_top);
 
 				double dist = DIST_ILLEGAL;
 				if(seq_compare == null) {
@@ -458,7 +458,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 		// I've got nothing to say, but it's okay
 	}
 
-	public String getValueAt(String colName, String rowName, Sequence seq) {
+	public String getValueAt(String colName, String rowName, DNASequence seq) {
 		// ignore
 		return null;
 	}
@@ -473,7 +473,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 			String rowName = getRowName(row);
 
 			// now, now, don't be STUPID.
-			Sequence seq = tableManager.getCancelledSequence(colName, rowName);
+			DNASequence seq = tableManager.getCancelledSequence(colName, rowName);
 
 			if(seq != null) {
 				tableManager.toggleCancelled(colName, rowName);

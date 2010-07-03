@@ -82,7 +82,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 	public abstract List getAdditionalColumns();
 	public abstract List getSortedColumns(Set colNames);
 	public abstract List getSortedSequences(Set seqNames);
-	public abstract String getValueAt(String colName, String seqName, Sequence seq);
+	public abstract String getValueAt(String colName, String seqName, DNASequence seq);
 	public abstract void setValueAt(String colName, String seqName, Object aValue);
 
 //
@@ -131,7 +131,7 @@ public abstract class DisplayMode implements TableModel, MouseListener {
 		} else if(columnIndex < additionalColumns) {
 			return getValueAt(colName, rowName, null);
 		} else {
-			Sequence seq = tableManager.getSequence(colName, rowName);
+			DNASequence seq = tableManager.getSequence(colName, rowName);
 
 			return getValueAt(colName, rowName, seq);
 		}

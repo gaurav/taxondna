@@ -295,12 +295,12 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		int oldSort = list.resort(SequenceList.SORT_BYNAME);
 		
 		LinkedList ll = new LinkedList();
-		Sequence best_seq = null;
+		DNASequence best_seq = null;
 		int current_best_length = -1;
 		Iterator i = list.iterator();
 		String lastName = "";
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 			String seqName = seq.getSpeciesName();
 
 			if(seqName == null)	// skip the nameless ones
@@ -444,7 +444,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
 		try {
 			while(i.hasNext()) {
-				Sequence s = (Sequence)i.next();
+				DNASequence s = (DNASequence)i.next();
 
 				count++;
 				try {
@@ -534,7 +534,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 	 * This function processes the name of a sequence
 	 * (based on the settings provided) and returns it.
 	 */
-	private String getSequenceName(Sequence seq) {
+	private String getSequenceName(DNASequence seq) {
 		String name = "";
 		int whatToOutput = choice_whatToOutput.getSelectedIndex();
 			// 0 = full name
@@ -567,7 +567,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		String genus = seq.getGenusName();
 		int genus_length = genus.length();
 
-		String species = seq.getSpeciesNameOnly();
+		String species = seq.getSpeciesEpithet();
 		int species_length = species.length();
 
 		String gi = seq.getGI();

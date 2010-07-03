@@ -258,7 +258,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		Pattern pSequenceDDD = Pattern.compile("^seq(.*)$");
 		Iterator i = set_final.iterator();
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 			String name = seq.getFullName();
 
 			Matcher m = pSequenceDDD.matcher(name);
@@ -274,7 +274,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 					Iterator iMap = set_map.iterator();
 
 					while(iMap.hasNext()) {
-						Sequence seq2 = (Sequence) iMap.next();
+						DNASequence seq2 = (DNASequence) iMap.next();
 						
 						// gi number? 
 						String compareTo = "gi|" + no + "|";
@@ -349,7 +349,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		list.lock();
 		
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 
 			String id = seq.getGI();
 			if(id == null || id.equals("")) {
@@ -440,7 +440,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 			Iterator i = set.iterator();
 			int no = 0;			
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 				String id = seq.getGI();
 
 				if(id == null || id.equals("")) {

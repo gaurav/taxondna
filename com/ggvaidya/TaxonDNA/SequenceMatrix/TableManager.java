@@ -269,11 +269,11 @@ public class TableManager implements ActionListener {
 	 * return 'null' when (colName, seqName) is cancelled. Just a
 	 * reminder, like.
 	 */
-	public Sequence getSequence(String colName, String seqName) {
+	public DNASequence getSequence(String colName, String seqName) {
 		return dataStore.getSequence(colName, seqName);
 	}
 
-	public Sequence getCancelledSequence(String colName, String seqName) {
+	public DNASequence getCancelledSequence(String colName, String seqName) {
 		return dataStore.getCancelledSequence(colName, seqName);
 	}
 
@@ -379,7 +379,7 @@ public class TableManager implements ActionListener {
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
 			
-			Sequence seq = dataStore.getSequence(colName, seqName);
+			DNASequence seq = dataStore.getSequence(colName, seqName);
 			if(seq != null)
 				sl.add(seq);
 		}

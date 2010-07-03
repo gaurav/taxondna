@@ -66,9 +66,9 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 	public static double	DIST_SEQ_ON_TOP		=	-1024.0;
 	public static double 	DIST_CANCELLED		=	-2048.0;
 
-	private int		currentDistanceMethod	=	Sequence.PDM_TRANS_ONLY;
+	private int		currentDistanceMethod	=	DNASequence.PDM_TRANS_ONLY;
 	private int		oldOverlap		=	0;
-	private int		oldDistanceMode		=	Sequence.PDM_UNCORRECTED;
+	private int		oldDistanceMode		=	DNASequence.PDM_UNCORRECTED;
 
 	private CheckboxMenuItem chmi_uncorrected	=	new CheckboxMenuItem("Uncorrected pairwise distances");
 	private CheckboxMenuItem chmi_k2p		=	new CheckboxMenuItem("K2P distances");
@@ -153,11 +153,11 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 //
 	private TableCellRenderer static_oldRenderer = null;
 	public void activateDisplay(JTable table, Object argument) {
-		oldOverlap = Sequence.getMinOverlap();
-		oldDistanceMode = Sequence.getPairwiseDistanceMethod();
+		oldOverlap = DNASequence.getMinOverlap();
+		oldDistanceMode = DNASequence.getPairwiseDistanceMethod();
 
-		Sequence.setMinOverlap(1);		// don't think we'll have to change this!
-		Sequence.setPairwiseDistanceMethod(currentDistanceMethod);
+		DNASequence.setMinOverlap(1);		// don't think we'll have to change this!
+		DNASequence.setPairwiseDistanceMethod(currentDistanceMethod);
 
 		super.activateDisplay(table, argument);
 
@@ -169,8 +169,8 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 	}
 
 	public void deactivateDisplay() {
-		Sequence.setMinOverlap(oldOverlap);
-		Sequence.setPairwiseDistanceMethod(oldDistanceMode);
+		DNASequence.setMinOverlap(oldOverlap);
+		DNASequence.setPairwiseDistanceMethod(oldDistanceMode);
 
 //		table.setModel(null);		-- CANNOT - you better pick it up on the next activateDisplay()!
 		table.setDefaultRenderer(String.class, static_oldRenderer);	// back to before
@@ -254,8 +254,8 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 			for(int y = 0; y < sequencesList.size(); y++) {
 				String seqName = (String) sequencesList.get(y);
 
-				Sequence seq = tableManager.getSequence(colName, seqName);
-				Sequence seq_compare = tableManager.getSequence(colName, seqName_top);
+				DNASequence seq = tableManager.getSequence(colName, seqName);
+				DNASequence seq_compare = tableManager.getSequence(colName, seqName_top);
 
 				double dist = DIST_ILLEGAL;
 				if(seq_compare == null) {
@@ -486,7 +486,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		// I've got nothing to say, but it's okay
 	}
 
-	public String getValueAt(String colName, String rowName, Sequence seq) {
+	public String getValueAt(String colName, String rowName, DNASequence seq) {
 		// ignore
 		return null;
 	}
@@ -662,13 +662,13 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		// now: the only question to remain is, who-dun-it?
 		//
 		if(chmi_uncorrected.equals(chmi_last))
-			currentDistanceMethod = Sequence.PDM_UNCORRECTED;
+			currentDistanceMethod = DNASequence.PDM_UNCORRECTED;
 		
 		if(chmi_k2p.equals(chmi_last))
-			currentDistanceMethod = Sequence.PDM_K2P;
+			currentDistanceMethod = DNASequence.PDM_K2P;
 
 		if(chmi_trans.equals(chmi_last))
-			currentDistanceMethod = Sequence.PDM_TRANS_ONLY;
+			currentDistanceMethod = DNASequence.PDM_TRANS_ONLY;
 
 		// now, recalculate the values, etc.
 		tableManager.changeDisplayMode(TableManager.DISPLAY_DISTANCES);

@@ -151,7 +151,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		count = 0;
 		while(i.hasNext()) {
 			boolean found = false;
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 
 			count++;
 			try {
@@ -167,7 +167,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 				Iterator group_i = groups.iterator();
 				while(group_i.hasNext()) {
 					Vector	v	= (Vector) group_i.next();
-					Sequence seq2	= (Sequence) v.get(0);
+					DNASequence seq2	= (DNASequence) v.get(0);
 
 					if(seq2.getSpeciesName() == null)
 						continue;
@@ -212,7 +212,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 			delay.delay(set.count() + count, set.count() * 2);
 			
 			if(group.size() == 1) {
-				results.add((Sequence)group.get(0));	
+				results.add((DNASequence)group.get(0));
 			} else {
 				int count_sequences = group.size();
 				int length = set.getMaxLength();
@@ -225,10 +225,10 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 					char ch2 = '?';
 					
 					for(int y = 0; y < count_sequences; y++) {
-						String str = ((Sequence)group.get(y)).getSequence();
+						String str = ((DNASequence)group.get(y)).getSequence();
 
 						if(name.equals("")) {
-							name = ((Sequence)group.get(y)).getSpeciesName();
+							name = ((DNASequence)group.get(y)).getSpeciesName();
 						}
 						
 						if(x < str.length())
@@ -239,11 +239,11 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 						if(ch == '?')
 							ch = ch2;
 						
-						if(Sequence.identical(ch, ch2)) {
+						if(DNASequence.identical(ch, ch2)) {
 							found_in++;
 						} 
 						
-						ch = Sequence.consensus(ch, ch2);
+						ch = DNASequence.consensus(ch, ch2);
 						if(ch == '_')
 							ch = '-';
 					}
@@ -288,7 +288,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 
 				String str = buff.toString().replace('_', '-');
 //				System.err.println("Consensus of " + name + " (" + count_sequences + "): " + str);
-				results.add(new Sequence(name + " (barcode of " + count_sequences + " sequences)", str));
+				results.add(new DNASequence(name + " (barcode of " + count_sequences + " sequences)", str));
 			}
 		}
 

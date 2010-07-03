@@ -235,7 +235,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 
 		Iterator i = set.iterator();
 		while(i.hasNext()) {
-			Sequence query =	(Sequence) i.next();
+			DNASequence query =	(DNASequence) i.next();
 			String name_query = query.getSpeciesName();
 
 			// skip it if it doesn't have a species name
@@ -277,7 +277,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 				block_nomatches = true;
 			} else {
 				for(int y = 2; y < sset.count(); y++) {
-					Sequence match = sset.get(y);
+					DNASequence match = sset.get(y);
 
 					// if match doesn't have a species name, we can ignore
 					// it at this point: we've already tested 'query' about,
@@ -346,7 +346,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 		text_main.setText(
 				"Sequences:\t" + count_sequences + 
 				"\nSequences without valid species names:\t" + count_seq_without_species_name + 
-				"\nSequences with atleast one sequence with an overlap of " + Sequence.getMinOverlap() + " base pairs:\t" + valid_sequences +
+				"\nSequences with atleast one sequence with an overlap of " + DNASequence.getMinOverlap() + " base pairs:\t" + valid_sequences +
 				"\n\nCorrect identifications according to \"All Species Barcodes\":\t" + block_correct + " (" + percentage(block_correct, valid_sequences) + "%)" +
 				"\nAmbiguous according to \"All Species Barcodes\":\t" + block_ambiguous + " (" + percentage(block_ambiguous, valid_sequences) + "%)" +
 				"\nIncorrect identifications according to \"All Species Barcodes\":\t" + block_incorrect + " (" + percentage(block_incorrect, valid_sequences) + "%)" + 

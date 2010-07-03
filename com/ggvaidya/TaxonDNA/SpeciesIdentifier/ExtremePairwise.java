@@ -105,7 +105,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 				pd.delay(count, total_sequences);
 				count++;
 
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 
 				if(seq.getSpeciesName() == null) {
 					results.append(seq.getFullName() + "\tUnable to identify species name\n");
@@ -114,12 +114,12 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 
 				sorted.sortAgainst(seq, null);
 
-				Sequence seq_largestIntra = null;
+				DNASequence seq_largestIntra = null;
 				double distance_largestIntra = -1;
-				Sequence seq_smallestInter = null;
+				DNASequence seq_smallestInter = null;
 				double distance_smallestInter = -1;
 				for(int x = 0; x < sorted.count(); x++) {
-					Sequence seq2 = sorted.get(x);
+					DNASequence seq2 = sorted.get(x);
 
 					// ignore the nameless ones
 					if(seq2.getSpeciesName() == null)
@@ -146,7 +146,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 
 				// we can't go until (x >= 0), since get(0) will get the query!
 				for(int x = sorted.count() - 1; x >= 1; x--) {
-					Sequence seq2 = sorted.get(x);
+					DNASequence seq2 = sorted.get(x);
 
 					// ignore the nameless ones
 					if(seq2.getSpeciesName() == null)

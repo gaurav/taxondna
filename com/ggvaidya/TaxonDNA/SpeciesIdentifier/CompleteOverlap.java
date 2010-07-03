@@ -141,9 +141,9 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 		Iterator i = sl.iterator();
 		int x = 0;
 
-		Sequence cons = null;
+		DNASequence cons = null;
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 
 			if(cons == null)
 				cons = seq;
@@ -157,7 +157,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 					return "";
 				}
 			
-			Sequence subseq = null;
+			DNASequence subseq = null;
 			try {
 				subseq = seq.getSubsequence(from, to);
 			} catch(SequenceException e) {
@@ -415,7 +415,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 			Iterator i = sl.iterator();
 			while(i.hasNext()) {
 				int no_ambiguous_bases = 0;
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 				String str_seq = seq.getSequenceWithExternalGaps();
 
 				// now: is seq LONG enough?	
@@ -446,7 +446,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 					}
 
 					// is this character ambiguous?
-					if(Sequence.isAmbiguous(ch))
+					if(DNASequence.isAmbiguous(ch))
 						no_ambiguous_bases++;
 				}
 

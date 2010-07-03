@@ -240,9 +240,9 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 		Iterator i = set.iterator();
 
 		while(i.hasNext()) {
-			Sequence query = (Sequence) i.next();
-			Sequence first_con = null;
-			Sequence first_allo = null;
+			DNASequence query = (DNASequence) i.next();
+			DNASequence first_con = null;
+			DNASequence first_allo = null;
 
 			// notify user
 			try {
@@ -272,7 +272,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 			// begin processing
 			int count_sequences = 		sset.count();
-			Sequence bestMatch =		sset.get(1);
+			DNASequence bestMatch =		sset.get(1);
 
 			// add ourselves to the listings
 			str_listings.append(query.getDisplayName());
@@ -296,7 +296,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 			boolean mixed_block = false;
 			int count_bestMatches = 0;
 			for(int y = 2; y < count_sequences; y++) {
-				Sequence match = sset.get(y);
+				DNASequence match = sset.get(y);
 
 				if(match == null) {
 					// wtf? shouldn't happen, but say it does.
@@ -326,7 +326,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 
 			// completely independently: check for allo and conspecific matches
 			for(int y = 1; y < count_sequences; y++) {
-				Sequence match = sset.get(y);
+				DNASequence match = sset.get(y);
 
 				if(match == null) {
 					// shouldn't happen; say it does.

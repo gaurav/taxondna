@@ -113,7 +113,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 */
 	public SequenceMatrix(java.util.List cmds) {
                 // Set up DNA.Sequence to use 0 bp as the min overlap.
-                Sequence.setMinOverlap(0);
+                DNASequence.setMinOverlap(0);
 
 	        createUI();			// create our user interface
                 resetFrameTitle();

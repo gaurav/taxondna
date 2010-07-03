@@ -248,8 +248,8 @@ public class GenBankFile {
 			return value().replaceAll("\\d+", "").replaceAll("\\s+", "");
 		}
 
-		public Sequence getSequence() throws SequenceException {
-			return new Sequence(getLocus().getName(), entry());
+		public DNASequence getSequence() throws SequenceException {
+			return new DNASequence(getLocus().getName(), entry());
 		}
 	}
 
@@ -352,7 +352,7 @@ public class GenBankFile {
 			 * Cut the current location (in biological units, natch)
 			 * out of Sequence.
 			 */
-			public Sequence getSubsequence(Sequence seq) throws SequenceException {
+			public DNASequence getSubsequence(DNASequence seq) throws SequenceException {
 				// now, since we're a SingleLocation, we've got it *easy*!
 				int my_from = from;
 				int my_to = to;
@@ -461,8 +461,8 @@ public class GenBankFile {
 		 * Cut the current location (in biological units, natch)
 		 * out of Sequence.
 		 */
-		public Sequence getSubsequence(Sequence seq) throws SequenceException {
-			Sequence sequence = Sequence.makeEmptySequence(toString(), 0);
+		public DNASequence getSubsequence(DNASequence seq) throws SequenceException {
+			DNASequence sequence = DNASequence.makeEmptySequence(toString(), 0);
 			// are we a join or order?
 			for(int x = 0; x < locations.size(); x++) {
 				sequence = sequence.concatSequence(((Location)locations.get(x)).getSubsequence(seq));
@@ -640,7 +640,7 @@ public class GenBankFile {
 						if(gene_name.length() != 0)
 							gene_name += ", ";
 
-						Sequence seq = location.getSubsequence(origin.getSequence());
+						DNASequence seq = location.getSubsequence(origin.getSequence());
 						seq.changeName(getLocus().getName() + " gi|" + getLocus().getGI() + "| " + gene_name + location.toString());
 
 						// DAMBE hack

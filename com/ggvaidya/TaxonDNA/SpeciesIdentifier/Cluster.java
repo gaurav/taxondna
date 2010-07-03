@@ -124,12 +124,12 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	/*
 	 * Just don't ask.
 	 */
-	private Sequence makeConsensusOfBin(Vector bin) throws SequenceException {
+	private DNASequence makeConsensusOfBin(Vector bin) throws SequenceException {
 		// Step 1. Go through all sequences, construct a consensus.
 		Iterator 	i_seqs = bin.iterator();
-		Sequence	consensus = null;
+		DNASequence	consensus = null;
 		while(i_seqs.hasNext()) {
-			Sequence seq = (Sequence)	i_seqs.next();
+			DNASequence seq = (DNASequence)	i_seqs.next();
 
 			if(consensus == null)
 				consensus = seq;
@@ -195,7 +195,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			str.append((x + 1) + "\t");
 
 			while(i1.hasNext()) {
-				Sequence seq = (Sequence) i1.next();
+				DNASequence seq = (DNASequence) i1.next();
 
 				try {
 					if(delay != null)
@@ -227,7 +227,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 				Iterator i2 = bin.iterator();
 				while(i2.hasNext()) {
-					Sequence seq2 = (Sequence) i2.next();
+					DNASequence seq2 = (DNASequence) i2.next();
 
 					if(seq2.getFullName().equals(seq.getFullName())) {
 						continue;
@@ -323,7 +323,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				}
 			}
 
-			Sequence consensus;
+			DNASequence consensus;
 			try {
 				consensus = makeConsensusOfBin(bin);
 			} catch(SequenceException e) {
@@ -333,7 +333,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 			String consensusName = cluster_type.replace(' ', '~') + " " + species_name + " (cluster #" + (x + 1) + ")";
 			try {
-				list_of_consensus.add(new Sequence(
+				list_of_consensus.add(new DNASequence(
 					consensusName,
 					consensus.getSequence()
 				));
@@ -355,7 +355,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 			Iterator i = set.iterator();
 			while(i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 
 				if(seq.getSpeciesName() != null && seq.getSpeciesName().equals(name))
 					count_sequences++;
@@ -379,7 +379,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				boolean containsThisOne = false;
 				Hashtable species = new Hashtable();
 				while(iter2.hasNext()) {
-					Sequence seq = (Sequence) iter2.next();
+					DNASequence seq = (DNASequence) iter2.next();
 					String speciesName = seq.getSpeciesName();
 
 			
@@ -444,7 +444,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 					int left_out = ((Integer) extremes_left.get(index_outer) ).intValue();
 					int right_out = ((Integer) extremes_right.get(index_outer) ).intValue();					
-					int minOverlap = Sequence.getMinOverlap();
+					int minOverlap = DNASequence.getMinOverlap();
 
 					int leftmost_right = (right_out <= right_in ? right_out : right_in);
 					int rightmost_left = (left_out <= left_in ? left_out : left_in);
@@ -491,7 +491,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			StringBuffer pairwise_table = new StringBuffer();
 			i1 = bin.iterator();
 			while(i1.hasNext()) {
-				Sequence seq1 = (Sequence)i1.next();
+				DNASequence seq1 = (DNASequence)i1.next();
 
 				try {
 					if(delay != null)
@@ -513,7 +513,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				Iterator i2 = bin.iterator();
 				while(i2.hasNext()) {
 					double pairwise = 0;
-					Sequence seq2 = (Sequence)i2.next();
+					DNASequence seq2 = (DNASequence)i2.next();
 						
 					pairwise = seq2.getPairwise(seq1);
 					if(seq2.getPairwise(seq1) < 0) {
@@ -616,7 +616,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				int c = 0;
 				while(iter.hasNext()) {
 					boolean	done = false;
-					Sequence seq = (Sequence) iter.next();
+					DNASequence seq = (DNASequence) iter.next();
 					Vector our_first_bin = null;
 	
 					try {
@@ -638,7 +638,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 						while(current > 0) {
 							current--;
 		
-							Sequence compare = (Sequence) v.get(current);
+							DNASequence compare = (DNASequence) v.get(current);
 
 							if(seq.getPairwise(compare) < 0) continue;
 
@@ -696,7 +696,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					int countChars = 0;
 					int numSequences = v.size();
 					while(i2.hasNext()) {
-						Sequence seq = (Sequence)i2.next();
+						DNASequence seq = (DNASequence)i2.next();
 						
 						String seqName = seq.getDisplayName();
 						if(seqName == null || seqName.length() == 0)

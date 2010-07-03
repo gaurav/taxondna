@@ -178,12 +178,12 @@ public class OverlapAnalysis extends Panel implements UIExtension, ActionListene
 			for(int y = 0; y < list.count(); y++) {
 				delay.delay(y, list.count());
 				
-				Sequence seq = (Sequence) list.get(y);
+				DNASequence seq = (DNASequence) list.get(y);
 
 				// Only do the half-table: each sequence is compared against the sequence
 				// in front of it.
 				for(int x = y; x < list.count(); x++) {
-					Sequence seq2 = (Sequence) list.get(x);
+					DNASequence seq2 = (DNASequence) list.get(x);
 
 					if(seq2 == seq) continue;	// Don't compare with itself
 					

@@ -194,7 +194,7 @@ public class DistanceAnalysis extends Panel implements UIExtension, ActionListen
 				delay.delay(current_seq, list.count());
 				current_seq++;
 				
-				Sequence query = (Sequence) i.next();
+				DNASequence query = (DNASequence) i.next();
 				ht_species.put(query.getSpeciesName(), new Object());
 						
 				ssl.sortAgainst(query, null);
@@ -202,7 +202,7 @@ public class DistanceAnalysis extends Panel implements UIExtension, ActionListen
 				double closest = -1;
 				Vector vec_inters = new Vector();
 				for(int x = 0; x < ssl.count(); x++) {
-					Sequence compare = ssl.get(x);
+					DNASequence compare = ssl.get(x);
 
 
 					if(compare.getSpeciesName().equals(query.getSpeciesName())) {
@@ -226,7 +226,7 @@ public class DistanceAnalysis extends Panel implements UIExtension, ActionListen
 				// as well as a Vector of interspecific distances.
 				if(closest != -1) {
  					if(ht_species_all.get(query) == null) {
-						query = new Sequence(query);	// make an exact copy of the query 
+						query = new DNASequence(query);	// make an exact copy of the query
 										// so we can distinquish between the two
 										// for the purposes of this analysis
 					}
@@ -248,7 +248,7 @@ public class DistanceAnalysis extends Panel implements UIExtension, ActionListen
 
 				Iterator i_seqs = ht_species_all.keySet().iterator();
 				while(i_seqs.hasNext()) {
-					Sequence seq = (Sequence) i_seqs.next();
+					DNASequence seq = (DNASequence) i_seqs.next();
 
 					if(seq.getSpeciesName().equals(spName)) {
 						// it's the avg distance for one particular thing!

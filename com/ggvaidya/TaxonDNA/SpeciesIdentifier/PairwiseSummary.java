@@ -161,7 +161,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		Hashtable species = new Hashtable();
 		Iterator i = set.iterator();
 		while(i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 			if(seq.getSpeciesName() != null)
 				species.put(seq.getSpeciesName(), new Integer(1));
 		}

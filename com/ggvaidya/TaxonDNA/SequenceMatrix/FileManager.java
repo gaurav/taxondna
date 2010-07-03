@@ -225,7 +225,7 @@ public class FileManager implements FormatListener {
 			// yes! do it!
 			Iterator i = sl.iterator();
 			while (i.hasNext()) {
-				Sequence seq = (Sequence) i.next();
+				DNASequence seq = (DNASequence) i.next();
 
 				seq.convertExternalGapsToMissingChars();
 			}
@@ -253,7 +253,7 @@ public class FileManager implements FormatListener {
 		}
 		Iterator i = list.iterator();
 		while (i.hasNext()) {
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 
 			String sequence_name = seq.getFullName();
 			String species_name = seq.getSpeciesName();
@@ -606,7 +606,7 @@ public class FileManager implements FormatListener {
 				int total = sequences.count();
 				int count = 0;
 				while (i_seq.hasNext()) {
-					Sequence seq = (Sequence) i_seq.next();
+					DNASequence seq = (DNASequence) i_seq.next();
 
 					try {
 						if(pd != null)
@@ -618,7 +618,7 @@ public class FileManager implements FormatListener {
 					count++;
 
 					// The new, synthesized sequence we're going to generate.
-					Sequence seq_out = new Sequence();
+					DNASequence seq_out = new DNASequence();
 					seq_out.changeName(seq.getFullName());
 
 					// Set up a vector to keep track of coordinates within this
@@ -647,7 +647,7 @@ public class FileManager implements FormatListener {
 						try {
 							// System.err.println("Cutting [" + name + "] " + seq.getFullName() + " from " + from + " to " + to + ": " + seq.getSubsequence(from, to) + ";");
 
-							Sequence subseq = seq.getSubsequence(from, to);
+							DNASequence subseq = seq.getSubsequence(from, to);
 
 							// This is the ONLY point at which we know where subseq came from.
 							// So this is the only place where we can correctly impose positional
@@ -658,7 +658,7 @@ public class FileManager implements FormatListener {
 							seq_positions_2.addAll(positionalInformationFor(positions_2, index_assembled_sequence, from, to, true));
 							seq_positions_3.addAll(positionalInformationFor(positions_3, index_assembled_sequence, from, to, true));
 
-							Sequence s = BaseSequence.promoteSequence(subseq);
+							DNASequence s = DataSequence.promoteSequence(subseq);
 							seq_out = seq_out.concatSequence(s);
 
 							// Increment the index along.
@@ -875,7 +875,7 @@ public class FileManager implements FormatListener {
 				// recalculated or anything and can go right in.
 				Iterator i_seq = sequences.iterator();
 				while (i_seq.hasNext()) {
-					Sequence seq = (Sequence) i_seq.next();
+					DNASequence seq = (DNASequence) i_seq.next();
 
 					// Apply the positional information.
 					seq.setProperty("position_0", positions_N);

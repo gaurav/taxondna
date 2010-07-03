@@ -117,7 +117,7 @@ public class DataStore extends SequenceGrid {
 	 *
 	 * @return null, if either the column or sequence name does not exist (or the sequence name does not exist in this column)
 	 */
-	public Sequence getSequence(String colName, String seqName) {
+	public DNASequence getSequence(String colName, String seqName) {
 		validateColName(colName);
 		validateSeqName(seqName);
 
@@ -125,7 +125,7 @@ public class DataStore extends SequenceGrid {
 		if(col == null)
 			return null;
 
-		Sequence seq = (Sequence) col.get(seqName);
+		DNASequence seq = (DNASequence) col.get(seqName);
 
 		if(seq == null)
 			return null;
@@ -142,7 +142,7 @@ public class DataStore extends SequenceGrid {
 	 *
 	 * @return null, if either the column or sequence name does not exist (or the sequence name does not exist in this column)
 	 */
-	public Sequence getCancelledSequence(String colName, String seqName) {
+	public DNASequence getCancelledSequence(String colName, String seqName) {
 		validateColName(colName);
 		validateSeqName(seqName);
 
@@ -150,7 +150,7 @@ public class DataStore extends SequenceGrid {
 		if(col == null)
 			return null;
 
-		Sequence seq = (Sequence) col.get(seqName);
+		DNASequence seq = (DNASequence) col.get(seqName);
 
 		if(seq == null)
 			return null;
@@ -223,7 +223,7 @@ public class DataStore extends SequenceGrid {
 		Iterator i = getSequences().iterator();
 		while(i.hasNext()) {
 			String seqName = (String) i.next();
-			Sequence seq = getSequence(colName, seqName);
+			DNASequence seq = getSequence(colName, seqName);
 
 			if(seq != null)
 				sl.add(seq);
@@ -258,7 +258,7 @@ public class DataStore extends SequenceGrid {
 		if(col == null)
 			return false;
 
-		Sequence seq = (Sequence) col.get(seqName);
+		DNASequence seq = (DNASequence) col.get(seqName);
 
 		if(seq == null)
 			return false;
@@ -282,7 +282,7 @@ public class DataStore extends SequenceGrid {
 		if(col == null)
 			throw new IllegalArgumentException("Can't find column '" + colName + "'.");
 
-		Sequence seq = (Sequence) col.get(seqName);
+		DNASequence seq = (DNASequence) col.get(seqName);
 
 		// if seq doesn't exist, just ignore it;
 		// it's hard for anybody but us to check whether
@@ -333,7 +333,7 @@ public class DataStore extends SequenceGrid {
 	 * column for this.
 	 *
 	 */
-	public void setSequence(String colName, String seqName, Sequence seq) {
+	public void setSequence(String colName, String seqName, DNASequence seq) {
 		validateColName(colName);
 		validateSeqName(seqName);
 
@@ -443,7 +443,7 @@ public class DataStore extends SequenceGrid {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
-			Sequence seq = getSequence(colName, seqName);
+			DNASequence seq = getSequence(colName, seqName);
 			if(seq != null)
 				count++;
 		}
@@ -493,8 +493,8 @@ public class DataStore extends SequenceGrid {
 	 * which exist, while CompleteSequence consists of all the sequences required
 	 * to recreate the line in SequenceMatrix - i.e., INCLUDING the gaps.
 	 */
-	public Sequence getCombinedSequence(String seqName) {
-		Sequence result = new Sequence();
+	public DNASequence getCombinedSequence(String seqName) {
+		DNASequence result = new DNASequence();
 
 		validateSeqName(seqName);
 
@@ -502,7 +502,7 @@ public class DataStore extends SequenceGrid {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
-			Sequence seq = getSequence(colName, seqName);
+			DNASequence seq = getSequence(colName, seqName);
 			if(seq != null)
 				result = result.concatSequence(seq);
 		}
@@ -523,7 +523,7 @@ public class DataStore extends SequenceGrid {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
-			Sequence seq = getSequence(colName, seqName);
+			DNASequence seq = getSequence(colName, seqName);
 			if(seq != null)
 				total += seq.getActualLength();	
 		}
@@ -536,8 +536,8 @@ public class DataStore extends SequenceGrid {
 	 * identical to getCompleteSequence, except that we insert
 	 * full length gaps into empty slots.
 	 */
-	public Sequence getCompleteSequence(String seqName) {
-		Sequence result = new Sequence();
+	public DNASequence getCompleteSequence(String seqName) {
+		DNASequence result = new DNASequence();
 
 		validateSeqName(seqName);
 
@@ -545,11 +545,11 @@ public class DataStore extends SequenceGrid {
 		while(i.hasNext()) {
 			String colName = (String) i.next();
 		
-			Sequence seq = getSequence(colName, seqName);
+			DNASequence seq = getSequence(colName, seqName);
 			if(seq != null)
 				result = result.concatSequence(seq);
 			else
-				result = result.concatSequence(Sequence.makeEmptySequence(seqName, getColumnLength(colName)));
+				result = result.concatSequence(DNASequence.makeEmptySequence(seqName, getColumnLength(colName)));
 		}
 
 		return result;
@@ -672,7 +672,7 @@ public class DataStore extends SequenceGrid {
 
 			count++;
 
-			Sequence seq = (Sequence) i.next();
+			DNASequence seq = (DNASequence) i.next();
 			String seqName = null;
 
 			// ignore sequences whose actualLength is zero
@@ -700,7 +700,7 @@ public class DataStore extends SequenceGrid {
 				colName = (String) seq.getProperty(INITIAL_COLNAME_PROPERTY);
 
 			// Is there already a sequence with this name?
-			Sequence seq_old = getSequence(colName, seqName);
+			DNASequence seq_old = getSequence(colName, seqName);
 			if(seq_old != null) {
 				// there's already an entry!
 				// but which one is bigger?
@@ -819,10 +819,10 @@ public class DataStore extends SequenceGrid {
 		Iterator i_cols = getColumns().iterator();
 		while(i_cols.hasNext()) {
 			String colName = (String) i_cols.next();	
-			Sequence seq = getCancelledSequence(colName, seqOld);
+			DNASequence seq = getCancelledSequence(colName, seqOld);
 
 			if(seq != null) {
-				Sequence replacing = getCancelledSequence(colName, seqNew);
+				DNASequence replacing = getCancelledSequence(colName, seqNew);
 				
 				if(replacing != null) {
 					// the new name already exists!
@@ -860,10 +860,10 @@ public class DataStore extends SequenceGrid {
 
 			if(getCancelledSequence(colName, seqOld) != null) {
 				// replace
-				Sequence seq = getCancelledSequence(colName, seqOld);
+				DNASequence seq = getCancelledSequence(colName, seqOld);
 				deleteSequence(colName, seqOld);
 
-				Sequence replacing = getCancelledSequence(colName, seqNew);
+				DNASequence replacing = getCancelledSequence(colName, seqNew);
 				
 				if(replacing != null) {
 					// the new name already exists!

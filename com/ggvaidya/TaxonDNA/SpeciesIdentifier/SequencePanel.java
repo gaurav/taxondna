@@ -112,7 +112,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	}
 
 
-	private Sequence savedListState = null;
+	private DNASequence savedListState = null;
 	/**
 	 * Stores the selected sequence of the SequenceSet internally.
 	 * The next call to restoreState() will restore this state.
@@ -164,7 +164,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	 *
 	 * Hang on ... that's not so bad ... never mind ...
 	 */
-	public void selectSequence(Sequence seq) {
+	public void selectSequence(DNASequence seq) {
 		for(int x = 0; x < list.count(); x++) {
 			if(list.get(x).equals(seq)) {
 				list_sequences.select(x);
@@ -217,14 +217,14 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		return list_sequences.getSelectedIndex();
 	}
 	
-	public Sequence getSelectedSequence() {
+	public DNASequence getSelectedSequence() {
 		if(getSelectedIndex() == -1)
 			return null;
 
-		return (Sequence) list.get(getSelectedIndex());
+		return (DNASequence) list.get(getSelectedIndex());
 	}
 
-	public void replaceCurrentSequence(Sequence seq) {
+	public void replaceCurrentSequence(DNASequence seq) {
 		if(getSelectedIndex() == -1)
 			return;
 		
@@ -262,12 +262,12 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	private void rewriteAll() {
 		backbuffer.removeAll();
 		for(int x = 0; x < list.count(); x++)
-			backbuffer.add(getListName((Sequence)list.get(x)));
+			backbuffer.add(getListName((DNASequence)list.get(x)));
 
 		flipLists();
 	}
 
-	private String getListName(Sequence seq) {
+	private String getListName(DNASequence seq) {
 		// KLUDGE!
 		String name = "";
 		if(seq.getSubspeciesName().equals("")) {
@@ -276,7 +276,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			name = seq.getSpeciesName() + " " + seq.getSubspeciesName();
 		}
 
-		if(seq.getWarningFlag())
+		if(seq.isSpeciesNameAvailable())
 			name = "{" + seq.getFullName() + "}";
 
 		if(name.length() > MAX_DISPLAY_NAME) {
@@ -317,7 +317,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 	public void actionPerformed(ActionEvent e) {
 		// button_Remove
 		if(e.getSource().equals(button_Remove)) {
-			Sequence seq = getSelectedSequence();
+			DNASequence seq = getSelectedSequence();
 
 			if(seq == null)
 				return;
@@ -339,7 +339,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 			list_sequences.makeVisible(indexNext);
 
 			// select the next one on the right as well
-			Sequence seqNext = getSelectedSequence();
+			DNASequence seqNext = getSelectedSequence();
 			selectSequence(seqNext);
 			
 			// and ... we've changed!
@@ -362,7 +362,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 				return;
 
 			// is there a Selected Sequence?
-			Sequence seq = getSelectedSequence();
+			DNASequence seq = getSelectedSequence();
 
 			if(seq == null)
 				return;
@@ -420,7 +420,7 @@ public class SequencePanel extends Panel implements UIExtension, ActionListener,
 		if(list == null)
 			return;
 
-		Sequence seqTarget = (Sequence) list.get(((Integer)e.getItem()).intValue());
+		DNASequence seqTarget = (DNASequence) list.get(((Integer)e.getItem()).intValue());
 		
 		// propagate it downstream
 		ItemEvent eOnward = new ItemEvent(list_sequences, e.getID(), seqTarget, e.getStateChange());

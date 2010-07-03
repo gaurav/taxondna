@@ -93,7 +93,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		//
 		rl.add(new Label("Do not compare two sequences unless they have atleast "), RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 
-		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
+		tfMinOverlap.setText(String.valueOf(DNASequence.getMinOverlap()));
 		rl.add(tfMinOverlap, RightLayout.BESIDE);
 
 		rl.add(new Label("bp in common."), RightLayout.BESIDE);
@@ -151,7 +151,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 			if(i < 0)
 				i = 0;
 
-			Sequence.setMinOverlap(i);
+			DNASequence.setMinOverlap(i);
 
 			tfMinOverlap.setText(String.valueOf(i));
 
@@ -159,18 +159,18 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 
 		if(e.getSource().equals(choice_ambiguity)) {
 			if(choice_ambiguity.getSelectedIndex() == 1) {
-				Sequence.ambiguousBasesAllowed(false);
+				DNASequence.ambiguousBasesAllowed(false);
 			} else {
-				Sequence.ambiguousBasesAllowed(true);
+				DNASequence.ambiguousBasesAllowed(true);
 			}
 		}
 		
 		if(e.getSource().equals(choice_pairwiseMethod)) {
 			if(choice_pairwiseMethod.getSelectedIndex() == 0) {
 				// index == 0: uncorrected
-				Sequence.setPairwiseDistanceMethod(Sequence.PDM_UNCORRECTED);
+				DNASequence.setPairwiseDistanceMethod(DNASequence.PDM_UNCORRECTED);
 			} else {
-				Sequence.setPairwiseDistanceMethod(Sequence.PDM_K2P);
+				DNASequence.setPairwiseDistanceMethod(DNASequence.PDM_K2P);
 			}
 		}
 
@@ -260,22 +260,22 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 		Preferences prefs = Preferences.userNodeForPackage(com.ggvaidya.TaxonDNA.SpeciesIdentifier.Configuration.class);
 
 		// minimum overlap
-		Sequence.setMinOverlap(prefs.getInt("minimumOverlap", 300));
-		tfMinOverlap.setText(String.valueOf(Sequence.getMinOverlap()));
+		DNASequence.setMinOverlap(prefs.getInt("minimumOverlap", 300));
+		tfMinOverlap.setText(String.valueOf(DNASequence.getMinOverlap()));
 
 		// ambiguous bases allowed
-		Sequence.ambiguousBasesAllowed(prefs.getBoolean("ambiguousBasesAllowed", true));
-		if(Sequence.areAmbiguousBasesAllowed()) {
+		DNASequence.ambiguousBasesAllowed(prefs.getBoolean("ambiguousBasesAllowed", true));
+		if(DNASequence.areAmbiguousBasesAllowed()) {
 			choice_ambiguity.select(0);
 		} else {
 			choice_ambiguity.select(1);
 		}
 
 		// pairwise distance method
-		Sequence.setPairwiseDistanceMethod(prefs.getInt("pairwiseDistanceMethod", Sequence.PDM_UNCORRECTED));
-		if(Sequence.getPairwiseDistanceMethod() == Sequence.PDM_UNCORRECTED)
+		DNASequence.setPairwiseDistanceMethod(prefs.getInt("pairwiseDistanceMethod", DNASequence.PDM_UNCORRECTED));
+		if(DNASequence.getPairwiseDistanceMethod() == DNASequence.PDM_UNCORRECTED)
 			choice_pairwiseMethod.select(0);
-		else if(Sequence.getPairwiseDistanceMethod() == Sequence.PDM_K2P)
+		else if(DNASequence.getPairwiseDistanceMethod() == DNASequence.PDM_K2P)
 			choice_pairwiseMethod.select(1);
 	}
 
@@ -284,9 +284,9 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
 	 */
 	public void saveToPrefs() {	
 		Preferences prefs = Preferences.userNodeForPackage(com.ggvaidya.TaxonDNA.SpeciesIdentifier.Configuration.class);
-		prefs.putInt("minimumOverlap", Sequence.getMinOverlap());
-		prefs.putBoolean("ambiguousBasesAllowed", Sequence.areAmbiguousBasesAllowed());
-		prefs.putInt("pairwiseDistanceMethod", Sequence.getPairwiseDistanceMethod());
+		prefs.putInt("minimumOverlap", DNASequence.getMinOverlap());
+		prefs.putBoolean("ambiguousBasesAllowed", DNASequence.areAmbiguousBasesAllowed());
+		prefs.putInt("pairwiseDistanceMethod", DNASequence.getPairwiseDistanceMethod());
 	}
 
 	private boolean pre_lockDownState = false;

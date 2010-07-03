@@ -123,18 +123,18 @@ public class Exporter implements SequencesHandler {
 				// left-most column.
 				//
 				//  This fixes issue #112, if you're interested.
-				Sequence seq = tm.getSequence(colName, seqName);
+				DNASequence seq = tm.getSequence(colName, seqName);
 	
 				if(seq == null) {
 					if(writeNASequences) {
-						sl.add(Sequence.makeEmptySequence(seqName, colLength));
+						sl.add(DNASequence.makeEmptySequence(seqName, colLength));
 					} else {
 						// seq == null ... ignore it
 					}
 				} else {
 					// seq != null
 					// write it!
-					seq = new Sequence(seq);	// clone 'seq'
+					seq = new DNASequence(seq);	// clone 'seq'
 					seq.changeName(seqName);	// and rename it to the 'correct' row name.
 					sl.add(seq);
 				}
@@ -387,7 +387,7 @@ public class Exporter implements SequencesHandler {
 			while(i_seqs.hasNext()) {
 				String seqName = (String) i_seqs.next();
 
-				Sequence seq = tm.getSequence(colName, seqName);
+				DNASequence seq = tm.getSequence(colName, seqName);
 				boolean cancelled = false;
 				if(seq == null) {
 					if(tm.isSequenceCancelled(colName, seqName)) {
@@ -427,14 +427,14 @@ public class Exporter implements SequencesHandler {
 		for(Object o_seqName: seqNames) {
 			String sequenceName = o_seqName.toString();
 
-			Sequence seq_row = new Sequence();
+			DNASequence seq_row = new DNASequence();
 			seq_row.changeName(sequenceName);
 			for(Object o_charsetName: tm.getCharsets()) {
 				String charsetName = o_charsetName.toString();
 
-				Sequence seq = tm.getSequence(charsetName, sequenceName);
+				DNASequence seq = tm.getSequence(charsetName, sequenceName);
 				if(seq == null)
-					seq = Sequence.makeEmptySequence(sequenceName, tm.getColumnLength(charsetName));
+					seq = DNASequence.makeEmptySequence(sequenceName, tm.getColumnLength(charsetName));
 
 				seq_row.concatSequence(seq);
 			}
@@ -450,7 +450,7 @@ public class Exporter implements SequencesHandler {
 //
 // EXPERIMENTAL SEQUENCES HANDLER
 //
-	public boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException { 
+	public boolean readLocalCommand(String cmdLine, DNASequence seq) throws FormatException {
 		String[] ret = new String[2];
 
 		if(SequencesFile.isCommand(cmdLine, ret)) {
@@ -477,7 +477,7 @@ public class Exporter implements SequencesHandler {
 		return false; 
 	}
 	public boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException { return false; }
-	public String writeLocalCommand(Sequence seq) { return null; }
+	public String writeLocalCommand(DNASequence seq) { return null; }
 	public String writeGlobalCommand(SequenceList list) { return null; }
 	public String getSequencesHandlerName() {
 		return "sequencematrix";
@@ -659,7 +659,7 @@ public class Exporter implements SequencesHandler {
                     Set seqNames = grid.getSequenceNamesByColumn(colName);
                     if(seqNames.size() > 0) {
                         // get the first sequence
-                        Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
+                        DNASequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
                         String str_end = ",\n";
 
@@ -832,11 +832,11 @@ public class Exporter implements SequencesHandler {
                                 Iterator i_seqs = tm.getSequenceNames().iterator();
                                 while(i_seqs.hasNext()) {
                                         String seqName = (String) i_seqs.next();
-                                        Sequence seq = tm.getSequence(colName, seqName); 
+                                        DNASequence seq = tm.getSequence(colName, seqName);
 
 
                                         if(seq == null)
-                                                seq = Sequence.makeEmptySequence(seqName, colLength);
+                                                seq = DNASequence.makeEmptySequence(seqName, colLength);
 
 
                                         writer.print("'" + getNexusName(seqName) + "' " + seq.getSequence());
@@ -865,24 +865,24 @@ public class Exporter implements SequencesHandler {
 
 
                                 String seqName = (String) i_rows.next();
-                                Sequence seq_interleaved = null;
+                                DNASequence seq_interleaved = null;
                                 int length = 0;
 
 
                                 if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
                                         writer.print("'" + getNexusName(seqName) + "' ");
                                 else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
-                                        seq_interleaved = new Sequence();
+                                        seq_interleaved = new DNASequence();
 
 
                                 Iterator i_cols = tm.getCharsets().iterator();
                                 while(i_cols.hasNext()) {
                                         String colName = (String) i_cols.next();
-                                        Sequence seq = tm.getSequence(colName, seqName);
+                                        DNASequence seq = tm.getSequence(colName, seqName);
 
 
                                         if(seq == null)
-                                                seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
+                                                seq = DNASequence.makeEmptySequence(colName, tm.getColumnLength(colName));
 
 
                                         length += seq.getLength();
@@ -1044,7 +1044,7 @@ public class Exporter implements SequencesHandler {
                     Set seqNames = grid.getSequenceNamesByColumn(colName);
                     if(seqNames.size() > 0) {
                         // get the first sequence
-                        Sequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
+                        DNASequence seq = grid.getSequence(colName, (String) seqNames.toArray()[0]);
 
 						// Note: if you change this x = 0, you'll get 'N' as
 						// well. Since we don't want this right now, we're
@@ -1220,7 +1220,7 @@ public class Exporter implements SequencesHandler {
 			count_rows++;
 
 			String seqName = (String) i_rows.next();
-			Sequence seq_interleaved = null;
+			DNASequence seq_interleaved = null;
 			int length = 0;
 
 			writer.print(getTNTName(seqName) + " ");
@@ -1228,10 +1228,10 @@ public class Exporter implements SequencesHandler {
 			Iterator i_cols = cols.iterator();
 			while(i_cols.hasNext()) {
 				String colName = (String) i_cols.next();
-				Sequence seq = tm.getSequence(colName, seqName); 
+				DNASequence seq = tm.getSequence(colName, seqName);
 				
 				if(seq == null)
-					seq = Sequence.makeEmptySequence(colName, tm.getColumnLength(colName));
+					seq = DNASequence.makeEmptySequence(colName, tm.getColumnLength(colName));
 
 				length += seq.getLength();
 

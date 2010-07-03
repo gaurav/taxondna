@@ -183,7 +183,7 @@ public class FeaturesDisplayMode extends DisplayMode implements MouseListener {
 			
 			if(GenBankFile.OriginSection.class.isAssignableFrom(cls)) {
 				GenBankFile.OriginSection ori = (GenBankFile.OriginSection) obj;
-				Sequence seq = null;
+				DNASequence seq = null;
 
 				try {
 					seq = ori.getSequence();

@@ -41,7 +41,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	private SpeciesIdentifier	seqId;
 	private SequenceList	set = null;
 	
-	private Sequence	currentSequence = new Sequence();
+	private DNASequence	currentSequence = new DNASequence();
 	private boolean		weEditedTheSet = false;	// set to true when a dataChanged() was caused by us
 
 	private SequencePanel	sequencePanel = null;
@@ -165,7 +165,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	public void itemStateChanged(ItemEvent e) {
 		set = seqId.lockSequenceList();
 		if(set != null) {
-			Sequence seq = (Sequence) e.getItem();
+			DNASequence seq = (DNASequence) e.getItem();
 			displaySequence(seq);			
 			seqId.goToExtension(getShortName());
 		}
@@ -193,13 +193,13 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	 * Returns the Sequence() indicated. Note that you are entirely responsible for
 	 * ensuring that the seqId list stays in sync. Maybe a method in seqId?
 	 */
-	public void displaySequence(Sequence seq) {
+	public void displaySequence(DNASequence seq) {
 		if(seq != null) {
 			currentSequence = seq;
 			text_name.setText(seq.getFullName().trim());
 			text_sequence.setText(seq.getSequenceWrapped(50).trim());
 		} else {
-			currentSequence = new Sequence();
+			currentSequence = new DNASequence();
 			text_name.setText("");
 			text_sequence.setText("");
 		}
@@ -213,7 +213,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 	 * Updates name related information. (i.e. based on the full name, it sets 
 	 * family, species, gi and the like.
 	 */
-	private void updateInfo(Sequence seq) {
+	private void updateInfo(DNASequence seq) {
 		if(seq != null) {
 			text_family.setText(seq.getFamilyName().trim());
 			String speciesName = seq.getSpeciesName();
@@ -261,7 +261,7 @@ public class SequenceEdit extends Panel implements UIExtension, ActionListener, 
 				return;
 			try {
 				Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-				Sequence seq = seqId.getSequencePanel().getSelectedSequence();
+				DNASequence seq = seqId.getSequencePanel().getSelectedSequence();
 				String copy = "> " + seq.getFullName() + "\n" + seq.getSequence();
 				StringSelection selection = new StringSelection(copy);
 				
