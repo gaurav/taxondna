@@ -948,7 +948,7 @@ public class FileManager implements FormatListener {
 		RightLayout rl = new RightLayout(frame);
 		frame.setLayout(rl);
 
-		rl.add(new Label("File to save to:"), RightLayout.NONE);
+		rl.add(new Label("Save as:"), RightLayout.NONE);
 		FileInputPanel finp = new FileInputPanel(
 				null,
 				FileInputPanel.MODE_FILE_WRITE,
