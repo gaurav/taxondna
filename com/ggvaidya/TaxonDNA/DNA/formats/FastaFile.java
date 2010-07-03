@@ -299,7 +299,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
 		if(seq.indexOf('U') != -1 || seq.indexOf('u') != -1) {
 			// Uracil!
 			if(delay != null)
-				delay.addWarning("Sequence '" + name + "' contains one or more uracil bases. TaxonDNA can only handle DNA sequences at the moment. I'm converting all uracil (U) bases into thymine (T) bases.");
+				delay.addWarning("Sequence '" + name + "' contains one or more uracil bases. This program can only handle DNA sequences at the moment. I'm converting all uracil (U) bases into thymine (T) bases.");
 
 			seq = seq.replace('U', 'T').replace('u', 't');
 		}

@@ -1,0 +1,8 @@
+SequenceMatrix Changelog
+========================
+
+- development
+
+- 1.7.6 (June 6, 2010)
+    - Added code to detect overlapping codonsets on input (#19).
+    - Fixed a bug relating to TNT files exported into directory (#55).

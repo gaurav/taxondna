@@ -156,7 +156,7 @@ public class ClustalMapping implements ActionListener {
 				String desc_final = list_final.size() + " final sequences to '" + f_final + "'";
 				file_being_processed = f_final;
 				new FastaFile().writeFile(f_final, list_final, 
-						new ProgressDialog(explorer.getFrame(),
+						ProgressDialog.create(explorer.getFrame(),
 							"Please wait, exporting final Fasta file ...",
 							"The final Fasta file is being exported. Sorry for the wait!"));
 
@@ -181,7 +181,7 @@ public class ClustalMapping implements ActionListener {
 
 						file_being_processed = f_missing;
 						new FastaFile().writeFile(f_missing, list_missing,
-							new ProgressDialog(explorer.getFrame(),
+							ProgressDialog.create(explorer.getFrame(),
 								"Please wait, exporting missing sequences to a separate Fasta file ...",
 								"The Fasta file containing missing seuqences is being written out now. Please wait a moment!")
 							);
@@ -210,7 +210,7 @@ public class ClustalMapping implements ActionListener {
 
 	private void loadSequenceList() {
 		try {
-			list_initial = explorer.getSelectedSequenceList(new ProgressDialog(
+			list_initial = explorer.getSelectedSequenceList(ProgressDialog.create(
 					explorer.getFrame(),
 					"Please wait, assembling sequences ...",
 					"I am assembling all selected sequences preparatory to writing them into a file. Sorry for the delay!")
@@ -284,7 +284,7 @@ public class ClustalMapping implements ActionListener {
 		error_occured_in = inputFile.toString();
 		try {
 			set_final = new SequenceList(inputFile, ff,
-					new ProgressDialog(
+					ProgressDialog.create(
 						getFrame(),
 						"Loading '" + inputFile + "' ...",
 						"Loading the sequences from '" + inputFile + "', please wait."
@@ -550,7 +550,7 @@ public class ClustalMapping implements ActionListener {
 			if(sl_duplicateSequences.count() > 0) {
 				try {
 					File f = new File(outputFile.getParent(), "duplicates.txt");
-					new FastaFile().writeFile(f, sl_duplicateSequences, new ProgressDialog(
+					new FastaFile().writeFile(f, sl_duplicateSequences, ProgressDialog.create(
 								explorer.getFrame(),
 								"Please wait, exporting duplicate sequences ...",
 								"All duplicate sequences are now being exported to '" + f + "'. Please be patient!"));

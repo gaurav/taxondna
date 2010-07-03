@@ -8,8 +8,16 @@
              we target JRE 1.5 instead. If you'd like to backport TaxonDNA to
              JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
              variable and fix all the issues which come up.
+
+             But! This generates a lot of warnings. So nevermind, 1.4 it is.
         -->
-        <property name = "java.targetversion" value = "1.4" />
+        <!--
+            Idea rescinded as of Dec 12, 2009. Generics really makes
+            it a lot easier to keep disperate parts of the source in
+            sync. We'll ignore other warnings for now (or fix them when
+            nobody's looking).
+        -->
+        <property name = "java.targetversion" value = "1.5" />
 
         <!-- files.common: (Common) files used by all the TaxonDNA tools -->
 	<property name = "files.common" value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**" />
@@ -92,7 +100,7 @@
 			basedir =       "../"
 			includes =      "TaxonDNA/**"
 			excludes =      "**/.svn, TaxonDNA/Releases"
-			comment =       "(c) Gaurav Vaidya, 2006, 2009"
+			comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
 		/>
                 <move file = "../TaxonDNA-src-${taxondna.version}.zip" todir = "Releases" />
 	</target>
@@ -120,18 +128,31 @@
 
         <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
         <target name = "SequenceMatrix.app"     depends = "build">
-            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/Sequence Matrix.app/Contents/Resources/Java" />
+            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/MacOSX/Sequence Matrix.app/Contents/Resources/Java" />
         </target>
 
 	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
 	<target name = "release"    depends = "build, SequenceMatrix.app">
-		<zip 
-			destfile =      "../TaxonDNA-${taxondna.version}.zip"
-			basedir =       "Release/"
-			comment =       "(c) Gaurav Vaidya, 2007, 2009"
-			update =        "false"
-		/>
-                <move file = "../TaxonDNA-${taxondna.version}.zip" todir = "Releases" />
+            <copy file="Changes.txt" overwrite="yes" todir="Release/Windows" />
+            <copy file="Changes.txt" overwrite="yes" todir="Release/MacOSX" />
+            <copy file="Release/SequenceMatrix.jar" todir="Release/Windows" />
+            <zip 
+	        destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
+	        basedir =       "Release/Windows/"
+	    	comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
+	    	update =        "false"
+	    />
+            <move file = "../SequenceMatrix-Windows-${taxondna.version}.zip" todir = "Releases" />
+            <mkdir dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}" />
+            <copy overwrite="yes" todir="Releases/SequenceMatrix-MacOSX-${taxondna.version}">
+                <fileset dir="Release/MacOSX" />
+            </copy>
+            <chmod
+                file="Releases/SequenceMatrix-MacOSX-${taxondna.version}/Sequence Matrix.app/Contents/MacOS/JavaApplicationStub"
+                perm="755"
+            />
+        
+            <!-- It's now up to the user to compress this -->
 	</target>
 
         <!--
@@ -139,15 +160,15 @@
                 that's a bad idea.
         -->
         <target name="run_spid" depends="SpeciesIdentifier"> 
-            <java jar="Release/SpeciesIdentifier.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/SpeciesIdentifier.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
         <target name="run_seqmat" depends="SequenceMatrix"> 
-            <java jar="Release/SequenceMatrix.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/SequenceMatrix.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
         <target name="run_gbx" depends="GenBankExplorer"> 
-            <java jar="Release/GenBankExplorer.jar" maxmemory="1024m" fork="true">
+            <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
             </java>
         </target>
 

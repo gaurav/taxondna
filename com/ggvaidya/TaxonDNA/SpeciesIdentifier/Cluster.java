@@ -165,7 +165,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		SpeciesDetails sd = null;
 		try {
 			sd = set.getSpeciesDetails(
-					new ProgressDialog(
+					ProgressDialog.create(
 						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
@@ -599,7 +599,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			return;
 		}
 				
-		ProgressDialog pb = new ProgressDialog(seqId.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
+		ProgressDialog pb = ProgressDialog.create(seqId.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
 				
 		pb.begin();
 
@@ -729,7 +729,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		pb.end();
 
 
-		pb = new ProgressDialog(
+		pb = ProgressDialog.create(
 				seqId.getFrame(),
 				"Writing up information ...",
 				"Formatting and writing the results, please wait.",

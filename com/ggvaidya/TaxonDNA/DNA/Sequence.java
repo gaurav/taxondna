@@ -176,12 +176,15 @@ public class Sequence  implements Comparable, Testable {
 
 	/**
 	 * 'Clone' constructor. We replicate a given Sequence, creating another identical
-	 * sequence WITH A DIFFERENT UUID (duh) in the process.
+	 * sequence WITH A DIFFERENT UUID (duh) in the process. Note that the old Properties
+         * object is COPIED over.
 	 */
 	public Sequence(Sequence seq) {
 		try {
 			changeName(seq.getFullName());
 			changeSequence(seq.getSequence());
+			if(seq.properties != null)
+				properties = (Properties) seq.properties.clone();
 		} catch(SequenceException e) {
 			throw new RuntimeException("Can't 'clone' sequence seq: " + e.getMessage());
 		}
@@ -1887,7 +1890,7 @@ public class Sequence  implements Comparable, Testable {
 		for(int x = 0; x < len; x++) {
 			if(seq[x] == 'U' || seq[x] == 'u')
 				throw new SequenceException(getFullName(),
-						"Currently, TaxonDNA only supports DNA sequences! I found a Uracil at index " + x);
+						"This program currently supports only DNA sequences! I found a Uracil at index " + x);
 			if(!isValid(seq[x]))
 				throw new SequenceException(getFullName(), 
 						"An illegal base '" + seq[x] + "' was found in sequence '" + 

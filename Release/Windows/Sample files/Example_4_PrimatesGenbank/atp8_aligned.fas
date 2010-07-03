@@ -1,0 +1,215 @@
+>Cebus albifrons  gi|14010679|gb|NC_002763.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7767 to 7967; the sequence used to be 16554 bp long)
+gtgccacaactagacatctcaccatgaccaatggtgactttatcaatgattttaaccctg
+ttttatgctatacaactaaaaatattaaaatttattttccacactaccccactatcaaaa
+t---taactaaaattcaaaaccaaaaaacaacctgagaactaaaatgaaccaaaatctat
+ttgcctctttcaatataccaataa------
+>Saimiri sciureus  gi|238866988|gb|NC_012775.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7752 to 7952; the sequence used to be 16474 bp long)
+atgcctcaactagacacctcaccatgaccaatggtgatcttatcaataatcgtaaccctc
+ttctatattacccaactaaaaatgctaaatttcatctcctacaccaatccactatttaaa
+t---caattaaaacaaaagaacataaaacaacctgaaaatcaaaatgacccaaaacttat
+tcaccatctttaatatcccagtag------
+>Chlorocebus aethiops  gi|66276030|gb|NC_007009.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7789 to 7989; the sequence used to be 16389 bp long)
+atgcctcaattagatacatccacatgatttatcactatcacaacaacactccctacacta
+tatcttattacacaactaaaactgctaaacacacattactatcaacccccccaacaaaaa
+a---actctcataagcaaacccccaataaccactgacaactaaaatgaacgaaaatctat
+ttaccttattcgcaactccaataa------
+>Chlorocebus sabaeus  gi|107736076|gb|NC_008066.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8363 to 8563; the sequence used to be 16550 bp long)
+atgcctcaattagacacatccacatgatttatcactattacaacaatactccctacacta
+tatcttattacacaactaaaactgctagacatatgttactatcaatccccccaacaaaaa
+a---actctracaagcaaacccccaataaccactgacaactaaaatgaacgaaaatttat
+ttaccttattcgcaactccaataa------
+>Chlorocebus tantalus  gi|156471205|gb|NC_009748.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7783 to 7983; the sequence used to be 16368 bp long)
+atgcctcaattagacacatccacatgatttaccactatcacaacaacactccttacacta
+tatcttatcacacaattaaaactgctaaacatacattactatcaacccccccaacaaaaa
+a---acccccataagcaaacccccaataaccactgacaactaaaatgaacgaaaatctgc
+ttaccctattcgcaaccccaataa------
+>Chlorocebus pygerythrus  gi|156471191|gb|NC_009747.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7786 to 7986; the sequence used to be 16343 bp long)
+atgcctcaattagatacatccacatgatttatcatcatcacagcaacactccccacacta
+tatcttattacacaattaaaactgctaaatatacattactaccaaaccccccaacaaaaa
+a---actctcataagcaagcccccaataaccactgacaactaaaatgaacgaaaatctat
+ttacctcattcgcaactccaataa------
+>Macaca fascicularis  gi|229772910|gb|NC_012670.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8364 to 8570; the sequence used to be 16575 bp long)
+atgccccaattagacacatcgacatgattcaccactattatgacgatgcttcctacacta
+tatcttatcacacaactaaaactactaaacacaaaccactaccaaccacctcctacaaaa
+a---actccaacctacaatctcacggtatccgctgacaaccaaaatgaacgaaaacttgt
+ttacccctttctcaaccccaacaatcctaa
+>Macaca mulatta  gi|49146236|gb|NC_005943.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8357 to 8563; the sequence used to be 16564 bp long)
+atgccccagttagatacatcaacatgattcaccactattatgacgatgcttcccacacta
+tatcttatcatgcagctaaagctactaaacacaaatcaccaccaaccaccccttacaaaa
+a---cccccacccttcagtctcacaatgtccgctgacaaccaaaatgaacgaaaacttgt
+ttacccctttctcagccccaacaattctaa
+>Macaca thibetana  gi|211908556|gb|NC_011519.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8334 to 8540; the sequence used to be 16540 bp long)
+gtgccccagttagatacatcgacatgattcaccaccattataacgacacttcccacacta
+tatcttatcatacaattaaaactactaaacataaaccactaccaaccgcctcttgcaaaa
+a---actcgaacctgcaacctcgcaatacccattgacaaccaaaatgaacgaaaacctgt
+ttacctctttctcaaccccaacaatcctaa
+>Macaca sylvanus  gi|14010693|gb|NC_002764.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7832 to 8032; the sequence used to be 16586 bp long)
+atgccccaattagacacatcgacatgatccaccactattatagcaatacttcctacacta
+taccttattacacaactaaaactactaaacacaaactactatcaaccacctcttacaaaa
+a---accccaacctacaaacccacaatatctactggcaaccagaatgaacgaaaacctgt
+ttaccccattctcaaccccaataa------
+>Papio hamadryas  gi|5835638|gb|NC_001992.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7790 to 7996; the sequence used to be 16521 bp long)
+atgccccaactggacacatccacatgattcactattatcatagcaatacttcccacacta
+taccttatcacacagttaaaactgctaagcataaactactatcaacctcccctcacaaaa
+a---accccaacttacaaacccacaacacctgttgacggccaaaatgaacgaaaacctat
+ttacctcattctcagccccaacaatcctag
+>Colobus guereza  gi|62161140|gb|NC_006901.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7821 to 8027; the sequence used to be 16648 bp long)
+atgcctcaactaaatacatccacatggttcactatcattataaccatactccccacacta
+tatatcattatacaattaaaattactaagtacaacctattatccatctccaccacaaaaa
+t---tagctaagacaaaaccccgcaacaatccttgacaactaaaatgaacgaaaatttat
+ttaccccattcacaactccaacaatcctag
+>Nasalis larvatus  gi|109689539|gb|NC_008216.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7813 to 8019; the sequence used to be 16570 bp long)
+atgcctcaactaaatacatccacgtggtttattactattatagccatgctgcccgcactt
+taccttatcatacaattaaagctactaaacacaacctaccatttctccccgtcacaaaaa
+g---tccttagtatacaaacaactaacaattcttgacaactaaaatgaacgaaaatttat
+ttaccccattcacaaccccaacactcttag
+>Trachypithecus obscurus  gi|62161253|gb|NC_006900.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7813 to 8019; the sequence used to be 16560 bp long)
+atgcctcaactaaacacatctacatggtttattaccattataaccatgctacctgcactt
+taccttattatacaattaaaattactaaatacaaactactatttgcccccaacacaaaaa
+a---cccctaatacgcaaatatttaataactcttgacaactaaaatgaacgaaaatttat
+ttaccccatttacaaccccaacactcctaa
+>Pygathrix nemaeus  gi|109689553|gb|NC_008220.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7791 to 7997; the sequence used to be 15467 bp long)
+atgcctcaactaaatacatctacatggctaattactattataaccatgctacccgcacta
+tatctcattatacaactaaaactattaaatatagtctactattttcccccgtcacaaaaa
+g---tctctagtacgcaaatattcaacaacccctgacaactaaaatgaacgaaaatttat
+ttacctcatttacacacccaacactcctag
+>Presbytis melalophos  gi|109689581|gb|NC_008217.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7807 to 8013; the sequence used to be 16543 bp long)
+atgcctcaactaaatacgtctacatggcttattactattattaccatgttacctacatta
+tatctaattatacaattaaaattactaagcataaattatcatttatccccattacaaaaa
+a---atcctaatatacgaatatttaacaacccttgacaactaaaatgaacgaaaatttat
+ttaccccattcacaaccccaacattcctag
+>Semnopithecus entellus  gi|109689595|gb|NC_008215.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7804 to 8010; the sequence used to be 16532 bp long)
+atgcctcagctaaacacatctacatgatttattactattattaccatactacctacacta
+tatcttattatacaactaaaattattaaaaacaacttattatttttctccctcacaaaaa
+g---cctctgacatacaatcatttaataacccctgacaattaaaatgaacgaaaatttgt
+ttgcccctttcacagctccatcactcctag
+>Rhinopithecus roxellana  gi|109689567|gb|NC_008218.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7806 to 8000; the sequence used to be 16549 bp long)
+atgcctcaactaaatacatctacatggtttattaccattatagccatgctacctacatta
+tatcttattatacaattaaagctactaagcacaaactaccatttttccccaccacaaaaa
+gaaatttatagtatacaggcatttaatagcccttgacaactaaaatgaacgaaaatttat
+ttaccccattcatag---------------
+>Piliocolobus badius  gi|109689609|gb|NC_008219.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7809 to 8000; the sequence used to be 16595 bp long)
+atgcctcaactaaatacatccacatggtttattgtaattataaccatacttcccacatta
+tatattattatacaattaaaattattgagcacaaattattatccccacccctcacaaaat
+t---tctctaaaatacagacccacaataacccctgacaactaaaatgaacgaaaatttat
+tcgcctctttcataa---------------
+>Gorilla gorilla  gi|5835149|gb|NC_001645.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7788 to 7994; the sequence used to be 16364 bp long)
+atgccccagctaaataccaccgtatggcccaccataattgccccaatactcctcacacta
+tttctcattacccaactaaaagttttaaacacaaattaccacctaccccccttaccaaaa
+a---ctataaaaataaaaaacttctgtaaaccctgagaaccaaaatgaacgaaaatttat
+tcgcttcattcattgcccccacaatcctag
+>Gorilla gorilla gorilla  gi|195952353|gb|NC_011120.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7790 to 7996; the sequence used to be 16412 bp long)
+atgccccagctaaataccaccgtatggcccaccataattgccccaatactcctcacacta
+tttctcattacccaactaaaagttttaaacacaaattaccacctaccccccttaccaaaa
+a---ctataaaaataaaaaacttctgtaaaccctgagaatcaaaatgaacgaaaatttat
+tcgcttcattcattgcccccacaatcctag
+>Homo sapiens  gi|251831106|gb|NC_012920.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8366 to 8572; the sequence used to be 16569 bp long)
+atgccccaactaaatactaccgtatggcccaccataattacccccatactccttacacta
+ttcctcatcacccaactaaaaatattaaacacaaactaccacctacctccctcaccaaag
+c---ccataaaaataaaaaattataacaaaccctgagaaccaaaatgaacgaaaatctgt
+tcgcttcattcattgcccccacaatcctag
+>Homo sapiens neanderthalensis  gi|196123578|gb|NC_011137.1| (cut 'CDS_ATP synthase F0 subunit 8' from 8361 to 8567; the sequence used to be 16565 bp long)
+atgccccaactaaatactactgtatggcccaccataattatccccatactccttacacta
+ttcctcatcacccaactaaaaatattaaatacaaattaccacttacctccctcaccaaag
+c---ccataaaaataaaaaactataacaaaccctgagaaccaaaatgaacgaaaatctgt
+tcgcttcattcattgcccccacaatcctag
+>Pan paniscus  gi|5835135|gb|NC_001644.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7785 to 7991; the sequence used to be 16563 bp long)
+atgccccaactaaataccgccgtatgacccaccacaattacccctatactccttacacta
+tttcttatcacccaactaaaaatattaaactcaaattaccatctacccccctcaccaaaa
+c---ccataaaaataaaaaactacaataaaccctgagaaccaaaatgaacgaaaatctgt
+tcgcttcattcgctgcccccacaatcctag
+>Pan troglodytes  gi|5835121|gb|NC_001643.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7784 to 7990; the sequence used to be 16554 bp long)
+atgccccaactaaataccgccgtatgacccaccataattacccccatactcctgacacta
+tttctcgtcacccaactaaaaatattaaattcaaattaccatctacccccctcaccaaaa
+c---ccataaaaataaaaaactacaataaaccctgagaaccaaaatgaacgaaaatctat
+tcgcttcattcgctgcccccacaatcctag
+>Pongo abelii  gi|5835834|gb|NC_002083.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7822 to 8028; the sequence used to be 16499 bp long)
+atgccccaactaaataccaccacatggcccaccatcatcaccccaatactccttgcacta
+ttcctcatcactcaactaaaactactaaactcacacctccacccacccaccccaccaaaa
+t---tcactaaaccaaaactccacgccaaaccctgaggaccaaaatgaacgaaagtctat
+ttaccccattcattacccccacagtactag
+>Pongo pygmaeus  gi|5835163|gb|NC_001646.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7811 to 8017; the sequence used to be 16389 bp long)
+atgccccaactaaataccaccacatggctcaccgtcatcactccaacacttcttgcacta
+ttcctcatcacccagttaaaactattaaactcacacctccacccacccaccccaccaaaa
+t---ttaccaaaacaaaaccccacgccaaaccctgagaactaaaatgaacgaagatctat
+tcaccccattcactacccccacagtcctag
+>Hylobates lar  gi|5835820|gb|NC_002082.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7785 to 7991; the sequence used to be 16472 bp long)
+atgccccaattaaacaccaccgtgtgacctacaatcatcatatcaatactcctcgcacta
+ttcctccttatacagctgaaaacactaaatacacactaccacccacccgcctccccaaaa
+c---tcacgaacattaaacctcataataatccctgagaacacaaatgaacgaaaatctat
+tcacttcattcgctacccccacaattctag
+>Daubentonia madagascariensis  gi|166851876|gb|NC_010299.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7797 to 8003; the sequence used to be 16620 bp long)
+atgccccaactagacacatcaacatgacctatcatcattctttcgatgatcctaacactc
+ttcattatactccaactaaaaacattaaaacttgtattccccctaaacccggcacccaaa
+a---atataacaacacaaaaatataacaacccctgagaaataaaatgaacgaaaatttat
+tcgcctctttcattacccctacaatcatag
+>Eulemur fulvus fulvus  gi|238866890|gb|NC_012766.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7789 to 7995; the sequence used to be 17126 bp long)
+atgcctcaactcgacacatcaacatggctaattacaattttctccataattttgacccta
+ctaattgttttccaactgaaagtttcaaaattcaattatcccctaagcccaacattaaaa
+g---acattaataaatattcacacactaacccttgagaaacaaaatgaacgaaaatttat
+ttgcctctttcattaccccaacaattgtag
+>Eulemur fulvus mayottensis  gi|238866918|gb|NC_012769.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7789 to 7995; the sequence used to be 17118 bp long)
+atgcctcaactcgacacatcaacatggctaattacaattttctccataattttgacccta
+ctaattgtttttcaactgaaagtttcaaaattcaattatcccctaagcccaacattaaaa
+g---acattaataaatattcacacactaacccttgagaaacaaaatgaacgaaaatttat
+ttgcctctttcattaccccaacaattgtag
+>Eulemur mongoz  gi|166851890|gb|NC_010300.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7790 to 7996; the sequence used to be 16686 bp long)
+atgcctcaactcaacacatcaacatggccaattacaattctctccataattttgacccta
+ctaattgtttttcaactgaaaatttcaaaattcaattaccccctaagcctgacattaaaa
+g---acactaataaatattcacacgttagtccttgagaaacaaaatgaacgaaaatttat
+ttgcctctttcattaccccaacaattgtag
+>Eulemur macaco macaco  gi|238866946|gb|NC_012771.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7787 to 7993; the sequence used to be 17149 bp long)
+atgcctcaactcgacacatcaacatggctaattacaattctctctataattttgactcta
+ttaactatttttcaactgaaaatttcaaaattcaattatcccttaagcctgacattaaaa
+g---acactaataaacattcatacaccaacccttgagaaactaaatgaacgaaaatctgt
+ttgcctctttcattaccccaacaattgtag
+>Lemur catta  gi|21449875|gb|NC_004025.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7782 to 7988; the sequence used to be 17036 bp long)
+atgcctcaacttgacacatcaacatggctaattacaattctttccataatcctaacccta
+ttaattgtttttcaactgaaaatctcaaaattcaactatcctttaaatccaacaataaaa
+a---atattaataaagacctatatactaacccctgagaaactaaatgaacgaaaatttat
+ttgcctctttcattaccccaacaatcgtag
+>Varecia variegata variegata  gi|238866960|gb|NC_012773.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7800 to 8006; the sequence used to be 16965 bp long)
+atgcctcaactcgatacatcaacatggctaattacaattctttctataatcctaaccctc
+ctaattgtttttcaattaaagattttaaaattcaactaccctttaagccctatattaaac
+t---taattaacaaacatctatacacccacccctgagaaacaaaatgaacgaaaatctat
+ttgcctcattcactaccccaacaatcgtag
+>Propithecus coquereli  gi|194277529|gb|NC_011053.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7790 to 7996; the sequence used to be 17104 bp long)
+atgccccaactagatacatcaacatgacttattacaattctttcgatgatcttaaccctg
+tttatcatttttcaactaaaagtctcaaaatttaactacccattaaacccggaactaaaa
+a---ctattagcataaataaacatgtaagcccttgagaaacaaaatgaacgaaaatctat
+ttgcctctttcattaccccaacaattgtag
+>Tarsius bancanus  gi|14602225|gb|NC_002811.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7798 to 8001; the sequence used to be 16927 bp long)
+atgccccaactaaatacatcaacatgatttattaccatcttatctataacattaacactc
+tttattctatttcaactaaatatttcaaaactgacttatcctcttaacctaaatctaaaa
+a---atatcaatacagaaacatttaaactcccctgagaactaaaatgaacgaaaacctat
+tcgcctctttcattacccccacaat---aa
+>Tarsius syrichta  gi|238866974|gb|NC_012774.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7819 to 8022; the sequence used to be 17004 bp long)
+atgccccaactagacacatcaacatgatttactactattttagctataacactaactctt
+ttcattttatttcaactaaatatttcaaaactaacatacccctttaacctaagcttagca
+g---acattaaattacaaacacttaattccccttgagaactaaaatgaacgaaaatctat
+ttgcctctttcattacccctacaat---aa
+>Galago senegalensis  gi|238866834|gb|NC_012761.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7820 to 8023; the sequence used to be 16795 bp long)
+atgccacaattagacacatctacatgaaccatccccattatttctataaccctaaccctc
+ttcaccctgtttcaactaaaattctcaaagttcttatatcctcttaaccctgtgcaaaaa
+a---ctataaaaacaataaaacaagataacccctgagagaaaaaatgaaccaaaacctat
+ttgcctctttcattacccctacaat---aa
+>Otolemur crassicaudatus  gi|238866848|gb|NC_012762.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7817 to 8020; the sequence used to be 16827 bp long)
+gtgccgcaactagatacatccacatgaaccattactattatctccgcaaccctgacctta
+cttatcctattccaactaaaattttcaaaattctcgcaccccctcaaccccactcctaaa
+a---ttacgggtgcactaaagcaagataacccatgagagaaaaaatgaaccaaaacctat
+ttgcctctttcgctacccctacaat---aa
+>Nycticebus coucang  gi|14010665|gb|NC_002765.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7819 to 8022; the sequence used to be 16764 bp long)
+atgccacaactagatacatcaacatggactatcactatcatgtctataattctaacactt
+tttattttattccaactaaaactgtcaaaatttatataccctacgaaccctaccaaaaaa
+c---tcacaaaaccacacaagctagaaagcccatgagagataaaatggaccaaaacttat
+ttgcctcattcattacccctacaat---ag
+>Perodicticus potto  gi|238866862|gb|NC_012764.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7818 to 8021; the sequence used to be 16638 bp long)
+atgccacagctagacacatccacatgaactataactattctatctacagccctaacatta
+ttcatcctattccaactaaaactactaaaattcacttttcccactgacccctcccaaaaa
+c---ttataaaactacccacacacaccaacccatgaaataaaaaatgaaccaaaacttat
+ttacctctttcatcaccccctcaat---ag
+>Loris tardigradus  gi|238908467|gb|NC_012763.1| (cut 'CDS_ATP synthase F0 subunit 8' from 7818 to 8021; the sequence used to be 16776 bp long)
+atgccacaactagacacatcaacgtgatttacaactatcttatccatgaccctaacacta
+tttatactacttcaattaaaactatctaaatttctatacccactccatccaactcaaaaa
+t---tcacaaaaacctactaccaaatcaacccttgagaaaaaaaatggaccaaaacctat
+ttgccccattcattacccccacaat---aa

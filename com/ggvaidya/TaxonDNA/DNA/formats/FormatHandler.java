@@ -97,16 +97,6 @@ public interface FormatHandler {
 	public void writeFile(File file, SequenceList set, DelayCallback delay) throws IOException, DelayAbortedException;
 	
 	/**
-	 * Writes the content of this sequence list into a file. The file is
-	 * overwritten. The order of the sequences written into the file is
-	 * guaranteed to be the same as in the list.
-	 *
-	 * @throws IOException if there was a problem creating/writing to the file.
-	 * @throws DelayAbortedException if the DelayCallback was aborted by the user.
-	 */
-	public void writeFile(File file, SequenceGrid grid, DelayCallback delay) throws IOException, DelayAbortedException;
-
-	/**
 	 * Checks to see if this file *might* be of this format. Good for internal loops.
 	 * 
 	 * No exceptions: implementors, please swallow them all up. If the file does not

@@ -377,7 +377,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		if(setSpeciesMatrix) {
 			try {
 				sd = sl.getSpeciesDetails(
-					new ProgressDialog(
+					ProgressDialog.create(
 						seqId.getFrame(),
 						"Please wait, calculating the species details ...",
 						"I'm calculating the species details for this sequence set. This might take a while. Sorry!"
@@ -390,7 +390,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			
 		}
 
-		ProgressDialog pd = new ProgressDialog(
+		ProgressDialog pd = ProgressDialog.create(
 				seqId.getFrame(),
 				"Please wait, writing sequences ...",
 				"Please wait, I am writing out the sequences as per your instructions. This shouldn't take too long, but what ARE reusable components for if you can't pop them at the user any time something might take too long to run?"
@@ -707,7 +707,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 			else
 				f = new File(fd.getDirectory() + fd.getFile());
 
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 					seqId.getFrame(),
 					"Please wait, exporting sequences ...",
 					"Sequences are being exported into the file(s) you requested.",

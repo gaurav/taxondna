@@ -91,7 +91,7 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 		StringBuffer results = new StringBuffer();
 		results.append("Sequence name\tLargest conspecific match\tDistance\tOverlap\tClosest congeneric, interspecific match\tDistance\tOverlap\n"); 
 		try {
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 					identifier.getFrame(),
 					"Please wait, calculating extreme pairwise distances ...",
 					"I am calculating extreme pairwise distances. Please bear with me.");

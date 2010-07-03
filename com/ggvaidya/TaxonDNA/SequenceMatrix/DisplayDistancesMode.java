@@ -179,7 +179,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 	public List getAdditionalColumns() {
 		Vector v = new Vector();
 
-		v.add(0, "Sequence name");
+		v.add(0, "Taxon");
 		v.add(1, "Total score");
 		v.add(2, "No of charsets");
 
@@ -398,7 +398,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 	 * 2.	Column 0 is reserved for the row names.
 	 * 3.	(0, 0) is to be a blank box (new String("")).
 	 */
-        public Object getValueAt(int rowIndex, int columnIndex) {
+    public Object getValueAt(int rowIndex, int columnIndex) {
 		String colName = getColumnName(columnIndex);
 		String seqName = getRowName(rowIndex);
 
@@ -460,8 +460,8 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		if(distances.length < col)		// out of range
 			return;
                 
-                if(col < 0)                             // out of range again
-                        return;
+        if(col < 0)                             // out of range again
+            return;
 
 		if(distances[col].length < row)
 			return;
@@ -471,8 +471,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 		if(d >= 0) {
 			// proper
 			super.doubleClick(e, colIndex, rowIndex);
-		} else
-			;	// ignore
+		}
 	}
 
 	/** Convenience function */

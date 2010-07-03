@@ -139,7 +139,7 @@ public class Exporter {
 			//
 			FeatureBin fb = new FeatureBin(explorer.getViewManager().getGenBankFile());
 
-			ProgressDialog pd = new ProgressDialog(explorer.getFrame(),
+			ProgressDialog pd = ProgressDialog.create(explorer.getFrame(),
 					"Please wait, processing features ...",
 					"I'm processing features; I'll start writing them in a bit. Sorry for the wait!");
 
@@ -160,7 +160,7 @@ public class Exporter {
 					f = new File(f_base, file_system_sanitize(list.getName() + "_" + number + ".txt"));
 
 				try {
-					_export(list, new FastaFile(), f, new ProgressDialog(
+					_export(list, new FastaFile(), f, ProgressDialog.create(
 								explorer.getFrame(),
 								"Exporting '" + f + "' ...",
 								"Currently exporting sequences to '" + f + "'"),
@@ -215,7 +215,7 @@ public class Exporter {
 
 		int count = 0;
 		try {
-			count = _export(containers, fh, f, new ProgressDialog(
+			count = _export(containers, fh, f, ProgressDialog.create(
 							explorer.getFrame(),
 							"Please wait, assembling sequences for export ...",
 							"I am assembling all selected sequences in preparation for export. Please give me a second!"
@@ -252,7 +252,7 @@ public class Exporter {
 					return 0;
 			}
 
-			ProgressDialog pd = new ProgressDialog(
+			ProgressDialog pd = ProgressDialog.create(
 				explorer.getFrame(),
 				"Please wait, exporting " + count + " features ...",
 				"I am exporting " + count + " features to '" + f.getAbsolutePath() + "' in the " + fh.getShortName() + " format. Sorry for the wait!");

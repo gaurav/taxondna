@@ -93,7 +93,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
 		// set up the totalLength part
-		rl.add(new Label("Create a taxonset consisting of only those taxons which have atleast "), RightLayout.FILL_3);
+		rl.add(new Label("Create a taxonset consisting of only those taxons which have at least "), RightLayout.FILL_3);
 		rl.add(tf_Length, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 		rl.add(new Label(" bp of combined length"), RightLayout.BESIDE);
 
@@ -108,7 +108,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		rl.add(btn_totalLength_Delete, RightLayout.NEXTLINE | RightLayout.FLUSHRIGHT);
 
 		// set up the totalCharSets part
-		rl.add(new Label("Create a taxonset consisting of only those taxons which have atleast "), RightLayout.NEXTLINE | RightLayout.FILL_3);
+		rl.add(new Label("Create a taxonset consisting of only those taxons which have at least "), RightLayout.NEXTLINE | RightLayout.FILL_3);
 		rl.add(tf_CharSets, RightLayout.NEXTLINE | RightLayout.STRETCH_X);
 		rl.add(new Label(" character sets"), RightLayout.BESIDE);
 
@@ -159,7 +159,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		while(i.hasNext()) {
 			int x = ((Integer)i.next()).intValue();
 
-			list_totalLength.add(prefix_Length + x + ": Containing atleast " + x + " bp combined length");
+			list_totalLength.add(prefix_Length + x + ": Containing at least " + x + " bp combined length");
 			vec_Length.add(new Integer(x));
 		}
 
@@ -177,7 +177,7 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 		while(i.hasNext()) {
 			int x = ((Integer)i.next()).intValue();
 
-			list_totalCharSets.add(prefix_CharSets + x + ": Containing atleast " + x + " character sets");
+			list_totalCharSets.add(prefix_CharSets + x + ": Containing at least " + x + " character sets");
 			vec_CharSets.add(new Integer(x));
 		}
 
@@ -223,14 +223,14 @@ public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 			String name = null;
 			
 			if(src.equals(btn_Length)) {
-				atleast = "atleast";
+				atleast = "at least";
 				name = "bp combined length";
 				prefix = prefix_Length;
 				newValue = tf_Length.getText();
 				list = list_totalLength;
 				addTo = vec_Length;
 			} else {
-				atleast = "atleast";
+				atleast = "at least";
 				name = "character sets";
 				prefix = prefix_CharSets;
 				newValue = tf_CharSets.getText();

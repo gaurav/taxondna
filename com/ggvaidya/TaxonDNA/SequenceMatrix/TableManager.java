@@ -293,9 +293,9 @@ public class TableManager implements ActionListener {
 		}
 	}
 
-	public void deleteRow(String seqName) {
-		if(warned("Delete this row?", "Are you sure you wish to delete sequence '" + seqName + "'?")) {
-			dataStore.deleteRow(seqName);
+	public void deleteRow(String taxonName) {
+		if(warned("Delete this taxon?", "Are you sure you wish to delete the taxon '" + taxonName + "'?")) {
+			dataStore.deleteRow(taxonName);
 			updateDisplay();
 		}
 	}
@@ -813,15 +813,15 @@ class ToolbarManager implements ActionListener {
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
-		btn = new JButton("Cancel entire taxon");
+		btn = new JButton("Excise entire taxon");
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
-                btn = new JButton("Find 0% distances");
+                btn = new JButton("Find distances");
                 btn.addActionListener(this);
                 toolbar.add(btn);
                 
-		btn = new JButton("Display Pairwise Distances");
+		btn = new JButton("Display pairwise distances");
 		btn.addActionListener(this);
 		toolbar.add(btn);
 
@@ -893,23 +893,23 @@ class ToolbarManager implements ActionListener {
 				tm.deleteColumn(currentCharsetName);
 		}
 
-		if(cmd.equals("Display Pairwise Distances")) {
+		if (cmd.equals("Display pairwise distances")) {
 			tm.changeDisplayMode(TableManager.DISPLAY_DISTANCES, currentCharsetName);
 
-                        // Rename the button so it can go the other way.
-                        JButton btn = (JButton) e.getSource();
-                        btn.setText("Display Sequences");
-                        btn.setActionCommand("Display Sequences");
+			// Rename the button so it can go the other way.
+			JButton btn = (JButton) e.getSource();
+			btn.setText("Display sequences");
+			btn.setActionCommand("Display sequences");
 		}
 
-                if(cmd.equals("Display Sequences")) {
-                        tm.changeDisplayMode(TableManager.DISPLAY_SEQUENCES, null);
+		if (cmd.equals("Display sequences")) {
+			tm.changeDisplayMode(TableManager.DISPLAY_SEQUENCES, null);
 
-                        // Rename the button so it can go the other way.
-                        JButton btn = (JButton) e.getSource();
-                        btn.setText("Display Pairwise Distances");
-                        btn.setActionCommand("Display Pairwise Distances");
-                }
+			// Rename the button so it can go the other way.
+			JButton btn = (JButton) e.getSource();
+			btn.setText("Display pairwise distances");
+			btn.setActionCommand("Display pairwise distances");
+		}
 
 		if(cmd.equals("Delete taxon")) {
 			if(currentSeqName != null)
@@ -918,7 +918,7 @@ class ToolbarManager implements ActionListener {
 			// TODO: Use table.changeSelection() to move to the next row
 		}
 
-		if(cmd.equals("Cancel entire taxon")) {
+		if(cmd.equals("Excise entire taxon")) {
 			if(currentSeqName != null)
 				tm.cancelRow(currentSeqName);
 		}
@@ -928,7 +928,7 @@ class ToolbarManager implements ActionListener {
 				tm.setReferenceSequence(currentSeqName);
 		}
 
-                if(cmd.equals("Find 0% distances")) {
+                if(cmd.equals("Find distances")) {
                     tm.matrix.findDistances.go();
                 }
 	}
