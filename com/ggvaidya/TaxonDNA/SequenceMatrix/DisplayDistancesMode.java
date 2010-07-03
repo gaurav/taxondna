@@ -46,8 +46,8 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DisplayDistancesMode extends DisplayMode implements ItemListener { 
@@ -119,8 +119,8 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 			if(s.getName().equals(seqName_top))
 				return +1;
 
-			return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-				- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
+			return constant * ((int)(com.ggvaidya.TaxonDNA.Model.Settings.makeLongFromDouble(getPairwise())
+				- com.ggvaidya.TaxonDNA.Model.Settings.makeLongFromDouble(s.getPairwise())));
 		}
 	};
 
@@ -476,7 +476,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 
 	/** Convenience function */
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 
 	public void setValueAt(String colName, String rowName, Object aValue) {
@@ -676,7 +676,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 
 	/** For convenience */
 	public boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.identical(x, y);
 	}
 }
 

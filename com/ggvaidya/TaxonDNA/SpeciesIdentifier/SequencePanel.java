@@ -12,7 +12,7 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class SequencePanel extends Panel implements UIExtension, ActionListener, ItemListener, ItemSelectable {

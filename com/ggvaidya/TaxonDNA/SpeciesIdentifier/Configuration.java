@@ -31,7 +31,7 @@ import java.awt.event.*;
 
 import java.util.prefs.*;		// for Preferences
 
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 

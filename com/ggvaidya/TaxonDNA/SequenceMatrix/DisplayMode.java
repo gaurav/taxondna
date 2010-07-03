@@ -47,8 +47,8 @@ import javax.swing.table.*;
 import javax.swing.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public abstract class DisplayMode implements TableModel, MouseListener {

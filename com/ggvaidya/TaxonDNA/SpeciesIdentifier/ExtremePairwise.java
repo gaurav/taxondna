@@ -31,7 +31,7 @@ import java.awt.datatransfer.*;	// for clipboard
 import java.io.*;		// for export
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class ExtremePairwise extends Panel implements UIExtension, ActionListener, Runnable {
@@ -194,11 +194,11 @@ public class ExtremePairwise extends Panel implements UIExtension, ActionListene
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 
 	private boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.identical(x, y);
 	}
 
 	/* Creates the actual Panel */

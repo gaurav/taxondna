@@ -33,7 +33,7 @@ import java.awt.datatransfer.*;
 import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
@@ -361,7 +361,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 	
 	public String getShortName() {		return "All Species Barcodes"; 	}

@@ -32,7 +32,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.Others.BrowserLauncher;
 import com.ggvaidya.TaxonDNA.UI.*;
 

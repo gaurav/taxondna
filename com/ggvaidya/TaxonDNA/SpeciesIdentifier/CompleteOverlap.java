@@ -34,7 +34,7 @@ import java.awt.event.*;
 import java.awt.datatransfer.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class CompleteOverlap extends Panel implements UIExtension, Runnable, ActionListener {

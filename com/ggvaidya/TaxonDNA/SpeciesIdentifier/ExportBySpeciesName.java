@@ -35,7 +35,7 @@ import java.awt.event.*;
 import java.io.*;					// For the BufferedReader, mostly
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class ExportBySpeciesName extends Panel implements UIExtension, ActionListener {
@@ -154,7 +154,7 @@ public class ExportBySpeciesName extends Panel implements UIExtension, ActionLis
 				f_output = new File(fd.getFile());
 				
 			// export
-			com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+			com.ggvaidya.TaxonDNA.Model.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Model.formats.FastaFile();
 			ff.writeFile(f_output, to_export, null);
 			
 			// yay done!

@@ -34,8 +34,8 @@ import java.util.*;
 import java.util.prefs.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class FeatureBin {

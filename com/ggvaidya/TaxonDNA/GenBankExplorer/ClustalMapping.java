@@ -60,8 +60,8 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class ClustalMapping implements ActionListener {
@@ -277,7 +277,7 @@ public class ClustalMapping implements ActionListener {
 		if(set_map == null || set_map.count() == 0) 
 			set_map = new SequenceList();
 
-		FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+		FastaFile ff = new com.ggvaidya.TaxonDNA.Model.formats.FastaFile();
 		String error_occured_in = "";
 
 		// Load up the datafile 

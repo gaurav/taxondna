@@ -50,8 +50,8 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class DisplayCorrelationsMode extends DisplayMode implements MouseListener, Runnable { 
@@ -123,8 +123,8 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 				// I can't believe it's an expression!
 				return constant * (
-					(int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-					- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise()))
+					(int)(com.ggvaidya.TaxonDNA.Model.Settings.makeLongFromDouble(getPairwise())
+					- com.ggvaidya.TaxonDNA.Model.Settings.makeLongFromDouble(s.getPairwise()))
 				);
 
 			}
@@ -448,7 +448,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 
 	/** Convenience function */
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 
 	public void setValueAt(String colName, String rowName, Object aValue) {
@@ -910,7 +910,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
 	}
 
 	public boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.identical(x, y);
 	}
 }
 

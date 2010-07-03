@@ -32,8 +32,8 @@ import java.awt.event.*;
 import java.awt.datatransfer.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Model.*;
+import com.ggvaidya.TaxonDNA.Model.formats.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 
@@ -171,7 +171,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					// assume that 'f' has already been tested for existance, and overwriting verified by FileDialog.
 
 					try {
-						com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+						com.ggvaidya.TaxonDNA.Model.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Model.formats.FastaFile();
 						ff.writeFile(f, new SequenceList(sl_results), null);
 					} catch(Exception ex) {
 						new MessageBox(seqId.getFrame(),
@@ -242,7 +242,7 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 					file = new File(fd.getFile());
 
 				try {
-					com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+					com.ggvaidya.TaxonDNA.Model.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Model.formats.FastaFile();
 					ff.writeFile(file, new SequenceList(result), null);
 				} catch(Exception ex) {
 					seqId.unlockSequenceList();
@@ -434,8 +434,8 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 												// check
 		str.append("Number of sequences shorter than " + Sequence.getMinOverlap() + " base pairs: " + species.getSequencesInvalidCount() + "\n");	// check
 		
-		str.append("Number of sequences with atleast one valid conspecific sequence: " + species.getSequencesWithValidConspecificsCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getSequencesWithValidConspecificsCount(), list.count()) + "%)\n");
-		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all species)\n");										 
+		str.append("Number of sequences with atleast one valid conspecific sequence: " + species.getSequencesWithValidConspecificsCount() + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(species.getSequencesWithValidConspecificsCount(), list.count()) + "%)\n");
+		str.append("Number of species with valid conspecifics: " + species.getValidSpeciesCount() + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(species.getValidSpeciesCount(), species.count()) + "% of all species)\n");
 		// set up list_species
 		//
 		list_species.removeAll();
@@ -701,6 +701,6 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 	}
 
 	public double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 }

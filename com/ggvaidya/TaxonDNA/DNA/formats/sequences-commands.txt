@@ -1,6 +1,0 @@
-COMMANDS USED BY SEQUENCES
-
-format: command\tfamilyCode\texplanation\n\t\t\texample
-
-N/A		nucleotide	Indicates that the sequence information is composed of nucleotides.
-cancelled	sequencematrix	Indicates that this sequence is a 'cancelled'

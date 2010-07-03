@@ -72,13 +72,13 @@ public class SystemUsage extends Panel implements UIExtension, ActionListener, C
 		buffer.append("\n");
 		buffer.append("Maximum memory available for use:             " + printMemory(runtime.maxMemory()) + "\n");
 		buffer.append("Total memory available for use at the moment: " + printMemory(runtime.totalMemory()) + "\n");
-		buffer.append("Free memory available for use at the moment:  " + printMemory(runtime.freeMemory()) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(runtime.freeMemory(), runtime.totalMemory()) + "%)\n");
+		buffer.append("Free memory available for use at the moment:  " + printMemory(runtime.freeMemory()) + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(runtime.freeMemory(), runtime.totalMemory()) + "%)\n");
 
 		long totalUsedMemory = runtime.totalMemory() - runtime.freeMemory();
 		long totalFreeMemory = runtime.maxMemory() - totalUsedMemory;
 		buffer.append("\n");
-		buffer.append("Total memory used: " + printMemory(totalUsedMemory) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(totalUsedMemory, runtime.maxMemory()) + "%)\n");
-		buffer.append("Total memory free: " + printMemory(totalFreeMemory) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(totalFreeMemory, runtime.maxMemory()) + "%)\n");
+		buffer.append("Total memory used: " + printMemory(totalUsedMemory) + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(totalUsedMemory, runtime.maxMemory()) + "%)\n");
+		buffer.append("Total memory free: " + printMemory(totalFreeMemory) + " (" + com.ggvaidya.TaxonDNA.Model.Settings.percentage(totalFreeMemory, runtime.maxMemory()) + "%)\n");
 
 		text_main.setText(buffer.toString());
 	}
@@ -88,7 +88,7 @@ public class SystemUsage extends Panel implements UIExtension, ActionListener, C
 		if(memory == Long.MAX_VALUE)
 			return "No limit";
 
-		return com.ggvaidya.TaxonDNA.DNA.Settings.roundOff(memory / (1024 * 1024)) + " MB\t(" + com.ggvaidya.TaxonDNA.DNA.Settings.roundOff(memory / 1024) + " KB)";
+		return com.ggvaidya.TaxonDNA.Model.Settings.roundOff(memory / (1024 * 1024)) + " MB\t(" + com.ggvaidya.TaxonDNA.Model.Settings.roundOff(memory / 1024) + " KB)";
 	}
 	
 	public void dataChanged()	{

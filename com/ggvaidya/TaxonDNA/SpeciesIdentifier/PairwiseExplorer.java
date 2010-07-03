@@ -31,7 +31,7 @@ import java.awt.datatransfer.*;	// for clipboard
 import java.io.*;		// for export
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.Model.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 
 public class PairwiseExplorer extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
@@ -290,11 +290,11 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.percentage(x, y);
 	}
 
 	private boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Model.Settings.identical(x, y);
 	}
 
 	/* Pad a string to a size */
