@@ -2,8 +2,12 @@ Changelog
 ==========
 
 - development
+
+- 1.7.7-dev2 
     - Rewrote SpeciesDetails to remove the old, bug-ridden algorithm.
       The new one will probably actually work.
+    - Added discrimination between "Split only", "Lumped/Split" and
+      "Lumped" for clusters in Cluster.
 
 - 1.7.6 (June 6, 2010)
     - Added code to detect overlapping codonsets on input (#19).

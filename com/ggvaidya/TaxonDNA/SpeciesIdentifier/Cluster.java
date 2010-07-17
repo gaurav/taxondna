@@ -145,6 +145,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 	public void writeupItemStrings(DelayCallback delay) throws DelayAbortedException {	
 		int delaySteps = clusters.size() + clusters.size();
 
+		System.err.println("1-G");
+
 		if(set != null)
 			delaySteps += set.count() * 2;	// try to get as accurate a guess as possible
 
@@ -152,6 +154,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 		if(delay != null)		
 			delay.begin();
+
+		System.err.println("1-H");
 		
 		// summary
 		StringBuffer str_final = new StringBuffer("Summary of results\n\n");
@@ -176,6 +180,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			return;
 		}	
 
+		System.err.println("1-I");
+
 		StringBuffer str = new StringBuffer(); 
 		Hashtable hash_species = new Hashtable();
 
@@ -189,7 +195,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			double largest_pairwise = 0;
 			int valid_comparisons = 0;
 			int valid_comparisons_over = 0;
-			Hashtable hash_species_this = new Hashtable();
+			HashMap<String, Integer> hash_species_counts_in_this_cluster = new HashMap<String, Integer>();
 			boolean bool_containsAllSequencesOfOneSpecies = false;
 				
 			str.append((x + 1) + "\t");
@@ -211,8 +217,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				if(spName == null)
 					spName = "{" + seq.getFullName() + "}";
 
-				if(hash_species_this.get(spName) == null) {
-					hash_species_this.put(spName, new Integer(1));
+				if(hash_species_counts_in_this_cluster.get(spName) == null) {
+					hash_species_counts_in_this_cluster.put(spName, new Integer(1));
 
 					if(hash_species.get(spName) == null) {
 						hash_species.put(spName, new Integer(1));
@@ -221,9 +227,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					}
 
 				} else {
-					hash_species_this.put(spName, new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));	
+					hash_species_counts_in_this_cluster.put(spName, new Integer(((Integer)hash_species.get(seq.getSpeciesName())).intValue() + 1));
 				}
-
 
 				Iterator i2 = bin.iterator();
 				while(i2.hasNext()) {
@@ -260,15 +265,15 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			if(largest_pairwise > largest_pairwise_distance_observed)
 				largest_pairwise_distance_observed = largest_pairwise;
 
-			if(hash_species_this.keySet().size() == 1) {
+			if(hash_species_counts_in_this_cluster.keySet().size() == 1) {
 				no_clusters_with_one_species++;
-			
+
 				// now, compare no of seq found for
 				// this one species with the no of
 				// seq available for this species
 				// in the database.
 
-				String speciesName = ( (String) (hash_species_this.keySet().toArray())[0]);
+				String speciesName = ( (String) (hash_species_counts_in_this_cluster.keySet().toArray())[0]);
 				// obviously, we can't do this for unknown species
 				if(
 					sd.getSpeciesDetailsByName(speciesName) != null &&
@@ -279,20 +284,17 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				}
 			}
 
-			if(hash_species_this.keySet().size() > largest_no_of_species_in_a_cluster)
-				largest_no_of_species_in_a_cluster = hash_species_this.keySet().size();
+			if(hash_species_counts_in_this_cluster.keySet().size() > largest_no_of_species_in_a_cluster)
+				largest_no_of_species_in_a_cluster = hash_species_counts_in_this_cluster.keySet().size();
 
 			String cluster_status =  "";
 			SequenceList list_of_consensus = null;
 			String cluster_type = null;
 			String species_name = null;
 				
-			if(hash_species_this.keySet().size() > 1) {
-				cluster_status = "Lumped\t(contains multiple species)";
-				list_of_consensus = list_consensuses_lumped;
-				cluster_type = "Lumped cluster multiple species";
-				species_name = "Multiple species";
-			} else {
+			if(hash_species_counts_in_this_cluster.keySet().size() == 1) {
+				// A single species in this cluster!
+
 				// it's either:
 				// 1.	'perfect': all seqs of 1 sp, and EVERY seq of that sp
 				// 2.	'technically split': all seqs of 1 sp, some seqs of that
@@ -312,16 +314,52 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 					list_of_consensus = list_consensuses_perfect;
 					cluster_type = "Perfect cluster single species";
 
-					species_name = ( (String) (hash_species_this.keySet().toArray())[0] );
+					species_name = ( (String) (hash_species_counts_in_this_cluster.keySet().toArray())[0] );
 				} else {
-					species_name = ( (String) (hash_species_this.keySet().toArray())[0] );
+					species_name = ( (String) (hash_species_counts_in_this_cluster.keySet().toArray())[0] );
 					// so ... now we need to find other clusters containing sp_Name.
 					// which is pretty hard, considering. sigh.
-					cluster_status = "Split";	// One way or another
+					cluster_status = "Split only";	// One way or another
 					list_of_consensus = list_consensuses_split;
 					cluster_type = "Split cluster single species";
 				}
+			} else {
+				// More than one species in this cluster.
+
+				boolean any_species_has_sequences_missing = false;
+				
+				for(String speciesName: hash_species_counts_in_this_cluster.keySet()) {
+					SpeciesDetail sdet = sd.getSpeciesDetailsByName(speciesName);
+
+					int count_speciesName_sequences_in_this_cluster =
+							hash_species_counts_in_this_cluster.get(speciesName).intValue();
+					int count_speciesName_sequences_in_total =
+							sdet.getSequencesCount();
+
+					if(count_speciesName_sequences_in_this_cluster != count_speciesName_sequences_in_total) {
+						any_species_has_sequences_missing = true;
+						break;
+					}
+				}
+
+				if(!any_species_has_sequences_missing) {
+					// All the sequences for all the species in this cluster
+					// are in this cluster.
+					cluster_status = "Lumped only\t(contains multiple species)";
+					list_of_consensus = list_consensuses_lumped;
+					cluster_type = "Lumped cluster multiple species";
+					species_name = "Multiple species";
+				} else {
+					// Atleast one sequence for atleast one species in this
+					// cluster is outside this cluster.
+					cluster_status = "Lumped/Split\t(contains multiple species)";
+					list_of_consensus = list_consensuses_lumped;
+					cluster_type = "Lumped cluster multiple species";
+					species_name = "Multiple species";
+				}
 			}
+
+			System.err.println("1-N");
 
 			Sequence consensus;
 			try {
@@ -342,7 +380,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				return;
 			}
 			
-			str.append(bin.size() + "\t" + hash_species_this.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\t" + cluster_status + "\n");
+			str.append(bin.size() + "\t" + hash_species_counts_in_this_cluster.keySet().size() + "\t" + percentage(largest_pairwise, 1) + "%\t" + (percentage) + "%\t" + cluster_status + "\n");
 		}
 
 		str.append("\n\nSummary of species\n\nSPECIES\tSEQUENCES\tFOUND IN HOW MANY CLUSTERS?\tFOUND WITH HOW MANY OTHER SPECIES?\n");
@@ -432,6 +470,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				x++;
 			}
 
+			System.err.println("1-P");
+
 			str.append(name + "\t" + count_sequences + "\t" + hash_species.get(name) + "\t" + species_found_with + "\n");
 
 			for(int index_outer = 0; index_outer < count_extremes; index_outer++) {
@@ -459,6 +499,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			}
 		}
 
+		System.err.println("1-Q");
+
 		// add stuff to str_final
 		str_final.append("Clustering at:\t" + percentage(max_pairwise, 1) + "%\n");
 		str_final.append("Number of clusters:\t" + clusters.size() + "\n");
@@ -473,6 +515,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 		item_strings[0] = str_final.toString();
 
+
+			System.err.println("1-R");
+
 		delay_count++;
 		for(int i = 1; !flag_skipIndivEntries && i <= clusters.size(); i++) {
 		// information on that particular clusters
@@ -480,6 +525,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			str = new StringBuffer();
 			Iterator i1;
 			Hashtable species = new Hashtable();
+
 
 
 			str.append("Cluster " + (i) + " consists of " + bin.size() + " sequences ");
@@ -528,13 +574,24 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				pairwise_table.append("\n");
 			}
 
+			System.err.println("1-S");
+
 			str.append("with " + nOverLimit + " sequences (" + percentage(nOverLimit, nValidComparisons) + "%) over " + percentage(max_pairwise, 1) + "%\n");
 
 			item_strings[i] = (str.toString() + "\n\t" + first_line.toString() + "\n" + pairwise_table.toString());
 		}
-		
+
+		System.err.println("1-T");
+
+		/*
+		 * I honestly have no idea why, but allowing delay.end() to
+		 * be called here causes the program to hang. So.
+		 * 
 		if(delay != null)
 			delay.end();
+		 *
+		 */
+		System.err.println("1-U");
 	}
 
 	/* Data changed: in our case, SequenceSet changed */
@@ -598,6 +655,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 			return;
 		}
+
+		System.err.println("1-A");
 		
 		ProgressDialog pb = ProgressDialog.create(seqId.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
 				
@@ -678,6 +737,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				list_clusters.removeAll();
 				list_clusters.add("Summary");
 
+
+		System.err.println("1-B");
+
 				Iterator i = clusters.iterator();
 				int x = 0;
 				while(i.hasNext()) {
@@ -729,18 +791,28 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		pb.end();
 
 
+		System.err.println("1-C");
+
 		pb = ProgressDialog.create(
 				seqId.getFrame(),
 				"Writing up information ...",
 				"Formatting and writing the results, please wait.",
 				0);
 
+
+		System.err.println("1-D");
+
 		try {
 			writeupItemStrings(pb);
+			System.err.println("1-E");
 		} catch(DelayAbortedException e) {
+			System.err.println("1-F");
 			seqId.unlockSequenceList();
 			return;
 		}
+
+
+		System.err.println("1-END");
 
 		/*
 		FileDialog fd_saveConsensuses = new FileDialog(
@@ -796,8 +868,12 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 		 * 
 		 */
 
+		System.err.println("Here");
+
 		selectItem(0);
 		seqId.unlockSequenceList();
+
+		System.err.println("There");
 	}
 	
 	// UIExtension stuff
