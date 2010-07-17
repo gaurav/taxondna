@@ -272,7 +272,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				// obviously, we can't do this for unknown species
 				if(
 					sd.getSpeciesDetailsByName(speciesName) != null &&
-					sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidMatchesCount() == bin.size()
+					sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidConspecificsCount() == bin.size()
 				) {
 					bool_containsAllSequencesOfOneSpecies = true;
 					no_of_clusters_with_all_sequences_for_a_species++;
@@ -598,7 +598,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 			return;
 		}
-				
+		
 		ProgressDialog pb = ProgressDialog.create(seqId.getFrame(), "Clustering sequences at " + (max_pairwise * 100) + "% ...", "All your sequences are being clustered, please wait ...", 0);
 				
 		pb.begin();
@@ -672,7 +672,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 						vec.add(seq);
 						clusters.add(vec);
 					}
-				}	
+				}
 
 				// now all the sequences have been clustered
 				list_clusters.removeAll();
@@ -741,7 +741,8 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			seqId.unlockSequenceList();
 			return;
 		}
-		
+
+		/*
 		FileDialog fd_saveConsensuses = new FileDialog(
 				seqId.getFrame(),
 				"Please select a file to save the consensuses into",
@@ -792,9 +793,10 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			MessageBox mb_done = new MessageBox(seqId.getFrame(), "Done!", "All consensus sequences were exported.");
 			mb_done.showMessageBox();
 		}
+		 * 
+		 */
 
 		selectItem(0);
-		
 		seqId.unlockSequenceList();
 	}
 	

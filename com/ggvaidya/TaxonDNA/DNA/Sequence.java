@@ -2216,4 +2216,8 @@ public class Sequence  implements Comparable, Testable {
 
 		Sequence.setMinOverlap(oldMinOverlap);
 	}
+
+	boolean hasMinOverlap(Sequence seq) {
+		return (getOverlap(seq) >= Sequence.getMinOverlap());
+	}
 }

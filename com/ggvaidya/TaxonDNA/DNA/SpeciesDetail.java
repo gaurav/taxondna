@@ -7,7 +7,7 @@
 
 /*
     TaxonDNA
-    Copyright (C) 2006	Gaurav Vaidya
+    Copyright (C) 2006, 2010	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -26,19 +26,12 @@
 
 package com.ggvaidya.TaxonDNA.DNA;
 
-import java.util.*;		// Hashtables
-import java.io.*;		// Input/output
-
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
+import java.util.*;
 
 public class SpeciesDetail {
-	private String 	name;
-	private int	sequences;
-	private int 	sequences_with_valid_matches;
-	private int 	sequences_with_no_valid_matches;
-	private int	length_largestSequence;
-	private Vector	gi_numbers = new Vector();
+	private String				species_name;
+	private int					length_longestSequence = 0;
+	private ArrayList<Sequence>	sequences = new ArrayList<Sequence>();
 
 	/**
 	 * You can't create a SpeciesDetail unless you, err,
@@ -49,39 +42,93 @@ public class SpeciesDetail {
 	/**
 	 * Our most useful constructor.
 	 */
-	public SpeciesDetail(String name) {
-		this.name = name;
+	public SpeciesDetail(String species_name) {
+		this.species_name = species_name;
 	}
 
 	/**
-	 * Some other helper functions to add information.
+	 * Add a sequence to this "species".
 	 */
-	public void pushSequenceIdentifier(String gi) {
-		gi_numbers.add(gi);
-	}
+	public void add(Sequence seq) {
+		if(!seq.getSpeciesName().equals(species_name))
+			throw new RuntimeException("Tried to add " + seq + " to a species detail of " + species_name);
 
-	/*
-	 * GET functions
-	 * SET functions
-	 */
-	public int getSequencesCount() 					{	return sequences; 			}
-	public void setSequencesCount(int count) 			{ 	sequences = count; 			}
-	public int getSequencesWithValidMatchesCount() 			{ 	return sequences_with_valid_matches; 	}
-	public void setSequencesWithValidMatchesCount(int count) 	{ 	sequences_with_valid_matches = count; 	}
-	public int getSequencesWithoutValidMatchesCount()		{ 	return sequences_with_no_valid_matches; }
-	public void setSequencesWithoutValidMatchesCount(int count)	{ 	sequences_with_no_valid_matches = count;}
-	public void setLargestSequenceLength(int len)			{	length_largestSequence = len;		}
-	public 	int getLargestSequenceLength()				{	return length_largestSequence; 		}
-
-	public Vector getIdentifiers() 					{ return gi_numbers; }
-	public Iterator getIdentifiersIterator() 			{ return gi_numbers.iterator(); }
-	public String getIdentifiersAsString() {
-		StringBuffer buff = new StringBuffer();
-		Iterator i = gi_numbers.iterator();
-		while(i.hasNext()) {
-			buff.append(((String)i.next()) + " ");
+		// Process all the numbers.
+		if(seq.getLength() > length_longestSequence) {
+			length_longestSequence = seq.getLength();
 		}
 
+		// Add this sequence to our list.
+		sequences.add(seq);
+	}
+
+	/**
+	 * @return A list of sequences associated with this species detail.
+	 */
+	public List<Sequence> getSequences() {
+		return (List<Sequence>) sequences;
+	}
+
+	/**
+	 * @return The number of sequences in this species detail.
+	 */
+	public int getSequencesCount() {
+		return sequences.size();
+	}
+
+	/**
+	 * Determine how many sequences have a "valid match", i.e. a conspecific
+	 * which has less than the minimum overlap.
+	 *
+	 * @return The number of such sequences.
+	 */
+	public int getSequencesWithValidConspecificsCount() {
+		int valid_matches = 0;
+
+		for(Sequence seq: sequences) {
+			for(Sequence seq_inner: sequences) {
+				if(seq_inner == seq) continue;
+
+				if(seq.hasMinOverlap(seq_inner)) {
+					valid_matches++;
+					break;		// Will break out of inner, but not outer, loop.
+				}
+			}
+		}
+
+		return valid_matches;
+	}
+
+	/**
+	 * Determine how many sequences *don't* have a valid match, i.e. a
+	 * conspecific which has less than the minimum overlap.
+	 *
+	 * @return The number of such sequences.
+	 */
+	public int getSequencesWithoutValidConspecificsCount() {
+		return getSequencesCount() - getSequencesWithValidConspecificsCount();
+	}
+
+	/**
+	 * @return The length of the longest sequence in this SpeciesDetail.
+	 */
+	public 	int getLongestSequenceLength() {
+		return length_longestSequence;
+	}
+
+	/**
+	 * @return a list of GI numbers as a concatenated string.
+	 */
+	public String getGINumbersAsString() {
+		StringBuffer buff = new StringBuffer();
+
+		for(Sequence seq: sequences) {
+			if(seq.getGI() != null)
+				buff.append("gi|" + seq.getGI() + "| ");
+			else
+				buff.append("(Sequence with unknown GI number) ");
+		}
+		
 		return buff.toString();
 	}
 }

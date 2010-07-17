@@ -9,11 +9,11 @@
             <folders>
                 <source-folder>
                     <label>Source Packages</label>
-                    <type>java</type>
                     <location>.</location>
                 </source-folder>
                 <source-folder>
                     <label>Source Packages</label>
+                    <type>java</type>
                     <location>.</location>
                 </source-folder>
             </folders>
@@ -28,7 +28,7 @@
                     <target>javadocs</target>
                 </action>
                 <action name="run">
-                    <target>run_seqmat</target>
+                    <target>run_spid</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
@@ -53,6 +53,7 @@
                     <ide-action name="run"/>
                 </context-menu>
             </view>
+            <subprojects/>
         </general-data>
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>

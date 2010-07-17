@@ -235,6 +235,9 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		if(sd == null)
 			return "";
 
+		return "(warning: defunct. Please contact the developers to reactivate)";
+
+		/*
 		ArrayList names = new ArrayList(sd.getSpeciesNamesWithMultipleValidSequencesList());
 		Collections.sort(names);
 
@@ -288,6 +291,8 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 		}
 
 		return matrix.toString();
+		 * 
+		 */
 	}
 
 	private Iterator createOnePerSpeciesIterator(SequenceList list) {

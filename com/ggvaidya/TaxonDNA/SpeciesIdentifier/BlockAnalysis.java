@@ -296,7 +296,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 				if(block_size <= 1) {
 					block_ambiguous++;
 				} else {
-					if(block_size == sd.getSpeciesDetailsByName(name_first_match).getSequencesWithValidMatchesCount()) {
+					if(block_size == sd.getSpeciesDetailsByName(name_first_match).getSequencesWithValidConspecificsCount()) {
 						// block_size will be equal to the number of conspecifics
 						// ONLY if all the conspecifics are blocked up ...
 						// which means that either it's not a proper block,
@@ -307,7 +307,7 @@ public class BlockAnalysis extends Panel implements UIExtension, ActionListener,
 						} else 
 							block_ambiguous++;
 					} else 
-					if(block_size == sd.getSpeciesDetailsByName(name_first_match).getSequencesWithValidMatchesCount() - 1) {
+					if(block_size == sd.getSpeciesDetailsByName(name_first_match).getSequencesWithValidConspecificsCount() - 1) {
 						// its the right size for a real block ...
 						// it's a real block!
 						if(name_first_match.equals(name_query)) {

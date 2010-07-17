@@ -2,6 +2,8 @@ Changelog
 ==========
 
 - development
+    - Rewrote SpeciesDetails to remove the old, bug-ridden algorithm.
+      The new one will probably actually work.
 
 - 1.7.6 (June 6, 2010)
     - Added code to detect overlapping codonsets on input (#19).

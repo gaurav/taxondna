@@ -447,9 +447,9 @@ public class SpeciesSummary extends Panel implements UIExtension, Runnable, Acti
 			SpeciesDetail det = species.getSpeciesDetailsByName(name);
 
 			int count_total = det.getSequencesCount();
-			int count_valid = det.getSequencesWithValidMatchesCount();
-			int count_invalid = det.getSequencesWithoutValidMatchesCount();
-			String gi_list = det.getIdentifiersAsString();
+			int count_valid = det.getSequencesWithValidConspecificsCount();
+			int count_invalid = det.getSequencesWithoutValidConspecificsCount();
+			String gi_list = det.getGINumbersAsString();
 		
 			index++;
 			list_species.add(index + ". " + name + " (" + count_total + " sequences, " + count_valid + " valid, " + count_invalid + " invalid): " + gi_list);
