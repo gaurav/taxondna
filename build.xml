@@ -3,32 +3,33 @@
 	<property file =        "version.txt" />
 
 	<!-- compile-time options -->
-
         <!-- Until TaxonDNA 1.5, code was written to target JRE 1.4. Since then,
              we target JRE 1.5 instead. If you'd like to backport TaxonDNA to
              JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
              variable and fix all the issues which come up.
-
-             But! This generates a lot of warnings. So nevermind, 1.4 it is.
-        -->
-        <!--
-            Idea rescinded as of Dec 12, 2009. Generics really makes
-            it a lot easier to keep disperate parts of the source in
-            sync. We'll ignore other warnings for now (or fix them when
-            nobody's looking).
         -->
         <property name = "java.targetversion" value = "1.5" />
 
-        <!-- files.common: (Common) files used by all the TaxonDNA tools -->
-	<property name = "files.common" value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**" />
-	
-        <!--    Targets begin here. Possible targets include: compile, SpeciesIdentifier, SequenceMatrix,
-                GenBankExplorer, build, src, javadocs, clean, rebuild, run_*, sign
+        <!-- 
+            files.common: (Common) files used by all the TaxonDNA tools
+            This is used to determine which files to package into the
+            JAR files.
         -->
+        <property name = "files.common"
+            value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**"
+        />
+	
+    <!--
+        Targets begin here.
+    -->
 
-	<!-- compile:			Compile will recompile all our Java code into Java classes in one shot -->
+	<!-- 
+        compile:
+            Compile will recompile all our Java code into Java classes
+            in one shot
+    -->
 	<target name = "compile">
-		<javac 
+		<javac
 			srcdir =        "." 
 			debug =         "yes" 
 			optimize =      "yes" 
@@ -42,11 +43,72 @@
 		</javac>
 	</target>
 
+	<!-- 
+        src:
+            Zips up the ENTIRE directory into one
+			file for a full-source backup.
+	-->
+	<target name = "src">
+		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
+		<zip
+			destfile =      "../TaxonDNA-src-${taxondna.version}.zip"
+			basedir =       "../"
+			includes =      "TaxonDNA/**"
+			excludes =      "**/.svn, **/.git, TaxonDNA/Releases"
+			comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
+		/>
+        <move 
+            file = "../TaxonDNA-src-${taxondna.version}.zip"
+            todir = "Releases"
+        />
+	</target>
+
+	<!--
+        javadocs:
+            Recompiles the JavaDocs (in Documentation/Javadocs)
+    -->
+	<target name = "javadocs"   depends = "compile">
+		<javadoc
+			packagenames =  "com.ggvaidya.TaxonDNA.*"
+			sourcepath =    "."
+			source =        "${java.version}"
+			destdir =       "Documentation/Javadocs/"
+		/>
+	</target>
+
+	<!--
+        clean:
+            Cleans up the build path
+    -->
+	<target name = "clean">
+		<delete     dir = "${build.dir}"            />
+		<mkdir      dir = "${build.dir}"            />
+		<mkdir      dir = "${build.dir}/classes"    />
+	</target>
+
+	<!--
+        rebuild:
+            Cleans the build path, then generates a build
+    -->
+	<target name = "rebuild"    depends = "clean, build">
+	</target>
+
+	<!-- 
+        build:
+            Prepares ChangeLog and Readme files.
+			This is also the most convenient way to
+			ensure that all Jars are built
+
+			Does NOT make a final zip. 'release' does that.
+	-->
+	<target name = "build" depends = "SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
+	</target>
+
 	<!-- SpeciesIdentifier:		Builds the Jar file for SpeciesIdentifier -->
 	<target name = "SpeciesIdentifier"      depends = "compile">
-		<jar  
-			destfile =  "Release/SpeciesIdentifier.jar" 
-			basedir =   "${build.dir}/classes" 
+		<jar
+			destfile =  "Release/SpeciesIdentifier/SpeciesIdentifier.jar"
+			basedir =   "${build.dir}/classes"
 			includes =  "${files.common}, **/SpeciesIdentifier/**"
 		>
 			<manifest>
@@ -57,10 +119,10 @@
 
 	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
 	<target name = "SequenceMatrix"         depends = "compile">
-		<jar  
-			destfile =  "Release/SequenceMatrix.jar" 
-			basedir =   "${build.dir}/classes" 
-			includes =  "${files.common}, **/SequenceMatrix/**" 
+		<jar
+			destfile =  "Release/SequenceMatrix/SequenceMatrix.jar"
+			basedir =   "${build.dir}/classes"
+			includes =  "${files.common}, **/SequenceMatrix/**"
 		>
 			<manifest>
 				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
@@ -70,10 +132,10 @@
 
 	<!-- GenBankExplorer:		Builds the Jar file for GenBankExplorer -->
 	<target name = "GenBankExplorer"        depends = "compile">
-		<jar  
-			destfile =  "Release/GenBankExplorer.jar" 
-			basedir =   "${build.dir}/classes" 
-			includes =  "${files.common}, **/GenBankExplorer/**" 
+		<jar
+			destfile =  "Release/GenBankExplorer.jar"
+			basedir =   "${build.dir}/classes"
+			includes =  "${files.common}, **/GenBankExplorer/**"
 		>
 			<manifest>
 				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
@@ -81,101 +143,83 @@
 		</jar>
 	</target>
 
-	<!-- build:			Prepares ChangeLog and Readme files. 
-					This is also the most convenient way to
-					ensure that all Jars are built
+    <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
+    <target name = "SequenceMatrix.app"     depends = "build">
+        <copy 
+            file = "Release/SequenceMatrix/SequenceMatrix.jar"
+            todir = "Release/SequenceMatrix/MacOSX/Sequence Matrix.app/Contents/Resources/Java"
+        />
+    </target>
 
-					Does NOT make a final zip. 'release' does that.
-	-->
-	<target name = "build" depends = "SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
-	</target>
+	<!-- 
+        release: Release both Species Identifier and Sequence Matrix at once
+    -->
+	<target name = "release"    depends = "SeqMat_release, SpecId_release">
+    </target>
 
-	<!-- src:			Zips up the ENTIRE directory into one
-					file for backup.
-	-->
-	<target name = "src">
-		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
-		<zip 
-			destfile =      "../TaxonDNA-src-${taxondna.version}.zip"
-			basedir =       "../"
-			includes =      "TaxonDNA/**"
-			excludes =      "**/.svn, TaxonDNA/Releases"
-			comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
-		/>
-                <move file = "../TaxonDNA-src-${taxondna.version}.zip" todir = "Releases" />
-	</target>
-
-	<!-- javadocs:			Recompiles the JavaDocs (in Documentation/Javadocs) -->
-	<target name = "javadocs"   depends = "compile">
-		<javadoc 
-			packagenames =  "com.ggvaidya.TaxonDNA.*"
-			sourcepath =    "."
-			source =        "${java.version}"
-			destdir =       "Documentation/Javadocs/"
-		/>
-	</target>
-
-	<!-- clean:			Cleans up the build path -->
-	<target name = "clean">
-		<delete     dir = "${build.dir}"            />
-		<mkdir      dir = "${build.dir}"            />
-		<mkdir      dir = "${build.dir}/classes"    />
-	</target>
-
-	<!-- rebuild:			Cleans the build path, then generates a build -->
-	<target name = "rebuild"    depends = "clean, build">
-	</target>
-
-        <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
-        <target name = "SequenceMatrix.app"     depends = "build">
-            <copy file = "Release/SequenceMatrix.jar"       todir = "Release/MacOSX/Sequence Matrix.app/Contents/Resources/Java" />
-        </target>
-
-	<!-- release:			Just makes a build, then generates a corresponding zip file in the parent directory. -->
-	<target name = "release"    depends = "build, SequenceMatrix.app">
-            <copy file="Changes.txt" overwrite="yes" todir="Release/Windows" />
-            <copy file="Changes.txt" overwrite="yes" todir="Release/MacOSX" />
-            <copy file="Release/SequenceMatrix.jar" todir="Release/Windows" />
-            <zip 
-	        destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
-	        basedir =       "Release/Windows/"
+    <!--
+        SpecId_release: Release Species Identifier only.
+    -->
+    <target name = "SpecId_release" depends = "build">
+        <copy file="Changes.txt" overwrite="yes" todir="Release/SpeciesIdentifier" />
+        <zip
+	        destfile =      "../SpeciesIdentifier-${taxondna.version}.zip"
+	        basedir =       "Release/SpeciesIdentifier"
 	    	comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
 	    	update =        "false"
 	    />
-            <move file = "../SequenceMatrix-Windows-${taxondna.version}.zip" todir = "Releases" />
-            <mkdir dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}" />
-            <copy overwrite="yes" todir="Releases/SequenceMatrix-MacOSX-${taxondna.version}">
-                <fileset dir="Release/MacOSX" />
-            </copy>
-            <chmod
-                file="Releases/SequenceMatrix-MacOSX-${taxondna.version}/Sequence Matrix.app/Contents/MacOS/JavaApplicationStub"
-                perm="755"
-            />
-        
-            <!-- It's now up to the user to compress this -->
+        <move
+            file="../SpeciesIdentifier-${taxondna.version}.zip"
+            todir="Releases"
+        />
+    </target>
+
+    <!--
+        SeqMat_release: Release Sequence Matrix only.
+    -->
+    <target name = "SeqMat_release" depends = "build, SequenceMatrix.app">
+        <copy file="Changes.txt" overwrite="yes" todir="Release/SequenceMatrix/Windows" />
+        <copy file="Changes.txt" overwrite="yes" todir="Release/SequenceMatrix/MacOSX" />
+        <copy 
+            file="Release/SequenceMatrix/SequenceMatrix.jar"
+            todir="Release/SequenceMatrix/Windows" />
+        <zip 
+	        destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
+	        basedir =       "Release/SequenceMatrix/Windows"
+	    	comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
+	    	update =        "false"
+	    />
+        <move file = "../SequenceMatrix-Windows-${taxondna.version}.zip" todir = "Releases" />
+        <delete
+            dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}"
+            quiet="yes"
+        /><!-- quiet -> don't complain if the folder doesn't exist (it probably won't anyway) -->
+        <mkdir dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}" />
+        <copy overwrite="yes" todir="Releases/SequenceMatrix-MacOSX-${taxondna.version}">
+            <fileset dir="Release/SequenceMatrix/MacOSX" />
+        </copy>
+        <chmod
+            file="Releases/SequenceMatrix-MacOSX-${taxondna.version}/Sequence Matrix.app/Contents/MacOS/JavaApplicationStub"
+            perm="755"
+        />
+        <!-- It's now up to you to compress this -->
 	</target>
 
-        <!--
-                NetBeans needs targets for running specific programs. Can't say
-                that's a bad idea.
-        -->
-        <target name="run_spid" depends="SpeciesIdentifier"> 
-            <java jar="Release/SpeciesIdentifier.jar" maxmemory="2048m" fork="true">
-            </java>
-        </target>
-        <target name="run_seqmat" depends="SequenceMatrix"> 
-            <java jar="Release/SequenceMatrix.jar" maxmemory="2048m" fork="true">
-            </java>
-        </target>
-        <target name="run_gbx" depends="GenBankExplorer"> 
-            <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
-            </java>
-        </target>
-
-	<target name="sign" depends="SpeciesIdentifier, SequenceMatrix, GenBankExplorer">
-		<signjar jar = "Release/SpeciesIdentifier.jar"  alias = "taxondna"   storepass = "123$%^Gta(9"  /> 
-		<signjar jar = "Release/SequenceMatrix.jar"     alias = "taxondna"   storepass = "123$%^Gta(9"  />
-		<signjar jar = "Release/GenBankExplorer.jar"    alias = "taxondna"   storepass = "123$%^Gta(9"  />
-	</target>
+    <!--
+            NetBeans needs targets for running specific programs. Can't say
+            that's a bad idea.
+    -->
+    <target name="run_spid" depends="SpeciesIdentifier">
+        <java jar="Release/SpeciesIdentifier/SpeciesIdentifier.jar" maxmemory="2048m" fork="true">
+        </java>
+    </target>
+    <target name="run_seqmat" depends="SequenceMatrix">
+        <java jar="Release/SequenceMatrix/SequenceMatrix.jar" maxmemory="2048m" fork="true">
+        </java>
+    </target>
+    <target name="run_gbx" depends="GenBankExplorer">
+        <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
+        </java>
+    </target>
         
 </project>

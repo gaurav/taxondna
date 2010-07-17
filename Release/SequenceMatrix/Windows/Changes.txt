@@ -1,5 +1,5 @@
-Changelog
-==========
+SequenceMatrix Changelog
+========================
 
 - development
 
