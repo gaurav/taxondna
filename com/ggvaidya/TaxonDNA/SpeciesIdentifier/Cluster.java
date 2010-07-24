@@ -498,9 +498,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				}
 			}
 		}
-
-		System.err.println("1-Q");
-
+		
 		// add stuff to str_final
 		str_final.append("Clustering at:\t" + percentage(max_pairwise, 1) + "%\n");
 		str_final.append("Number of clusters:\t" + clusters.size() + "\n");
@@ -515,9 +513,6 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 		item_strings[0] = str_final.toString();
 
-
-			System.err.println("1-R");
-
 		delay_count++;
 		for(int i = 1; !flag_skipIndivEntries && i <= clusters.size(); i++) {
 		// information on that particular clusters
@@ -526,13 +521,11 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			Iterator i1;
 			Hashtable species = new Hashtable();
 
-
-
 			str.append("Cluster " + (i) + " consists of " + bin.size() + " sequences ");
 			// count species?
 			int nSpecies = 0; 
 			int nValidComparisons = 0;
-			int nOverLimit = 0;
+			int nComparisonsOverLimit = 0;
 			StringBuffer first_line = new StringBuffer();
 			StringBuffer pairwise_table = new StringBuffer();
 			i1 = bin.iterator();
@@ -566,22 +559,21 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 						pairwise_table.append("\t(inadequate overlap)");
 					} else {
 						pairwise_table.append("\t" + percentage(pairwise, 1) + "%");
+
+						if(!seq2.equals(seq1))
+							nValidComparisons++;
 						
 						if(pairwise > max_pairwise)
-							nOverLimit++;
+							nComparisonsOverLimit++;
 					}
 				}
 				pairwise_table.append("\n");
 			}
 
-			System.err.println("1-S");
-
-			str.append("with " + nOverLimit + " sequences (" + percentage(nOverLimit, nValidComparisons) + "%) over " + percentage(max_pairwise, 1) + "%\n");
+			str.append("with " + nComparisonsOverLimit + " valid comparisons (" + percentage(nComparisonsOverLimit, nValidComparisons) + "%) over " + percentage(max_pairwise, 1) + "%\n");
 
 			item_strings[i] = (str.toString() + "\n\t" + first_line.toString() + "\n" + pairwise_table.toString());
 		}
-
-		System.err.println("1-T");
 
 		/*
 		 * I honestly have no idea why, but allowing delay.end() to
@@ -591,7 +583,6 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			delay.end();
 		 *
 		 */
-		System.err.println("1-U");
 	}
 
 	/* Data changed: in our case, SequenceSet changed */

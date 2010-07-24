@@ -2,6 +2,8 @@ Changelog
 ==========
 
 - development
+    - Fixed a minor bug with clustering in which the "% of valid comparisons
+      above the threshold" number was always 0%.
     - Fixed a bug in which multiple "Cluster" analyses in the same session
       caused the ProgressDialog to never close, resulting in the program
       getting "stuck" and a forced quit becoming necessary.
