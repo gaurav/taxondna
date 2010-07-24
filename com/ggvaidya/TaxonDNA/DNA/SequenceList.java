@@ -422,7 +422,7 @@ public class SequenceList implements List, Testable {
 	 */
 	public void lock() {
 		if(DEBUG_LOCK)
-			System.err.println(" [" + sequenceListLockCount + "] Locking sequence list: " + Thread.currentThread());
+			System.err.println(" [" + sequenceListLockCount + "] Locking sequence list: " + Thread.currentThread() + " called from " + new Throwable().getStackTrace()[1]);
 		
 		synchronized(sequenceListLock) {
 			// if tLSS = null:		go thru
@@ -440,7 +440,7 @@ public class SequenceList implements List, Testable {
 		}
 	
 		if(DEBUG_LOCK)
-			System.err.println(" [" + sequenceListLockCount + "] Sequence list locked: " + Thread.currentThread());
+			System.err.println(" [" + sequenceListLockCount + "] Sequence list locked: " + Thread.currentThread() +  " called from " + new Throwable().getStackTrace()[1]);
 	}
 
 	/**
@@ -448,7 +448,7 @@ public class SequenceList implements List, Testable {
 	 */
 	public void unlock() {
 		if(DEBUG_LOCK)
-			System.err.println(" [" + sequenceListLockCount + "] Unlocking sequence list: " + Thread.currentThread());
+			System.err.println(" [" + sequenceListLockCount + "] Unlocking sequence list: " + Thread.currentThread() + " called from " + new Throwable().getStackTrace()[1]);
 		
 		synchronized(sequenceListLock) {
 			sequenceListLockCount--;
@@ -461,7 +461,7 @@ public class SequenceList implements List, Testable {
 		}
 
 		if(DEBUG_LOCK)
-			System.err.println(" [" + sequenceListLockCount + "] Sequence list unlocked: " + Thread.currentThread());		
+			System.err.println(" [" + sequenceListLockCount + "] Sequence list unlocked: " + Thread.currentThread() + " called from " + new Throwable().getStackTrace()[1]);
 	}
 
 //
@@ -748,6 +748,8 @@ public class SequenceList implements List, Testable {
 			}
 
 		unlock();
+
+		System.err.println("ERE 100291");
 		
 		return details;
 	}
