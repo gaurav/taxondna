@@ -287,7 +287,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 					str = str.replaceFirst(" sequences, ", ",");
 					str = str.replaceFirst(" defined sequences across ", ",");
 					str = str.replaceFirst(" species \\(with ", ",");
-				       	str = str.replaceFirst(" non-singleton sequences\\)","");
+				    str = str.replaceFirst(" non-singleton sequences\\)","");
 
 					pw.println(str);
 				}
