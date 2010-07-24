@@ -738,8 +738,13 @@ public class SequenceList implements List, Testable {
 	 */
 	public SpeciesDetails getSpeciesDetails(DelayCallback delay) throws DelayAbortedException {
 		lock();
-		
-		if(details == null)
+
+		// An innoculous little optimization? Nope!
+		// If you uncomment this next line, delay.end() doesn't
+		// get called correctly, and the ProgressDialog stays
+		// active. TODO, if anyone's interested.
+		//
+		//if(details == null)
 			try {
 				details = new SpeciesDetails(this, delay);
 			} catch(DelayAbortedException e) {
@@ -748,8 +753,6 @@ public class SequenceList implements List, Testable {
 			}
 
 		unlock();
-
-		System.err.println("ERE 100291");
 		
 		return details;
 	}
