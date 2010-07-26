@@ -3,6 +3,13 @@ Changelog
 
 - development
 
+- 1.7.7-dev3 
+    - Fixed a minor bug with clustering in which the "% of valid comparisons
+      above the threshold" number was always 0%.
+    - Fixed a bug in which multiple "Cluster" analyses in the same session
+      caused the ProgressDialog to never close, resulting in the program
+      getting "stuck" and a forced quit becoming necessary.
+
 - 1.7.7-dev2 
     - Rewrote SpeciesDetails to remove the old, bug-ridden algorithm.
       The new one will probably actually work.

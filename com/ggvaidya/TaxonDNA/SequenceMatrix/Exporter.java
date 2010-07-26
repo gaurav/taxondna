@@ -839,9 +839,22 @@ public class Exporter implements SequencesHandler {
                                                 seq = Sequence.makeEmptySequence(seqName, colLength);
 
 
-                                        writer.print("'" + getNexusName(seqName) + "' " + seq.getSequence());
-										if(!nakedNexusMode)
+										// NOTE: There's no guarantee that all the names generated
+										// will be unique! However, this is fairly unlikely, and
+										// uniqueness is not necessary for Nexus, so YAGNI and don't
+										// bother for now.
+									
+										if(nakedNexusMode) {
+											// Sanitize the name.
+											String name = seqName.replaceAll("[^0-9A-Za-z]", "_");
+
+											// Write the sequence out.
+											writer.print(name + " " + seq.getSequence());
+										} else {
+											writer.print("'" + getNexusName(seqName) + "' " + seq.getSequence());
 											writer.print(" [" + colLength + " bp]");
+										}
+
 										writer.println("");	// Blank line to end the row.
                                 }
 

@@ -1537,7 +1537,7 @@ public class NexusFile extends BaseFormatHandler {
 
 			writer.println("");
 
-                        writer.println(buff_nexus_positions);
+            writer.println(buff_nexus_positions);
 
 			writer.println("BEGIN DATA;");
 			writer.println("\tDIMENSIONS NTAX=" + grid.getSequencesCount() + " NCHAR=" + grid.getCompleteSequenceLength() + ";");
