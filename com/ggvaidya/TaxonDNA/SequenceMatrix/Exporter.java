@@ -882,9 +882,12 @@ public class Exporter implements SequencesHandler {
                                 int length = 0;
 
 
-                                if(how == Preferences.PREF_NEXUS_SINGLE_LINE)
+                                if(how == Preferences.PREF_NEXUS_SINGLE_LINE) {
+									if(nakedNexusMode)
+										writer.print(seqName.replaceAll("[^0-9A-Za-z]", "_") + " ");
+									else
                                         writer.print("'" + getNexusName(seqName) + "' ");
-                                else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
+								} else if(how == Preferences.PREF_NEXUS_INTERLEAVED)
                                         seq_interleaved = new Sequence();
 
 
