@@ -2,6 +2,8 @@ Changelog
 ==========
 
 - development
+    - Turned off displaying 'N's in the display, as we don't re-export
+      those anyway.
 
 - 1.7.8
     - Added DOI to the citation for Sequence Matrix.
