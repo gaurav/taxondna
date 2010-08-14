@@ -3,6 +3,12 @@ Changelog
 
 - development
 
+- 1.7.8
+    - Added DOI to the citation for Sequence Matrix.
+
+- 1.7.7-dev4
+    - Naked Nexus now replaces all non-alphanumeric characters with underscores.
+
 - 1.7.7-dev3 
     - Fixed a minor bug with clustering in which the "% of valid comparisons
       above the threshold" number was always 0%.
