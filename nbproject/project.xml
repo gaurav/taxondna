@@ -3,13 +3,17 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>TaxonDNA</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
             <name>TaxonDNA</name>
             <properties/>
             <folders>
                 <source-folder>
-                    <label>Source Packages</label>
+                    <label>TaxonDNA</label>
                     <location>.</location>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>Source Packages</label>
@@ -28,7 +32,7 @@
                     <target>javadocs</target>
                 </action>
                 <action name="run">
-                    <target>run_spid</target>
+                    <target>run_dclusters</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
