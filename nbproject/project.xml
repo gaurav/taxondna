@@ -58,6 +58,7 @@
         <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
             <compilation-unit>
                 <package-root>.</package-root>
+                <classpath mode="compile">libs/commons-cli-1.2.jar</classpath>
                 <source-level>1.5</source-level>
             </compilation-unit>
         </java-data>
