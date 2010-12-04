@@ -25,6 +25,8 @@ package com.ggvaidya.TaxonDNA.DClusters.cli;
 import java.io.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
+import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 import com.ggvaidya.TaxonDNA.DClusters.*;
 
 /**
@@ -90,9 +92,43 @@ public class CommandLine {
 				if(!f.canRead() || !f.isFile()) {
 					System.err.println("File '" + f + "' could not be read");
 				} else {
-					System.err.println("Going to load file " + f + " now.");
+					// A readable file! Process it.
+					processFile(f);
 				}
 			}
 		}
+	}
+
+	/**
+	 * Process a file, reporting results to standard output/error.
+	 * 
+	 * @param f A file to process.
+	 */
+	private static void processFile(File f) {
+		SequenceList	sl;
+		SpeciesDetails	species;
+
+		/* Load this file */
+		try {
+			System.out.println("Loading: " + f);
+			sl =			SequenceList.readFile(f, null);
+			species =		sl.getSpeciesDetails(null);
+		} catch(SequenceListException sle) {
+			System.err.println("Could not load " + f + ": " + sle);
+			return;
+
+		} catch(DelayAbortedException e) {
+			System.err.println("Unexpected exception: " + e);
+			return;
+			
+		}
+
+		System.out.println(
+			sl.count() + " sequences for " + 
+			species.count() + " species " +
+			"loaded successfully."
+		);
+
+		/* File loaded! Set up a ClusterJob. */
 	}
 }
