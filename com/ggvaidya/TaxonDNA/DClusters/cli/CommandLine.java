@@ -22,6 +22,8 @@
 
 package com.ggvaidya.TaxonDNA.DClusters.cli;
 
+import java.io.*;
+
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DClusters.*;
 
@@ -79,12 +81,17 @@ public class CommandLine {
 						"    --help, -h          Help information"
 					);
 					System.out.println();
+				} else {
+					System.err.println("Unknown command: " + arg +", ignoring.");
 				}
-			}
-
-			/* If all else fails ... */
-			else {
-				System.err.println("Unknown command: " + arg +", ignoring.");
+			} else {
+				/* Probably a file name */
+				File f = new File(arg);
+				if(!f.canRead() || !f.isFile()) {
+					System.err.println("File '" + f + "' could not be read");
+				} else {
+					System.err.println("Going to load file " + f + " now.");
+				}
 			}
 		}
 	}
