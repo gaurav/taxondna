@@ -22,7 +22,7 @@
 
 package com.ggvaidya.TaxonDNA.DClusters;
 
-import com.ggvaidya.TaxonDNA.DClusters.simple.*;
+import com.ggvaidya.TaxonDNA.DClusters.cli.*;
 
 /**
  * The main class of the DClusters menu. This checks for command-line

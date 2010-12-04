@@ -20,7 +20,7 @@
  *
  */
 
-package com.ggvaidya.TaxonDNA.DClusters.simple;
+package com.ggvaidya.TaxonDNA.DClusters.cli;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DClusters.*;
@@ -63,11 +63,23 @@ public class CommandLine {
 				flag_argument = true;
 			}
 
-			/* Process common arguments */
-			if(flag_argument && (arg.equalsIgnoreCase("version") || arg.equalsIgnoreCase("v"))) {
-				System.out.print("This is " + DClusters.getName() + " version " + DClusters.getVersion());
-				System.out.println(" based on TaxonDNA/" + Versions.getTaxonDNA() + ".");
-				System.out.println();
+			/* Process common arguments: */
+			if(flag_argument) {
+				/* Version */
+				if(arg.equalsIgnoreCase("version") || arg.equalsIgnoreCase("v")) {
+					System.out.print("This is " + DClusters.getName() + " version " + DClusters.getVersion());
+					System.out.println(" based on TaxonDNA/" + Versions.getTaxonDNA() + ".");
+					System.out.println();
+				}
+				/* Help */
+				else if(arg.equalsIgnoreCase("h") || arg.equalsIgnoreCase("help")) {
+					System.out.println(
+						"The following command line arguments are accepted:\n" +
+						"    --version, -v       Version information\n" +
+						"    --help, -h          Help information"
+					);
+					System.out.println();
+				}
 			}
 
 			/* If all else fails ... */
