@@ -22,6 +22,8 @@
 
 package com.ggvaidya.TaxonDNA.DClusters;
 
+import com.ggvaidya.TaxonDNA.DClusters.simple.*;
+
 /**
  * The main class of the DClusters menu. This checks for command-line
  * instructions, ultimately handing control over to MainFrame.
@@ -36,7 +38,39 @@ public class DClusters {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
+		// We don't have a GUI yet!
+		CommandLine.main(args);
+	}
 
-		
+	/**
+	 * Returns the version of this program.
+	 * Eventually we'll get this from Common.Versions,
+	 * but for now we've got our own.
+	 *
+	 * @return The version as a string.
+	 */
+	public static String getVersion() {
+		return "0.01_01";
+	}
+
+	public static String getCopyrightNotice() {
+		return
+			DClusters.getName() + " version " + DClusters.getVersion() + "\n" +
+			"Copyright (C) 2010 Gaurav Vaidya\n" +
+			DClusters.getName() + " comes with ABSOLUTELY NO WARRANTY.\n" +
+			"\n" +
+			"This is free software, and you are welcome to redistribute\n" +
+			"it under the terms of either the GPL 2.0 or GPL 3.0 license.\n" +
+			"\n" +
+			"For more details, please see: " + DClusters.getHomepage()
+		;
+	}
+
+	public static String getName() {
+		return "DistanceClusters";
+	}
+
+	public static String getHomepage() {
+		return "http://code.google.com/p/taxondna/";
 	}
 }
