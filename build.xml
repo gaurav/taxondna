@@ -16,7 +16,7 @@
             JAR files.
         -->
         <property name = "files.common"
-            value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**, libs/**"
+            value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**"
         />
 	
     <!--

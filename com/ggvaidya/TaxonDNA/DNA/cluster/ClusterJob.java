@@ -70,15 +70,4 @@ public class ClusterJob {
 		this.threshold =	threshold;
 		this.linkage =		linkage;
 	}
-
-	/**
-	 * Describe this cluster job.
-	 */
-	@Override
-	public String toString() {
-		return
-			"A cluster job clustering " + (sequences.count()) +
-			" sequences at " + threshold + " with linkage " + linkage.toString()
-		;
-	}
 }
