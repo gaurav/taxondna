@@ -53,6 +53,10 @@ public class CommandLine {
 		System.out.println(DClusters.getCopyrightNotice());
 		System.out.println();
 
+		// Variables.
+		double		threshold =		0.03;
+		Linkage		linkage =		Linkage.MinimumLinkage();
+
 		for(String arg: args) {
 			/* Identify arguments */
 			boolean flag_argument = false;
@@ -93,7 +97,7 @@ public class CommandLine {
 					System.err.println("File '" + f + "' could not be read");
 				} else {
 					// A readable file! Process it.
-					processFile(f);
+					processFile(f, threshold, linkage);
 				}
 			}
 		}
@@ -102,9 +106,11 @@ public class CommandLine {
 	/**
 	 * Process a file, reporting results to standard output/error.
 	 * 
-	 * @param f A file to process.
+	 * @param f			A file to process.
+	 * @param theshold	The threshold at which to cluster.
+	 * @param linkage	The Linkage to use in clustering.
 	 */
-	private static void processFile(File f) {
+	private static void processFile(File f, double theshold, Linkage linkage) {
 		SequenceList	sl;
 		SpeciesDetails	species;
 
@@ -128,7 +134,10 @@ public class CommandLine {
 			species.count() + " species " +
 			"loaded successfully."
 		);
+		System.out.println();
 
 		/* File loaded! Set up a ClusterJob. */
+		System.out.println("Setting up a cluster job.");
+		ClusterJob job = new ClusterJob(sl, theshold, 
 	}
 }

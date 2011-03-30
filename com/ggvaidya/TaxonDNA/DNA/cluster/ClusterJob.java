@@ -36,27 +36,12 @@ public class ClusterJob {
 
 	/** The threshold to cluster at, represented as a percentage. */
 	protected double			threshold;
-
-	/** 
-	 * A cluster job requires a Linkage object to specify how linking
-	 * should be carried out. Here is what a Linkage looks like.
-	 */
-	public interface Linkage {
-		/**
-		 *
-		 * @param list
-		 * @param seq The sequence which may or may not fit into this cluster.
-		 * @return True if this sequence can be linked to this sequence list,
-		 *		false otherwise.
-		 */
-		public boolean canLink(SequenceList list, Sequence seq);
-	}
 	
 	/**
 	 * A linkage object to define how linkage should be carried out during
 	 * this job.
 	 */
-	protected Linkage			linkage;
+	protected Linkage.LinkageModel	linkage;
 
 	/**
 	 * Create a new Cluster job.
@@ -65,7 +50,7 @@ public class ClusterJob {
 	 * @param threshold		The threshold to cluster at (as a percentage).
 	 * @param linkage		The linkage to use.
 	 */
-	public ClusterJob(SequenceList list, double threshold, Linkage linkage) {
+	public ClusterJob(SequenceList list, double threshold, Linkage.LinkageModel linkage) {
 		this.sequences =	new SequenceList(list);
 		this.threshold =	threshold;
 		this.linkage =		linkage;
