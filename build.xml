@@ -30,13 +30,12 @@
     -->
 	<target name = "compile">
 		<javac
-			srcdir =        "." 
+			srcdir =        "src"
 			debug =         "yes" 
 			optimize =      "yes" 
 			deprecation =   "yes" 
 			source =        "${java.targetversion}"
 			target =        "${java.targetversion}"
-			excludes =      "Tests/**, Backup/**, Documentation/**, Release/**, build/**, Redacted/**"
 			destdir =       "${build.dir}/classes"
 		>
 			<compilerarg value = "-Xlint:unchecked" />
