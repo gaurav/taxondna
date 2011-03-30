@@ -3,18 +3,17 @@
     <type>org.netbeans.modules.ant.freeform</type>
     <configuration>
         <general-data xmlns="http://www.netbeans.org/ns/freeform-project/1">
+            <name>TaxonDNA</name>
+        </general-data>
+        <general-data xmlns="http://www.netbeans.org/ns/freeform-project/2">
             <!-- Do not use Project Properties customizer when editing this file manually. -->
             <name>TaxonDNA</name>
             <properties/>
             <folders>
                 <source-folder>
-                    <label>Source Packages</label>
+                    <label>TaxonDNA</label>
                     <location>.</location>
-                </source-folder>
-                <source-folder>
-                    <label>Source Packages</label>
-                    <type>java</type>
-                    <location>.</location>
+                    <encoding>MacRoman</encoding>
                 </source-folder>
             </folders>
             <ide-actions>
@@ -37,10 +36,6 @@
             </ide-actions>
             <view>
                 <items>
-                    <source-folder style="packages">
-                        <label>Source Packages</label>
-                        <location>.</location>
-                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -55,11 +50,6 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
-            <compilation-unit>
-                <package-root>.</package-root>
-                <source-level>1.5</source-level>
-            </compilation-unit>
-        </java-data>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1"/>
     </configuration>
 </project>
