@@ -2,7 +2,7 @@
 /*
  *
  *  DClusters
- *  Copyright (C) 2010 Gaurav Vaidya
+ *  Copyright (C) 2010-11 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class DClusters {
 	public static String getCopyrightNotice() {
 		return
 			DClusters.getName() + " version " + DClusters.getVersion() + "\n" +
-			"Copyright (C) 2010 Gaurav Vaidya\n" +
+			"Copyright (C) 2010-11 Gaurav Vaidya\n" +
 			DClusters.getName() + " comes with ABSOLUTELY NO WARRANTY.\n" +
 			"\n" +
 			"This is free software, and you are welcome to redistribute\n" +

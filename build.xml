@@ -235,7 +235,10 @@
         </java>
     </target>
     <target name="run_dclusters" depends="DClusters">
-        <java jar="Release/DClusters.jar" maxmemory="2048m" fork="true" />
+        <java jar="Release/DClusters.jar" maxmemory="2048m" fork="true">
+            <!-- Give it a file to execute -->
+            <arg value="Tests/files/Diptera COI.fasta" />
+        </java>
     </target>
         
 </project>

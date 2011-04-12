@@ -2,7 +2,7 @@
 /*
  *
  *  CommandLine
- *  Copyright (C) 2010 Gaurav Vaidya
+ *  Copyright (C) 2010-11 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,7 +55,7 @@ public class CommandLine {
 
 		// Variables.
 		double		threshold =		0.03;
-		Linkage		linkage =		Linkage.MinimumLinkage();
+		Linkage		linkage =		new Linkages.SingleLinkage();
 
 		for(String arg: args) {
 			/* Identify arguments */
@@ -97,7 +97,11 @@ public class CommandLine {
 					System.err.println("File '" + f + "' could not be read");
 				} else {
 					// A readable file! Process it.
-					processFile(f, threshold, linkage);
+					try {
+						processFile(f, threshold, linkage);
+					} catch(DelayAbortedException e) {
+						System.err.println("\nOperation cancelled by user.");
+					}
 				}
 			}
 		}
@@ -110,7 +114,7 @@ public class CommandLine {
 	 * @param theshold	The threshold at which to cluster.
 	 * @param linkage	The Linkage to use in clustering.
 	 */
-	private static void processFile(File f, double theshold, Linkage linkage) {
+	private static void processFile(File f, double threshold, Linkage linkage) throws DelayAbortedException {
 		SequenceList	sl;
 		SpeciesDetails	species;
 
@@ -137,7 +141,45 @@ public class CommandLine {
 		System.out.println();
 
 		/* File loaded! Set up a ClusterJob. */
-		System.out.println("Setting up a cluster job.");
-		ClusterJob job = new ClusterJob(sl, theshold, 
+		System.out.println(
+				"Setting up a cluster job with " + linkage +
+				", threshold of " + (threshold * 100) + "%; minimum overlap is set to " +
+				Sequence.getMinOverlap() + "bp."
+		);
+		ClusterJob job = new ClusterJob(sl, linkage, threshold);
+
+		System.out.print("Job ready, executing now:");
+		job.execute(new CmdLineDelay());
+
+		System.out.println("\n" + job.count() + " clusters identified.");
+
+		for(Cluster cluster: job.getClusters()) {
+			System.out.println("\t" + cluster);
+		}
+	}
+
+	/**
+	 * A private command line delay to implement DelayCallback.
+	 */
+	private static class CmdLineDelay implements DelayCallback {
+		public void begin() {
+			System.out.print("\t");
+		}
+
+		public void delay(int done, int total) throws DelayAbortedException {
+			double percentage = (((double)done/total) * 100);
+
+			// Only display 0, 10, 20, ... 100%
+			if(percentage % 10 == 0)
+				System.out.print("[" + ((int)percentage) + "%] ");
+		}
+
+		public void end() {
+			System.out.println("Finished.");
+		}
+
+		public void addWarning(String warning) {
+			System.err.println("\nWARNING: " + warning + "\n");
+		}
 	}
 }
