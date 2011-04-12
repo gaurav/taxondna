@@ -15,6 +15,12 @@
                     <location>.</location>
                     <encoding>MacRoman</encoding>
                 </source-folder>
+                <source-folder>
+                    <label>src</label>
+                    <type>java</type>
+                    <location>src</location>
+                    <encoding>MacRoman</encoding>
+                </source-folder>
             </folders>
             <ide-actions>
                 <action name="build">
@@ -36,6 +42,10 @@
             </ide-actions>
             <view>
                 <items>
+                    <source-folder style="packages">
+                        <label>src</label>
+                        <location>src</location>
+                    </source-folder>
                     <source-file>
                         <location>build.xml</location>
                     </source-file>
@@ -50,6 +60,11 @@
             </view>
             <subprojects/>
         </general-data>
-        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1"/>
+        <java-data xmlns="http://www.netbeans.org/ns/freeform-project-java/1">
+            <compilation-unit>
+                <package-root>src</package-root>
+                <source-level>1.5</source-level>
+            </compilation-unit>
+        </java-data>
     </configuration>
 </project>

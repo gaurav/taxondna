@@ -37,6 +37,7 @@
 			source =        "${java.targetversion}"
 			target =        "${java.targetversion}"
 			destdir =       "${build.dir}/classes"
+                        includeAntRuntime = "no"
 		>
 			<compilerarg value = "-Xlint:unchecked" />
 		</javac>
