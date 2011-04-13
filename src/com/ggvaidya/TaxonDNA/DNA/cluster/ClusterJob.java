@@ -57,7 +57,7 @@ public class ClusterJob {
 	 * Return the resulting clusters.
 	 */
 	public List<Cluster> getClusters() {
-		return Collections.unmodifiableList(results);
+		return (List<Cluster>) results.clone();
 	}
 
 	/**
@@ -128,7 +128,8 @@ public class ClusterJob {
 
 			// We will be modifying this list on the fly, but we need to
 			// iterate over the *original* list.
-			ArrayList<Cluster> original_clusters_list = Collections.unmodifiableList(clusters);
+			ArrayList<Cluster> original_clusters_list = (ArrayList<Cluster>)
+					clusters.clone();
 
 			// For every bin we currently have:
 			for(Cluster cluster: original_clusters_list) {

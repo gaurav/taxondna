@@ -1,13 +1,6 @@
-/**
- * A SpeciesDetail object holds information about one particular species in a
- * SpeciesDetails map.
- * 
- * @author Gaurav Vaidya, gaurav@ggvaidya.com 
- */
-
 /*
     TaxonDNA
-    Copyright (C) 2006, 2010	Gaurav Vaidya
+    Copyright (C) 2006, 2010-11	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -28,13 +21,20 @@ package com.ggvaidya.TaxonDNA.DNA;
 
 import java.util.*;
 
+/**
+ * A SpeciesDetail object holds information about one particular species in a
+ * SpeciesDetails map.
+ *
+ * @author Gaurav Vaidya, gaurav@ggvaidya.com
+ */
+
 public class SpeciesDetail {
 	private String				species_name;
 	private int					length_longestSequence = 0;
 	private ArrayList<Sequence>	sequences = new ArrayList<Sequence>();
 
 	/**
-	 * You can't create a SpeciesDetail unless you, err,
+	 * You can't create a SpeciesDetail unless you
 	 * provide the details.
 	 */
 	private SpeciesDetail() {}
@@ -120,11 +120,11 @@ public class SpeciesDetail {
 	 * @return a list of GI numbers as a concatenated string.
 	 */
 	public String getGINumbersAsString() {
-		StringBuffer buff = new StringBuffer();
+		StringBuilder buff = new StringBuilder();
 
 		for(Sequence seq: sequences) {
 			if(seq.getGI() != null)
-				buff.append("gi|" + seq.getGI() + "| ");
+				buff.append("gi|").append(seq.getGI()).append("| ");
 			else
 				buff.append("(Sequence with unknown GI number) ");
 		}

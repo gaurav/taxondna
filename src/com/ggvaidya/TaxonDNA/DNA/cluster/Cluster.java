@@ -22,7 +22,10 @@
 
 package com.ggvaidya.TaxonDNA.DNA.cluster;
 
+import com.ggvaidya.TaxonDNA.Common.DelayAbortedException;
 import com.ggvaidya.TaxonDNA.DNA.*;
+
+import java.util.*;
 
 /**
  * A cluster is a set of sequences which have
@@ -37,7 +40,7 @@ import com.ggvaidya.TaxonDNA.DNA.*;
  *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
-public class Cluster extends SequenceList {
+public class Cluster extends SequenceList implements Comparable {
 	/**
 	 * Creates an empty cluster.
 	 */
@@ -62,6 +65,103 @@ public class Cluster extends SequenceList {
 	 * @return A name for the current cluster.
 	 */
 	@Override public String toString() {
-		return "Cluster of " + count() + " sequences";
+		SpeciesDetails details;
+		try {
+			details = getSpeciesDetails(null);
+		} catch(DelayAbortedException e) {
+			return "A cluster";
+		}
+
+		/*
+		 * For full sequence listing.
+
+		StringBuilder seqs = new StringBuilder();
+		for(Object obj: this) {
+			Sequence seq = (Sequence) obj;
+
+			seqs.append(" - ")
+				.append(seq.getSpeciesName())
+				.append(": ")
+				.append(seq.getFullName())
+				.append(" (")
+				.append(seq.getLength())
+				.append(" bp)")
+				.append("\n");
+		}
+		 * 
+		 */
+
+		String distances = "(distances: " + getDistances() + ")";
+
+		int species_count = details.getSpeciesCount();
+		if(species_count == 1) {
+			return "A cluster of " + details.getSequencesCount() + " sequences from " + details.getSpeciesNamesIterator().next() +
+					" " + distances;
+		} else {
+			HashMap<String, SpeciesDetail> speciesDetails = new HashMap<String, SpeciesDetail>(details.getDetails());
+			ArrayList<String> speciesNames = new ArrayList<String>(speciesDetails.keySet());
+
+			if(species_count == 2) {
+				return "A cluster of " +
+					speciesDetails.get(speciesNames.get(0)).getSequencesCount() + " sequence(s) from " + speciesNames.get(0) +
+					" and " +
+					speciesDetails.get(speciesNames.get(1)).getSequencesCount() + " sequence(s) from " + speciesNames.get(1) +
+					" " + distances
+				;
+			} else {
+				int diff_sequences = count()
+						- speciesDetails.get(speciesNames.get(0)).getSequencesCount()
+						- speciesDetails.get(speciesNames.get(1)).getSequencesCount();
+
+				return "A cluster of " +
+					speciesDetails.get(speciesNames.get(0)).getSequencesCount() + " sequence(s) from " + speciesNames.get(0) +
+					", " +
+					speciesDetails.get(speciesNames.get(1)).getSequencesCount() + " sequence(s) from " + speciesNames.get(1) +
+					", and " + diff_sequences + " other sequences from " + (species_count - 2) + " species " +
+					distances
+				;
+			}
+		}
+	}
+
+	public int compareTo(Object t) {
+		Cluster other = (Cluster) t;
+
+		return (other.count() - count());
+	}
+
+	private String getDistances() {
+		double smallest =	-1;
+		double largest =	-1;
+		double sum =		0;
+		int count =			0;
+
+		for(Object outer: this) {
+			for(Object inner: this) {
+				if(outer == inner)
+					continue;
+
+				double pairwise = ((Sequence)outer).getPairwise((Sequence)inner);
+				if(pairwise > 0) {
+					count++;
+					sum += pairwise;
+
+					if(smallest == -1 || pairwise < smallest)
+						smallest =	pairwise;
+					if(largest == -1 || pairwise > largest)
+						largest =	pairwise;
+				}
+			}
+		}
+
+		double average = -1;
+		if(count > 0)
+			average = (sum/count);
+
+
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(smallest, 1) +
+			"|" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(average, 1) +
+			"|" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(largest, 1)
+		;
 	}
 }

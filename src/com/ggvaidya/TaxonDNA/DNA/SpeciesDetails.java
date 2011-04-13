@@ -1,24 +1,7 @@
-/**
- * SpeciesDetails is a map which allows you get get the
- * SpeciesDetail on any species. Note that you really
- * shouldn't be allowed to access all this directly.
- * (hence the private constructors; I assume there's
- * a better way of doing this I don't know about)
- * So you call SequenceList.getSpeciesDetails(),
- * from which you can countSpecies(), countSpeciesWithMultipleSequences(),
- * and so on, as well as getSpeciesIterator, which
- * iterates over the SpeciesDetail objects.
- *
- * I would _love_ to find an easier way of doing
- * this, so if you have one, PLEASE let me know!
- * Thanks!
- * 
- * @author Gaurav Vaidya, gaurav@ggvaidya.com 
- */
 
 /*
     TaxonDNA
-    Copyright (C) 2006, 2010	Gaurav Vaidya
+    Copyright (C) 2006, 2010-11	Gaurav Vaidya
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -40,6 +23,24 @@ package com.ggvaidya.TaxonDNA.DNA;
 import java.util.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 
+/**
+ * SpeciesDetails is a map which allows you get get the
+ * SpeciesDetail on any species. Note that you really
+ * shouldn't be allowed to access all this directly.
+ * (hence the private constructors; I assume there's
+ * a better way of doing this I don't know about)
+ * So you call SequenceList.getSpeciesDetails(),
+ * from which you can countSpecies(), countSpeciesWithMultipleSequences(),
+ * and so on, as well as getSpeciesIterator, which
+ * iterates over the SpeciesDetail objects.
+ *
+ * I would _love_ to find an easier way of doing
+ * this, so if you have one, PLEASE let me know!
+ * Thanks!
+ *
+ * @author Gaurav Vaidya, gaurav@ggvaidya.com
+ */
+
 public class SpeciesDetails {
 	SequenceList	list =						null;
 	SequenceList	seqs_with_conspecifics =	null;
@@ -52,6 +53,12 @@ public class SpeciesDetails {
 
 	private HashMap<String, SpeciesDetail> details	= new HashMap<String, SpeciesDetail>();
 
+	/**
+	 * Return the details. Yes, all of them.
+	 */
+	public Map<String, SpeciesDetail> getDetails() {
+		return (Map<String, SpeciesDetail>) details.clone();
+	}
 
 	/**
 	 * This class can only be created with a SequenceList.
@@ -106,6 +113,7 @@ public class SpeciesDetails {
 			if(!details.containsKey(species_name)) {
 				// Yes, it's the first of its kind.
 				details.put(species_name, new SpeciesDetail(species_name));
+				count_species++;
 			} else {
 				// We've seen this species name before!
 				// This species name has conspecifics.
@@ -116,6 +124,8 @@ public class SpeciesDetails {
 
 			// Add this sequence to the detail.
 			details.get(species_name).add(seq);
+			
+			//System.err.println("Species " + species_name + " has been assigned species detail " + details.get(species_name));
 
 			// Count any invalid sequences (total length < overlap).
 			if(seq.getLength() < Sequence.getMinOverlap())

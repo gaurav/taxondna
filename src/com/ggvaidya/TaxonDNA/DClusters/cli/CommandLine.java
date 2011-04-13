@@ -22,6 +22,7 @@
 
 package com.ggvaidya.TaxonDNA.DClusters.cli;
 
+import java.util.*;
 import java.io.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
@@ -153,7 +154,9 @@ public class CommandLine {
 
 		System.out.println("\n" + job.count() + " clusters identified.");
 
-		for(Cluster cluster: job.getClusters()) {
+		List<Cluster> clusters = job.getClusters();
+		Collections.sort(clusters);
+		for(Cluster cluster: clusters) {
 			System.out.println("\t" + cluster);
 		}
 	}
