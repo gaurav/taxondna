@@ -41,9 +41,35 @@ public interface Linkage {
 	public boolean canLink(Cluster cluster, Sequence seq, double threshold);
 
 	/**
+	 * Determine if these two clusters ought to be linked.
+	 *
+	 * @param a 
+	 * @param b
+	 * @param threshold
+	 * @return True if these clusters can be linked under this criterion,
+	 *	otherwise false.
+	 */
+	public boolean canLink(Cluster a, Cluster b, double threshold);
+
+	/**
+	 * Return the pairwise distance between two clusters based on a
+	 * linkage model. For instance, single linkage will return the smallest
+	 * distance between the two clusters, while maximum linkage will
+	 * return the *largest* distance between the two clusters.
+	 *
+	 * @param a
+	 * @param b
+	 * @return The pairwise distance between cluster A and cluster B under
+	 *	this constraint, or '-1' if none of the sequences have overlap.
+	 */
+	public double pairwiseDistance(Cluster a, Cluster b);
+
+	/**
 	 * Every Linkage should be able to represent itself as a string which
 	 * includes the word "linkage" in it.
 	 * @return The name of this linkage.
 	 */
+	@Override
 	public String toString();
+
 }

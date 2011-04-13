@@ -75,8 +75,38 @@ public class Linkages {
 			return false;
 		}
 
-		@Override
-		public String toString() {
+		public boolean canLink(Cluster a, Cluster b, double threshold) {
+			double distance = pairwiseDistance(a, b);
+
+			if(distance < 0)			return false;
+			if(distance >= threshold)	return false;
+			
+			return true;
+		}
+
+		// O(n^2)
+		public double pairwiseDistance(Cluster a, Cluster b) {
+			double min_distance = -1;
+
+			for(Object obj1: a) {
+				Sequence outer = (Sequence) obj1;
+				for(Object obj2: b) {
+					Sequence inner = (Sequence) obj2;
+
+					double dist = inner.getPairwise(inner);
+					if(dist >= 0) {
+						// Valid distance!
+						if(min_distance > dist) {
+							min_distance = dist;
+						}
+					}
+				}
+			}
+
+			return min_distance;
+		}
+
+		@Override public String toString() {
 			return "single linkage";
 		}
 	}

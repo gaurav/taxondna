@@ -102,24 +102,83 @@ public class ClusterJob {
 			// Find our sequence.
 			Sequence seq = (Sequence) obj;
 
+			// What we're doing here is similar but not identical to the
+			// hierarchical clustering algorithm (see
+			// http://home.dei.polimi.it/matteucc/Clustering/tutorial_html/hierarchical.html
+			// for more details). We *should* be safe, as long as we
+			// double-check that the final set of clusters are all minimally
+			// different from each other (i.e. no clusters remain unmerged).
+			//
+			// Which we now do, check out the verification section below.
+
+			// A quick reminder of "Kathy's Bug": it's possible that a new
+			// sequence 'seq' will 'connect' two previously unconnected bins.
+			// So we do this:
+			//   |----------------------- bins -------------------------|
+			//	 |-----* Found the first bin that matchs.				|
+			//   |     *-----X---X-X-----X--X For every subsequent match|
+			//	 |							  we merge that bin into the|
+			//   |							  first bin we found.       |
+			//	 |							 -------X-----------------X-|
+			//   |------------------------------------------------------*
+			//   | ^- No matches go into their own, new bin at the end. |
+			//   |------------------------------------------------------|
+
+			Cluster found_bin = null;
+
+			// We will be modifying this list on the fly, but we need to
+			// iterate over the *original* list.
+			ArrayList<Cluster> original_clusters_list = Collections.unmodifiableList(clusters);
+
 			// For every bin we currently have:
-			for(Cluster cluster: clusters) {
+			for(Cluster cluster: original_clusters_list) {
 				// Check if this sequence should go into this bin.
 				if(linkage.canLink(cluster, seq, threshold)) {
-					// System.err.println("Sequence " + seq + " added to cluster " + cluster);
-					cluster.add(seq);
-					seq = null;
-					break;
+					if(found_bin != null) {
+						// We already have a bin for the current sequence.
+						// So 'cluster' should be merged into found_bin
+						// and then deleted from clusters.
+						found_bin.addAll(cluster);
+						clusters.remove(cluster);
+					} else {
+						// First bin to be found!
+						cluster.add(seq);
+						found_bin = cluster;
+					}
 				}
 			}
+			
+			// No matches? No matter, put it into its own cluster
+			// and save.
+			if(found_bin == null) {
+				found_bin = new Cluster();
+				found_bin.add(seq);
+				clusters.add(found_bin);
+			}
+		}
 
-			// If the sequence hasn't been placed, put it into its
-			// own bin.
-			if(seq != null) {
-				Cluster cluster = new Cluster();
-				cluster.add(seq);
-				clusters.add(cluster);
-				// System.err.println("Sequence " + seq + " added to new cluster");
+		callback.end();
+		callback.begin();
+
+		// VERIFICATION.
+		// Make sure that NONE of the clusters can be linked to each other
+		// using this algorithm.
+		count = 0;
+		total = clusters.size();
+		for(Cluster outer: clusters) {
+			// Count 'em.
+			count++;
+			callback.delay(count, total);
+			
+			for(Cluster inner: clusters) {
+				if(linkage.canLink(outer, inner, threshold)) {
+					throw new RuntimeException(
+						"Verification FAILED: cluster " + inner +
+						" can be merged with cluster " + outer + 
+						", but WASN'T (distance = " + linkage.pairwiseDistance(inner, outer) +
+						")"
+					);
+				}
 			}
 		}
 
