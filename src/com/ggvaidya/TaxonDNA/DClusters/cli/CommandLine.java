@@ -28,7 +28,7 @@ import java.io.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
-import com.ggvaidya.TaxonDNA.DClusters.*;
+import com.ggvaidya.TaxonDNA.DtClusters.*;
 
 /**
  * This class handles command line requests, managing a stream of input
@@ -51,7 +51,7 @@ public class CommandLine {
 	 *	commands).
 	 */
 	public static void main(String[] args) {
-		System.out.println(DClusters.getCopyrightNotice());
+		System.out.println(DtClusters.getCopyrightNotice());
 		System.out.println();
 
 		// Variables.
@@ -76,7 +76,7 @@ public class CommandLine {
 			if(flag_argument) {
 				/* Version */
 				if(arg.equalsIgnoreCase("version") || arg.equalsIgnoreCase("v")) {
-					System.out.print("This is " + DClusters.getName() + " version " + DClusters.getVersion());
+					System.out.print("This is " + DtClusters.getName() + " version " + DtClusters.getVersion());
 					System.out.println(" based on TaxonDNA/" + Versions.getTaxonDNA() + ".");
 					System.out.println();
 				}

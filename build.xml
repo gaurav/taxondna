@@ -151,15 +151,15 @@
         />
     </target>
 
-    <!-- DClusters:          Builds the release folder for DistClus -->
-    <target name = "DClusters"       depends = "compile">
+    <!-- DtClusters:          Builds the release folder for DistClus -->
+    <target name = "DtClusters"       depends = "compile">
         <jar
-            destfile =  "Release/DClusters.jar"
+            destfile =  "Release/DtClusters.jar"
             basedir =   "${build.dir}/classes"
-            includes =  "${files.common}, **/DClusters/**"
+            includes =  "${files.common}, **/DtClusters/**"
         >
             <manifest>
-                <attribute name = "Main-Class" value = "com.ggvaidya.TaxonDNA.DClusters.DClusters" />
+                <attribute name = "Main-Class" value = "com.ggvaidya.TaxonDNA.DtClusters.DtClusters" />
             </manifest>
         </jar>
     </target>
@@ -167,7 +167,7 @@
 	<!-- 
         release: Release both Species Identifier and Sequence Matrix at once
     -->
-	<target name = "release"    depends = "SeqMat_release, SpecId_release, DClusters">
+	<target name = "release"    depends = "SeqMat_release, SpecId_release, DtClusters">
     </target>
 
     <!--
@@ -234,8 +234,8 @@
         <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
         </java>
     </target>
-    <target name="run_dclusters" depends="DClusters">
-        <java jar="Release/DClusters.jar" maxmemory="2048m" fork="true">
+    <target name="run_dtclusters" depends="DtClusters">
+        <java jar="Release/DtClusters.jar" maxmemory="2048m" fork="true">
             <!-- Give it a file to execute -->
             <arg value="Tests/files/Diptera COI.fasta" />
         </java>

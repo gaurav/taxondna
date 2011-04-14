@@ -13,7 +13,7 @@
                 <source-folder>
                     <label>TaxonDNA</label>
                     <location>.</location>
-                    <encoding>UTF-8</encoding>
+                    <encoding>MacRoman</encoding>
                 </source-folder>
                 <source-folder>
                     <label>src</label>
@@ -24,7 +24,7 @@
             </folders>
             <ide-actions>
                 <action name="build">
-                    <target>SequenceMatrix.app</target>
+                    <target>release</target>
                 </action>
                 <action name="clean">
                     <target>clean</target>
@@ -33,11 +33,11 @@
                     <target>javadocs</target>
                 </action>
                 <action name="run">
-                    <target>run_dclusters</target>
+                    <target>run_dtclusters</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>
-                    <target>SequenceMatrix.app</target>
+                    <target>release</target>
                 </action>
             </ide-actions>
             <view>

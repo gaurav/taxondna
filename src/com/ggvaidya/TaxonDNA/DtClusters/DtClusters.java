@@ -1,7 +1,7 @@
 
 /*
  *
- *  DClusters
+ *  DtClusters
  *  Copyright (C) 2010-11 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -20,7 +20,7 @@
  *
  */
 
-package com.ggvaidya.TaxonDNA.DClusters;
+package com.ggvaidya.TaxonDNA.DtClusters;
 
 import com.ggvaidya.TaxonDNA.DClusters.cli.*;
 
@@ -30,7 +30,7 @@ import com.ggvaidya.TaxonDNA.DClusters.cli.*;
  *
  * @author Gaurav Vaidya
  */
-public class DClusters {
+public class DtClusters {
 	
 	/**
 	 * Kicks off this program.
@@ -55,14 +55,14 @@ public class DClusters {
 
 	public static String getCopyrightNotice() {
 		return
-			DClusters.getName() + " version " + DClusters.getVersion() + "\n" +
+			DtClusters.getName() + " version " + DtClusters.getVersion() + "\n" +
 			"Copyright (C) 2010-11 Gaurav Vaidya\n" +
-			DClusters.getName() + " comes with ABSOLUTELY NO WARRANTY.\n" +
+			DtClusters.getName() + " comes with ABSOLUTELY NO WARRANTY.\n" +
 			"\n" +
 			"This is free software, and you are welcome to redistribute\n" +
 			"it under the terms of either the GPL 2.0 or GPL 3.0 license.\n" +
 			"\n" +
-			"For more details, please see: " + DClusters.getHomepage()
+			"For more details, please see: " + DtClusters.getHomepage()
 		;
 	}
 

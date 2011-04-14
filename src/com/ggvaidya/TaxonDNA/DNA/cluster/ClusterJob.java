@@ -57,7 +57,7 @@ public class ClusterJob {
 	 * Return the resulting clusters.
 	 */
 	public List<Cluster> getClusters() {
-		return (List<Cluster>) results.clone();
+		return (List<Cluster>) getResults().clone();
 	}
 
 	/**
@@ -78,8 +78,8 @@ public class ClusterJob {
 	 * @return the number of clusters, or -1 if this job has not yet been executed.
 	 */
 	public int count() {
-		if(results != null)
-			return results.size();
+		if(getResults() != null)
+			return getResults().size();
 		else
 			return -1;
 	}
@@ -92,9 +92,9 @@ public class ClusterJob {
 
 		// Ready to go!
 		int count = 0;
-		int total = sequences.count();
+		int total = getSequences().count();
 
-		for(Object obj: sequences) {
+		for(Object obj: getSequences()) {
 			// Count 'em.
 			count++;
 			callback.delay(count, total);
@@ -134,7 +134,7 @@ public class ClusterJob {
 			// For every bin we currently have:
 			for(Cluster cluster: original_clusters_list) {
 				// Check if this sequence should go into this bin.
-				if(linkage.canLink(cluster, seq, threshold)) {
+				if(getLinkage().canLink(cluster, seq, getThreshold())) {
 					if(found_bin != null) {
 						// We already have a bin for the current sequence.
 						// So 'cluster' should be merged into found_bin
@@ -152,7 +152,7 @@ public class ClusterJob {
 			// No matches? No matter, put it into its own cluster
 			// and save.
 			if(found_bin == null) {
-				found_bin = new Cluster();
+				found_bin = new Cluster(this);
 				found_bin.add(seq);
 				clusters.add(found_bin);
 			}
@@ -172,11 +172,11 @@ public class ClusterJob {
 			callback.delay(count, total);
 			
 			for(Cluster inner: clusters) {
-				if(linkage.canLink(outer, inner, threshold)) {
+				if(getLinkage().canLink(outer, inner, getThreshold())) {
 					throw new RuntimeException(
 						"Verification FAILED: cluster " + inner +
 						" can be merged with cluster " + outer + 
-						", but WASN'T (distance = " + linkage.pairwiseDistance(inner, outer) +
+						", but WASN'T (distance = " + getLinkage().pairwiseDistance(inner, outer) +
 						")"
 					);
 				}
@@ -186,5 +186,29 @@ public class ClusterJob {
 		// Save the clusters to this Job's results field and exit.
 		results = clusters;
 		callback.end();
+	}
+
+	/**
+	 * @return the sequences
+	 */ public SequenceList getSequences() {
+		return sequences;
+	}
+
+	/**
+	 * @return the threshold
+	 */ public double getThreshold() {
+		return threshold;
+	}
+
+	/**
+	 * @return the linkage
+	 */ public Linkage getLinkage() {
+		return linkage;
+	}
+
+	/**
+	 * @return the results
+	 */ public ArrayList<Cluster> getResults() {
+		return results;
 	}
 }

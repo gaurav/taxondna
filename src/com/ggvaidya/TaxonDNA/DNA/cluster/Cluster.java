@@ -1,7 +1,7 @@
 
 /*
  *
- *  Cluster
+ *  DtClusters
  *  Copyright (C) 2010-11 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -41,15 +41,18 @@ import java.util.*;
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
 public class Cluster extends SequenceList implements Comparable {
+	/** The job which created this cluster */
+	protected ClusterJob job;
+
 	/**
 	 * Creates an empty cluster.
 	 */
-	public Cluster() {}
+	public Cluster(ClusterJob job) {	this.job = job; }
 
 	/**
 	 * Creates a cluster from another SequenceList.
 	 */
-	public Cluster(SequenceList list) { super(list); }
+	public Cluster(ClusterJob job, SequenceList list) { super(list); this.job = job; }
 
 	/**
 	 * Gets a 'name' for the current cluster. The trick
@@ -164,4 +167,5 @@ public class Cluster extends SequenceList implements Comparable {
 			"|" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(largest, 1)
 		;
 	}
+
 }
