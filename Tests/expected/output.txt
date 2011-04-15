@@ -1,0 +1,7 @@
+# Cluster stability between 1.0% and 5.0% on Fri Apr 15 16:40:38 SGT 2011 upon 1390 sequences
+Threshold	Clusters	Shared clusters
+1.0	582	NA
+2.0	503	-1
+3.0	471	-1
+4.0	438	-1
+5.0	403	-1

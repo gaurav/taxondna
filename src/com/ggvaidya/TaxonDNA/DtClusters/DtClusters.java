@@ -22,10 +22,10 @@
 
 package com.ggvaidya.TaxonDNA.DtClusters;
 
-import com.ggvaidya.TaxonDNA.DClusters.cli.*;
+import com.ggvaidya.TaxonDNA.DtClusters.cli.*;
 
 /**
- * The main class of the DClusters menu. This checks for command-line
+ * The main class of the DtClusters menu. This checks for command-line
  * instructions, ultimately handing control over to MainFrame.
  *
  * @author Gaurav Vaidya

@@ -130,7 +130,15 @@ public class Cluster extends SequenceList implements Comparable {
 	public int compareTo(Object t) {
 		Cluster other = (Cluster) t;
 
-		return (other.count() - count());
+		return (other.getSpeciesCount() - getSpeciesCount());
+	}
+
+	public int getSpeciesCount() {
+		try {
+			return getSpeciesDetails(null).count();
+		} catch(DelayAbortedException e) {
+			return -1;
+		}
 	}
 
 	private String getDistances() {
@@ -166,6 +174,26 @@ public class Cluster extends SequenceList implements Comparable {
 			"|" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(average, 1) +
 			"|" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(largest, 1)
 		;
+	}
+
+	/**
+	 * @return A unique identifier for this cluster's sequences. Two clusters
+	 *	with identical sequences *will* return identical Contents UUIDs,
+	 *  *as long as* the two clusters were generated from the same original
+	 *  SequenceList. If you use two SequenceLists, all bets are off.
+	 */
+	public String getContentsUUID() {
+		StringBuilder uuid = new StringBuilder();
+		resort(SORT_BYNAME);
+		for(Object o: this) {
+			Sequence seq = (Sequence) o;
+
+			uuid.append("|");
+			uuid.append(seq.getUUID());
+			uuid.append("|");
+		}
+
+		return uuid.toString();
 	}
 
 }

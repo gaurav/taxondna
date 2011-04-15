@@ -93,10 +93,10 @@ public class Linkages {
 				for(Object obj2: b) {
 					Sequence inner = (Sequence) obj2;
 
-					double dist = inner.getPairwise(inner);
+					double dist = outer.getPairwise(inner);
 					if(dist >= 0) {
 						// Valid distance!
-						if(min_distance > dist) {
+						if(min_distance < dist) {
 							min_distance = dist;
 						}
 					}

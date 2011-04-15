@@ -68,7 +68,10 @@ public class ClusterJob {
 	 * @param linkage		The linkage to use.
 	 */
 	public ClusterJob(SequenceList list, Linkage linkage, double threshold) {
-		this.sequences =	new SequenceList(list); // Copy it, just in case.
+		if(list == null)
+			this.sequences = null;
+		else
+			this.sequences =	new SequenceList(list); // Copy it, just in case.
 		this.threshold =	threshold;
 		this.linkage =		linkage;
 	}
@@ -172,6 +175,8 @@ public class ClusterJob {
 			callback.delay(count, total);
 			
 			for(Cluster inner: clusters) {
+				if(outer == inner) continue;
+
 				if(getLinkage().canLink(outer, inner, getThreshold())) {
 					throw new RuntimeException(
 						"Verification FAILED: cluster " + inner +
@@ -210,5 +215,40 @@ public class ClusterJob {
 	 * @return the results
 	 */ public ArrayList<Cluster> getResults() {
 		return results;
+	}
+
+	public void createFakeResults() {
+		results = new ArrayList<Cluster>();
+	}
+
+	public int countClustersSharedWith(ClusterJob other) {
+		int count = 0;
+
+		ClusterJob bigger = other;
+		ClusterJob smaller = this;
+
+		/*
+		 * We need to find the smaller cluster job instead
+		 * the bigger one. Otherwise:
+		 *		(c1, c3) vs (c1, c1, c3)
+		 * The correct answer is three: (c1, c1), (c1, c1), (c3, c3)
+		 * but without swapping, we would end up only finding two.
+		 */
+		if(bigger.count() < smaller.count()) {
+			ClusterJob t =	bigger;
+			bigger =		smaller;
+			smaller =		t;
+		}
+
+		for(Cluster outer: bigger.getResults()) {
+			for(Cluster inner: smaller.getResults()) {
+				if(outer.getContentsUUID().equals(inner.getContentsUUID())) {
+					count++;
+					break;
+				}
+			}
+		}
+
+		return count;
 	}
 }
