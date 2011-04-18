@@ -143,7 +143,7 @@ public class CommandLine {
 		);
 		System.err.println();
 
-		/* File loaded! Set up a ClusterJob. */
+		/* File loaded! Set up a ClusterJob.
 		System.err.println(
 				"Setting up a cluster job with " + linkage +
 				", threshold of " + (threshold * 100) + "%; minimum overlap is set to " +
@@ -163,7 +163,7 @@ public class CommandLine {
 			x++;
 			System.out.println("C" + x + ":\t" + cluster);
 		}
-		/* */
+		*/
 
 		/* Print out the distance matrix. */
 		//System.err.println("Writing out clusters vs sequences");
@@ -178,6 +178,30 @@ public class CommandLine {
 		
 		//System.err.println("Writing out cluster stability information:");
 		//determineClusterStability(sl, linkage, 0.03, 0.10, 0.005);
+
+		System.err.println("Doing the distance walk:");
+		doTheDistanceWalk(sl, linkage, 0.01, 0.07);
+	}
+
+	private static void doTheDistanceWalk(SequenceList sl, Linkage linkage, double from, double to) {
+		System.err.println(" Determining cluster information at " + from + "% (" + linkage + ", " + Sequence.getMinOverlap() + " bp minimum overlap)");
+
+		ClusterJob job = new ClusterJob(sl, linkage, from);
+		System.err.print("  Processing: ");
+		try {
+			job.execute(new CmdLineDelay());
+		} catch(DelayAbortedException e) {
+			System.err.println("\nAborted.");
+			System.exit(0);
+		}
+
+		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
+		List<ClusterNode> walkToDistance = ClusterNode.walkToDistance(job, to);
+		System.err.println(" Obtained " + walkToDistance.size() + " clusters at " + percentage(to) + "%");
+
+		System.err.println("Results follow.");
+		ClusterNode.visualizeFrame(walkToDistance);
+		System.err.println("Results completed.");
 	}
 
 	private static void testCountClustersSharedWith(SequenceList sl) {

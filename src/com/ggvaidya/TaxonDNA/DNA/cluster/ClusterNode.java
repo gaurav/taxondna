@@ -51,6 +51,10 @@ public class ClusterNode implements Sequences {
 		this.distance =		distance;
 	}
 
+	public void addCluster(Cluster c) {
+		this.sequences.add(c);
+	}
+
 	/**
 	 * @return What distance do these clusters merge at?
 	 */
@@ -65,10 +69,136 @@ public class ClusterNode implements Sequences {
 		SequenceList sl = new SequenceList();
 
 		for(Sequences s: sequences) {
-			sl.add(s.getSequences());
+			sl.addAll(s.getSequences());
 		}
 
 		return sl;
 	}
 
+	public List<Sequences> getSequencesObjects() {
+		return sequences;
+	}
+
+	/**
+	 * "Walk" from the ClusterJob provided to the final_threshold by combining
+	 * ClusterNodes into a tree. Basically, once we're done, the ClusterJob will
+	 * tell you what the nodes looked like before the "walk", the returned list
+	 * will tell you what the nodes look like at the final threshold, and recursing
+	 * through the nodes will tell you what the tree between the two thresholds
+	 * looks like.
+	 *
+	 * It's ... pretty crazy.
+	 *
+	 * @param job			The cluster job we need to 'extend'. It's kinda hard
+	 *						(and, I think, computationally expensive?) to do
+	 *						agglumeration right from the sequence list level;
+	 *						it's much easier to start off with a set of clusters.
+	 * @param final_threshold	The final threshold to step up to.
+	 * @return A list of ClusterNodes left standing at the final_threshold.
+	 */
+	public static List<ClusterNode>	walkToDistance(ClusterJob job, double final_threshold) {
+		List<Cluster> clusters =		job.getClusters();
+		ArrayList<ClusterNode> frame =	new ArrayList<ClusterNode>();
+
+		Linkage linkage =	job.getLinkage();
+		double threshold =	job.getThreshold();
+
+		// Load the frame - one ClusterNode per incoming cluster.
+		for(Cluster c: clusters) {
+			frame.add(new ClusterNode(threshold, c));
+		}
+
+		while(threshold < final_threshold) {
+			System.err.println(" - Moving frame to: " + percentage(threshold) + "%, " + frame.size() + " clusters remaining.");
+
+			// Find the pair of ClusterNodes with the smallest pairwise distance.
+			double	smallestPairwise = -1;
+			ClusterNode	smallest_a = null;
+			ClusterNode smallest_b = null;
+			for(ClusterNode outer: frame) {
+				for(ClusterNode inner: frame) {
+					// Don't compare same with same.
+					if(outer == inner)	break;
+
+					double d = linkage.pairwiseDistance(outer, inner);
+
+					if(d < 0)
+						continue;
+
+					if(smallestPairwise == -1 || d <= smallestPairwise) {
+						smallestPairwise =	d;
+						smallest_a =		outer;
+						smallest_b =		inner;
+					}
+				}
+			}
+			
+			if(smallestPairwise < 0) {
+				System.err.println(" - Process terminated at " + percentage(threshold) + "%: no further clusters have adequate overlap");
+				return frame;
+			}
+
+			// Oh, Java.
+			if(smallest_a == null || smallest_b == null) {
+				throw new RuntimeException("Smallest distance obtained but matching clusters not set!");
+			}
+
+			if(smallestPairwise < threshold) {
+				throw new RuntimeException("Invalid: clusters " + smallest_a + " and " + smallest_b + " have a distance of " + percentage(smallestPairwise) + "%, below the threshold of " + percentage(threshold) + "%");
+			}
+
+			// All good. Now merge smallest_a and smallest_b!
+			ClusterNode newNode = new ClusterNode(smallestPairwise, smallest_a, smallest_b);
+			frame.remove(smallest_a);
+			frame.remove(smallest_b);
+			frame.add(newNode);
+
+			// And move the threshold
+			threshold = smallestPairwise;
+		}
+
+		// This is now the final frame.
+		return frame;
+	}
+
+	private static double percentage(double d) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(d, 1);
+	}
+
+	public static void visualizeFrame(List<ClusterNode> nodes) {
+		for(ClusterNode node: nodes) {
+			visualizeClusterNode(node, 0);
+		}
+	}
+
+	boolean firstNode = false;
+	private static void visualizeClusterNode(ClusterNode cn, int indent) {
+		StringBuilder indentation = new StringBuilder();
+		for(int x = 0; x < indent; x++) {
+			indentation.append(" ");
+		}
+
+		// System.out.println(indentation + "CN [" + (cn.getDistance() * 100) + "%] { ");
+		System.out.print("(");
+		for(Sequences sequences: cn.getSequencesObjects()) {
+			Class cls = sequences.getClass();
+
+			if (cls.equals(ClusterNode.class)) {
+				visualizeClusterNode((ClusterNode) sequences, indent + 2);
+				
+			} else if(cls.equals(Cluster.class)) {
+				Cluster c = (Cluster) sequences;
+
+				// System.out.println(indentation + "  C(" + c + ")");
+				System.out.print("'" + c + "',");
+				
+			} else if(cls.equals(Sequence.class)) {
+				Sequence seq = (Sequence) sequences;
+
+				// System.out.println(indentation + " |gi|" + seq.getGI() + "|");
+				System.out.print("'gi|" + seq.getGI() + "|', ");
+			}
+		}
+		System.out.print("),");
+	}
 }
