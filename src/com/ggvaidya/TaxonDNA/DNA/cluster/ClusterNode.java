@@ -22,6 +22,8 @@
 
 package com.ggvaidya.TaxonDNA.DNA.cluster;
 
+import com.ggvaidya.TaxonDNA.DNA.*;
+
 import java.util.*;
 
 /**
@@ -29,16 +31,13 @@ import java.util.*;
  * merge at a particular distance. For instance, a ClusterNode might specify
  * that three clusters merge together at 4%.
  *
- * Note that ClusterNodes can only contain *Clusters*. If you need to use a
- * Sequence instead, pop it into a one-sequence Cluster.
- *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
-public class ClusterNode {
+public class ClusterNode implements Sequences {
 	/** Cluster node */
 
 	/** Clusters to match */
-	protected List<Cluster>		clusters;
+	protected List<Sequences>	sequences;
 
 	/** Distance at which they would merge. */
 	protected double			distance;
@@ -47,8 +46,8 @@ public class ClusterNode {
 	 * A ClusterNode consists of two or more Clusters which 'merge' at
 	 * a particular distance.
 	 */
-	public ClusterNode(double distance, Cluster... clusters) {
-		this.clusters =		Arrays.asList(clusters);
+	public ClusterNode(double distance, Sequences... clusters) {
+		this.sequences =	Arrays.asList(clusters);
 		this.distance =		distance;
 	}
 
@@ -56,5 +55,20 @@ public class ClusterNode {
 	 * @return What distance do these clusters merge at?
 	 */
 	public double getDistance() {	return distance;	}
+
+	/**
+	 * Note that this is a recursive list of *all* the sequences at this node.
+	 *
+	 * @return A SequenceList of all the sequences present at this sequence node.
+	 */
+	public SequenceList getSequences() {
+		SequenceList sl = new SequenceList();
+
+		for(Sequences s: sequences) {
+			sl.add(s.getSequences());
+		}
+
+		return sl;
+	}
 
 }

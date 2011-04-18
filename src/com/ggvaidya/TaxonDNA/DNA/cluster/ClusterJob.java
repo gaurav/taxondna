@@ -61,6 +61,16 @@ public class ClusterJob {
 	}
 
 	/**
+	 * This can be used to figure out how this cluster is doing
+	 * relative to this entire dataset.
+	 * 
+	 * @return The Sequences on which this clustering job was run.
+	 */
+	public Sequences getOriginalSequences() {
+		return sequences;
+	}
+
+	/**
 	 * Create a new Cluster job.
 	 * 
 	 * @param list			The sequences to cluster.

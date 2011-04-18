@@ -43,7 +43,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.formats.*;
 
 
-public class SequenceList implements List, Testable {
+public class SequenceList implements List, Testable, Sequences {
 	// variables essential to this class	
 	private LinkedList 	sequences =	new LinkedList();	// specified solely by order (based on sortedBy)
 	private SpeciesDetails	details = 	null;			// the species summary for this SequenceList
@@ -188,6 +188,13 @@ public class SequenceList implements List, Testable {
 		addAll(c);			// as long as you add 'c'
 
 		modified();
+	}
+
+	/**
+	 * @return Since we're already a SequenceList, this is very easy.
+	 */
+	public SequenceList getSequences() {
+		return this;
 	}
 
 //

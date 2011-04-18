@@ -143,7 +143,7 @@ public class CommandLine {
 		);
 		System.err.println();
 
-		/* File loaded! Set up a ClusterJob.
+		/* File loaded! Set up a ClusterJob. */
 		System.err.println(
 				"Setting up a cluster job with " + linkage +
 				", threshold of " + (threshold * 100) + "%; minimum overlap is set to " +
@@ -163,7 +163,7 @@ public class CommandLine {
 			x++;
 			System.out.println("C" + x + ":\t" + cluster);
 		}
-		*/
+		/* */
 
 		/* Print out the distance matrix. */
 		//System.err.println("Writing out clusters vs sequences");
@@ -176,8 +176,8 @@ public class CommandLine {
 		 *
 		 */
 		
-		System.err.println("Writing out cluster stability information:");
-		determineClusterStability(sl, linkage, 0.03, 0.10, 0.005);
+		//System.err.println("Writing out cluster stability information:");
+		//determineClusterStability(sl, linkage, 0.03, 0.10, 0.005);
 	}
 
 	private static void testCountClustersSharedWith(SequenceList sl) {

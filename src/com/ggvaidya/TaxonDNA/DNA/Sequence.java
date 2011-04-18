@@ -36,7 +36,7 @@ import	java.util.regex.*;	// used to regex the species names
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.Others.UUID;	// UUIDs
 
-public class Sequence  implements Comparable, Testable {
+public class Sequence  implements Comparable, Testable, Sequences {
 	protected UUID		id = 	new UUID();	// just call them "UUIDs" and gag me with a spoon ...
 	protected String	name;			// the full name of the sequence
 	protected char[]	seq;			// the sequence itself (as a char array)
@@ -2219,5 +2219,14 @@ public class Sequence  implements Comparable, Testable {
 
 	boolean hasMinOverlap(Sequence seq) {
 		return (getOverlap(seq) >= Sequence.getMinOverlap());
+	}
+
+	/**
+	 * @return A new SequenceList containing only this sequence.
+	 */
+	public SequenceList getSequences() {
+		SequenceList sl = new SequenceList();
+		sl.add(this);
+		return sl;
 	}
 }

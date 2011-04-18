@@ -40,7 +40,7 @@ import java.util.*;
  *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
-public class Cluster extends SequenceList implements Comparable {
+public class Cluster extends SequenceList implements Comparable, Sequences {
 	/** The job which created this cluster */
 	protected ClusterJob job;
 
@@ -98,14 +98,14 @@ public class Cluster extends SequenceList implements Comparable {
 
 		int species_count = details.getSpeciesCount();
 		if(species_count == 1) {
-			return "A cluster of " + details.getSequencesCount() + " sequences from " + details.getSpeciesNamesIterator().next() +
+			return "A " + getClusterSummary() + " cluster of " + details.getSequencesCount() + " sequences from " + details.getSpeciesNamesIterator().next() +
 					" " + distances;
 		} else {
 			HashMap<String, SpeciesDetail> speciesDetails = new HashMap<String, SpeciesDetail>(details.getDetails());
 			ArrayList<String> speciesNames = new ArrayList<String>(speciesDetails.keySet());
 
 			if(species_count == 2) {
-				return "A cluster of " +
+				return "A " + getClusterSummary() + " cluster of " +
 					speciesDetails.get(speciesNames.get(0)).getSequencesCount() + " sequence(s) from " + speciesNames.get(0) +
 					" and " +
 					speciesDetails.get(speciesNames.get(1)).getSequencesCount() + " sequence(s) from " + speciesNames.get(1) +
@@ -116,7 +116,7 @@ public class Cluster extends SequenceList implements Comparable {
 						- speciesDetails.get(speciesNames.get(0)).getSequencesCount()
 						- speciesDetails.get(speciesNames.get(1)).getSequencesCount();
 
-				return "A cluster of " +
+				return "A " + getClusterSummary() + " cluster of " +
 					speciesDetails.get(speciesNames.get(0)).getSequencesCount() + " sequence(s) from " + speciesNames.get(0) +
 					", " +
 					speciesDetails.get(speciesNames.get(1)).getSequencesCount() + " sequence(s) from " + speciesNames.get(1) +
@@ -127,10 +127,43 @@ public class Cluster extends SequenceList implements Comparable {
 		}
 	}
 
+	/**
+	 * A "cluster summary" is a one-word description of a cluster.
+	 *
+	 * @return Either "complete", "incomplete" or "mixed"
+	 */
+	public String getClusterSummary() {
+		if(getSpeciesCount() == 1) {
+			SpeciesDetails det_cluster;
+			SpeciesDetails det_job;
+			
+			try {
+				det_cluster = getSpeciesDetails(null);
+				det_job = job.getOriginalSequences().getSequences().getSpeciesDetails(null);
+			} catch(DelayAbortedException e) {
+				return "aborted";
+			}
+
+			SpeciesDetail detail = det_job.getSpeciesDetailsByName((String) det_cluster.getSpeciesNamesIterator().next());
+			if(detail.getSequencesCount() != count()) {
+				return "incomplete";
+			} else {
+				return "complete";
+			}
+		} else {
+			return "mixed";
+		}
+	}
+
 	public int compareTo(Object t) {
 		Cluster other = (Cluster) t;
 
-		return (other.getSpeciesCount() - getSpeciesCount());
+		int diff = (other.getSpeciesCount() - getSpeciesCount());
+
+		if(diff != 0)
+			return diff;
+		else
+			return (other.count() - count());
 	}
 
 	public int getSpeciesCount() {
