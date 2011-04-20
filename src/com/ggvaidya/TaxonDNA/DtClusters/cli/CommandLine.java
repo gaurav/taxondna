@@ -29,8 +29,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 import com.ggvaidya.TaxonDNA.DtClusters.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.ggvaidya.TaxonDNA.DtClusters.gui.*;
 
 /**
  * This class handles command line requests, managing a stream of input
@@ -180,7 +179,7 @@ public class CommandLine {
 		//determineClusterStability(sl, linkage, 0.03, 0.10, 0.005);
 
 		System.err.println("Doing the distance walk:");
-		doTheDistanceWalk(sl, linkage, 0.01, 0.07);
+		doTheDistanceWalk(sl, linkage, 0.03, 0.05);
 	}
 
 	private static void doTheDistanceWalk(SequenceList sl, Linkage linkage, double from, double to) {
@@ -195,8 +194,16 @@ public class CommandLine {
 			System.exit(0);
 		}
 
+		// Uh-oh UI!
+		MainFrame mf = new MainFrame();
+		AgglomerateClusters ac = new AgglomerateClusters();
+		ac.changeInitialState(job);
+		mf.setContent(ac.getPanel());
+		mf.pack();
+		mf.setVisible(true);
+
 		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
-		List<ClusterNode> walkToDistance = ClusterNode.walkToDistance(job, to);
+		List<ClusterNode> walkToDistance = ClusterNode.agglomerateClusters(job, to);
 		System.err.println(" Obtained " + walkToDistance.size() + " clusters at " + percentage(to) + "%");
 
 		System.err.println("Results follow.");

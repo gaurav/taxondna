@@ -96,7 +96,7 @@ public class ClusterNode implements Sequences {
 	 * @param final_threshold	The final threshold to step up to.
 	 * @return A list of ClusterNodes left standing at the final_threshold.
 	 */
-	public static List<ClusterNode>	walkToDistance(ClusterJob job, double final_threshold) {
+	public static List<ClusterNode>	agglomerateClusters(ClusterJob job, double final_threshold) {
 		List<Cluster> clusters =		job.getClusters();
 		ArrayList<ClusterNode> frame =	new ArrayList<ClusterNode>();
 
