@@ -203,7 +203,7 @@ public class CommandLine {
 		mf.setVisible(true);
 
 		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
-		List<ClusterNode> walkToDistance = ClusterNode.agglomerateClusters(job, to);
+		List<ClusterNode> walkToDistance = ac.agglomerateClusters(to);
 		System.err.println(" Obtained " + walkToDistance.size() + " clusters at " + percentage(to) + "%");
 
 		System.err.println("Results follow.");

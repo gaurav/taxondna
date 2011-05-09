@@ -40,7 +40,6 @@ import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 public class AgglomerateClusters {
 	JPanel						panel =			new JPanel();
 	ClusterJob					clusterJob =	null;
-	java.util.List<ClusterNode>	final_frame =	null;
 
 	public AgglomerateClusters()	{
 		panel.setLayout(null);
@@ -50,43 +49,135 @@ public class AgglomerateClusters {
 
 	public void changeInitialState(ClusterJob job) {
 		clusterJob = job;
-
+		
 		panel.removeAll();
-
-		int largestWidth = -1;
-
-		int y = 10;
-		for(Cluster c: clusterJob.getClusters()) {
-			String title = c.toString();
-
-			if(title.length() > 30) {
-				title = title.substring(0, 26) + " ...";
+		panel.repaint();
+		
+		JLabel label = new JLabel("Please wait, processing has not finished yet.");
+		label.setBounds(
+			0, 0,
+			label.getPreferredSize().width + 20,
+			label.getPreferredSize().height + 20
+		);
+		panel.add(label);
+		
+		panel.setPreferredSize(
+			new Dimension(
+				label.getPreferredSize().width + 20,
+				label.getPreferredSize().height + 20
+			)
+		);
+	}
+	
+	/**
+	 * Redraw the view based on the final frame.
+	 * 
+	 * @param final_frame
+	 * @param from
+	 * @param to 
+	 */
+	public void redrawView(java.util.List<ClusterNode> final_frame, double from, double to) {
+		if(final_frame == null)
+			throw new RuntimeException("No frame specified! Can not draw!");
+		
+		if(clusterJob.getThreshold() != from)
+			throw new RuntimeException("'from' specified as " + from + ", but the clusterJob started at " + clusterJob.getThreshold());
+		
+		panel.removeAll();
+		panel.repaint();
+		
+		// Step 1. Figure out our "key lengths", so it's easy to do the pixel
+		// calculations.
+		JButton button =	new JButton("Checking button height 1234567"); // This string is 30 characters long.
+		
+		// 1.1. Delimit a grid.
+		int verticalSpace =		5;
+		int horizontalSpace =	5;
+		int columnWidth =	button.getPreferredSize().width		+ horizontalSpace;
+		int rowHeight =		button.getPreferredSize().height	+ verticalSpace;
+		
+		double smallestDistance =	clusterJob.getThreshold();
+		double largestDistance =	to;
+		
+		double columnSpan =	0.005;
+		int columns =		(int)((largestDistance - smallestDistance) / columnSpan) + 1;
+		
+		System.err.println("Columns: " + columns);
+		
+		// Step 2. Start drawing the ClusterNodes.
+		int y = 0;
+		for(ClusterNode node: final_frame) {
+			// All our components for this node will have to fit within a large
+			// rectangle, whose size depends on the number of child nodes that
+			// this cluster has.
+			java.util.List<Sequences> leaves = node.getLeafNodes();
+			
+			// Draw all the leaf nodes on the left first.
+			for(Sequences seqs: leaves) {
+				y++;
+				
+				JComponent comp = createSequencesComponent(node);
+				comp.setBounds(
+					0,
+					(y * rowHeight),
+					comp.getPreferredSize().width,
+					comp.getPreferredSize().height
+				);
+				panel.add(comp);
 			}
 			
-			JButton btn =		new JButton(title);
-			btn.setToolTipText(c.toString());
-
-			// Is this really the best way to do this?
-			Insets insets =		btn.getInsets();
-			Dimension size =	btn.getPreferredSize();
-
-			if(largestWidth == -1 || (largestWidth - insets.left) < size.width)
-				largestWidth = size.width + insets.left;
-
-			btn.setBounds(
-				insets.left,
-				y,
-				size.width,
-				size.height
-			);
-
-			y += size.height + insets.top + 5;
+			// Finally, draw this button at the final line.
+			int rows =		(leaves.size());
+			double diff_y =	(y - ((double)rows/2));
 			
-			panel.add(btn);
+			JComponent comp = createSequencesComponent(node);
+			comp.setBounds(
+				(columnWidth * columns),
+				(int)(diff_y * rowHeight),
+				comp.getPreferredSize().width,
+				comp.getPreferredSize().height
+			);
+			panel.add(comp); 
+			
+			// Next, draw "child" components at their respective places.
+			for(Sequences seqs: node.getSequencesObjects()) {
+				comp = createSequencesComponent(seqs);
+			
+				double percentage = (node.getDistance() - smallestDistance)/(largestDistance - smallestDistance);
+				
+				comp.setBounds(
+					(int)(columnWidth * columns * percentage) + columnWidth,
+					(y * rowHeight),
+					comp.getPreferredSize().width,
+					comp.getPreferredSize().height
+				);
+				
+				panel.add(comp);
+			}
+			
 		}
 
-		int totalHeight = y + 5;
+		panel.setPreferredSize(new Dimension((columns + 1) * columnWidth, (y * rowHeight)));
+	}
 
-		panel.setPreferredSize(new Dimension(largestWidth + 20, totalHeight));
+	public java.util.List<ClusterNode> agglomerateClusters(double to) {
+		java.util.List<ClusterNode> nodes = ClusterNode.agglomerateClusters(clusterJob, to);
+		
+		redrawView(nodes, clusterJob.getThreshold(), to);
+		
+		return nodes;
+	}
+
+	private JComponent createSequencesComponent(Sequences sequences) {
+		String title = sequences.toString();
+
+		if(title.length() > 30) {
+			title = title.substring(0, 26) + " ...";
+		}
+
+		JButton btn =		new JButton(title);
+		btn.setToolTipText(sequences.toString());
+		
+		return btn;
 	}
 }

@@ -201,4 +201,34 @@ public class ClusterNode implements Sequences {
 		}
 		System.out.print("),");
 	}
+	
+	@Override
+	public String toString() {
+		return sequences.size() + " sequences at " + (double)(distance * 100) + "%";
+	}
+
+	/**
+	 * Recurses through this tree structure, and returns a list of all the 
+	 * "leaf" Sequences object which make up this node.
+	 * 
+	 * @return 
+	 */
+	public List<Sequences> getLeafNodes() {
+		List<Sequences> results = new ArrayList<Sequences>();
+		
+		addLeafNodes(results);
+		
+		return results;
+	}
+
+	private void addLeafNodes(List<Sequences> results) {
+		for(Sequences seqs: getSequencesObjects()) {
+			if(seqs.getClass().equals(ClusterNode.class)) {
+				ClusterNode node = (ClusterNode) seqs;
+				node.addLeafNodes(results);
+			} else {
+				results.add(seqs);
+			}
+		}
+	}
 }
