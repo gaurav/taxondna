@@ -23,12 +23,17 @@
 package com.ggvaidya.TaxonDNA.DtClusters.gui;
 
 import java.util.*;
-import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.*;
+
+import java.awt.BorderLayout;
+import java.awt.Container;
 
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
+import com.ggvaidya.TaxonDNA.UI.*;
 
 /**
  * This class carries out and visualises "agglomerative clustering". We
@@ -39,35 +44,30 @@ import com.ggvaidya.TaxonDNA.DNA.cluster.*;
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
 public class AgglomerateClusters {
-	JPanel						panel =			new JPanel();
+	JFrame						parent;
 	ClusterJob					clusterJob =	null;
 
-	public AgglomerateClusters()	{
-		panel.setLayout(null);
+	public AgglomerateClusters(JFrame parent)	{
+		this.parent = parent;
+		
+		parent.setLayout(new BorderLayout());
 	}
-
-	public JPanel getPanel()			{	return panel;	}
 
 	public void changeInitialState(ClusterJob job) {
 		clusterJob = job;
 		
-		panel.removeAll();
-		panel.repaint();
+		parent.add(new JLabel("Please wait until processing completes ..."), BorderLayout.SOUTH);
+		parent.pack();
+		
+		/*
+		parent.removeAll();
 		
 		JLabel label = new JLabel("Please wait, processing has not finished yet.");
-		label.setBounds(
-			0, 0,
-			label.getPreferredSize().width + 20,
-			label.getPreferredSize().height + 20
-		);
-		panel.add(label);
+		parent.add(label);
 		
-		panel.setPreferredSize(
-			new Dimension(
-				label.getPreferredSize().width + 20,
-				label.getPreferredSize().height + 20
-			)
-		);
+		parent.pack();
+		 * 
+		 */
 	}
 	
 	/**
@@ -78,108 +78,12 @@ public class AgglomerateClusters {
 	 * @param to 
 	 */
 	public void redrawView(java.util.List<ClusterNode> final_frame, double from, double to) {
-		if(final_frame == null)
-			throw new RuntimeException("No frame specified! Can not draw!");
+		TableClusterView tcv = new TableClusterView(clusterJob, final_frame);
+		JTable table = new JTable(tcv);
 		
-		if(clusterJob.getThreshold() != from)
-			throw new RuntimeException("'from' specified as " + from + ", but the clusterJob started at " + clusterJob.getThreshold());
-		
-		panel.removeAll();
-		panel.repaint();
-		
-		// Step 1. Figure out our "key lengths", so it's easy to do the pixel
-		// calculations.
-		JButton button =	new JButton("Checking button height 1234567"); // This string is 30 characters long.
-		
-		// 1.1. Delimit a grid.
-		int verticalSpace =		0;
-		int horizontalSpace =	50;
-		int columnWidth =		button.getPreferredSize().width		+ horizontalSpace;
-		int rowHeight =			button.getPreferredSize().height	+ verticalSpace;
-		
-		double smallestDistance =	clusterJob.getThreshold();
-		double largestDistance =	to;
-		
-		double columnSpan =	0.005;
-		int columns =		(int)((largestDistance - smallestDistance) / columnSpan) + 2;
-		
-		System.err.println("Columns: " + columns);
-		
-		// Step 2. Start drawing the ClusterNodes.
-		int y = 0;
-		for(ClusterNode node: final_frame) {
-			y = renderClusterNode(node, y, columns, rowHeight, columnWidth, columns, smallestDistance, largestDistance, null);
-			
-		}
-
-		panel.setPreferredSize(new Dimension((columns + 2) * columnWidth, (y * rowHeight)));
-	}
-
-	private int renderClusterNode(Sequences seqs, int y, int column, int rowHeight, int columnWidth, int columns, double smallestDistance, double largestDistance, Component parent) {
-		// Step 1: render the sequences object itself.
-		JComponent current =	createSequencesComponent(seqs);
-		
-		current.setBounds(
-			(columnWidth * column),
-			(int)(y * rowHeight),
-			current.getPreferredSize().width,
-			current.getPreferredSize().height
-		);
-		panel.add(current);
-		
-		if(parent != null) {
-			LineJoining lj = new LineJoining(parent, current);
-			
-			Rectangle current_bound =	current.getBounds();
-			Rectangle parent_bound =	parent.getBounds(); 
-			
-			lj.setBounds(
-				current.getX(),
-				parent.getY(),
-				parent_bound.x + parent_bound.width - current_bound.x,
-				current_bound.y + current_bound.height - parent_bound.y
-			);
-			
-			/*
-			lj.setBounds(
-				current_bound.x,
-				current_bound.y + current_bound.height,
-				parent_bound.x + parent_bound.width,
-				parent_bound.y
-			);
-			 */
-			
-			panel.add(lj);
-			
-			// System.err.println("LineJoining " + lj + " added: " + parent + ", " + current);
-		}
-		
-		// Step 2: render the immediate child nodes.
-		if(seqs.getClass().equals(ClusterNode.class)) {
-			ClusterNode node = (ClusterNode) seqs;
-			
-			int subnode_column = (int)((percentage(node.getDistance()) - smallestDistance*100)/0.01) + 1;
-			for(Sequences subnode_seqs: node.getSequencesObjects()) {
-				y = renderClusterNode(subnode_seqs, y, subnode_column, rowHeight, columnWidth, columns, smallestDistance, largestDistance, current);
-			}
-		} else {
-			// "Drop" it to the first column.
-			JComponent first_col =	createSequencesComponent(seqs);
-		
-			current.setBounds(
-				0,
-				(int)(y * rowHeight),
-				current.getPreferredSize().width,
-				current.getPreferredSize().height
-			);
-			panel.add(current);
-		}
-		
-		return y + 1;
-	}
-	
-	private static double percentage(double d) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(d, 1);
+		//parent.removeAll();
+		parent.add(new JScrollPane(table));
+		parent.pack();
 	}
 
 	public java.util.List<ClusterNode> agglomerateClusters(double to) {
@@ -190,48 +94,150 @@ public class AgglomerateClusters {
 		return nodes;
 	}
 
-	private JComponent createSequencesComponent(Sequences sequences) {
-		String title = sequences.toString();
-
-		if(title.length() > 30) {
-			title = title.substring(0, 26) + " ...";
-		}
-
-		JButton btn =		new JButton(title);
-		btn.setToolTipText(sequences.toString());
-		
-		return btn;
+	private static double percentage(double d) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(d, 1);
 	}
 }
 
-class LineJoining extends Component {
-	Component	a;
-	Component	b;
+class TableClusterView implements TableModel {
+	ClusterJob			job;
+	List<ClusterNode>	final_frame;
+	List<Integer>		distances;
+	Sequences[][]		contents;
 	
-	public LineJoining(Component a, Component b) {
-		this.a = a;
-		this.b = b;
+	public TableClusterView(ClusterJob job, java.util.List<ClusterNode> final_frame) {
+		this.job = job;
+		this.final_frame = final_frame;
+		
+		// Step 1: figure out the distances we're covering.
+		Map<Integer, Integer> distanceMap = new HashMap<Integer, Integer>();
+		
+		for(ClusterNode node: final_frame) {
+			addDistances(distanceMap, node);
+		}
+		
+		distances = new ArrayList<Integer>(distanceMap.keySet());
+		Collections.sort(distances); 
+		
+		// Step 2: figure out the contents. This is a sparse array, so:
+		contents = new Sequences[job.count()][distances.size()];
+		
+		int y = 0;
+		for(ClusterNode node: final_frame) {
+			//contents[y][distances.size()] = node;
+			y = setContents(contents, node, y);
+		}
+	}
+
+	public int getRowCount() {
+		return job.count();
+	}
+
+	public int getColumnCount() {
+		return distances.size() + 1;
+	}
+
+	public String getColumnName(int columnIndex) {
+		if(columnIndex == 0)
+			return "Index";
+		return ((double)distances.get(columnIndex - 1)/100) + "%";
+	}
+
+	public Class<?> getColumnClass(int columnIndex) {
+		return String.class;
+	}
+
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return false;
+	}
+
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		if(columnIndex == 0)
+			return (rowIndex + 1);
+		
+		columnIndex--;
+		
+		if(contents[rowIndex][columnIndex] == null) {
+			if(columnIndex == 0 || columnIndex == distances.size() + 1) {
+				return "";
+			}
+			
+			// To draw a line or not? The answer depends on whether
+			// the next sequence cluster is to the right, or  
+			// above.
+			for(int col = columnIndex; col < getColumnCount() - 1; col++) {
+				if(contents[rowIndex][col] != null) {
+					// Something on this line itself.
+					return "--";
+				}
+			
+				if(rowIndex > 1 && col < getColumnCount() - 1) {
+					if(contents[rowIndex - 1][col] != null) {
+						if(contents[rowIndex - 1][columnIndex] != null)
+							return "-/";
+						return "--";
+					}
+				}
+			}
+			
+			return "";
+		} else {
+			return contents[rowIndex][columnIndex].toString();
+		}
+	}
+
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		throw new UnsupportedOperationException("Not supported yet ... ");
+	}
+
+	Set<TableModelListener> listeners = new HashSet<TableModelListener>();
+	public void addTableModelListener(TableModelListener l) {
+		listeners.add(l);
+	}
+
+	public void removeTableModelListener(TableModelListener l) {
+		listeners.remove(l);
+	}
+
+	private void addDistances(Map<Integer, Integer> distances, ClusterNode node) {
+		Integer integralDistance = integralDistance(node.getDistance());
+		
+		if(distances.containsKey(integralDistance)) {
+			distances.put(integralDistance, new Integer(distances.get(integralDistance) + 1));
+		} else {
+			distances.put(integralDistance, 1);
+		}
+
+		for(Sequences seqs: node.getSequencesObjects()) {
+			if(seqs.getClass().equals(ClusterNode.class))
+				addDistances(distances, (ClusterNode) seqs);
+		}
 	}
 	
-	@Override
-	public void paint(Graphics g) {
-		// System.err.println("paint() fired: " + getBounds() + " bounds, " + getLocation() + " location.");
-		g.setColor(Color.BLACK);
-		
-		// We need to draw three line segments:
-		//	1. Center of component 'a' to the midpoint of the 'x' distance between 'a' and 'b'
-		//	2. Travel up or down to the right 'y' dimension.
-		//	3. Travel to the center of component 'b'.
-		//g.drawLine(getHeight(), 0, 0, getWidth());
-		
-		// g.drawRect(0, 0, getWidth(), getHeight());
-		
-		// A 3-pixel thick line.
-		g.drawRect(0, (int)(getHeight()/2)-3, getWidth(), (int)(getHeight()/2)+3);
+	private static Integer integralDistance(double d) {
+		return new Integer((int)(percentage(d) * 100));
 	}
 	
-	@Override
-	public String toString() {
-		return ("location: " + getLocation() + ", bounds: " + getBounds());
+	private static double percentage(double d) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(d, 1);
+	}
+
+	private int setContents(Sequences[][] contents, Sequences seqs, int y) {
+		if(seqs.getClass().equals(ClusterNode.class)) {
+			ClusterNode node = (ClusterNode) seqs;
+			
+			int x = distances.indexOf(integralDistance(node.getDistance()));
+		
+			contents[y][x] = seqs;
+		
+			for(Sequences subseqs: node.getSequencesObjects()) {
+				y = setContents(contents, subseqs, y);
+			}
+		} else {
+			contents[y][0] = seqs;
+			y++;
+		}
+		
+		return y;
 	}
 }

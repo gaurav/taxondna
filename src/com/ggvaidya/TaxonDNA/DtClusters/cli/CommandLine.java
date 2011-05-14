@@ -196,19 +196,17 @@ public class CommandLine {
 
 		// Uh-oh UI!
 		MainFrame mf = new MainFrame();
-		AgglomerateClusters ac = new AgglomerateClusters();
+		AgglomerateClusters ac = new AgglomerateClusters(mf);
 		ac.changeInitialState(job);
-		mf.setContent(ac.getPanel());
-		mf.pack();
 		mf.setVisible(true);
 
 		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
 		List<ClusterNode> walkToDistance = ac.agglomerateClusters(to);
 		System.err.println(" Obtained " + walkToDistance.size() + " clusters at " + percentage(to) + "%");
 
-		System.err.println("Results follow.");
-		ClusterNode.visualizeFrame(walkToDistance);
-		System.err.println("Results completed.");
+		//System.err.println("Results follow.");
+		//ClusterNode.visualizeFrame(walkToDistance);
+		//System.err.println("Results completed.");
 	}
 
 	private static void testCountClustersSharedWith(SequenceList sl) {

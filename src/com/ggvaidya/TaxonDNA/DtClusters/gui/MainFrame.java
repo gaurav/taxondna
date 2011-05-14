@@ -38,8 +38,4 @@ public class MainFrame extends JFrame {
 		super(DtClusters.getName() + "/" + DtClusters.getVersion());
 		setDefaultCloseOperation(MainFrame.DISPOSE_ON_CLOSE);
 	}
-
-	public void setContent(JComponent component) {
-		add(new JScrollPane(component));
-	}
 }
