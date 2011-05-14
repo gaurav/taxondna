@@ -24,6 +24,7 @@ package com.ggvaidya.TaxonDNA.DtClusters.gui;
 
 import java.util.*;
 import java.awt.*;
+import java.awt.event.*;
 import javax.swing.*;
 
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -91,73 +92,94 @@ public class AgglomerateClusters {
 		JButton button =	new JButton("Checking button height 1234567"); // This string is 30 characters long.
 		
 		// 1.1. Delimit a grid.
-		int verticalSpace =		5;
-		int horizontalSpace =	5;
-		int columnWidth =	button.getPreferredSize().width		+ horizontalSpace;
-		int rowHeight =		button.getPreferredSize().height	+ verticalSpace;
+		int verticalSpace =		0;
+		int horizontalSpace =	50;
+		int columnWidth =		button.getPreferredSize().width		+ horizontalSpace;
+		int rowHeight =			button.getPreferredSize().height	+ verticalSpace;
 		
 		double smallestDistance =	clusterJob.getThreshold();
 		double largestDistance =	to;
 		
 		double columnSpan =	0.005;
-		int columns =		(int)((largestDistance - smallestDistance) / columnSpan) + 1;
+		int columns =		(int)((largestDistance - smallestDistance) / columnSpan) + 2;
 		
 		System.err.println("Columns: " + columns);
 		
 		// Step 2. Start drawing the ClusterNodes.
 		int y = 0;
 		for(ClusterNode node: final_frame) {
-			// All our components for this node will have to fit within a large
-			// rectangle, whose size depends on the number of child nodes that
-			// this cluster has.
-			java.util.List<Sequences> leaves = node.getLeafNodes();
-			
-			// Draw all the leaf nodes on the left first.
-			for(Sequences seqs: leaves) {
-				y++;
-				
-				JComponent comp = createSequencesComponent(node);
-				comp.setBounds(
-					0,
-					(y * rowHeight),
-					comp.getPreferredSize().width,
-					comp.getPreferredSize().height
-				);
-				panel.add(comp);
-			}
-			
-			// Finally, draw this button at the final line.
-			int rows =		(leaves.size());
-			double diff_y =	(y - ((double)rows/2));
-			
-			JComponent comp = createSequencesComponent(node);
-			comp.setBounds(
-				(columnWidth * columns),
-				(int)(diff_y * rowHeight),
-				comp.getPreferredSize().width,
-				comp.getPreferredSize().height
-			);
-			panel.add(comp); 
-			
-			// Next, draw "child" components at their respective places.
-			for(Sequences seqs: node.getSequencesObjects()) {
-				comp = createSequencesComponent(seqs);
-			
-				double percentage = (node.getDistance() - smallestDistance)/(largestDistance - smallestDistance);
-				
-				comp.setBounds(
-					(int)(columnWidth * columns * percentage) + columnWidth,
-					(y * rowHeight),
-					comp.getPreferredSize().width,
-					comp.getPreferredSize().height
-				);
-				
-				panel.add(comp);
-			}
+			y = renderClusterNode(node, y, columns, rowHeight, columnWidth, columns, smallestDistance, largestDistance, null);
 			
 		}
 
-		panel.setPreferredSize(new Dimension((columns + 1) * columnWidth, (y * rowHeight)));
+		panel.setPreferredSize(new Dimension((columns + 2) * columnWidth, (y * rowHeight)));
+	}
+
+	private int renderClusterNode(Sequences seqs, int y, int column, int rowHeight, int columnWidth, int columns, double smallestDistance, double largestDistance, Component parent) {
+		// Step 1: render the sequences object itself.
+		JComponent current =	createSequencesComponent(seqs);
+		
+		current.setBounds(
+			(columnWidth * column),
+			(int)(y * rowHeight),
+			current.getPreferredSize().width,
+			current.getPreferredSize().height
+		);
+		panel.add(current);
+		
+		if(parent != null) {
+			LineJoining lj = new LineJoining(parent, current);
+			
+			Rectangle current_bound =	current.getBounds();
+			Rectangle parent_bound =	parent.getBounds(); 
+			
+			lj.setBounds(
+				current.getX(),
+				parent.getY(),
+				parent_bound.x + parent_bound.width - current_bound.x,
+				current_bound.y + current_bound.height - parent_bound.y
+			);
+			
+			/*
+			lj.setBounds(
+				current_bound.x,
+				current_bound.y + current_bound.height,
+				parent_bound.x + parent_bound.width,
+				parent_bound.y
+			);
+			 */
+			
+			panel.add(lj);
+			
+			// System.err.println("LineJoining " + lj + " added: " + parent + ", " + current);
+		}
+		
+		// Step 2: render the immediate child nodes.
+		if(seqs.getClass().equals(ClusterNode.class)) {
+			ClusterNode node = (ClusterNode) seqs;
+			
+			int subnode_column = (int)((percentage(node.getDistance()) - smallestDistance*100)/0.01) + 1;
+			for(Sequences subnode_seqs: node.getSequencesObjects()) {
+				y = renderClusterNode(subnode_seqs, y, subnode_column, rowHeight, columnWidth, columns, smallestDistance, largestDistance, current);
+			}
+		} else {
+			// "Drop" it to the first column.
+			JComponent first_col =	createSequencesComponent(seqs);
+		
+			current.setBounds(
+				0,
+				(int)(y * rowHeight),
+				current.getPreferredSize().width,
+				current.getPreferredSize().height
+			);
+			panel.add(current);
+		}
+		
+		return y + 1;
+	}
+	
+	private static double percentage(double d) {
+		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(d, 1);
 	}
 
 	public java.util.List<ClusterNode> agglomerateClusters(double to) {
@@ -179,5 +201,37 @@ public class AgglomerateClusters {
 		btn.setToolTipText(sequences.toString());
 		
 		return btn;
+	}
+}
+
+class LineJoining extends Component {
+	Component	a;
+	Component	b;
+	
+	public LineJoining(Component a, Component b) {
+		this.a = a;
+		this.b = b;
+	}
+	
+	@Override
+	public void paint(Graphics g) {
+		// System.err.println("paint() fired: " + getBounds() + " bounds, " + getLocation() + " location.");
+		g.setColor(Color.BLACK);
+		
+		// We need to draw three line segments:
+		//	1. Center of component 'a' to the midpoint of the 'x' distance between 'a' and 'b'
+		//	2. Travel up or down to the right 'y' dimension.
+		//	3. Travel to the center of component 'b'.
+		//g.drawLine(getHeight(), 0, 0, getWidth());
+		
+		// g.drawRect(0, 0, getWidth(), getHeight());
+		
+		// A 3-pixel thick line.
+		g.drawRect(0, (int)(getHeight()/2)-3, getWidth(), (int)(getHeight()/2)+3);
+	}
+	
+	@Override
+	public String toString() {
+		return ("location: " + getLocation() + ", bounds: " + getBounds());
 	}
 }

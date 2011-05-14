@@ -204,7 +204,7 @@ public class ClusterNode implements Sequences {
 	
 	@Override
 	public String toString() {
-		return sequences.size() + " sequences at " + (double)(distance * 100) + "%";
+		return sequences.size() + " sequences at " + percentage(distance) + "%";
 	}
 
 	/**
