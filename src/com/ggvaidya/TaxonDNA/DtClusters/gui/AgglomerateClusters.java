@@ -83,6 +83,7 @@ public class AgglomerateClusters {
 		
 		//parent.removeAll();
 		parent.add(new JScrollPane(table));
+		table.doLayout();
 		parent.pack();
 	}
 

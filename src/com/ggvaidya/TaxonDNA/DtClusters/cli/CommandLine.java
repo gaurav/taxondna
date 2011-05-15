@@ -58,7 +58,16 @@ public class CommandLine {
 		// Variables.
 		double		threshold =		0.03;
 		Linkage		linkage =		new Linkages.SingleLinkage();
+		
+		// Just run it on input.fasta.
+		try {
+			processFile(new File("input.fas"), threshold, linkage);
+		} catch(DelayAbortedException e) {
+			System.err.println("\nOperation cancelled by user.");
+		}
 
+		// multiline comment, fast.
+		if(1!=1) {
 		for(String arg: args) {
 			/* Identify arguments */
 			boolean flag_argument = false;
@@ -106,6 +115,7 @@ public class CommandLine {
 					}
 				}
 			}
+		}
 		}
 	}
 
