@@ -2,7 +2,7 @@
 /*
  *
  *  TaxonDNA
- *  Copyright (C) 2010 Gaurav Vaidya
+ *  Copyright (C) 2011 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,12 +24,11 @@ package com.ggvaidya.TaxonDNA.DtClusters.gui;
 
 import com.ggvaidya.TaxonDNA.DtClusters.*;
 
-import java.awt.*;
 import javax.swing.*;
 
 /**
- * The main frame creates a main frame for us to use to get DtClusters stuff
- * done.
+ * The main frame creates a frame for us to use to put DtClusters stuff
+ * up.
  *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
