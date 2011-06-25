@@ -34,40 +34,25 @@ import com.ggvaidya.TaxonDNA.DtClusters.gui.*;
 /**
  * This class handles command line requests, managing a stream of input
  * commands to process and display the results of clustering.
+ * 
+ * TODO: This class needs a *lot* of cleanup.
  *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
 public class CommandLine {
-
+	/** The list of files to process. */
+	protected List<File>	filesToProcess =	new LinkedList<File>();
+	protected boolean		start_gui =			true;
+	
+	public List<File>	filesToProcess()	{	return new LinkedList(filesToProcess);	}
+	public boolean		startGUI()			{	return start_gui;	}
+	
 	/**
-	 * This method reads the command line arguments (or stream of commands)
-	 * provided, and executes them.
-	 *
-	 * Note that this can be used as the MainClass, if you are so inclined.
-	 * It probably makes more sense to have another MainClass which can
-	 * decide whether to use a textual interface or GUI, and then send it on
-	 * to us if the former.
-	 *
-	 * @param args The command line arguments provided (or a stream of
-	 *	commands).
+	 * Set up a CommandLine object with the arguments provided.
+	 * 
+	 * @param args The command-line arguments to use.
 	 */
-	public static void main(String[] args) {
-		System.err.println(DtClusters.getCopyrightNotice());
-		System.err.println();
-
-		// Variables.
-		double		threshold =		0.03;
-		Linkage		linkage =		new Linkages.SingleLinkage();
-		
-		// Just run it on input.fasta.
-		try {
-			processFile(new File("input.fas"), threshold, linkage);
-		} catch(DelayAbortedException e) {
-			System.err.println("\nOperation cancelled by user.");
-		}
-
-		// multiline comment, fast.
-		if(1!=1) {
+	public CommandLine(String[] args) {
 		for(String arg: args) {
 			/* Identify arguments */
 			boolean flag_argument = false;
@@ -105,17 +90,47 @@ public class CommandLine {
 				/* Probably a file name */
 				File f = new File(arg);
 				if(!f.canRead() || !f.isFile()) {
-					System.err.println("File '" + f + "' could not be read");
+					System.err.println("File '" + f + "' could not be read.");
 				} else {
-					// A readable file! Process it.
-					try {
-						processFile(f, threshold, linkage);
-					} catch(DelayAbortedException e) {
-						System.err.println("\nOperation cancelled by user.");
-					}
+					// A readable file!
+					filesToProcess.add(f);
 				}
 			}
 		}
+	}
+
+	/**
+	 * This method reads the command line arguments (or stream of commands)
+	 * provided, and executes them.
+	 *
+	 * Note that this can be used as the MainClass, if you are so inclined.
+	 * It probably makes more sense to have another MainClass which can
+	 * decide whether to use a textual interface or GUI, and then send it on
+	 * to us if the former.
+	 *
+	 * @param args The command line arguments provided (or a stream of
+	 *	commands).
+	 */
+	public void run() {
+		System.err.println(DtClusters.getCopyrightNotice());
+		System.err.println();
+
+		// Variables.
+		double		threshold =		0.03;
+		Linkage		linkage =		new Linkages.SingleLinkage();
+		
+		if(filesToProcess.isEmpty()) {
+			System.err.println("No files to process; quitting.");
+			System.exit(0);
+		}
+		
+		// Process all the input files.
+		for(File f: filesToProcess) {
+			try {
+				processFile(f, threshold, linkage);
+			} catch(DelayAbortedException e) {
+				System.err.println("\nOperation cancelled by user.");
+			}
 		}
 	}
 

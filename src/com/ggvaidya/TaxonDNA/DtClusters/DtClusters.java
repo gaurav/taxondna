@@ -23,6 +23,7 @@
 package com.ggvaidya.TaxonDNA.DtClusters;
 
 import com.ggvaidya.TaxonDNA.DtClusters.cli.*;
+import com.ggvaidya.TaxonDNA.DtClusters.gui.*;
 
 /**
  * The main class of the DtClusters menu. This checks for command-line
@@ -38,8 +39,14 @@ public class DtClusters {
 	 * @param args Command line arguments.
 	 */
 	public static void main(String[] args) {
-		// We don't have a GUI yet!
-		CommandLine.main(args);
+		// Parse the command line.
+		CommandLine cl = new CommandLine(args);
+		if(cl.startGUI()) {
+			MainFrame mf = new MainFrame();
+			mf.setVisible(true);
+		} else {
+			cl.run();
+		}
 	}
 
 	/**
