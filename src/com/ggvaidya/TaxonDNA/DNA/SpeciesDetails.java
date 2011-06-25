@@ -232,6 +232,10 @@ public class SpeciesDetails {
 				// Ignore identicals.
 				if(seq_inner.equals(seq))
 					continue;
+				
+				// Ignore sequences without species names.
+				if(seq_inner.getSpeciesName() == null || seq_inner.getSpeciesName() == null)
+					continue;
 
 				// Conspecifics only.
 				if(!seq_inner.getSpeciesName().equals(seq_inner.getSpeciesName()))

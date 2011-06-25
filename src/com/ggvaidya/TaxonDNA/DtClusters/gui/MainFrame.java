@@ -27,13 +27,18 @@ import com.ggvaidya.TaxonDNA.DtClusters.*;
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
+import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.table.*;
 
 /**
  * The main frame creates a frame for us to use to put DtClusters stuff
@@ -49,6 +54,12 @@ public class MainFrame extends JFrame {
 	// UI objects.
 	JTextField		tf_filename =	new JTextField("No file loaded", JLabel.LEFT);
 	JTextField		tf_status =		new JTextField("Starting application ...", JLabel.LEFT);
+	JTable			tb_fileinfo =	new JTable();
+	JTable			tb_clusters =	new JTable();
+	
+	JTextField tf_minOverlap;
+	JTextField tf_startThreshold;
+	JTextField tf_endThreshold;
 	
 	/**
 	 * Create the frame.
@@ -79,7 +90,7 @@ public class MainFrame extends JFrame {
 		
 		// Display the filename.
 		tf_filename.setEditable(false);
-		tf_filename.setFont(new Font("serif", Font.PLAIN, 36));
+		tf_filename.setFont(new Font("serif", Font.PLAIN, 24));
 		tf_filename.setBorder(new LineBorder(Color.GRAY));
 		p_top.add(tf_filename);
 		
@@ -108,9 +119,15 @@ public class MainFrame extends JFrame {
 					thisObject.changeFile(file);
 				}
 			}
-			
 		});
 		p_action.add(btn_changeFile);
+		
+		JButton btn_recluster = new JButton(new AbstractAction("Recluster") {
+			public void actionPerformed(ActionEvent e) {
+				thisObject.recluster();
+			}
+		});
+		p_action.add(btn_recluster);
 		
 		/*
 		 * MAIN PANEL (p_main)
@@ -118,6 +135,67 @@ public class MainFrame extends JFrame {
 		 */
 		JPanel p_main = new JPanel();
 		add(p_main);
+		
+		// Results (TBD).
+		JPanel p_results = new JPanel();
+		p_main.add(p_results);
+		
+		// Side panel.
+		JPanel p_side = new JPanel();
+		p_side.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+		
+		JSplitPane	splitPane = new JSplitPane(
+			JSplitPane.HORIZONTAL_SPLIT,		
+			p_side,
+			p_results
+		);
+		
+		splitPane.setResizeWeight(0.25);
+		add(splitPane);
+		
+		// Set up some settings.
+		JPanel p_settings = new JPanel();
+		p_settings.setBorder(new SoftBevelBorder(SoftBevelBorder.LOWERED));
+		RightLayout rl = new RightLayout(p_settings);
+		p_settings.setLayout(rl);
+		
+		// Minimum overlap.
+		tf_minOverlap = new JTextField();
+		tf_minOverlap.setHorizontalAlignment(JTextField.RIGHT);
+		rl.add(new JLabel("Minimum overlap:"),		RightLayout.NONE);
+		rl.add(tf_minOverlap,						RightLayout.STRETCH_X | RightLayout.BESIDE);
+		rl.add(new JLabel("base pairs"),			RightLayout.BESIDE);
+		tf_minOverlap.setText("" + Sequence.getMinOverlap());
+		
+		Choice ch_linkage = new Choice();
+		ch_linkage.add("Single linkage");
+		ch_linkage.add("Average linkage");
+		ch_linkage.add("Maximum linkage");
+		rl.add(new JLabel("Linkage method"),		RightLayout.NEXTLINE);
+		rl.add(ch_linkage,							RightLayout.BESIDE | RightLayout.FILL_2);
+		
+		tf_startThreshold = new JTextField();
+		tf_startThreshold.setHorizontalAlignment(JTextField.RIGHT);
+		rl.add(new JLabel("Cluster at:"),			RightLayout.NEXTLINE);
+		rl.add(tf_startThreshold,					RightLayout.BESIDE);
+		rl.add(new JLabel("%"),						RightLayout.BESIDE);
+		tf_startThreshold.setText("0.05");
+		
+		tf_endThreshold = new JTextField();
+		tf_endThreshold.setHorizontalAlignment(JTextField.RIGHT);
+		rl.add(new JLabel("Cluster until:"),		RightLayout.NEXTLINE);
+		rl.add(tf_endThreshold,						RightLayout.BESIDE);
+		rl.add(new JLabel("%"),						RightLayout.BESIDE);
+		tf_endThreshold.setText("0.50");
+		
+		rl.add(new JLabel("File information:"),	RightLayout.NEXTLINE);
+		rl.add(tb_fileinfo,						RightLayout.BESIDE | RightLayout.FILL_2);
+		
+		p_side.setLayout(new BorderLayout());
+		p_side.add(p_settings, BorderLayout.NORTH);
+		
+		// Add the clusters table to the side panel.
+		p_side.add(new JScrollPane(tb_clusters));
 		
 		/*
 		 * BOTTOM PANEL (p_bottom)
@@ -153,6 +231,45 @@ public class MainFrame extends JFrame {
 				"Loading file '" + file + "' ...", 
 				"The file '" + file + "' is being loaded. We apologize for the inconvenience!"
 			));
+			
+			SpeciesDetails sd = sequenceList.getSpeciesDetails(ProgressDialog.create(
+				this, 
+				"Compiling species information ...", 
+				"Identifying and counting species information in the dataset we loaded. " +
+				"We apologize for the inconvenience!"
+			));
+			setStatus("Loaded '" + 
+				file.getName() + "': " + 
+				sequenceList.count() + " sequences across " + 
+				sd.getSpeciesCount() + " species."
+			);
+			
+			DefaultTableModel dtm = new DefaultTableModel();
+			tb_fileinfo.setModel(dtm);
+			dtm.addColumn(
+				"File information",
+				new String[] {
+					"File name",
+					"File path",
+					"Sequences",
+					"Species",
+					"Sequences with a valid conspecific",
+					"Sequences without a valid conspecific",
+					"Sequences without a species name"
+				}
+			);
+			dtm.addColumn(
+				"(as loaded)",
+				new String[] {
+					file.getName(),
+					file.getAbsolutePath(),
+					sequenceList.count() + " sequences",
+					sd.getSpeciesCount() + " species",
+					sd.getSequencesWithValidConspecificsCount() + " sequences",
+					(sequenceList.count() - sd.getSequencesWithValidConspecificsCount()) + " sequences",
+					sd.getSequencesWithoutASpeciesNameCount() + " sequences"
+				}
+			);
 		} catch (SequenceListException ex) {
 			new JOptionPane("Could not load file '" + file + "': " + ex.getMessage(), JOptionPane.ERROR_MESSAGE)
 				.setVisible(true);
@@ -163,6 +280,8 @@ public class MainFrame extends JFrame {
 		
 		currentFile = file;
 		tf_filename.setText(currentFile.getName());
+		
+		recluster();
 	}
 
 	/**
@@ -173,5 +292,50 @@ public class MainFrame extends JFrame {
 	 */
 	private void setStatus(String message) {
 		tf_status.setText(message);
+	}
+
+	private void recluster() {
+		// Can't recluster without sequences!
+		if(sequenceList == null) {
+			JOptionPane.showMessageDialog(this, "No file has been loaded! Please load a file and try clustering again.");
+			return;
+		}
+
+		// Recluster.
+		ClusterJob job = new ClusterJob(
+			sequenceList, 
+			new Linkages.SingleLinkage(), 
+			Double.parseDouble(tf_startThreshold.getText())/100
+		);
+		try {
+			job.execute(ProgressDialog.create(
+				this, 
+				"(Re)clustering datasets ...", 
+				"Your dataset is being divided into clusters at a " + (job.getThreshold() * 100) + "% threshold. We apologize for the inconvenience!"
+			));
+		} catch (DelayAbortedException ex) {
+			return;
+		}
+		
+		// Done!
+		Vector clusterIndex =		new Vector();
+		Vector clusterNames =		new Vector();
+		Vector clusterSequenceCount = new Vector();
+		Vector clusterDistances =	new Vector();
+		int x = 0;
+		for(Cluster c: job.getClusters()) {
+			clusterIndex.add	(++x);
+			clusterNames.add	(c.toString());
+			clusterSequenceCount.add(c.count());
+			clusterDistances.add(c.getDistances());
+		}
+		
+		DefaultTableModel dtm = new DefaultTableModel();
+		tb_clusters.setModel(dtm);
+		
+		dtm.addColumn("#",			clusterIndex);
+		dtm.addColumn("Name",		clusterNames);
+		dtm.addColumn("Sequences",	clusterSequenceCount);
+		dtm.addColumn("Distances",	clusterDistances);
 	}
 }

@@ -94,7 +94,7 @@ public class Cluster extends SequenceList implements Comparable, Sequences {
 		 * 
 		 */
 
-		String distances = "(distances: " + getDistances() + ")";
+		String distances = ""; // (distances: " + getDistances() + ")";
 
 		int species_count = details.getSpeciesCount();
 		if(species_count == 1) {
@@ -174,7 +174,7 @@ public class Cluster extends SequenceList implements Comparable, Sequences {
 		}
 	}
 
-	private String getDistances() {
+	public String getDistances() {
 		double smallest =	-1;
 		double largest =	-1;
 		double sum =		0;

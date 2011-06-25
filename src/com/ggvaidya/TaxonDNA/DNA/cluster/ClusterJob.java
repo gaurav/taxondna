@@ -81,7 +81,7 @@ public class ClusterJob {
 		if(list == null)
 			this.sequences = null;
 		else
-			this.sequences =	new SequenceList(list); // Copy it, just in case.
+			this.sequences = new SequenceList(list); // Copy it, just in case.
 		this.threshold =	threshold;
 		this.linkage =		linkage;
 	}
@@ -102,6 +102,12 @@ public class ClusterJob {
 
 		// Reset older variables.
 		ArrayList<Cluster> clusters = new ArrayList<Cluster>();
+		
+		// Check whether we have sequences to execute.
+		if(getSequences() == null) {
+			throw new RuntimeException("ClusterJob " + this + " called without sequences!");
+		}
+			
 
 		// Ready to go!
 		int count = 0;
