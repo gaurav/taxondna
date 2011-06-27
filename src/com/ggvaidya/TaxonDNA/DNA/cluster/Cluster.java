@@ -126,6 +126,32 @@ public class Cluster extends SequenceList implements Comparable, Sequences {
 			}
 		}
 	}
+	
+	/**
+	 * @return A summary of the species names present in this cluster.
+	 */
+	public String getSpeciesNameSummary() {
+		SpeciesDetails details;
+		try {
+			details = getSpeciesDetails(null);
+		} catch(DelayAbortedException e) {
+			return "A cluster";
+		}
+		
+		int species_count = details.getSpeciesCount();
+		if(species_count == 1) {
+			return (String) details.getSpeciesNamesIterator().next();
+		} else {
+			HashMap<String, SpeciesDetail> speciesDetails = new HashMap<String, SpeciesDetail>(details.getDetails());
+			ArrayList<String> speciesNames = new ArrayList<String>(speciesDetails.keySet());
+
+			if(species_count == 2) {
+				return speciesNames.get(0) + " and " + speciesNames.get(1);
+			} else {
+				return speciesNames.get(0) + ", " + speciesNames.get(1) + ", and " + (species_count - 2) + " other species";
+			}
+		}
+	}
 
 	/**
 	 * A "cluster summary" is a one-word description of a cluster.

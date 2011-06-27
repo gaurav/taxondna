@@ -318,24 +318,43 @@ public class MainFrame extends JFrame {
 		}
 		
 		// Done!
-		Vector clusterIndex =		new Vector();
 		Vector clusterNames =		new Vector();
 		Vector clusterSequenceCount = new Vector();
+		Vector clusterSpeciesCount = new Vector();
+		Vector clusterStatuses =	new Vector();
 		Vector clusterDistances =	new Vector();
-		int x = 0;
 		for(Cluster c: job.getClusters()) {
-			clusterIndex.add	(++x);
-			clusterNames.add	(c.toString());
+			clusterNames.add	(c.getSpeciesNameSummary());
 			clusterSequenceCount.add(c.count());
+			clusterSpeciesCount.add(c.getSpeciesCount());
+			clusterStatuses.add(c.getClusterSummary());
 			clusterDistances.add(c.getDistances());
 		}
 		
 		DefaultTableModel dtm = new DefaultTableModel();
+		
+		dtm.addColumn("Name",		clusterNames);
+		dtm.addColumn("Status",		clusterStatuses);
+		dtm.addColumn("Sequences",	clusterSequenceCount);
+		dtm.addColumn("Species",	clusterSpeciesCount);
+		dtm.addColumn("Distances",	clusterDistances);
+		
+//		tb_clusters.getColumn("Name").setWidth((int) ((float) tb_clusters.getWidth() * 0.6f));
+		
 		tb_clusters.setModel(dtm);
 		
-		dtm.addColumn("#",			clusterIndex);
-		dtm.addColumn("Name",		clusterNames);
-		dtm.addColumn("Sequences",	clusterSequenceCount);
-		dtm.addColumn("Distances",	clusterDistances);
+		TableRowSorter sorter = new TableRowSorter(dtm);
+		
+		Comparator integralComparator = new Comparator() {
+			public int compare(Object o1, Object o2) {
+				Integer i1 = (Integer) o1;
+				Integer i2 = (Integer) o2;
+				
+				return (i1.intValue() - i2.intValue());
+			}
+		};
+		sorter.setComparator(2, integralComparator);
+		sorter.setComparator(3, integralComparator);
+		tb_clusters.setRowSorter(sorter);		
 	}
 }
