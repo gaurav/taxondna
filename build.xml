@@ -154,7 +154,7 @@
     <!-- DtClusters:          Builds the release folder for DistClus -->
     <target name = "DtClusters"       depends = "compile">
         <jar
-            destfile =  "Release/DtClusters.jar"
+            destfile =  "Release/DistanceClusters/Windows/DtClusters.jar"
             basedir =   "${build.dir}/classes"
             includes =  "${files.common}, **/DtClusters/**"
         >
@@ -162,12 +162,16 @@
                 <attribute name = "Main-Class" value = "com.ggvaidya.TaxonDNA.DtClusters.DtClusters" />
             </manifest>
         </jar>
+        <copy
+            file = "Release/DistanceClusters/Windows/DtClusters.jar"
+            todir = "Release/DistanceClusters/MacOSX/DistanceClusters.app/Contents/Resources/Java"
+        />
     </target>
 
-	<!-- 
+    <!-- 
         release: Release both Species Identifier and Sequence Matrix at once
     -->
-	<target name = "release"    depends = "SeqMat_release, SpecId_release, DtClusters">
+	<target name = "release"    depends = "SeqMat_release, SpecId_release, DtClusters_release">
     </target>
 
     <!--
@@ -216,7 +220,34 @@
             perm="755"
         />
         <!-- It's now up to you to compress this -->
-	</target>
+    </target>
+
+   <!--
+        DtClusters_release: Release Distance Clusters only.
+    -->
+    <target name = "DtClusters_release" depends = "build, SequenceMatrix.app">
+        <copy file="Changes.txt" overwrite="yes" todir="Release/DistanceClusters/Windows" />
+        <copy file="Changes.txt" overwrite="yes" todir="Release/DistanceClusters/MacOSX" />
+        <zip 
+	        destfile =      "Releases/DistanceClusters-Windows-${taxondna.version}.zip"
+	        basedir =       "Release/DistanceClusters/Windows"
+	    	comment =       "(c) Gaurav Vaidya, 2011"
+	    	update =        "false"
+	    />
+        <delete
+            dir="Releases/DistanceClusters-MacOSX-${taxondna.version}"
+            quiet="yes"
+        /><!-- quiet -> don't complain if the folder doesn't exist (it probably won't anyway) -->
+        <mkdir dir="Releases/DistanceClusters-MacOSX-${taxondna.version}" />
+        <copy overwrite="yes" todir="Releases/DistanceClusters-MacOSX-${taxondna.version}">
+            <fileset dir="Release/DistanceClusters/MacOSX" />
+        </copy>
+        <chmod
+            file="Releases/DistanceClusters-MacOSX-${taxondna.version}/DistanceClusters.app/Contents/MacOS/JavaApplicationStub"
+            perm="755"
+        />
+        <!-- It's now up to you to compress this -->
+    </target>
 
     <!--
             NetBeans needs targets for running specific programs. Can't say
@@ -235,7 +266,7 @@
         </java>
     </target>
     <target name="run_dtclusters" depends="DtClusters">
-        <java jar="Release/DtClusters.jar" maxmemory="2048m" fork="true">
+        <java jar="Release/DistanceClusters/Windows/DtClusters.jar" maxmemory="2048m" fork="true">
             <!-- Give it a file to execute -->
             <arg value="Tests/files/Diptera COI.fasta" />
         </java>
