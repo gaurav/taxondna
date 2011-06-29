@@ -22,6 +22,7 @@
 
 package com.ggvaidya.TaxonDNA.DtClusters.cli;
 
+import com.ggvaidya.TaxonDNA.DtClusters.gui.MainFrame;
 import java.util.*;
 import java.io.*;
 

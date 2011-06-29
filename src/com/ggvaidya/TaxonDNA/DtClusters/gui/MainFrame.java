@@ -28,6 +28,8 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
+import com.ggvaidya.TaxonDNA.UI.ProgressDialog;
+import com.ggvaidya.TaxonDNA.UI.RightLayout;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -244,7 +246,8 @@ public class MainFrame extends JFrame {
 				sd.getSpeciesCount() + " species."
 			);
 			
-			DefaultTableModel dtm = new DefaultTableModel();
+			UneditableDefaultTableModel dtm = new UneditableDefaultTableModel(UneditableDefaultTableModel.UNDO_EDITING);
+		
 			tb_fileinfo.setModel(dtm);
 			dtm.addColumn(
 				"File information",
@@ -331,7 +334,7 @@ public class MainFrame extends JFrame {
 			clusterDistances.add(c.getDistances());
 		}
 		
-		DefaultTableModel dtm = new DefaultTableModel();
+		UneditableDefaultTableModel dtm = new UneditableDefaultTableModel(UneditableDefaultTableModel.UNDO_EDITING);
 		
 		dtm.addColumn("Name",		clusterNames);
 		dtm.addColumn("Status",		clusterStatuses);

@@ -129,6 +129,13 @@ public class Cluster extends SequenceList implements Comparable, Sequences {
 	
 	/**
 	 * @return A summary of the species names present in this cluster.
+	 * 
+	 * TODO: rewrite to display *all* species names (A a, B b, C c, C d, C e, F a)
+	 * instead of summarizing it to two species. Perhaps after ten we'll summarize?
+	 * Or perhaps we'll allow it to summarize to 7 if
+	 * there are more than 10 names in total (i.e. at 10 names it would spell
+	 * them all out, and at 11 it would only display the first seven and say
+	 * "... and four others". That way, we'll never see "... and one other".
 	 */
 	public String getSpeciesNameSummary() {
 		SpeciesDetails details;
