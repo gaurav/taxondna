@@ -28,15 +28,11 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
-import com.ggvaidya.TaxonDNA.UI.ProgressDialog;
-import com.ggvaidya.TaxonDNA.UI.RightLayout;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.*;
 import javax.swing.border.*;
@@ -58,6 +54,8 @@ public class MainFrame extends JFrame {
 	JTextField		tf_status =		new JTextField("Starting application ...", JLabel.LEFT);
 	JTable			tb_fileinfo =	new JTable();
 	JTable			tb_clusters =	new JTable();
+	
+	java.util.List<Cluster>	clusters =		new ArrayList();
 	
 	JTextField tf_minOverlap;
 	JTextField tf_startThreshold;
@@ -321,12 +319,15 @@ public class MainFrame extends JFrame {
 		}
 		
 		// Done!
+		Vector clusterObjects =		new Vector();
 		Vector clusterNames =		new Vector();
 		Vector clusterSequenceCount = new Vector();
 		Vector clusterSpeciesCount = new Vector();
 		Vector clusterStatuses =	new Vector();
 		Vector clusterDistances =	new Vector();
-		for(Cluster c: job.getClusters()) {
+
+		clusters = job.getClusters();
+		for(Cluster c: clusters) {
 			clusterNames.add	(c.getSpeciesNameSummary());
 			clusterSequenceCount.add(c.count());
 			clusterSpeciesCount.add(c.getSpeciesCount());
@@ -334,16 +335,14 @@ public class MainFrame extends JFrame {
 			clusterDistances.add(c.getDistances());
 		}
 		
-		UneditableDefaultTableModel dtm = new UneditableDefaultTableModel(UneditableDefaultTableModel.UNDO_EDITING);
+		UneditableDefaultTableModel dtm = new UneditableDefaultTableModel(UneditableDefaultTableModel.TURN_OFF_EDITING);
 		
 		dtm.addColumn("Name",		clusterNames);
 		dtm.addColumn("Status",		clusterStatuses);
 		dtm.addColumn("Sequences",	clusterSequenceCount);
 		dtm.addColumn("Species",	clusterSpeciesCount);
 		dtm.addColumn("Distances",	clusterDistances);
-		
-//		tb_clusters.getColumn("Name").setWidth((int) ((float) tb_clusters.getWidth() * 0.6f));
-		
+				
 		tb_clusters.setModel(dtm);
 		
 		TableRowSorter sorter = new TableRowSorter(dtm);
@@ -358,6 +357,38 @@ public class MainFrame extends JFrame {
 		};
 		sorter.setComparator(2, integralComparator);
 		sorter.setComparator(3, integralComparator);
-		tb_clusters.setRowSorter(sorter);		
+		tb_clusters.setRowSorter(sorter);	
+		
+		// tb_clusters.getColumn("Name").setWidth((int) ((float) tb_clusters.getWidth() * 0.6f));
+		final JFrame frame = this;
+		tb_clusters.addMouseListener(new MouseListener() {
+			public void mouseClicked(MouseEvent e) {
+				if(e.getClickCount() == 2) {
+					int row_index =	tb_clusters.rowAtPoint(e.getPoint());
+					int row_model = tb_clusters.getRowSorter().convertRowIndexToModel(row_index);
+					
+					Cluster cluster;
+					try {
+						cluster = clusters.get(row_model);
+					} catch(IndexOutOfBoundsException ex) {
+						// That's fine; ignore.
+						return;
+					}
+					
+					SequencesViewer viewer = new SequencesViewer(
+						frame,
+						cluster.toString(),
+						cluster.getSpeciesNameSummary(),
+						cluster
+					);
+					viewer.setVisible(true);
+				}
+			}
+
+			public void mousePressed(MouseEvent e)	{}
+			public void mouseReleased(MouseEvent e) {}
+			public void mouseEntered(MouseEvent e)	{}
+			public void mouseExited(MouseEvent e)	{}
+		});
 	}
 }

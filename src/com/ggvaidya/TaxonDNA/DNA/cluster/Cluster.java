@@ -212,6 +212,9 @@ public class Cluster extends SequenceList implements Comparable, Sequences {
 		double largest =	-1;
 		double sum =		0;
 		int count =			0;
+		
+		if(count() == 0)	return "(empty)";
+		if(count() == 1)	return "(singleton)";
 
 		for(Object outer: this) {
 			for(Object inner: this) {
