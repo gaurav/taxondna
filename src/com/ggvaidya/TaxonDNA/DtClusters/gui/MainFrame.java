@@ -111,7 +111,7 @@ public class MainFrame extends JFrame {
 					if(fd.getFile() != null) {
 						file = new File(fd.getDirectory(), fd.getFile());
 					}
-				} else {
+				} else if(fd.getFile() != null) {
 					file = new File(fd.getFile());
 				}
 				

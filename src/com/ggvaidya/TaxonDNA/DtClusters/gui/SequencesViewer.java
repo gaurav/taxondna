@@ -31,7 +31,10 @@ import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.LinkedList;
 import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.*;
 import javax.swing.border.*;
 
 /**
@@ -50,7 +53,9 @@ class SequencesViewer extends JDialog {
 	Sequences	sequences;
 	
 	JTextArea	ta_description =	new JTextArea(3, 20);
-	JTable		tb_data;
+	
+	SequencesVisualization visualization;
+	JComponent	comp_visualization;
 	
 	public SequencesViewer(JFrame parent, String title, String description, Sequences sequences) {
 		super(parent, "Sequences: " + description + " (" + sequences.getSequences().count() + ")", false);
@@ -94,7 +99,7 @@ class SequencesViewer extends JDialog {
 					if(fd.getFile() != null) {
 						f = new File(fd.getDirectory(), fd.getFile());
 					}
-				} else {
+				} else if(fd.getFile() != null) {
 					f = new File(fd.getFile());
 				}
 				
@@ -118,6 +123,129 @@ class SequencesViewer extends JDialog {
 		exports.add(btn_export_fasta);
 		panel_top.add(exports, BorderLayout.EAST);
 		
+		// Create a visualization.
+		visualization = getVisualizationFor(sequences);
+		comp_visualization = visualization.getVisualization();
+		add(comp_visualization);
+		
 		pack();
+	}
+
+	/**
+	 * Determines the appropriate visualization component for the Sequences
+	 * object provided.
+	 * 
+	 * @param sequences The sequences to visualize.
+	 * @return A JComponent object which provided the visualization. Note that
+	 *	any required JScrollPanes would already have been added here. 
+	 */
+	public SequencesVisualization getVisualizationFor(Sequences sequences) {
+		return new SequenceListVisualization(sequences.getSequences());
+	}
+}
+
+interface SequencesVisualization {
+	public JComponent getVisualization();
+}
+
+/**
+ * Default visualization for sequences. Essentially the same as the SequenceMatrix
+ * visualization.
+ * 
+ * @author Gaurav Vaidya <gaurav@ggvaidya.com>
+ */
+class SequenceListVisualization implements TableModel, SequencesVisualization {
+	SequenceList	sl;
+	JTable			table;
+	
+	public SequenceListVisualization(SequenceList sl) {
+		this.sl = sl;
+		
+		table = new JTable(this);
+		
+		table.setModel(this);
+		table.setRowSorter(new TableRowSorter(this));
+	}
+	
+	public JComponent getVisualization() {
+		return new JScrollPane(table);
+	}
+	
+	public int getRowCount() {
+		return sl.count();
+	}
+
+	public int getColumnCount() {
+		return 5;
+	}
+
+	public String getColumnName(int columnIndex) {
+		switch(columnIndex) {
+			case 0:		return "#";
+			case 1:		return "Name";
+			case 2:		return "Length (bp)";
+			case 3:		return "'N's";
+			case 4:		return "'?'s";
+		}
+		
+		return "(err)";
+	}
+
+	public Class<?> getColumnClass(int columnIndex) {
+		switch(columnIndex) {
+			case 0:		return Integer.class;
+			case 1:		return String.class;
+			case 2:		return Integer.class;
+			case 3:		return Integer.class;
+			case 4:		return Integer.class;
+		}
+		
+		return String.class;
+	}
+
+	public boolean isCellEditable(int rowIndex, int columnIndex) {
+		return false;
+	}
+
+	public Object getValueAt(int rowIndex, int columnIndex) {
+		int row = table.getRowSorter().convertRowIndexToModel(rowIndex);
+		
+		Sequence seq = (Sequence) sl.get(row);
+		if(seq == null)
+			return "(err)";
+		
+		switch(columnIndex) {
+			case 0:		return (rowIndex + 1);
+			case 1:		return seq.getName();
+			case 2:		return seq.getActualLength();
+			case 3:
+				int count_n = 0;
+				for(char ch: seq.getSequence().toCharArray()) {
+					if(ch == 'N' || ch == 'n') count_n++;
+				}
+				return count_n;
+				
+			case 4:
+				int count_q = 0;
+				for(char ch: seq.getSequence().toCharArray()) {
+					if(ch == '?') count_q++;
+				}
+				return count_q;
+		}
+		
+		return "(err)";
+	}
+
+	public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
+		return;
+	}
+
+	protected java.util.List<TableModelListener> tableModelListeners = new LinkedList<TableModelListener>();
+	public void addTableModelListener(TableModelListener l) {
+		tableModelListeners.add(l);
+	}
+
+	public void removeTableModelListener(TableModelListener l) {
+		tableModelListeners.remove(l);
 	}
 }
