@@ -60,6 +60,7 @@ public class MainFrame extends JFrame {
 	JTextField tf_minOverlap;
 	JTextField tf_startThreshold;
 	JTextField tf_endThreshold;
+	JPanel panel_agglomerate = new JPanel();
 	
 	/**
 	 * Create the frame.
@@ -144,10 +145,13 @@ public class MainFrame extends JFrame {
 		JPanel p_side = new JPanel();
 		p_side.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
 		
+		// Agglomerate panel
+		panel_agglomerate.setBorder(new SoftBevelBorder(SoftBevelBorder.RAISED));
+		
 		JSplitPane	splitPane = new JSplitPane(
 			JSplitPane.HORIZONTAL_SPLIT,		
 			p_side,
-			p_results
+			panel_agglomerate
 		);
 		
 		splitPane.setResizeWeight(0.25);
@@ -186,7 +190,7 @@ public class MainFrame extends JFrame {
 		rl.add(new JLabel("Cluster until:"),		RightLayout.NEXTLINE);
 		rl.add(tf_endThreshold,						RightLayout.BESIDE);
 		rl.add(new JLabel("%"),						RightLayout.BESIDE);
-		tf_endThreshold.setText("0.50");
+		tf_endThreshold.setText("0.15");
 		
 		rl.add(new JLabel("File information:"),	RightLayout.NEXTLINE);
 		rl.add(tb_fileinfo,						RightLayout.BESIDE | RightLayout.FILL_2);
@@ -317,6 +321,21 @@ public class MainFrame extends JFrame {
 		} catch (DelayAbortedException ex) {
 			return;
 		}
+		
+		AgglomerateClusters ac = new AgglomerateClusters(panel_agglomerate);
+		ac.changeInitialState(job);
+		try {
+			ac.agglomerateClusters(Double.parseDouble(tf_endThreshold.getText())/100, 
+				ProgressDialog.create(
+					this, 
+					"Extending clustering ...", 
+					"Clustering is now being extended to " + (tf_endThreshold.getText()) + "% threshold. We apologize for the inconvenience!"
+				)
+			);
+		} catch(DelayAbortedException ex) {
+			return;
+		}
+		pack();
 		
 		// Done!
 		Vector clusterObjects =		new Vector();

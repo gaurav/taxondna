@@ -60,6 +60,9 @@ class SequencesViewer extends JDialog {
 	public SequencesViewer(JFrame parent, String title, String description, Sequences sequences) {
 		super(parent, "Sequences: " + description + " (" + sequences.getSequences().count() + ")", false);
 		
+		// The user might want to look at multiple views together.
+		setAlwaysOnTop(false);
+		
 		this.parent =		parent;
 		this.title =		title;
 		this.description =	description;
@@ -181,9 +184,9 @@ class SequenceListVisualization implements TableModel, SequencesVisualization {
 
 	public String getColumnName(int columnIndex) {
 		switch(columnIndex) {
-			case 0:		return "#";
-			case 1:		return "Name";
-			case 2:		return "Length (bp)";
+			case 0:		return "Name";
+			case 1:		return "Length (bp)";
+			case 2:		return "GI number";
 			case 3:		return "'N's";
 			case 4:		return "'?'s";
 		}
@@ -193,9 +196,9 @@ class SequenceListVisualization implements TableModel, SequencesVisualization {
 
 	public Class<?> getColumnClass(int columnIndex) {
 		switch(columnIndex) {
-			case 0:		return Integer.class;
-			case 1:		return String.class;
-			case 2:		return Integer.class;
+			case 0:		return String.class;
+			case 1:		return Integer.class;
+			case 2:		return String.class;
 			case 3:		return Integer.class;
 			case 4:		return Integer.class;
 		}
@@ -215,9 +218,13 @@ class SequenceListVisualization implements TableModel, SequencesVisualization {
 			return "(err)";
 		
 		switch(columnIndex) {
-			case 0:		return (rowIndex + 1);
-			case 1:		return seq.getName();
-			case 2:		return seq.getActualLength();
+			case 0:		return seq.getName();
+			case 1:		return seq.getActualLength();
+			case 2:
+				String gi = seq.getGI();
+				if(gi != null)
+					return gi;
+				return "";
 			case 3:
 				int count_n = 0;
 				for(char ch: seq.getSequence().toCharArray()) {

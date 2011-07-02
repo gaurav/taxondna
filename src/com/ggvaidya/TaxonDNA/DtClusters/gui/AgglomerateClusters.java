@@ -23,14 +23,14 @@
 package com.ggvaidya.TaxonDNA.DtClusters.gui;
 
 import java.util.*;
-import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.event.TableModelListener;
 import javax.swing.table.*;
+import javax.swing.event.*;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
 
+import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
 import com.ggvaidya.TaxonDNA.UI.*;
@@ -44,10 +44,10 @@ import com.ggvaidya.TaxonDNA.UI.*;
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
 public class AgglomerateClusters {
-	JFrame						parent;
+	JPanel						parent;
 	ClusterJob					clusterJob =	null;
 
-	public AgglomerateClusters(JFrame parent)	{
+	public AgglomerateClusters(JPanel parent)	{
 		this.parent = parent;
 		
 		parent.setLayout(new BorderLayout());
@@ -55,19 +55,6 @@ public class AgglomerateClusters {
 
 	public void changeInitialState(ClusterJob job) {
 		clusterJob = job;
-		
-		parent.add(new JLabel("Please wait until processing completes ..."), BorderLayout.SOUTH);
-		parent.pack();
-		
-		/*
-		parent.removeAll();
-		
-		JLabel label = new JLabel("Please wait, processing has not finished yet.");
-		parent.add(label);
-		
-		parent.pack();
-		 * 
-		 */
 	}
 	
 	/**
@@ -77,20 +64,19 @@ public class AgglomerateClusters {
 	 * @param from
 	 * @param to 
 	 */
-	public void redrawView(java.util.List<ClusterNode> final_frame, double from, double to) {
+	public void redrawView(java.util.List<ClusterNode> final_frame, double from, double to, DelayCallback delay) throws DelayAbortedException {
 		TableClusterView tcv = new TableClusterView(clusterJob, final_frame);
 		JTable table = new JTable(tcv);
 		
 		//parent.removeAll();
 		parent.add(new JScrollPane(table));
 		table.doLayout();
-		parent.pack();
 	}
 
-	public java.util.List<ClusterNode> agglomerateClusters(double to) {
-		java.util.List<ClusterNode> nodes = ClusterNode.agglomerateClusters(clusterJob, to);
+	public java.util.List<ClusterNode> agglomerateClusters(double to, DelayCallback delay) throws DelayAbortedException {
+		java.util.List<ClusterNode> nodes = ClusterNode.agglomerateClusters(clusterJob, to, delay);
 		
-		redrawView(nodes, clusterJob.getThreshold(), to);
+		redrawView(nodes, clusterJob.getThreshold(), to, delay);
 		
 		return nodes;
 	}
@@ -121,7 +107,7 @@ class TableClusterView implements TableModel {
 		Collections.sort(distances); 
 		
 		// Step 2: figure out the contents. This is a sparse array, so:
-		contents = new Sequences[job.count()][distances.size()];
+		contents = new Sequences[job.count() + 1000][distances.size()];
 		
 		int y = 0;
 		for(ClusterNode node: final_frame) {
@@ -229,13 +215,21 @@ class TableClusterView implements TableModel {
 			
 			int x = distances.indexOf(integralDistance(node.getDistance()));
 		
-			contents[y][x] = seqs;
+			try {
+				contents[y][x] = seqs;
+			} catch(ArrayIndexOutOfBoundsException ex) {
+				throw new RuntimeException("Attempting to set (y=" + y + ", x=" + x + ") when array is only [y=" + contents.length + ", x=" + contents[0].length + "]");
+			}
 		
 			for(Sequences subseqs: node.getSequencesObjects()) {
 				y = setContents(contents, subseqs, y);
 			}
 		} else {
-			contents[y][0] = seqs;
+			try {
+				contents[y][0] = seqs;
+			} catch(ArrayIndexOutOfBoundsException ex) {
+				throw new RuntimeException("Attempting to set (y=" + y + ", x=0) when array is only [y=" + contents.length + ", x=0]");
+			}
 			y++;
 		}
 		

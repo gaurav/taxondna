@@ -22,6 +22,7 @@
 
 package com.ggvaidya.TaxonDNA.DNA.cluster;
 
+import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 
 import java.util.*;
@@ -115,24 +116,35 @@ public class ClusterNode implements Sequences {
 	 * 
 	 * @return A list of ClusterNodes left standing at the final_threshold.
 	 */
-	public static List<ClusterNode>	agglomerateClusters(ClusterJob job, double final_threshold) {
+	public static List<ClusterNode>	agglomerateClusters(ClusterJob job, double final_threshold, DelayCallback delay) throws DelayAbortedException {
 		List<Cluster> clusters =		job.getClusters();
 		ArrayList<ClusterNode> frame =	new ArrayList<ClusterNode>();
 
 		Linkage linkage =	job.getLinkage();
 		double threshold =	job.getThreshold();
 
+		if(delay != null)
+			delay.begin();
+		
 		// Load the frame - one ClusterNode per incoming cluster.
-		System.err.println(" - Frame initialized at " + percentage(threshold));
+		//// System.err.println(" - Frame initialized at " + percentage(threshold));
 		for(Cluster c: clusters) {
 			frame.add(new ClusterNode(threshold, c));
 		}
 
 		// Move from threshold to final_threshold, combining ClusterNodes as
 		// we go.
+		double initial_threshold = threshold;
 		while(threshold < final_threshold) {
-			System.err.println(" - Moving frame to: " + percentage(threshold) + "%, " + frame.size() + " clusters remaining.");
+			//// System.err.println(" - Moving frame to: " + percentage(threshold) + "%, " + frame.size() + " clusters remaining.");
 
+			if(delay != null) {
+				int percentage = 0;
+				percentage = (int) (1000.0d * (threshold - initial_threshold)/(final_threshold - initial_threshold));
+			
+				delay.delay(percentage, 1000);
+			}
+			
 			// Find the pair of ClusterNodes with the smallest pairwise distance.
 			double	smallestPairwise = -1;
 			ClusterNode	smallest_a = null;
@@ -156,7 +168,10 @@ public class ClusterNode implements Sequences {
 			}
 			
 			if(smallestPairwise < 0) {
-				System.err.println(" - Process terminated at " + percentage(threshold) + "%: no further clusters have adequate overlap");
+				//// System.err.println(" - Process terminated at " + percentage(threshold) + "%: no further clusters have adequate overlap");
+				if(delay != null)
+					delay.end();
+				
 				return frame;
 			}
 
@@ -183,6 +198,9 @@ public class ClusterNode implements Sequences {
 			// And move the threshold
 			threshold = smallestPairwise;
 		}
+		
+		if(delay != null)
+			delay.end();
 
 		// This is now the final frame.
 		return frame;
