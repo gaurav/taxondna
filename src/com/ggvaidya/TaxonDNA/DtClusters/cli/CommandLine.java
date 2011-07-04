@@ -22,9 +22,12 @@
 
 package com.ggvaidya.TaxonDNA.DtClusters.cli;
 
-import com.ggvaidya.TaxonDNA.DtClusters.gui.MainFrame;
 import java.util.*;
 import java.io.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.swing.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
@@ -222,12 +225,21 @@ public class CommandLine {
 
 		// Uh-oh UI!
 		MainFrame mf = new MainFrame();
-		AgglomerateClusters ac = new AgglomerateClusters(mf);
+		JPanel panel = new JPanel();
+		mf.add(panel);
+		mf.pack();
+		
+		AgglomerateClusters ac = new AgglomerateClusters(panel);
 		ac.changeInitialState(job);
 		mf.setVisible(true);
 
 		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
-		List<ClusterNode> walkToDistance = ac.agglomerateClusters(to);
+		List<ClusterNode> walkToDistance = new LinkedList<ClusterNode>();
+		try {
+			walkToDistance = ac.agglomerateClusters(to, null);
+		} catch (DelayAbortedException ex) {
+			Logger.getLogger(CommandLine.class.getName()).log(Level.SEVERE, null, ex);
+		}
 		System.err.println(" Obtained " + walkToDistance.size() + " clusters at " + percentage(to) + "%");
 
 		//System.err.println("Results follow.");
