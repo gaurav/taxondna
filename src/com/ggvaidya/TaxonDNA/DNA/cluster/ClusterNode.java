@@ -1,7 +1,7 @@
 
 /*
  *
- *  ClusterNode
+ *  TaxonDNA
  *  Copyright (C) 2011 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -95,6 +95,30 @@ public class ClusterNode implements Sequences {
 		}
 
 		return sl;
+	}
+	
+	/**
+	 * A quick way of recursing through this ClusterNode. We
+	 * will call the 'found' method on the ClusterNodeRecursionResult
+	 * object provided once for every object inside this ClusterNode
+	 * (except the ClusterNode itself).
+	 * 
+	 * @param result The ClusterNodeRecursionResult through which results
+	 *		will be returned.
+	 */
+	public void recurse(ClusterNodeRecursionResult result) {
+		for(Sequences seqs: getSequencesObjects()) {
+			if(seqs.getClass().equals(ClusterNode.class)) {
+				ClusterNode node = (ClusterNode) seqs;
+				
+				// Report this ClusterNode anyway.
+				result.found(node, this);
+				
+				node.recurse(result);
+			} else {
+				result.found(seqs, this);
+			}
+		}
 	}
 
 	/**
@@ -289,7 +313,7 @@ public class ClusterNode implements Sequences {
 	@Override
 	public String toString() {
 		if(sequences.size() == 1)
-			return sequences.get(0).toString();
+			return "ClusterNode wrapping " + sequences.get(0).toString();
 		return sequences.size() + " clusters/sequences at " + percentage(distance) + "%";
 	}
 }

@@ -1,7 +1,7 @@
 
 /*
  *
- *  DtClusters
+ *  Cluster
  *  Copyright (C) 2010-11 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify

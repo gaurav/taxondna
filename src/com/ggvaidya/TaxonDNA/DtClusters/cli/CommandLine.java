@@ -229,14 +229,15 @@ public class CommandLine {
 		mf.add(panel);
 		mf.pack();
 		
-		AgglomerateClusters ac = new AgglomerateClusters(panel);
+		AgglomerateClusters ac = new AgglomerateClusters();
+		panel.add(ac);
 		ac.changeInitialState(job);
 		mf.setVisible(true);
 
 		System.err.println(" Walking from " + percentage(from) + "% to " + percentage(to) + "%");
 		List<ClusterNode> walkToDistance = new LinkedList<ClusterNode>();
 		try {
-			walkToDistance = ac.agglomerateClusters(to, null);
+			walkToDistance = ac.agglomerateClusters(to);
 		} catch (DelayAbortedException ex) {
 			Logger.getLogger(CommandLine.class.getName()).log(Level.SEVERE, null, ex);
 		}

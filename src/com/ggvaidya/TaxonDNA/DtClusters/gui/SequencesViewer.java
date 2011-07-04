@@ -69,8 +69,19 @@ class SequencesViewer extends JDialog {
 		this.sequences =	sequences;
 		
 		createUI();
+	}
+
+	public SequencesViewer(JFrame parent, Sequences sequences) {
+		// This is basically the "figure it out from the Sequences" option.
+		super(parent, "Sequences (" + sequences.getSequences().count() + ")", false);
 		
-		setVisible(true);
+		// The user might want to look at multiple views together.
+		setAlwaysOnTop(false);
+		
+		this.parent =		parent;
+		this.title =		getTitle();
+		this.description =	sequences.toString();
+		this.sequences =	sequences;
 	}
 	
 	/**
