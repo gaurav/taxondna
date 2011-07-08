@@ -34,7 +34,7 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.UI.*;
 import com.ggvaidya.TaxonDNA.DNA.*;
 import com.ggvaidya.TaxonDNA.DNA.cluster.*;
-import com.ggvaidya.TaxonDNA.DtClusters.DtClusters;
+import com.ggvaidya.TaxonDNA.DtClusters.*;
 
 /**
  * This class carries out and visualises "agglomerative clustering". We
@@ -157,15 +157,15 @@ public class AgglomerateClusters extends JPanel {
 		
 		// Now, we already have all the clusters originally present, so we can
 		// start drawing from there, then draw in the ClusterNodes as necessary.
-		setLayout(new GridLayout(clusterJob.count(), 1));
 		
+		RulerLayout ruler = new RulerLayout(0, 100);
+			// For now, we'll just do it on a 0.00 to 1.00 scale to two decimal places
+			// (so we'll represent it in 000 to 100 in decimals)			
+		setLayout(ruler);
+		
+		int row = 0;
 		for(Sequences seqs: sequences) {
-			JPanel panel = new JPanel();
-			add(panel);
-			
-			RightLayout rl = new RightLayout(panel);
-			panel.setLayout(rl);
-			rl.add(getSequencesComponent(seqs), RightLayout.NONE);
+			add(getSequencesComponent(seqs), new RulerLayoutConstraint(row, 0));
 			
 			Sequences s = seqs;
 			while(true) {
@@ -175,8 +175,18 @@ public class AgglomerateClusters extends JPanel {
 				
 				// Until then, keep add(..)ing stuff.
 				s = clusterNodeMap.get(s);
-				rl.add(getSequencesComponent(s), RightLayout.BESIDE);
+				
+				int col = ruler.getRightmostValue();
+				if(s.getClass().equals(ClusterNode.class)) {
+					ClusterNode cn = (ClusterNode) s;
+					col = (int) (cn.getDistance()*100);
+					System.err.println("Placing ClusterNode (" + cn.getDistance() + ") at " + col + ".");
+				}
+				add(getSequencesComponent(s), new RulerLayoutConstraint(row, col));
 			}
+			
+			// Increment rows.
+			row++;
 		}
 	}
 	
