@@ -158,7 +158,7 @@ public class AgglomerateClusters extends JPanel {
 		// Now, we already have all the clusters originally present, so we can
 		// start drawing from there, then draw in the ClusterNodes as necessary.
 		
-		RulerLayout ruler = new RulerLayout(0, 100);
+		RulerLayout ruler = new RulerLayout(0, 100, 10);
 			// For now, we'll just do it on a 0.00 to 1.00 scale to two decimal places
 			// (so we'll represent it in 000 to 100 in decimals)			
 		setLayout(ruler);
@@ -168,6 +168,7 @@ public class AgglomerateClusters extends JPanel {
 			add(getSequencesComponent(seqs), new RulerLayoutConstraint(row, 0));
 			
 			Sequences s = seqs;
+			int col = 0;
 			while(true) {
 				// Keep going until we hit the end of the chain.
 				if(!clusterNodeMap.containsKey(s))
@@ -176,18 +177,25 @@ public class AgglomerateClusters extends JPanel {
 				// Until then, keep add(..)ing stuff.
 				s = clusterNodeMap.get(s);
 				
-				int col = ruler.getRightmostValue();
 				if(s.getClass().equals(ClusterNode.class)) {
 					ClusterNode cn = (ClusterNode) s;
 					col = (int) (cn.getDistance()*100);
-					System.err.println("Placing ClusterNode (" + cn.getDistance() + ") at " + col + ".");
+					if(col == 0) {
+						col = ruler.getRightmostValue();
+						if(col < 1) col = 1;
+					}
 				}
+				
+				// System.err.println("Placing " + s + " at " + row + ", " + col + ".");
+				
 				add(getSequencesComponent(s), new RulerLayoutConstraint(row, col));
 			}
 			
 			// Increment rows.
 			row++;
 		}
+		
+		add(ruler.getRuler());
 	}
 	
 	private JComponent getSequencesComponent(Sequences seqs) {
