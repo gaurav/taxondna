@@ -142,8 +142,10 @@ public class RulerLayout implements LayoutManager2 {
 	}
 
 	// Layout sizes.
-	public static final int		BUTTON_WIDTH =		300;
-	public static final int		BUTTON_HEIGHT =		150;
+	public static final int		BUTTON_WIDTH =		150;
+	public static final int		BUTTON_HEIGHT =		70;
+	public static final int		INSET_RIGHT =		20;
+	public static final int		INSET_BOTTOM =		5;
 	
 	public Dimension maximumLayoutSize(Container target) {
 		return new Dimension(BUTTON_WIDTH * (columns + 1), BUTTON_HEIGHT * lines.size() + RULER_HEIGHT);
@@ -187,7 +189,8 @@ public class RulerLayout implements LayoutManager2 {
 				
 				if(value != -1) {
 					int col = (int)Math.floor((value - leftmost_value)/col_span);
-					c.setBounds(col * BUTTON_WIDTH, row * BUTTON_HEIGHT + ruler_height, BUTTON_WIDTH - 50, BUTTON_HEIGHT - 50);
+					System.err.println("(row, col)->(x, y): (" + row + ", " + col + ")->(" + (col * BUTTON_WIDTH) + ", " + ((row * BUTTON_HEIGHT) + ruler_height) + ")");
+					c.setBounds(col * BUTTON_WIDTH, (row * BUTTON_HEIGHT) + ruler_height, BUTTON_WIDTH - INSET_RIGHT, BUTTON_HEIGHT - INSET_BOTTOM);
 					
 					continue;
 				}
@@ -222,7 +225,7 @@ public class RulerLayout implements LayoutManager2 {
 		
 		for(int x = 0; x <= columns; x++) {
 			JButton btn_label = new JButton("" +  (x * col_span));
-			btn_label.setBounds(BUTTON_WIDTH * x, 0, BUTTON_WIDTH - 50, BUTTON_HEIGHT - 50);
+			btn_label.setBounds(BUTTON_WIDTH * x, 0, BUTTON_WIDTH - INSET_RIGHT, BUTTON_HEIGHT - INSET_BOTTOM);
 			rulerPanel.add(btn_label);
 		}
 		
