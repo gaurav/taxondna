@@ -2,7 +2,7 @@
 /*
  *
  *  TaxonDNA
- *  Copyright (C) 2011 Gaurav Vaidya
+ *  Copyright (C) 2011-12 Gaurav Vaidya
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
 		
 		// Button to change the filename.
 		final MainFrame thisObject = this;
-		JButton btn_changeFile = new JButton(new AbstractAction("Change file ...") {
+		final JButton btn_changeFile = new JButton(new AbstractAction("Change file ...") {
 			public void actionPerformed(ActionEvent e) {
 				FileDialog fd = new FileDialog(thisObject, "Select file to load ...", FileDialog.LOAD);
 				fd.setVisible(true);
@@ -126,6 +126,10 @@ public class MainFrame extends JFrame {
 		
 		JButton btn_recluster = new JButton(new AbstractAction("Recluster") {
 			public void actionPerformed(ActionEvent e) {
+				if(sequenceList == null) {
+					btn_changeFile.doClick();
+				}
+				
 				thisObject.recluster();
 			}
 		});
