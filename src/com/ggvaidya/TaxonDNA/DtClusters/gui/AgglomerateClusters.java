@@ -42,6 +42,16 @@ import com.ggvaidya.TaxonDNA.DtClusters.*;
  * and visualise this onto the specified Canvas. The actual work is carried out
  * by ClusterNode.
  *
+ * New plan of action:
+ *  - The JTable in the lower-left quadrant should contain all the 
+ *    species.
+ *  - The right pane should contain cluster information. There are three key
+ *    things we want users to be able to see:
+ *      1. Which clusters stay stable across the range of distances provided.
+ *      2. Which clusters are found at particular distances.
+ *      3. Look up the distance table for a given cluster at a given distance.
+ *      4. Which clusters correspond directly to species and which don't.
+ *
  * @author Gaurav Vaidya <gaurav@ggvaidya.com>
  */
 public class AgglomerateClusters extends JPanel {
