@@ -4,7 +4,7 @@
  */
 /*
     TaxonDNA
-    Copyright (C) Gaurav Vaidya, 2005, 2007-08
+    Copyright (C) Gaurav Vaidya, 2005, 2007-08, 2010
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -277,7 +277,9 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 				// obviously, we can't do this for unknown species
 				if(
 					sd.getSpeciesDetailsByName(speciesName) != null &&
-					sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidConspecificsCount() == bin.size()
+					sd.getSpeciesDetailsByName(speciesName).getSequencesCount() == bin.size()
+					// Used to be: sd.getSpeciesDetailsByName(speciesName).getSequencesWithValidConspecificsCount() == bin.size()
+					// but obviously makes no sense at all. Thanks, Michael!
 				) {
 					bool_containsAllSequencesOfOneSpecies = true;
 					no_of_clusters_with_all_sequences_for_a_species++;

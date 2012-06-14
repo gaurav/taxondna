@@ -13,7 +13,7 @@
                 <source-folder>
                     <label>TaxonDNA</label>
                     <location>.</location>
-                    <encoding>MacRoman</encoding>
+                    <encoding>UTF-8</encoding>
                 </source-folder>
                 <source-folder>
                     <label>src</label>
@@ -33,7 +33,7 @@
                     <target>javadocs</target>
                 </action>
                 <action name="run">
-                    <target>run_spid</target>
+                    <target>run_dclusters</target>
                 </action>
                 <action name="rebuild">
                     <target>clean</target>

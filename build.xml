@@ -151,10 +151,23 @@
         />
     </target>
 
+    <!-- DClusters:          Builds the release folder for DistClus -->
+    <target name = "DClusters"       depends = "compile">
+        <jar
+            destfile =  "Release/DClusters.jar"
+            basedir =   "${build.dir}/classes"
+            includes =  "${files.common}, **/DClusters/**"
+        >
+            <manifest>
+                <attribute name = "Main-Class" value = "com.ggvaidya.TaxonDNA.DClusters.DClusters" />
+            </manifest>
+        </jar>
+    </target>
+
 	<!-- 
         release: Release both Species Identifier and Sequence Matrix at once
     -->
-	<target name = "release"    depends = "SeqMat_release, SpecId_release">
+	<target name = "release"    depends = "SeqMat_release, SpecId_release, DClusters">
     </target>
 
     <!--
@@ -220,6 +233,9 @@
     <target name="run_gbx" depends="GenBankExplorer">
         <java jar="Release/GenBankExplorer.jar" maxmemory="2048m" fork="true">
         </java>
+    </target>
+    <target name="run_dclusters" depends="DClusters">
+        <java jar="Release/DClusters.jar" maxmemory="2048m" fork="true" />
     </target>
         
 </project>

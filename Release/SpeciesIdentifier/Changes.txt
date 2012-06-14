@@ -1,7 +1,14 @@
 Changelog
 ==========
 
-- development
+- Development
+
+- 1.7.9 
+    - Turned off displaying 'N's in the display, as we don't re-export
+      those anyway.
+    - Fixed a bug in the Cluster tool reported by Michael Balke: single
+      species without conspecific sequences in the dataset were being
+      reported as 'Split'.
 
 - 1.7.8
     - Added DOI to the citation for Sequence Matrix.
