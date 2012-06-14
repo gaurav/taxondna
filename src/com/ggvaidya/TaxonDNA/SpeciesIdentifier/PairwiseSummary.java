@@ -174,8 +174,114 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		println(str, "No of sequences:", set.count() + "\tsequences");
 		println(str, "No of species:", species.keySet().size() + "\tspecies");
 
-//		println(str, "\nPAIRWISE COMPARISIONS");
-//		println(str, "No of valid comparisons with adequate overlap:", all.countValidComparisons() + "\tcomparisons");
+		//println(str, "\nPAIRWISE COMPARISIONS");
+		//println(str, "No of valid pairwise comparisons with adequate overlap:", all.countValidComparisons() + "\tcomparisons (minimum overlap is " + Sequence.getMinOverlap() + " bp)");
+		
+                println(str, "Note that minimum overlap is set to " + Sequence.getMinOverlap() + " bp: pairs of sequences with less that " + Sequence.getMinOverlap() + " bp overlap will not be counted as a pairwise distance for this analysis.");
+
+                // ranges
+                println(str, "\nRANGES");
+        
+                println(str, "WARNING: These calculations are new to Species Identifier as of June 14, 2012, and have not been comprehensively tested yet. Please use with caution!\n");
+
+                if(intra.countValidComparisons() == 0) {
+                    // No intra distances.
+                    println(str, "There are no valid intraspecific pairwise distances (i.e. no two sequences have less than " + Sequence.getMinOverlap() + " bp overlap).");
+
+                } else { 
+                    // remove the 5% biggest intraspecific pairwise distances
+		    //
+		    int x = 1;
+		    Vector distances_intra = intra.getDistancesBetween(0, 1);
+
+                    // Note: "max_intra_distance" really means "95pc_intra_distance".
+                    float max_intra_distance = 
+                        ((Float) distances_intra.get(distances_intra.size() - 1))
+                            .floatValue();
+
+		    while(x < distances_intra.size()) {
+		        Float dist = (Float) distances_intra.get(distances_intra.size() - x);
+	                if((float)x / distances_intra.size() > 0.05)
+	                    break;
+	
+                        max_intra_distance = dist.floatValue();
+		        x++;
+                    }
+
+                    // Total range.
+                    println(str, "Intraspecific pairwise distances range between "
+                        + percentage(intra.getMinimumDistance(), 1) + "% and " +
+                        + percentage(intra.getMaximumDistance(), 1) + "% (contains "
+                        + percentage(intra.getBetweenIncl(
+                            intra.getMinimumDistance(),
+                            intra.getMaximumDistance()
+                          ), intra.countValidComparisons()) 
+                        + "% of all valid intraspecific pairwise distances)"
+                    );
+
+                    println(str, "  Removing the largest 5% of intraspecific distances reduces that range to "
+                        + percentage(intra.getMinimumDistance(), 1) + "% and " +
+                        + percentage(max_intra_distance, 1) + "% (contains "
+                        + percentage(intra.getBetweenIncl(
+                            intra.getMinimumDistance(),
+                            max_intra_distance
+                          ), intra.countValidComparisons()) 
+                        + "% of all valid intraspecific pairwise distances)"
+                    );
+                }
+
+                if(inter.countValidComparisons() == 0) {
+                    // No inter distances.
+                    println(str, "There are no valid interspecific pairwise distances (i.e. no two sequences have less than " + Sequence.getMinOverlap() + " bp overlap).");
+
+                } else { 
+                    // Note: "min_inter_distance" really means "95pc_inter_distance".
+		    Vector distances_inter = inter.getDistancesBetween(0, 1);
+		    float min_inter_distance = inter.getMinimumDistance();
+ 
+                    i = distances_inter.iterator();
+                    int x = 0;
+                    while(i.hasNext()) {
+                        Float dist = (Float) i.next();
+
+                        if((float)x / distances_inter.size() > 0.05)
+		            break;
+
+                        min_inter_distance = dist.floatValue();
+
+			x++;
+                    }
+
+                    // Total range.
+                    println(str, "Interspecific, intrageneric pairwise distances range between "
+                        + percentage(inter.getMinimumDistance(), 1) + "% and " +
+                        + percentage(inter.getMaximumDistance(), 1) + "% (contains "
+                        + percentage(inter.getBetweenIncl(
+                            inter.getMinimumDistance(),
+                            inter.getMaximumDistance()
+                          ), inter.countValidComparisons()) 
+                        + "% of all valid interspecific, intrageneric pairwise distances)"
+                    );
+
+                    println(str, "  Removing the largest 5% of interspecific, intrageneric distances reduces that range to "
+                        + percentage(inter.getMinimumDistance(), 1) + "% and " +
+                        + percentage(min_inter_distance, 1) + "% (contains "
+                        + percentage(inter.getBetweenIncl(
+                            min_inter_distance,
+                            inter.getMaximumDistance()
+                          ), inter.countValidComparisons()) 
+                        + "% of all valid interspecific, intrageneric pairwise distances)"
+                    );
+                }
+
+                // At this point, we need a one-sentence summary of either:
+                //  "There is a gap containing no pairwise distances between inter and intraspecific distances.
+                //   Within this dataset, all distances less than X% are intraspecific while all congeneric 
+                //   distances larger than Y% are interspecific.
+                //
+                //  "There is an overlap between intra and interspecific distances: all distances less than
+                //   X% are intraspecific while all congeneric distances greater than Y% are interspecific.
+                //   However, distances between X% and Y% may be from either group."
 
 		// percentages - probably the most important part of this whole thing
 		println(str, "\nPERCENTAGES");
@@ -187,7 +293,7 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
 		if(inter.countValidComparisons() == 0) { 
 			// If there are NO interspecific comparisons
 			println(str, 
-					"Total overlap:\tNo interspecific, intrageneric comparisons.\n              \tIntraspecific comparisons range from " + percentage(intra.getMinimumDistance(), 1) + "% to " + percentage(intra.getMaximumDistance(), 1) + "% (total width: " + percentage(intra.getMaximumDistance() - intra.getMinimumDistance(), 1) + "%)");
+                            "Total overlap:\tNo interspecific, intrageneric comparisons.\n              \tIntraspecific comparisons range from " + percentage(intra.getMinimumDistance(), 1) + "% to " + percentage(intra.getMaximumDistance(), 1) + "% (total width: " + percentage(intra.getMaximumDistance() - intra.getMinimumDistance(), 1) + "%)");
 
 		} else {
 			// If there ARE interspecific comparisons
