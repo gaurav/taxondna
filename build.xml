@@ -143,6 +143,21 @@
         </jar>
     </target>
 
+    <!-- SequenceMatrix_with_appbundler: Creates an .app using appbuilder -->
+    <property environment="env" />
+
+    <target name = "SequenceMatrix_with_appbundler" depends="build">
+        <bundleapp outputdirectory="Release/SequenceMatrix/MacOSX_with_appbundler"
+            name="SequenceMatrix"
+            displayname = "Sequence Matrix"
+            identifier="com.ggvaidya.TaxonDNA.SequenceMatrix"
+            mainclassname="com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix"
+        >
+            <runtime dir="${env.JAVA_HOME}" />
+            <classpath file="Release/SequenceMatrix/SequenceMatrix.jar" />
+        </bundleapp>
+    </target>
+
     <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
     <target name = "SequenceMatrix.app"     depends = "build">
         <copy 
@@ -163,6 +178,13 @@
             </manifest>
         </jar>
     </target>
+
+    <!--
+        We use appbundler to produce an .app worthy of Yosemite.
+    -->
+    <taskdef name="bundleapp"
+         classname="com.oracle.appbundler.AppBundlerTask"
+         classpath="lib/appbundler-1.0.jar" />
 
     <!-- 
         release: Release both Species Identifier and Sequence Matrix at once
@@ -190,7 +212,7 @@
     <!--
         SeqMat_release: Release Sequence Matrix only.
     -->
-    <target name = "SeqMat_release" depends = "build, SequenceMatrix.app">
+    <target name = "SeqMat_release" depends = "build, SequenceMatrix.app, SequenceMatrix_with_appbundler">
         <copy file="Changes.txt" overwrite="yes" todir="Release/SequenceMatrix/Windows" />
         <copy file="Changes.txt" overwrite="yes" todir="Release/SequenceMatrix/MacOSX" />
         <copy 
