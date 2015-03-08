@@ -1,8 +1,8 @@
 <project default = "compile">
-	<property name =        "build.dir"      location = "build"    />
-	<property file =        "version.txt" />
+    <property name =        "build.dir"      location = "build"    />
+    <property file =        "version.txt" />
 
-	<!-- compile-time options -->
+    <!-- compile-time options -->
         <!-- Until TaxonDNA 1.5, code was written to target JRE 1.4. Since then,
              we target JRE 1.5 instead. If you'd like to backport TaxonDNA to
              JRE 1.4 (in order to support MacOS X 10.3, for instance), flip this
@@ -18,130 +18,130 @@
         <property name = "files.common"
             value = "**/Common/**, **/DNA/**, **/Others/**, **/UI/**"
         />
-	
+    
     <!--
         Targets begin here.
     -->
 
-	<!-- 
+    <!-- 
         compile:
             Compile will recompile all our Java code into Java classes
             in one shot
     -->
-	<target name = "compile">
-		<javac
-			srcdir =        "src"
-			debug =         "yes" 
-			optimize =      "yes" 
-			deprecation =   "yes" 
-			source =        "${java.targetversion}"
-			target =        "${java.targetversion}"
-			destdir =       "${build.dir}/classes"
+    <target name = "compile">
+        <javac
+            srcdir =        "src"
+            debug =         "yes" 
+            optimize =      "yes" 
+            deprecation =   "yes" 
+            source =        "${java.targetversion}"
+            target =        "${java.targetversion}"
+            destdir =       "${build.dir}/classes"
                         includeAntRuntime = "no"
-		>
-			<compilerarg value = "-Xlint:unchecked" />
-		</javac>
-	</target>
+        >
+            <compilerarg value = "-Xlint:unchecked" />
+        </javac>
+    </target>
 
-	<!-- 
+    <!-- 
         src:
             Zips up the ENTIRE directory into one
-			file for a full-source backup.
-	-->
-	<target name = "src">
-		<!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
-		<zip
-			destfile =      "../TaxonDNA-src-${taxondna.version}.zip"
-			basedir =       "../"
-			includes =      "TaxonDNA/**"
-			excludes =      "**/.svn, **/.git, TaxonDNA/Releases"
-			comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
-		/>
+            file for a full-source backup.
+    -->
+    <target name = "src">
+        <!-- Warning: This will fail unless we are in a directory called 'TaxonDNA' -->
+        <zip
+            destfile =      "../TaxonDNA-src-${taxondna.version}.zip"
+            basedir =       "../"
+            includes =      "TaxonDNA/**"
+            excludes =      "**/.svn, **/.git, TaxonDNA/Releases"
+            comment =       "(c) Gaurav Vaidya, 2006, 2009, 2010"
+        />
         <move 
             file = "../TaxonDNA-src-${taxondna.version}.zip"
             todir = "Releases"
         />
-	</target>
+    </target>
 
-	<!--
+    <!--
         javadocs:
             Recompiles the JavaDocs (in Documentation/Javadocs)
     -->
-	<target name = "javadocs"   depends = "compile">
-		<javadoc
-			packagenames =  "com.ggvaidya.TaxonDNA.*"
-			sourcepath =    "."
-			source =        "${java.version}"
-			destdir =       "Documentation/Javadocs/"
-		/>
-	</target>
+    <target name = "javadocs"   depends = "compile">
+        <javadoc
+            packagenames =  "com.ggvaidya.TaxonDNA.*"
+            sourcepath =    "."
+            source =        "${java.version}"
+            destdir =       "Documentation/Javadocs/"
+        />
+    </target>
 
-	<!--
+    <!--
         clean:
             Cleans up the build path
     -->
-	<target name = "clean">
-		<delete     dir = "${build.dir}"            />
-		<mkdir      dir = "${build.dir}"            />
-		<mkdir      dir = "${build.dir}/classes"    />
-	</target>
+    <target name = "clean">
+        <delete     dir = "${build.dir}"            />
+        <mkdir      dir = "${build.dir}"            />
+        <mkdir      dir = "${build.dir}/classes"    />
+    </target>
 
-	<!--
+    <!--
         rebuild:
             Cleans the build path, then generates a build
     -->
-	<target name = "rebuild"    depends = "clean, build">
-	</target>
+    <target name = "rebuild"    depends = "clean, build">
+    </target>
 
-	<!-- 
+    <!-- 
         build:
             Prepares ChangeLog and Readme files.
-			This is also the most convenient way to
-			ensure that all Jars are built
+            This is also the most convenient way to
+            ensure that all Jars are built
 
-			Does NOT make a final zip. 'release' does that.
-	-->
-	<target name = "build" depends = "SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
-	</target>
+            Does NOT make a final zip. 'release' does that.
+    -->
+    <target name = "build" depends = "SpeciesIdentifier,SequenceMatrix,GenBankExplorer">
+    </target>
 
-	<!-- SpeciesIdentifier:		Builds the Jar file for SpeciesIdentifier -->
-	<target name = "SpeciesIdentifier"      depends = "compile">
-		<jar
-			destfile =  "Release/SpeciesIdentifier/SpeciesIdentifier.jar"
-			basedir =   "${build.dir}/classes"
-			includes =  "${files.common}, **/SpeciesIdentifier/**"
-		>
-			<manifest>
-				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
-			</manifest>
-		</jar>
-	</target>
+    <!-- SpeciesIdentifier:        Builds the Jar file for SpeciesIdentifier -->
+    <target name = "SpeciesIdentifier"      depends = "compile">
+        <jar
+            destfile =  "Release/SpeciesIdentifier/SpeciesIdentifier.jar"
+            basedir =   "${build.dir}/classes"
+            includes =  "${files.common}, **/SpeciesIdentifier/**"
+        >
+            <manifest>
+                <attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier" />
+            </manifest>
+        </jar>
+    </target>
 
-	<!-- SequenceMatrix:		Builds the Jar file for SequenceMatrix -->
-	<target name = "SequenceMatrix"         depends = "compile">
-		<jar
-			destfile =  "Release/SequenceMatrix/SequenceMatrix.jar"
-			basedir =   "${build.dir}/classes"
-			includes =  "${files.common}, **/SequenceMatrix/**"
-		>
-			<manifest>
-				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
-			</manifest>
-		</jar>
-	</target>
+    <!-- SequenceMatrix:        Builds the Jar file for SequenceMatrix -->
+    <target name = "SequenceMatrix"         depends = "compile">
+        <jar
+            destfile =  "Release/SequenceMatrix/SequenceMatrix.jar"
+            basedir =   "${build.dir}/classes"
+            includes =  "${files.common}, **/SequenceMatrix/**"
+        >
+            <manifest>
+                <attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix" />
+            </manifest>
+        </jar>
+    </target>
 
-	<!-- GenBankExplorer:		Builds the Jar file for GenBankExplorer -->
-	<target name = "GenBankExplorer"        depends = "compile">
-		<jar
-			destfile =  "Release/GenBankExplorer.jar"
-			basedir =   "${build.dir}/classes"
-			includes =  "${files.common}, **/GenBankExplorer/**"
-		>
-			<manifest>
-				<attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
-			</manifest>
-		</jar>
-	</target>
+    <!-- GenBankExplorer:        Builds the Jar file for GenBankExplorer -->
+    <target name = "GenBankExplorer"        depends = "compile">
+        <jar
+            destfile =  "Release/GenBankExplorer.jar"
+            basedir =   "${build.dir}/classes"
+            includes =  "${files.common}, **/GenBankExplorer/**"
+        >
+            <manifest>
+                <attribute name = "Main-Class"  value = "com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer" />
+            </manifest>
+        </jar>
+    </target>
 
     <!-- SequenceMatrix.app:        Creates an .app for Sequence Matrix -->
     <target name = "SequenceMatrix.app"     depends = "build">
@@ -164,10 +164,10 @@
         </jar>
     </target>
 
-	<!-- 
+    <!-- 
         release: Release both Species Identifier and Sequence Matrix at once
     -->
-	<target name = "release"    depends = "SeqMat_release, SpecId_release, DClusters">
+    <target name = "release"    depends = "SeqMat_release, SpecId_release, DClusters">
     </target>
 
     <!--
@@ -176,11 +176,11 @@
     <target name = "SpecId_release" depends = "build">
         <copy file="Changes.txt" overwrite="yes" todir="Release/SpeciesIdentifier" />
         <zip
-	        destfile =      "../SpeciesIdentifier-${taxondna.version}.zip"
-	        basedir =       "Release/SpeciesIdentifier"
-	    	comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
-	    	update =        "false"
-	    />
+            destfile =      "../SpeciesIdentifier-${taxondna.version}.zip"
+            basedir =       "Release/SpeciesIdentifier"
+            comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
+            update =        "false"
+        />
         <move
             file="../SpeciesIdentifier-${taxondna.version}.zip"
             todir="Releases"
@@ -197,11 +197,11 @@
             file="Release/SequenceMatrix/SequenceMatrix.jar"
             todir="Release/SequenceMatrix/Windows" />
         <zip 
-	        destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
-	        basedir =       "Release/SequenceMatrix/Windows"
-	    	comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
-	    	update =        "false"
-	    />
+            destfile =      "../SequenceMatrix-Windows-${taxondna.version}.zip"
+            basedir =       "Release/SequenceMatrix/Windows"
+            comment =       "(c) Gaurav Vaidya, 2007, 2009, 2010"
+            update =        "false"
+        />
         <move file = "../SequenceMatrix-Windows-${taxondna.version}.zip" todir = "Releases" />
         <delete
             dir="Releases/SequenceMatrix-MacOSX-${taxondna.version}"
@@ -216,7 +216,7 @@
             perm="755"
         />
         <!-- It's now up to you to compress this -->
-	</target>
+    </target>
 
     <!--
             NetBeans needs targets for running specific programs. Can't say
