@@ -1,7 +1,9 @@
 Changelog
 ==========
 
-- Development
+- 1.8: June 22, 2015
+    - Used 'codesign' to sign "Sequence Matrix.app" as this might prevent
+      it from being recognized on MacOS X systems.
 
 - 1.7.9 
     - Turned off displaying 'N's in the display, as we don't re-export
