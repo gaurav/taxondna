@@ -49,6 +49,7 @@ public class Sequence  implements Comparable, Testable {
 	protected String	family = "";		// - family
 	protected String	subspecies = "";	// - subspecies
 	protected String	gi = "";		// - gi (unique DB code)
+	protected String	genBankAccession = "";	// GenBank Accession Number
 	protected int		ambiguous = 0;		// number of ambiguous bases in this sequence
 	protected boolean	warningFlag = false;	// If set, indicates that something is (probably) wrong with the
 							// species name.
@@ -284,6 +285,10 @@ public class Sequence  implements Comparable, Testable {
 
 			if(getGI() != null) {
 				name += " (gi:" + getGI() + ")";
+			}
+			
+			if(getGenBankAccession() != null) {
+				name += " (gb: " + getGenBankAccession() + ")";
 			}
 			
 			return name;	
@@ -522,6 +527,17 @@ public class Sequence  implements Comparable, Testable {
 			return null;
 
 		return gi;
+	}
+	
+	/**
+	 * Returns the GenBank accession number
+	 * @return null, if no GenBank accession number is defined
+	 */
+	public String getGenBankAccession() {
+		if(genBankAccession.equals(""))
+			return null;
+
+		return genBankAccession;
 	}
 
 	/**
@@ -776,6 +792,13 @@ public class Sequence  implements Comparable, Testable {
 
 		if(m.find()) {
 			gi = m.group(1);
+		}
+		
+		// guess GenBank accession (as per https://www.ncbi.nlm.nih.gov/Sequin/acc.html)
+		p = Pattern.compile("\\b([a-zA-Z]{1,5}\\d{5,8}(?:[\\.\\-]\\d+)?)\\b");
+		m = p.matcher(name);
+		if(m.find()) {
+			genBankAccession = m.group(1);
 		}
 
 		// guess family
@@ -1953,8 +1976,8 @@ public class Sequence  implements Comparable, Testable {
 			else {
 				// all we have is fullName
 				String name = getFullName();
-				if(getGI() != null)
-					name = "gi|" + getGI() + "| " + name;
+				if(getGenBankAccession() != null)
+					name = getGenBankAccession() + " " + name;
 
 				if(name.length() > max_size)
 					return name.substring(0, max_size);
@@ -2051,7 +2074,7 @@ public class Sequence  implements Comparable, Testable {
 		
 		test.beginTest("Create a sequence");
 			try {
-				seq = new Sequence("Fasta sequence (this one has WEIRD symbols in it, like  ~ and # and, oh, I don't know, ~!@!%~!#~$!$!@!%!!!!!!!!!!!!!!!!!!@#$%^&*()K_+{}|:\"<>?~[]\\;',./=-098789194678`90260`92836`0892846`129340`927380`712387`19073190¡¡ñõóá also, it has every single valid DNA sequence string thingie thingie in the Sequence", "----ACTG?WRKYSMBHDVN----????");
+				seq = new Sequence("Fasta sequence (this one has WEIRD symbols in it, like  ~ and # and, oh, I don't know, ~!@!%~!#~$!$!@!%!!!!!!!!!!!!!!!!!!@#$%^&*()K_+{}|:\"<>?~[]\\;',./=-098789194678`90260`92836`0892846`129340`927380`712387`19073190ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ also, it has every single valid DNA sequence string thingie thingie in the Sequence", "----ACTG?WRKYSMBHDVN----????");
 				if(
 						seq.getFullName().length() == 304 && 	// whole name?
 						seq.getFullName().charAt(216) == '\u00F1' && 	// with weird letters?
