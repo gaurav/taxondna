@@ -1,0 +1,15 @@
+/BaseFormatHandler.class
+/FastaFile.class
+/FormatException.class
+/FormatHandler.class
+/FormatHandlerEvent.class
+/FormatListener.class
+/Interleaver.class
+/MegaFile.class
+/NexusFile.class
+/NexusTokenizer$Results.class
+/NexusTokenizer.class
+/PhylipFile.class
+/SequencesFile.class
+/SequencesHandler.class
+/TNTFile.class
