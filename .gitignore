@@ -2,3 +2,5 @@ Release/*.jar
 Releases/*
 build/
 *.class
+.classpath
+.project
