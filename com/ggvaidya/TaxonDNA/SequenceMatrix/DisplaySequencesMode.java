@@ -51,6 +51,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	// Currently selected CheckboxMenuItem
 	private CheckboxMenuItem 	last_chmi = null;
 	private CheckboxMenuItem	chmi_name = null;
+	private CheckboxMenuItem	chmi_name_gb = null;
 	private CheckboxMenuItem	chmi_name_gi = null;
 	private CheckboxMenuItem	chmi_species = null;
 	private CheckboxMenuItem	chmi_charsets = null;
@@ -59,8 +60,9 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 	private Comparator 		currentComparator = new SortByName();
 	private String			sortBy = "name";
 
+	private boolean			display_gb_noes = false;
 	private boolean			display_gi_noes = false;
-
+	
 //
 // INNER CLASSES
 //
@@ -262,8 +264,30 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		if(seq == null)
 			return "(No data)";
 		
-		// if GI is on, display GI!
-		if(display_gi_noes) {
+		if(display_gi_noes && display_gb_noes) {
+			// If both GB and GI are on, display both.
+			String gb = seq.getGenBankAccession();
+			String gi = seq.getGI();
+			
+			if(gb != null && gi != null) {
+				return "GB:" + gb + " GI:" + gi;
+			} else if(gb != null) {
+				return "GB:" + gb + " GI:unknown";
+			} else if(gi != null) {
+				return "GB:unknown GI:" + gi;
+			} else {
+				return "GB:unknown GI:unknown";
+			}
+		
+		} else if(display_gb_noes) {
+			// If GB is on, display GB!
+			String gb = seq.getGenBankAccession();
+			
+			if(gb != null) return gb;
+			return "GB:unknown";
+		
+		} else if(display_gi_noes) {
+			// if GI is on, display GI!
 			String gi = seq.getGI();
 			if(gi != null)
 				return "GI:" + gi;
@@ -326,6 +350,9 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 			chmi_name = new CheckboxMenuItem("Sort by name");
 			chmi_name.addItemListener(this);
 
+			chmi_name_gb = new CheckboxMenuItem("Sort by name, but display GenBank accession numbers");
+			chmi_name_gb.addItemListener(this);
+			
 			chmi_name_gi = new CheckboxMenuItem("Sort by name, but display GI numbers");
 			chmi_name_gi.addItemListener(this);
 
@@ -340,6 +367,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		}
 
 		m.add(chmi_name);
+		m.add(chmi_name_gb);
 		m.add(chmi_name_gi);
 		m.add(chmi_species);
 		m.add(chmi_charsets);
@@ -369,6 +397,9 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 		currentComparator = new SortByName();
 		sortBy = "name";
 		display_gi_noes = false;
+		if(chmi.equals(chmi_name_gb)) {
+			display_gb_noes = true;
+		}
 		if(chmi.equals(chmi_name_gi)) {
 			// okay, we keep the default
 			// but turn on display_gi_noes
