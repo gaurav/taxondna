@@ -2051,7 +2051,7 @@ public class Sequence  implements Comparable, Testable {
 		
 		test.beginTest("Create a sequence");
 			try {
-				seq = new Sequence("Fasta sequence (this one has WEIRD symbols in it, like  ~ and # and, oh, I don't know, ~!@!%~!#~$!$!@!%!!!!!!!!!!!!!!!!!!@#$%^&*()K_+{}|:\"<>?~[]\\;',./=-098789194678`90260`92836`0892846`129340`927380`712387`19073190¡¡ñõóá also, it has every single valid DNA sequence string thingie thingie in the Sequence", "----ACTG?WRKYSMBHDVN----????");
+				seq = new Sequence("Fasta sequence (this one has WEIRD symbols in it, like  ~ and # and, oh, I don't know, ~!@!%~!#~$!$!@!%!!!!!!!!!!!!!!!!!!@#$%^&*()K_+{}|:\"<>?~[]\\;',./=-098789194678`90260`92836`0892846`129340`927380`712387`19073190 also, it has every single valid DNA sequence string thingie thingie in the Sequence", "----ACTG?WRKYSMBHDVN----????");
 				if(
 						seq.getFullName().length() == 304 && 	// whole name?
 						seq.getFullName().charAt(216) == '\u00F1' && 	// with weird letters?
