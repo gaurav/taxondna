@@ -1,7 +1,7 @@
 Changelog
 ==========
 
-- 1.8.1: April 17, 2020
+- 1.8.2: April 17, 2020
   - Reorganized build system to avoid saving generated files into the
     Git repository.
   - Tweaked newlines.
