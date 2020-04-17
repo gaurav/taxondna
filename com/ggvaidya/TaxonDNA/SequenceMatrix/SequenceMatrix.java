@@ -11,7 +11,7 @@
  * SequenceMatrix will, hopefully, be a much SMALLER program than TaxonDNA.
  * We will also experiment with Swing, just to see how that goes (and because
  * JTable would save work like nobody's business).
- * 
+ *
  * @author Gaurav Vaidya, gaurav@ggvaidya.com
  *
  */
@@ -20,7 +20,7 @@
  *
  *  SequenceMatrix
  *  Copyright (C) 2006-07, 2009-10 Gaurav Vaidya
- *  
+ *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -34,7 +34,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- *  
+ *
  */
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
@@ -67,11 +67,11 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 //	private DataStore	dataStore		= new DataStore(this);	// the datastore: stores data
 	private Preferences	prefs			= new Preferences(this); // preferences are stored here
 	private Exporter	exporter		= new Exporter(this);	// and the actual exports go thru exporter
-	
+
 	// managers
 	private FileManager	fileManager		= new FileManager(this); // file manager: handles files coming in and outgoing
 	private TableManager	tableManager		= null;			// the table manager handles mid-level UI
-	
+
 	// additional functionality
 	private Taxonsets	taxonSets		= new Taxonsets(this);	// and taxonsets are set (on the UI) here
 
@@ -82,7 +82,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	private CheckboxMenuItem chmi_displaySequences	= null;
 	private CheckboxMenuItem chmi_displayDistances 	= null;
 	private CheckboxMenuItem chmi_displayCorrelations = null;
-	
+
 	private JToolBar	toolBar			= null;
 	private JPanel		statusBar		= null;
 
@@ -98,7 +98,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public static void main(String[] args) {
 		new SequenceMatrix( Arrays.asList(args) );
 	}
-	
+
 //
 // 	2.	CONSTRUCTORS.
 //
@@ -122,7 +122,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
                     // Commands to run!
                     Commands.executeCmdLine(this, cmds);
                 }
-	        
+
                 resetFrameTitle();
 	}
 
@@ -135,7 +135,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public Frame		getFrame() {
 		return mainFrame;
 	}
-	
+
 	/**
 	 * Returns the Preferences object (so you can see what the user wants).
 	 */
@@ -194,7 +194,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public Taxonsets getTaxonsets() {
 		return taxonSets;
 	}
-	
+
 	/**
 	 * Returns the citation used by SequenceMatrix.
 	 */
@@ -213,14 +213,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		String cmd = evt.getActionCommand();
 
 		//
-		// File -> New. Just close the present file. 
-		// 
+		// File -> New. Just close the present file.
+		//
 		if(cmd.equals("Clear all sequences"))
 			tableManager.clear();
 
 		//
 		// File -> Open. Tries to load the file specified.
-		// The current file is closed before anything 
+		// The current file is closed before anything
 		// further is done.
 		//
 		if(cmd.equals("Add sequences"))
@@ -236,7 +236,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// File -> Exit. Calls our exit() way out.
 		//
 		if(cmd.equals("Exit"))
-			exit();	
+			exit();
 
 		// Analyses -> Zero Percent Distances
 		if(cmd.equals("Find all zero percent distances")) {
@@ -278,8 +278,8 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// Export -> Export table as tab delimited.
 		if(cmd.equals("Export table as tab-delimited"))
 			fileManager.exportTableAsTabDelimited();
-		
-		// Export -> One file per column. 
+
+		// Export -> One file per column.
 		if(cmd.equals("Export sequences (one file per column)"))
 			fileManager.exportSequencesByColumn();
 
@@ -292,7 +292,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		//
 		if(cmd.equals("Export sequences as NEXUS (interleaved, 1000 bp)"))
 			fileManager.quickExportAsNexus();
-		
+
 		if(cmd.equals("Export sequences as NEXUS (non-interleaved)"))
 			fileManager.quickExportAsNexusNonInterleaved();
 
@@ -315,7 +315,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			fileManager.quickExportAsPhylip();
 
 		//
-		// Settings -> Taxonsets. Allows you to manipulate taxonsets. 
+		// Settings -> Taxonsets. Allows you to manipulate taxonsets.
 		//
 		if(cmd.equals("Taxonset settings"))
 			taxonSets.go();
@@ -331,6 +331,30 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			mb.showMessageBox();
 		}
 
+		// Help -> Memory usage. Displays information
+		// on the current memory usage of SequenceMatrix.
+		if(cmd.equals("Memory usage")) {
+			StringBuffer buffer = new StringBuffer();
+			Runtime runtime = Runtime.getRuntime();
+
+			buffer.append("Number of processors available: " + runtime.availableProcessors() + " processors\n");
+			buffer.append("\n");
+			buffer.append("Maximum memory available for use:             " + getRoundedMemory(runtime.maxMemory()) + "\n");
+			buffer.append("Total memory available for use at the moment: " + getRoundedMemory(runtime.totalMemory()) + "\n");
+			buffer.append("Free memory available for use at the moment:  " + getRoundedMemory(runtime.freeMemory()) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(runtime.freeMemory(), runtime.totalMemory()) + "%)\n");
+
+			long totalUsedMemory = runtime.totalMemory() - runtime.freeMemory();
+			long totalFreeMemory = runtime.maxMemory() - totalUsedMemory;
+			buffer.append("\n");
+			buffer.append("Total memory used: " + getRoundedMemory(totalUsedMemory) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(totalUsedMemory, runtime.maxMemory()) + "%)\n");
+			buffer.append("Total memory free: " + getRoundedMemory(totalFreeMemory) + " (" + com.ggvaidya.TaxonDNA.DNA.Settings.percentage(totalFreeMemory, runtime.maxMemory()) + "%)\n");
+
+			MessageBox mb = new MessageBox(mainFrame, "Memory Usage",
+				buffer.toString()
+			);
+			mb.showMessageBox();
+		}
+
 		// Help -> About. We should put something
 		// up here, once we get proper documentation
 		// working in the Help -> * menu.
@@ -339,18 +363,25 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			String copyrightNotice = new String(
 					"You may cite this program as follows:\n\t" + getCitation() + "\n---\n" +
 					getName() + ", Copyright (C) 2006-07 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
-					
-			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice 
+
+			MessageBox mb = new MessageBox(mainFrame, "About this program", copyrightNotice
 					+ "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
-					+ "This program was written with Vim (http://vim.org) with occasional help from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/)." 
+					+ "This program was written with Vim (http://vim.org) with occasional help from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/)."
 			);
 			mb.showMessageBox();
-		}		
+		}
 
 		//
 		// END OF MAIN MENU
 		//
+	}
 
+	private String getRoundedMemory(long memory) {
+		//return DNA.Settings.percentage(memory, 1024) + " KB, or " + DNA.Settings.percentage(memory, 1024 * 1024) + " MB";
+		if(memory == Long.MAX_VALUE)
+			return "No limit";
+
+		return com.ggvaidya.TaxonDNA.DNA.Settings.roundOff(memory / (1024 * 1024)) + " MB\t(" + com.ggvaidya.TaxonDNA.DNA.Settings.roundOff(memory / 1024) + " KB)";
 	}
 
 	//
@@ -362,10 +393,10 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void windowDeactivated(WindowEvent e) {}
 	public void windowDeiconified(WindowEvent e) {}
 	public void windowIconified(WindowEvent e) {}
-	public void windowOpened(WindowEvent e) {}	
+	public void windowOpened(WindowEvent e) {}
 	/**
 	 * If somebody tries to close the window, call our local exit()
-	 * to shut things down. 
+	 * to shut things down.
 	 */
 	public void windowClosing(WindowEvent e) {
 		exit();
@@ -398,7 +429,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 				list =		(java.util.List) tf.getTransferData(DataFlavor.javaFileListFlavor);
 			} catch(UnsupportedFlavorException e) {
 				dtde.rejectDrop();
-				return;	
+				return;
 			} catch(IOException e) {
 				dtde.rejectDrop();
 				return;
@@ -420,12 +451,12 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	/** This really ought to be a static variable in the itemStateChanged function. Ah, well. */
 	private CheckboxMenuItem last_chmi = null;
 	/**
-	 * An item listener, used for the sort sub-menu. 
+	 * An item listener, used for the sort sub-menu.
 	 */
 	public void	itemStateChanged(ItemEvent e) {
 		CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();
 
-		// 
+		//
 		// HANDLER CODE FOR CHECKBOX ITEMS IN THE MENU (STUPID SUN BUG #4024569)
 		//
 		/*
@@ -443,7 +474,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		}
 		*/
 
-		// 
+		//
 		// HANDLER CODE FOR THE "SORT BY ..." MENU
 		// Note that the following code is pretty badly
 		// tuned specifically for SORT BY. If you're not
@@ -464,17 +495,17 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	public void switchView(int mode) {
 		switchView(mode, null);
 	}
-	
+
 	public void switchView(int mode, String arg) {
 		if(last_chmi != null)
 			last_chmi.setState(false);
 
 		tableManager.changeDisplayMode(mode, arg);
-			
+
 		switch(mode) {
 			default:
 			case TableManager.DISPLAY_SEQUENCES:
-				chmi_displaySequences.setState(true);	
+				chmi_displaySequences.setState(true);
 				last_chmi = chmi_displaySequences;
 				break;
 
@@ -517,7 +548,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		tableManager = new TableManager(this, mainTable);
 		mainTable.setModel(tableManager.getTableModel());
 		tableManager.updateDisplay();
-		
+
 		// jtoolbar
 		toolBar = tableManager.getToolbar();
 		mainFrame.add(toolBar, BorderLayout.NORTH);
@@ -540,14 +571,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// completely covering our client area
 		DropTarget dropTarget = new DropTarget(mainFrame, this);
 		dropTarget.setActive(true);
-		
+
 		DropTarget dropTargetTable = new DropTarget(mainTable, this);
 		dropTargetTable.setActive(true);
 	}
-	
+
 	/**
 	 * Resets the title of the main frame. This is from the old SpeciesIdentifier
-	 * code, but it doesn't actually do anything much any more. Maybe we'll 
+	 * code, but it doesn't actually do anything much any more. Maybe we'll
 	 * eventually tie this into FileManager or DataStore and put up the number
 	 * of charsets or something, but for now, we really don't need that. At all.
 	 */
@@ -564,9 +595,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		// File menu
 		Menu 	file		=	new Menu("File");
 		file.add(new MenuItem("Clear all sequences"));
-		
+
 		//file.add(new MenuItem("Save"));
-                
+
         // Import submenu
 		Menu	imports		= 	new Menu("Import");
 
@@ -580,7 +611,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 			imports.add(menuItem);
 			count++;
 		}
-		
+
 		imports.addActionListener(this);
 		// Turn off imports menu.
 		//file.add(imports);
@@ -609,7 +640,7 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 		export.add(new MenuItem("Taxonset settings"));
 
 		export.addSeparator();
-		
+
 		export.add(new MenuItem("Export sequences as TNT"));
 		export.add(new MenuItem("Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
 		export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
@@ -656,13 +687,14 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 */
 		view.addActionListener(this);
 		menubar.add(view);
-		
+
 		// Help menu
 		Menu	help		=	new Menu("Help");
+		help.add("Memory usage");
 		help.add("About SequenceMatrix");
 		help.addActionListener(this);
-		//menubar.add(help);
-		
+		menubar.add(help);
+
 		return menubar;
 	}
 
@@ -671,9 +703,9 @@ public class SequenceMatrix implements WindowListener, ActionListener, ItemListe
 	 *	the power of System.exit(0).
 	 */
 	private void exit() {
-		tableManager.clear(); 
-		mainFrame.dispose();		// this "closes" this window; whether or not this 
-						// terminates the application depends on whether 
+		tableManager.clear();
+		mainFrame.dispose();		// this "closes" this window; whether or not this
+						// terminates the application depends on whether
 						// other stuff is running.
 		System.exit(0);			// until we run this command. *then*, it's dead, all right.
 
