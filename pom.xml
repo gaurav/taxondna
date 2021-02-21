@@ -1,5 +1,4 @@
 <!-- A pom.xml file for TaxonDNA -->
-
 <!--
   We used Ant files [1] until Feb 2021, when I switched over to Maven.
 
@@ -11,7 +10,6 @@
 
   [1] https://github.com/gaurav/taxondna/blob/1842c7329d2c32fe76bf5c352720712c2cc7d46d/build.xml
 -->
-
 <project>
   <modelVersion>4.0.0</modelVersion>
 
@@ -20,6 +18,21 @@
   <version>2.0-SNAPSHOT</version>
 
   <name>TaxonDNA</name>
+  <description>Taxonomy-aware DNA sequence processing toolkit.</description>
+  <url>https://github.com/gaurav/taxondna</url>
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://www.opensource.org/licenses/mit-license.php</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git://github.com/gaurav/taxondna.git</connection>
+    <developerConnection>scm:git:ssh://github.com:gaurav/taxondna.git</developerConnection>
+    <url>http://github.com/gaurav/taxondna</url>
+  </scm>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -28,8 +41,8 @@
   </properties>
 
   <build>
-    <!-- Compilation configuration -->
     <plugins>
+      <!-- Compilation configuration -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -43,90 +56,112 @@
         </configuration>
       </plugin>
 
-        <!--
+      <!--
           Create multiple JAR files, one for each 'software'.
         -->
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <executions>
-              <!-- SpeciesIdentifier -->
-              <execution>
-                  <id>SpeciesIdentifier</id>
-                  <phase>package</phase>
-                  <goals>
-                      <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                      <archive>
-                          <index>true</index>
-                          <manifest>
-                              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                              <mainClass>com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier</mainClass>
-                          </manifest>
-                      </archive>
+      <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <executions>
+          <!-- SpeciesIdentifier -->
+          <execution>
+            <id>SpeciesIdentifier</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <index>true</index>
+                <manifest>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <mainClass>com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier</mainClass>
+                </manifest>
+              </archive>
+              <classifier>SpeciesIdentifier</classifier>
+              <includes>
+                <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                <include>com/ggvaidya/TaxonDNA/SpeciesIdentifier/**</include>
+              </includes>
+            </configuration>
+          </execution>
 
-                      <classifier>SpeciesIdentifier</classifier>
-                      <includes>
-                          <include>com/ggvaidya/TaxonDNA/Common/**</include>
-                          <include>com/ggvaidya/TaxonDNA/SpeciesIdentifier/**</include>
-                      </includes>
-                  </configuration>
-              </execution>
+          <!-- GenBankExplorer -->
+          <execution>
+            <id>GenBankExplorer</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <index>true</index>
+                <manifest>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <mainClass>com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer</mainClass>
+                </manifest>
+              </archive>
+              <classifier>GenBankExplorer</classifier>
+              <includes>
+                <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                <include>com/ggvaidya/TaxonDNA/GenBankExplorer/**</include>
+              </includes>
+            </configuration>
+          </execution>
 
-              <!-- GenBankExplorer -->
-              <execution>
-                  <id>GenBankExplorer</id>
-                  <phase>package</phase>
-                  <goals>
-                      <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                      <archive>
-                          <index>true</index>
-                          <manifest>
-                              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                              <mainClass>com.ggvaidya.TaxonDNA.GenBankExplorer.GenBankExplorer</mainClass>
-                          </manifest>
-                      </archive>
+          <!-- SequenceMatrix -->
+          <execution>
+            <id>SequenceMatrix</id>
+            <phase>package</phase>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+            <configuration>
+              <archive>
+                <index>true</index>
+                <manifest>
+                  <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                  <mainClass>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</mainClass>
+                </manifest>
+              </archive>
+              <classifier>SequenceMatrix</classifier>
+              <includes>
+                <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                <include>com/ggvaidya/TaxonDNA/SequenceMatrix/**</include>
+              </includes>
+            </configuration>
+          </execution>
 
-                      <classifier>GenBankExplorer</classifier>
-                      <includes>
-                          <include>com/ggvaidya/TaxonDNA/Common/**</include>
-                          <include>com/ggvaidya/TaxonDNA/GenBankExplorer/**</include>
-                      </includes>
-                  </configuration>
-              </execution>
-
-              <!-- SequenceMatrix -->
-              <execution>
-                  <id>SequenceMatrix</id>
-                  <phase>package</phase>
-                  <goals>
-                      <goal>jar</goal>
-                  </goals>
-                  <configuration>
-                      <archive>
-                          <index>true</index>
-                          <manifest>
-                              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
-                              <mainClass>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</mainClass>
-                          </manifest>
-                      </archive>
-
-                      <classifier>SequenceMatrix</classifier>
-                      <includes>
-                          <include>com/ggvaidya/TaxonDNA/Common/**</include>
-                          <include>com/ggvaidya/TaxonDNA/SequenceMatrix/**</include>
-                      </includes>
-                  </configuration>
-              </execution>
-
-              <!--
+          <!--
                 In build.xml, there was a reference to something called 'DClusters',
                 in com.ggvaidya.TaxonDNA.DClusters, but this no longer appears to be
                 part of the source. Oh well!
               -->
-          </executions>
+        </executions>
+      </plugin>
+
+      <!-- Use Spotless to check and fix style: https://github.com/diffplug/spotless/tree/master/plugin-maven -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.8.1</version>
+        <configuration>
+          <java>
+            <googleJavaFormat>
+              <version>1.6</version>
+              <style>GOOGLE</style>
+            </googleJavaFormat>
+            <removeUnusedImports />
+          </java>
+        </configuration>
+        <executions>
+          <execution>
+            <id>test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
