@@ -1,27 +1,18 @@
 /**
- * Allows you to read and write files in MEGA format.
- * This will be the main format for this program, so that
- * taxonomic information can be inserted into the file itself.
+ * Allows you to read and write files in MEGA format. This will be the main format for this program,
+ * so that taxonomic information can be inserted into the file itself.
  *
- * TODO: Update to fully conform to MEGA format.
- * 
- * Format:
- * Line 1:	#mega
- * Line 2:	TITLE: ([.\n]*)
- * ...
- * Line x:	#OTU-name	sequence
- * 		#OTU-name2	sequence2
- * 		#OTU-name	sequence3
- * 		#OTU-name	sequence4
+ * <p>TODO: Update to fully conform to MEGA format.
  *
- * We do not support distance triangles in the file. Yet.
+ * <p>Format: Line 1: #mega Line 2: TITLE: ([.\n]*) ... Line x: #OTU-name sequence #OTU-name2
+ * sequence2 #OTU-name sequence3 #OTU-name sequence4
  *
- * http://www.megasoftware.net/WebHelp/helpfile.htm
+ * <p>We do not support distance triangles in the file. Yet.
  *
- * Note: this class needs much rewriting, particularly to
- * correspond exactly to published Mega specifications.
- * The current version is really just a hack.
+ * <p>http://www.megasoftware.net/WebHelp/helpfile.htm
  *
+ * <p>Note: this class needs much rewriting, particularly to correspond exactly to published Mega
+ * specifications. The current version is really just a hack.
  */
 /*
    TaxonDNA
@@ -41,414 +32,394 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
-*/   
+*/
 
 package com.ggvaidya.TaxonDNA.Common.DNA.formats;
 
+import com.ggvaidya.TaxonDNA.Common.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
 import java.io.*;
 import java.util.*;
 import java.util.regex.*;
 
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.Common.DNA.*;
-
 public class MegaFile extends BaseFormatHandler implements Testable {
-	public static final int MAX_NAME_SIZE = 40;		// Mega3 will truncate anything bigger
-	
-	/** Creates a MegaFile format handler */
-	public MegaFile() {}
-	
-	/** Returns the short name of this handler, which is "MEGA" */
-	public String getShortName() {
-		return "MEGA";
-	}
+  public static final int MAX_NAME_SIZE = 40; // Mega3 will truncate anything bigger
 
-	/** Returns the extension. We'll go with '.meg' as our semi-official DOS-compat extension */
-	public String getExtension() {
-		return "meg";
-	}
-	
+  /** Creates a MegaFile format handler */
+  public MegaFile() {}
 
-	/** Returns the full name of this handler, which among other things notes the level of compliance we have with Mega */
-	public String getFullName() {
-		return "MEGA file format, partial compliance";
-	}	
+  /** Returns the short name of this handler, which is "MEGA" */
+  public String getShortName() {
+    return "MEGA";
+  }
 
-	/**
-	 * Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name.
-	 */
-	public String getMegaOTU(String name, int len) {
-		// Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
-		char first = name.charAt(0);
-		if(
-		 	(first >= 'A' && first <= 'Z') ||
-			(first >= 'a' && first <= 'z') ||
-			(first >= '0' && first <= '9') ||
-			(first == '-') ||
-			(first == '+') ||
-			(first == '.')
-		) {
-			// it's all good!
-		} else {
-			name = "." + name;
-		}
+  /** Returns the extension. We'll go with '.meg' as our semi-official DOS-compat extension */
+  public String getExtension() {
+    return "meg";
+  }
 
-		// Rule #2: strange characters we'll turn into '_' 
-		name = name.replaceAll("[^a-zA-Z0-9\\-\\+\\.\\_\\*\\:\\(\\)\\|\\\\\\/]", "_");
+  /**
+   * Returns the full name of this handler, which among other things notes the level of compliance
+   * we have with Mega
+   */
+  public String getFullName() {
+    return "MEGA file format, partial compliance";
+  }
 
-		// Rule #3: spaces we'll turn into '_' (although really they ought to have been fixed in rule #2)
-		name = name.replace(' ', '_');
-		
-		// Rule #4: truncate to 'len'
-		int size = name.length();
-		if(size <= len)
-			return name;
-		else
-			return name.substring(0, len);
-	}
-	
-	/** 
-	 * Writes the sequence list 'list' into the File 'file', in Mega format.
-	 * 
-	 * @throws IOException if it can't create or write the file
-	 */
-	public void writeFile(File file, SequenceList list, DelayCallback delay) throws IOException, DelayAbortedException {
-		int count = 0;
+  /** Returns a valid Mega OTU (Operation Taxonomic Unit), that is, a taxon name. */
+  public String getMegaOTU(String name, int len) {
+    // Rule #1: the name must start with '[A-Za-z0-9\-\+\.]'
+    char first = name.charAt(0);
+    if ((first >= 'A' && first <= 'Z')
+        || (first >= 'a' && first <= 'z')
+        || (first >= '0' && first <= '9')
+        || (first == '-')
+        || (first == '+')
+        || (first == '.')) {
+      // it's all good!
+    } else {
+      name = "." + name;
+    }
 
-		if(file == null)
-			throw new FileNotFoundException("No filename specified!\n\nThis is probably a programming error.");
+    // Rule #2: strange characters we'll turn into '_'
+    name = name.replaceAll("[^a-zA-Z0-9\\-\\+\\.\\_\\*\\:\\(\\)\\|\\\\\\/]", "_");
 
-		Hashtable names = new Hashtable();	// names are stored, to be checked for duplicate names
+    // Rule #3: spaces we'll turn into '_' (although really they ought to have been fixed in rule
+    // #2)
+    name = name.replace(' ', '_');
 
-		PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
-		
-		if(delay != null)
-			delay.begin();
+    // Rule #4: truncate to 'len'
+    int size = name.length();
+    if (size <= len) return name;
+    else return name.substring(0, len);
+  }
 
-		writer.println("#mega");
-		writer.println("TITLE Generated by DNA.formats.MegaFile");
+  /**
+   * Writes the sequence list 'list' into the File 'file', in Mega format.
+   *
+   * @throws IOException if it can't create or write the file
+   */
+  public void writeFile(File file, SequenceList list, DelayCallback delay)
+      throws IOException, DelayAbortedException {
+    int count = 0;
 
-		Iterator i = list.iterator();
-		while(i.hasNext()) {
-			Sequence seq = (Sequence)i.next();
-			String name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE);
+    if (file == null)
+      throw new FileNotFoundException(
+          "No filename specified!\n\nThis is probably a programming error.");
 
-			// determine the first <name>_<next_index> which
-			// hasn't already been used (and put into our hash of names)
-			//
-			// this is only done if the name already exists. ideally,
-			// after the first save, the new "unique" sequence names will
-			// ensure that everything makes sense. and no more problems
-			// for us! 
-			//
-			int next_index = 1;
-			while(names.contains(name)) {
-				// note that we now truncate it down further, so that MAX_NAME_SIZE
-				// will fit the name, '_', and upto 4 digits of an index number.
-				System.err.print("Name '" + name + "' didn't work, ");
-				name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE - 1 - 4) + "_" + next_index;
-				next_index++;
+    Hashtable names = new Hashtable(); // names are stored, to be checked for duplicate names
 
-				System.err.println("trying '" + name + "' ...");
-				
-				if(next_index > 9999)
-					throw new IOException("Sorry, I can only handle upto 9,999 duplicate names while exporting a Mega file! Please let us (the developers) know if this limit is too small for your needs.");
-			}
-			
-			names.put((Object)name, new Integer(1));
-			writer.println("#" + name + "\t" + seq.getSequence());
+    PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file)));
 
-			try {
-				if(delay != null)
-					delay.delay(count, list.count());
-			} catch(DelayAbortedException e) {
-				writer.close();
-				if(delay != null)
-					delay.end();
-				throw e;
-			}
-			count++;
-		}
-		if(delay != null)
-			delay.end();
-		
-		writer.close();		
-	}
+    if (delay != null) delay.begin();
 
-	/**
-	 * Could 'file' be Mega? That is the question. This is relatively easy, since we assume that it
-	 * is Mega if the signature ('#mega') is present. 
-	 */
-	public boolean mightBe(File file) {
-		try {
-			BufferedReader	read	=	new BufferedReader(new FileReader(file));
-			String 		line;
-			while((line = read.readLine()) != null) {
-				line = line.trim();
-				if(!line.equals("")) {
-					if(line.toLowerCase().equals("#mega"))
-						return true;
-					else  {
-						return false;
-					}
-				}
-			}			
-		} catch(IOException e) {
-		}
-		return false;
-	}
+    writer.println("#mega");
+    writer.println("TITLE Generated by DNA.formats.MegaFile");
 
-	/**
-	 * Read a Mega file (from 'file') and return a SequenceList containing all the entries. 
-	 * @throws FormatException if anything is in any whatsoeverway wrong with this format.
-	 */
-	public SequenceList readFile(File file, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException {
-		SequenceList list = new SequenceList();
-		appendFromFile(list, file, delay);
-		return list;
-	}
+    Iterator i = list.iterator();
+    while (i.hasNext()) {
+      Sequence seq = (Sequence) i.next();
+      String name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE);
 
-	public void appendFromFile(SequenceList list, File file, DelayCallback delay) throws IOException, SequenceException, FormatException, DelayAbortedException
-	{
-		try {
-			TreeMap	names		=	new TreeMap();		// stores the names-to-sequence map
-			Vector sequences	=	new Vector();		// stores all the sequences
-			boolean waitingForSig	=	true;			// state engine variable: are we waiting
-										// for the '#mega' signature?
-			boolean waitingForTitle = 	true;			// state engine variable: are we waiting
-		       								// for the 'TITLE' line?	
-										 
-			String title		=	"";			// the TITLE of the mega file
+      // determine the first <name>_<next_index> which
+      // hasn't already been used (and put into our hash of names)
+      //
+      // this is only done if the name already exists. ideally,
+      // after the first save, the new "unique" sequence names will
+      // ensure that everything makes sense. and no more problems
+      // for us!
+      //
+      int next_index = 1;
+      while (names.contains(name)) {
+        // note that we now truncate it down further, so that MAX_NAME_SIZE
+        // will fit the name, '_', and upto 4 digits of an index number.
+        System.err.print("Name '" + name + "' didn't work, ");
+        name = getMegaOTU(seq.getFullName(MAX_NAME_SIZE), MAX_NAME_SIZE - 1 - 4) + "_" + next_index;
+        next_index++;
 
-			int lineno		=	0;			// line we are currently working on
-			int spid		=	0;			// species id
+        System.err.println("trying '" + name + "' ...");
 
-			BufferedReader	read	=	new BufferedReader(new FileReader(file));
+        if (next_index > 9999)
+          throw new IOException(
+              "Sorry, I can only handle upto 9,999 duplicate names while exporting a Mega file! Please let us (the developers) know if this limit is too small for your needs.");
+      }
 
-			list.lock();
+      names.put((Object) name, new Integer(1));
+      writer.println("#" + name + "\t" + seq.getSequence());
 
-			if(delay != null)
-				delay.begin();
+      try {
+        if (delay != null) delay.delay(count, list.count());
+      } catch (DelayAbortedException e) {
+        writer.close();
+        if (delay != null) delay.end();
+        throw e;
+      }
+      count++;
+    }
+    if (delay != null) delay.end();
 
-			String line		=	"";
-			while((line = read.readLine()) != null) {
-				line = line.trim();
-				lineno++;
-			
-				if(waitingForSig) {
-					// do we have the signature? if we can't find it, we might
-					// as well quit.
-					if(line != "") {
-						if(line.toLowerCase().equals("#mega"))
-							waitingForSig = false;
-						else  {
-							throw new FormatException("This file does not contain a valid MEGA signature");
-						}
-					}
-				} else if(waitingForTitle) {
-					// do we have a title? it ain't mega without a title! (I think)
-					//
-					if(line != "") {
-						if(line.startsWith("TITLE")) {
-							Pattern	p = Pattern.compile("TITLE[:]*\\s*(.*)$");
-							Matcher m = p.matcher(line);
-	
-							if(m.lookingAt()) {
-								title = m.group(1);
-								waitingForTitle = false;
-							}
-						}
-					}
-				} else if(line.startsWith("#")) {
-					// We've hit a line containing a portion of a sequence. How this is handled:
-					//	- break the sequence up into its name and sequence components 
-					line = line.substring(1).trim();	// so we don't have to worry abt spaces after the '#'
-					StringBuffer 	seq_name	=	new StringBuffer();
-					StringBuffer 	seq_seq		=	new StringBuffer();
-					boolean		comment		=	false;
-					int		x;
-	
-					// get the sequence name
-					for(x = 0; x < line.length(); x++) {
-						char ch = line.charAt(x);
-		
-						if(Character.isWhitespace(ch))
-							break;
-	
-						if(ch == '_')
-							ch = ' ';
-	
-						seq_name.append(ch);
-					}
-	
-					// get the sequence itself.
-					// comments are inclosed "like so"
-					for(x++; x < line.length(); x++) {
-						char ch = line.charAt(x);
+    writer.close();
+  }
 
-						if(!comment) {
-							if(ch == '"') {
-								comment = true;
-							} else if(!Character.isWhitespace(ch)) {
-								seq_seq.append(ch);
-							}
-						} else {
-							if(ch == '"') {
-								comment = false;
-							}
-						}
-					}	
-					
-					if(seq_name.toString().trim() != "" && seq_seq.toString().trim() != "") {
-						if(names.get(seq_name.toString()) == null) {
-							names.put(seq_name.toString(), new Integer(spid));
-							sequences.add(spid, seq_seq);
-							spid++;	// so the next one will be 'new'
-						} else {	
-							int my_spid = 0;
-							my_spid = ((Integer)names.get(seq_name.toString())).intValue();
-							StringBuffer tmp = (StringBuffer)sequences.get(my_spid);
-							sequences.remove(my_spid);
-							sequences.add(my_spid, tmp.append(seq_seq));
-						}
-					} else {
-						throw new FormatException("Error in file on line " + lineno + ": something wrong with this line! Is there a illegible sequence on that line?");
-					}
-				} else {	
-					// comment line
-				}
-			}	
+  /**
+   * Could 'file' be Mega? That is the question. This is relatively easy, since we assume that it is
+   * Mega if the signature ('#mega') is present.
+   */
+  public boolean mightBe(File file) {
+    try {
+      BufferedReader read = new BufferedReader(new FileReader(file));
+      String line;
+      while ((line = read.readLine()) != null) {
+        line = line.trim();
+        if (!line.equals("")) {
+          if (line.toLowerCase().equals("#mega")) return true;
+          else {
+            return false;
+          }
+        }
+      }
+    } catch (IOException e) {
+    }
+    return false;
+  }
 
-			if(waitingForSig) {
-				throw new FormatException("This file does not contain a valid MEGA signature");
-			}	
+  /**
+   * Read a Mega file (from 'file') and return a SequenceList containing all the entries.
+   *
+   * @throws FormatException if anything is in any whatsoeverway wrong with this format.
+   */
+  public SequenceList readFile(File file, DelayCallback delay)
+      throws IOException, SequenceException, FormatException, DelayAbortedException {
+    SequenceList list = new SequenceList();
+    appendFromFile(list, file, delay);
+    return list;
+  }
 
-			if(waitingForTitle) {
-				throw new FormatException("This file does not contain a 'TITLE', a requirement in all valid MEGA files");
-			}
-		
-			int total		= 	spid;
-			Iterator iterator = names.keySet().iterator();
-	
-			while(iterator.hasNext()) {
-				String name 	= (String) iterator.next();
-				int i			= ((Integer)names.get(name)).intValue();
-				StringBuffer seq	= (StringBuffer) sequences.get(i);
+  public void appendFromFile(SequenceList list, File file, DelayCallback delay)
+      throws IOException, SequenceException, FormatException, DelayAbortedException {
+    try {
+      TreeMap names = new TreeMap(); // stores the names-to-sequence map
+      Vector sequences = new Vector(); // stores all the sequences
+      boolean waitingForSig = true; // state engine variable: are we waiting
+      // for the '#mega' signature?
+      boolean waitingForTitle = true; // state engine variable: are we waiting
+      // for the 'TITLE' line?
 
-				int count = (total - spid--);
-				if(delay != null)
-					delay.delay(count, total);
+      String title = ""; // the TITLE of the mega file
 
-				list.add(new Sequence(name, seq.toString()));
-			}
+      int lineno = 0; // line we are currently working on
+      int spid = 0; // species id
 
-			list.setFile(file);
-			list.setFormatHandler(this);
-		} catch(IOException e) {
-			throw new FormatException("There was an error reading the Mega file '" + file + "': " + e, e);
-		} finally {
-			if(delay != null)
-				delay.end();
-			if(list != null)
-				list.unlock();
-		}
-	}
+      BufferedReader read = new BufferedReader(new FileReader(file));
 
-	/**
-	 * Tests the MegaFile class extensively so that bugs don't creep in.
-	 */
-	public void test(TestController testMaster, DelayCallback delay) throws DelayAbortedException {
-		testMaster.begin("DNA.formats.MegaFile");
+      list.lock();
 
-		MegaFile ff = new MegaFile();
+      if (delay != null) delay.begin();
 
-		testMaster.beginTest("Recognize a file as being a MEGA file");
-			File test = testMaster.file("DNA/formats/megafile/test_mega1.txt");
-			if(ff.mightBe(test))
-				try {
-					int count = ff.readFile(test, delay).count();
-					if(count == 10)
-						testMaster.succeeded();
-					else	
-						testMaster.failed("I got back " + count + " sequences instead of 10!");
+      String line = "";
+      while ((line = read.readLine()) != null) {
+        line = line.trim();
+        lineno++;
 
-				} catch(IOException e) {
-					testMaster.failed("There was an IOException reading " + test + ": " + e);
-				} catch(SequenceException e) {
-					testMaster.failed("There was a SequenceException reading " + test + ": " + e);
-				} catch(FormatException e) {
-					testMaster.failed("There was a FormatException reading " + test + ": " + e);
-				}
+        if (waitingForSig) {
+          // do we have the signature? if we can't find it, we might
+          // as well quit.
+          if (line != "") {
+            if (line.toLowerCase().equals("#mega")) waitingForSig = false;
+            else {
+              throw new FormatException("This file does not contain a valid MEGA signature");
+            }
+          }
+        } else if (waitingForTitle) {
+          // do we have a title? it ain't mega without a title! (I think)
+          //
+          if (line != "") {
+            if (line.startsWith("TITLE")) {
+              Pattern p = Pattern.compile("TITLE[:]*\\s*(.*)$");
+              Matcher m = p.matcher(line);
 
+              if (m.lookingAt()) {
+                title = m.group(1);
+                waitingForTitle = false;
+              }
+            }
+          }
+        } else if (line.startsWith("#")) {
+          // We've hit a line containing a portion of a sequence. How this is handled:
+          //	- break the sequence up into its name and sequence components
+          line = line.substring(1).trim(); // so we don't have to worry abt spaces after the '#'
+          StringBuffer seq_name = new StringBuffer();
+          StringBuffer seq_seq = new StringBuffer();
+          boolean comment = false;
+          int x;
 
-			else
-				testMaster.failed(test + " was not recognized as a MEGA file");
+          // get the sequence name
+          for (x = 0; x < line.length(); x++) {
+            char ch = line.charAt(x);
 
-		testMaster.beginTest("Recognize a file generated by MEGA export from a FASTA file as a MEGA file");
-			File test2 = testMaster.file("DNA/formats/megafile/test_mega2.txt");
-			if(ff.mightBe(test2))
-				try {
-					if(ff.readFile(test2, delay).count() == 10)
-						testMaster.succeeded();
-				} catch(IOException e) {
-					testMaster.failed("There was an IOException reading " + test2 + ": " + e);
-				} catch(SequenceException e) {
-					testMaster.failed("There was a SequenceException reading " + test2 + ": " + e);
-				} catch(FormatException e) {
-					testMaster.failed("There was a FormatException reading " + test2 + ": " + e);
-				}
+            if (Character.isWhitespace(ch)) break;
 
+            if (ch == '_') ch = ' ';
 
-			else
-				testMaster.failed(test + " was not recognized as a MEGA file");
-			
+            seq_name.append(ch);
+          }
 
-		testMaster.beginTest("Recognize other files as being non-MEGA");
-			File notfasta = testMaster.file("DNA/formats/megafile/test_nonmega1.txt");
-			if(notfasta.canRead() && !ff.mightBe(notfasta))
-				testMaster.succeeded();
-			else
-				testMaster.failed(notfasta + " was incorrectly identified as a MEGA file");
+          // get the sequence itself.
+          // comments are inclosed "like so"
+          for (x++; x < line.length(); x++) {
+            char ch = line.charAt(x);
 
-		// err, skip this last test
-		// IT DOESNT WORK
-		testMaster.done();
-		return;
-/*
-		testMaster.beginTest("Write out a MEGA file, then read it back in (twice!)");
-			File input = testMaster.file("DNA/formats/megafile/test_megacopy.txt");
-			File success = testMaster.file("DNA/formats/megafile/test_megacopy_success.txt");
-			File output = testMaster.tempfile();
-			File output2 = testMaster.tempfile();
+            if (!comment) {
+              if (ch == '"') {
+                comment = true;
+              } else if (!Character.isWhitespace(ch)) {
+                seq_seq.append(ch);
+              }
+            } else {
+              if (ch == '"') {
+                comment = false;
+              }
+            }
+          }
 
-			try {
-				SequenceList list = ff.readFile(input, delay);
-				ff.writeFile(output, list, delay);
+          if (seq_name.toString().trim() != "" && seq_seq.toString().trim() != "") {
+            if (names.get(seq_name.toString()) == null) {
+              names.put(seq_name.toString(), new Integer(spid));
+              sequences.add(spid, seq_seq);
+              spid++; // so the next one will be 'new'
+            } else {
+              int my_spid = 0;
+              my_spid = ((Integer) names.get(seq_name.toString())).intValue();
+              StringBuffer tmp = (StringBuffer) sequences.get(my_spid);
+              sequences.remove(my_spid);
+              sequences.add(my_spid, tmp.append(seq_seq));
+            }
+          } else {
+            throw new FormatException(
+                "Error in file on line "
+                    + lineno
+                    + ": something wrong with this line! Is there a illegible sequence on that line?");
+          }
+        } else {
+          // comment line
+        }
+      }
 
-				list = ff.readFile(output, delay);
-				ff.writeFile(output2, list, delay);
+      if (waitingForSig) {
+        throw new FormatException("This file does not contain a valid MEGA signature");
+      }
 
-				if(testMaster.isIdentical(success, output2))
-					testMaster.succeeded();
-				else
-					testMaster.failed(
-						"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but they aren't identical"
-					);
-			} catch(IOException e) {
-				testMaster.failed(
-					"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got an IOException: " + e
-					);
-			} catch(SequenceException e) {
-				testMaster.failed(
-					"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got a SequenceListException: " + e
-					);
-			} catch(FormatException e) {
-				testMaster.failed(
-					"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got a SequenceListException: " + e
-					);
-			}
+      if (waitingForTitle) {
+        throw new FormatException(
+            "This file does not contain a 'TITLE', a requirement in all valid MEGA files");
+      }
 
-		testMaster.done();
-	*/
-	}
+      int total = spid;
+      Iterator iterator = names.keySet().iterator();
+
+      while (iterator.hasNext()) {
+        String name = (String) iterator.next();
+        int i = ((Integer) names.get(name)).intValue();
+        StringBuffer seq = (StringBuffer) sequences.get(i);
+
+        int count = (total - spid--);
+        if (delay != null) delay.delay(count, total);
+
+        list.add(new Sequence(name, seq.toString()));
+      }
+
+      list.setFile(file);
+      list.setFormatHandler(this);
+    } catch (IOException e) {
+      throw new FormatException("There was an error reading the Mega file '" + file + "': " + e, e);
+    } finally {
+      if (delay != null) delay.end();
+      if (list != null) list.unlock();
+    }
+  }
+
+  /** Tests the MegaFile class extensively so that bugs don't creep in. */
+  public void test(TestController testMaster, DelayCallback delay) throws DelayAbortedException {
+    testMaster.begin("DNA.formats.MegaFile");
+
+    MegaFile ff = new MegaFile();
+
+    testMaster.beginTest("Recognize a file as being a MEGA file");
+    File test = testMaster.file("DNA/formats/megafile/test_mega1.txt");
+    if (ff.mightBe(test))
+      try {
+        int count = ff.readFile(test, delay).count();
+        if (count == 10) testMaster.succeeded();
+        else testMaster.failed("I got back " + count + " sequences instead of 10!");
+
+      } catch (IOException e) {
+        testMaster.failed("There was an IOException reading " + test + ": " + e);
+      } catch (SequenceException e) {
+        testMaster.failed("There was a SequenceException reading " + test + ": " + e);
+      } catch (FormatException e) {
+        testMaster.failed("There was a FormatException reading " + test + ": " + e);
+      }
+    else testMaster.failed(test + " was not recognized as a MEGA file");
+
+    testMaster.beginTest(
+        "Recognize a file generated by MEGA export from a FASTA file as a MEGA file");
+    File test2 = testMaster.file("DNA/formats/megafile/test_mega2.txt");
+    if (ff.mightBe(test2))
+      try {
+        if (ff.readFile(test2, delay).count() == 10) testMaster.succeeded();
+      } catch (IOException e) {
+        testMaster.failed("There was an IOException reading " + test2 + ": " + e);
+      } catch (SequenceException e) {
+        testMaster.failed("There was a SequenceException reading " + test2 + ": " + e);
+      } catch (FormatException e) {
+        testMaster.failed("There was a FormatException reading " + test2 + ": " + e);
+      }
+    else testMaster.failed(test + " was not recognized as a MEGA file");
+
+    testMaster.beginTest("Recognize other files as being non-MEGA");
+    File notfasta = testMaster.file("DNA/formats/megafile/test_nonmega1.txt");
+    if (notfasta.canRead() && !ff.mightBe(notfasta)) testMaster.succeeded();
+    else testMaster.failed(notfasta + " was incorrectly identified as a MEGA file");
+
+    // err, skip this last test
+    // IT DOESNT WORK
+    testMaster.done();
+    return;
+    /*
+    	testMaster.beginTest("Write out a MEGA file, then read it back in (twice!)");
+    		File input = testMaster.file("DNA/formats/megafile/test_megacopy.txt");
+    		File success = testMaster.file("DNA/formats/megafile/test_megacopy_success.txt");
+    		File output = testMaster.tempfile();
+    		File output2 = testMaster.tempfile();
+
+    		try {
+    			SequenceList list = ff.readFile(input, delay);
+    			ff.writeFile(output, list, delay);
+
+    			list = ff.readFile(output, delay);
+    			ff.writeFile(output2, list, delay);
+
+    			if(testMaster.isIdentical(success, output2))
+    				testMaster.succeeded();
+    			else
+    				testMaster.failed(
+    					"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but they aren't identical"
+    				);
+    		} catch(IOException e) {
+    			testMaster.failed(
+    				"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got an IOException: " + e
+    				);
+    		} catch(SequenceException e) {
+    			testMaster.failed(
+    				"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got a SequenceListException: " + e
+    				);
+    		} catch(FormatException e) {
+    			testMaster.failed(
+    				"I read a MEGA file from " + input + ", then wrote it to '" + output2 + "', but I got a SequenceListException: " + e
+    				);
+    		}
+
+    	testMaster.done();
+    */
+  }
 }

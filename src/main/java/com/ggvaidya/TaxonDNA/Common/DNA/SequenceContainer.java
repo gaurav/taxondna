@@ -1,6 +1,6 @@
 /**
- * A SequenceContainer contains sequence information, which can be accessed
- * via its getAsSequenceList() function. That's, err, it, really.
+ * A SequenceContainer contains sequence information, which can be accessed via its
+ * getAsSequenceList() function. That's, err, it, really.
  */
 /*
     TaxonDNA
@@ -26,18 +26,19 @@ package com.ggvaidya.TaxonDNA.Common.DNA;
 import java.util.*;
 
 public interface SequenceContainer {
-	/**
-	 * Returns a SequenceList containing all the sequences 'contained'
-	 * herein. Might just contain a single sequence.
-	 *
-	 * @throws SequenceException if there was a problem in retrieving or creating the one sequence (e.g. if the sequence is hosted remotely, and the server returned an error).
-	 */
-	public SequenceList getAsSequenceList() throws SequenceException;
-	/** 
-	 * Returns a List contains all the other SequenceContainers
-	 * that this SequenceContainer 'contains'.
-	 *
-	 * @return aforementioned list, or an EMPTY list (NEVER null)
-	 */
-	public List alsoContains();
+  /**
+   * Returns a SequenceList containing all the sequences 'contained' herein. Might just contain a
+   * single sequence.
+   *
+   * @throws SequenceException if there was a problem in retrieving or creating the one sequence
+   *     (e.g. if the sequence is hosted remotely, and the server returned an error).
+   */
+  public SequenceList getAsSequenceList() throws SequenceException;
+  /**
+   * Returns a List contains all the other SequenceContainers that this SequenceContainer
+   * 'contains'.
+   *
+   * @return aforementioned list, or an EMPTY list (NEVER null)
+   */
+  public List alsoContains();
 }

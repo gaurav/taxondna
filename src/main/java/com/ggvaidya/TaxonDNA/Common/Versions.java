@@ -1,8 +1,7 @@
 /**
- * Versions contains various constants and values used by TaxonDNA
- * in general.
+ * Versions contains various constants and values used by TaxonDNA in general.
  *
- * @author Gaurav Vaidya gaurav@ggvaidya.com 
+ * @author Gaurav Vaidya gaurav@ggvaidya.com
  */
 
 /*
@@ -22,16 +21,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
+ *
  */
 
 package com.ggvaidya.TaxonDNA.Common;
 
 public class Versions {
-	/**
-	 * Returns the common version string for the entire TaxonDNA package. 
-	 */
-	public static String getTaxonDNA() {
-		return "1.8";
-	}
+  /** Returns the common version string for the entire TaxonDNA package. */
+  public static String getTaxonDNA() {
+    return "1.8";
+  }
 }

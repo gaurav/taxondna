@@ -1,10 +1,8 @@
-/** 	
- * 	A FormatException is thrown if any of the formats here
- * 	don't like something. FormatException is a generic error
- * 	meaning "something went wrong trying to figure this
- * 	format out"; it could be an IOException, SequenceSetException,
- * 	etc. We wrap it all up, but you can get the underlying exception
- * 	by using getCause(). 
+/**
+ * A FormatException is thrown if any of the formats here don't like something. FormatException is a
+ * generic error meaning "something went wrong trying to figure this format out"; it could be an
+ * IOException, SequenceSetException, etc. We wrap it all up, but you can get the underlying
+ * exception by using getCause().
  */
 
 /*
@@ -29,21 +27,21 @@
 package com.ggvaidya.TaxonDNA.Common.DNA.formats;
 
 public class FormatException extends Exception {
-	private static final long serialVersionUID = -8796431763478134968L;
+  private static final long serialVersionUID = -8796431763478134968L;
 
-	public FormatException() {
-		super();
-	}
+  public FormatException() {
+    super();
+  }
 
-	public FormatException(String message) {
-		super(message);
-	}
+  public FormatException(String message) {
+    super(message);
+  }
 
-	public FormatException(String message, Throwable cause) {
-		super(message, cause);
-	}
+  public FormatException(String message, Throwable cause) {
+    super(message, cause);
+  }
 
-	public FormatException(Throwable cause) {
-		super(cause);
-	}
+  public FormatException(Throwable cause) {
+    super(cause);
+  }
 }

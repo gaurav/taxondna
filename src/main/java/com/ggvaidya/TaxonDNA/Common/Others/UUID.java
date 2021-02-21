@@ -1,12 +1,11 @@
 /**
- * A class representing a UUID [1]. Okay, this is a hack. Read my lips: H-A-C-K.
- * I'm only doing this because it'll HELP (not STOP) programs from screwing up.
- * UUID engines are way too complex for me to try and handcode one right now
- * just to get AlignmentHelper working. Plus, hopefully, the WORSE thing that
- * can happen is a collision (two UUIDs are identical), which should be handled
- * by another part of the program - and ideally, that BARFS. So it's all good :).
- * 
- * @author Gaurav Vaidya, gaurav@ggvaidya.com 
+ * A class representing a UUID [1]. Okay, this is a hack. Read my lips: H-A-C-K. I'm only doing this
+ * because it'll HELP (not STOP) programs from screwing up. UUID engines are way too complex for me
+ * to try and handcode one right now just to get AlignmentHelper working. Plus, hopefully, the WORSE
+ * thing that can happen is a collision (two UUIDs are identical), which should be handled by
+ * another part of the program - and ideally, that BARFS. So it's all good :).
+ *
+ * @author Gaurav Vaidya, gaurav@ggvaidya.com
  */
 /*
     TaxonDNA
@@ -30,44 +29,43 @@
 package com.ggvaidya.TaxonDNA.Common.Others;
 
 public class UUID {
-	private static long lastAllocated = 0;
-	private static int lastSequenceNo = 0;
-	private long myTimestamp = 0;
-	private int mySequenceNo = 0;
-	private static Object lock = new Object();
-	
-	public UUID() {
-		synchronized(lock) {
-			myTimestamp = System.currentTimeMillis();
-			mySequenceNo = 1;
+  private static long lastAllocated = 0;
+  private static int lastSequenceNo = 0;
+  private long myTimestamp = 0;
+  private int mySequenceNo = 0;
+  private static Object lock = new Object();
 
-			if(myTimestamp == lastAllocated)
-				mySequenceNo = lastSequenceNo + 1;
-			
-			lastAllocated = myTimestamp;
-			lastSequenceNo = mySequenceNo;
-		}
-//		System.err.println("Unique ID allocated: " + toString());
-	}
+  public UUID() {
+    synchronized (lock) {
+      myTimestamp = System.currentTimeMillis();
+      mySequenceNo = 1;
 
-	// equals()? Only if you're another UUID, mate
-	public boolean equals(Object o) {
-		return equals( (UUID) o);
-	}
+      if (myTimestamp == lastAllocated) mySequenceNo = lastSequenceNo + 1;
 
-	// equals()? Only if the UIDs match, mate
-	public boolean equals(UUID uid2) {
-		return uid2.getUUID().equals(getUUID());
-	}
+      lastAllocated = myTimestamp;
+      lastSequenceNo = mySequenceNo;
+    }
+    //		System.err.println("Unique ID allocated: " + toString());
+  }
 
-	// if you're "one of us" ... you get to know this
-	// otherwise, please, just use equals(Object) and be happy with it ...
-	protected String getUUID() {
-		return myTimestamp + "_" + mySequenceNo;
-	}
+  // equals()? Only if you're another UUID, mate
+  public boolean equals(Object o) {
+    return equals((UUID) o);
+  }
 
-	// guaranteed to be unique
-	public String toString() {
-		return getUUID();
-	}
+  // equals()? Only if the UIDs match, mate
+  public boolean equals(UUID uid2) {
+    return uid2.getUUID().equals(getUUID());
+  }
+
+  // if you're "one of us" ... you get to know this
+  // otherwise, please, just use equals(Object) and be happy with it ...
+  protected String getUUID() {
+    return myTimestamp + "_" + mySequenceNo;
+  }
+
+  // guaranteed to be unique
+  public String toString() {
+    return getUUID();
+  }
 }

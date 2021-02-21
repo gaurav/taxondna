@@ -1,13 +1,11 @@
 /**
  * Pearls. Because some of us wish we were coding in Perl.
  *
- * (Note: this file was hacked together as coding continued,
- * basically any time I pined for Perl. The functions do not
- * attempt to fully, or even partially, emulate their 
- * corresponding Perl functions or actions. They only do as
- * much as my program needs them to do.)
+ * <p>(Note: this file was hacked together as coding continued, basically any time I pined for Perl.
+ * The functions do not attempt to fully, or even partially, emulate their corresponding Perl
+ * functions or actions. They only do as much as my program needs them to do.)
  *
- * @author Gaurav Vaidya gaurav@ggvaidya.com 
+ * @author Gaurav Vaidya gaurav@ggvaidya.com
  */
 
 /*
@@ -27,7 +25,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
+ *
  */
 
 package com.ggvaidya.TaxonDNA.Common;
@@ -35,46 +33,42 @@ package com.ggvaidya.TaxonDNA.Common;
 import java.util.*;
 
 public class Pearls {
-	/**
-	 * 'Joins' a Collection into a String.
-	 *
-	 * Analagous to join()
-	 */
-	public static String join(String joiner, Collection coll) {
-		StringBuffer buff = new StringBuffer();
+  /**
+   * 'Joins' a Collection into a String.
+   *
+   * <p>Analagous to join()
+   */
+  public static String join(String joiner, Collection coll) {
+    StringBuffer buff = new StringBuffer();
 
-		Iterator i = coll.iterator();
-		while(i.hasNext()) {
-			String str = i.next().toString();
-			buff.append(str);
-			if(i.hasNext())
-				buff.append(joiner);
-		}
+    Iterator i = coll.iterator();
+    while (i.hasNext()) {
+      String str = i.next().toString();
+      buff.append(str);
+      if (i.hasNext()) buff.append(joiner);
+    }
 
-		return buff.toString();
-	}
+    return buff.toString();
+  }
 
-	/**
-	 * 'Joins' a Collection into a String. This function allowes 
-	 * you to denote both a 'before' and an after'. For instance,
-	 * 	repeat('A', @list, 'B')
-	 * will give you 
-	 * 	A$list[0]BA@list[1]B...
-	 *
-	 * It's the best I can do without continuations, I guess =/
-	 */
-	public static String repeat(String before, Collection coll, String after) {
-		StringBuffer buff = new StringBuffer();
+  /**
+   * 'Joins' a Collection into a String. This function allowes you to denote both a 'before' and an
+   * after'. For instance, repeat('A', @list, 'B') will give you A$list[0]BA@list[1]B...
+   *
+   * <p>It's the best I can do without continuations, I guess =/
+   */
+  public static String repeat(String before, Collection coll, String after) {
+    StringBuffer buff = new StringBuffer();
 
-		Iterator i = coll.iterator();
-		while(i.hasNext()) {
-			String str = i.next().toString();
+    Iterator i = coll.iterator();
+    while (i.hasNext()) {
+      String str = i.next().toString();
 
-			buff.append(before);
-			buff.append(str);
-			buff.append(after);
-		}
+      buff.append(before);
+      buff.append(str);
+      buff.append(after);
+    }
 
-		return buff.toString();
-	}
+    return buff.toString();
+  }
 }

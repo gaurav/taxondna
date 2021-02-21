@@ -1,5 +1,5 @@
 /**
- * Barcode generator attempts to generate species-level barcodes for everybody. 
+ * Barcode generator attempts to generate species-level barcodes for everybody.
  *
  * @author Gaurav Vaidya, gaurav@ggvaidya.com
  */
@@ -22,310 +22,329 @@
     Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-
 package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
-
-import java.util.*;
-import java.io.*;
-import java.awt.*;
-import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
 import com.ggvaidya.TaxonDNA.Common.DNA.*;
 import com.ggvaidya.TaxonDNA.Common.UI.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
 
+public class BarcodeGenerator extends Panel
+    implements UIExtension, ActionListener, ItemListener, Runnable {
+  private SpeciesIdentifier seqId = null;
+  private SequenceList set = null;
 
-public class BarcodeGenerator extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
-	private SpeciesIdentifier	seqId = null;
-	private SequenceList	set = null;
+  private Choice choice_overlap = new Choice();
+  private Button calc;
 
-	private Choice		choice_overlap = new Choice();
-	private Button		calc;
+  public BarcodeGenerator(SpeciesIdentifier seqId) {
+    this.seqId = seqId;
 
-	public BarcodeGenerator(SpeciesIdentifier seqId) {
-		this.seqId = seqId;
-	
+    // layouting
+    setLayout(new BorderLayout());
 
-		// layouting
-		setLayout(new BorderLayout());	
-	       	
-		Panel settings = new Panel(); 
-		settings.setLayout(new GridBagLayout());
-		GridBagConstraints cons = new GridBagConstraints();
-		
-		cons.gridwidth = 1;
-		cons.gridheight = 1;
-		cons.weightx = 0;
-		cons.weighty = 0;
-		cons.anchor = GridBagConstraints.NORTHWEST;
-		cons.fill = GridBagConstraints.HORIZONTAL;
-		cons.insets = new Insets(5, 5, 5, 5);
-		cons.ipadx = 0;
-		cons.ipady = 0;
-		
-		// overlap
-		cons.gridx = 0;
-		cons.gridy = 0;
-		cons.weightx = 1;
+    Panel settings = new Panel();
+    settings.setLayout(new GridBagLayout());
+    GridBagConstraints cons = new GridBagConstraints();
 
-		settings.add(new Label("Only consider base pairs for which:"), cons);
-		choice_overlap.add("information exists in any sequence");
-		choice_overlap.add("information exists for two or more sequences");
-		choice_overlap.add("information exists for one or more sequences");
-		choice_overlap.select(1);
-		choice_overlap.addItemListener(this);
+    cons.gridwidth = 1;
+    cons.gridheight = 1;
+    cons.weightx = 0;
+    cons.weighty = 0;
+    cons.anchor = GridBagConstraints.NORTHWEST;
+    cons.fill = GridBagConstraints.HORIZONTAL;
+    cons.insets = new Insets(5, 5, 5, 5);
+    cons.ipadx = 0;
+    cons.ipady = 0;
 
-		cons.gridx = 1;
-		cons.gridy = 0;
-		settings.add(choice_overlap, cons);
+    // overlap
+    cons.gridx = 0;
+    cons.gridy = 0;
+    cons.weightx = 1;
 
-		cons.gridx = 0;
-		cons.gridy = 1;
-		cons.gridwidth = 2;
-		settings.add(new Label("We will use the inclusivity algorithm to generate consensus sequences. Thus, A+T will become W, and W+C will become H."), cons);
-		
-		calc = new Button("Generate");
-		calc.addActionListener(this);
+    settings.add(new Label("Only consider base pairs for which:"), cons);
+    choice_overlap.add("information exists in any sequence");
+    choice_overlap.add("information exists for two or more sequences");
+    choice_overlap.add("information exists for one or more sequences");
+    choice_overlap.select(1);
+    choice_overlap.addItemListener(this);
 
-		cons.gridx = 0;
-		cons.gridy = 2;
-		cons.gridwidth = 2;
-		settings.add(calc, cons);
+    cons.gridx = 1;
+    cons.gridy = 0;
+    settings.add(choice_overlap, cons);
 
-		add(settings, BorderLayout.NORTH);
+    cons.gridx = 0;
+    cons.gridy = 1;
+    cons.gridwidth = 2;
+    settings.add(
+        new Label(
+            "We will use the inclusivity algorithm to generate consensus sequences. Thus, A+T will become W, and W+C will become H."),
+        cons);
 
-		/*
-		Panel buttons = new Panel();
-		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
-*/
+    calc = new Button("Generate");
+    calc.addActionListener(this);
 
-/*
-		buttons.add(calc);
-		add(buttons, BorderLayout.SOUTH);
-		*/
-	}
+    cons.gridx = 0;
+    cons.gridy = 2;
+    cons.gridwidth = 2;
+    settings.add(calc, cons);
 
-	public void itemStateChanged(ItemEvent e) {
-	}
+    add(settings, BorderLayout.NORTH);
 
-	public void actionPerformed(ActionEvent e) {
-		if(e.getSource().equals(calc)) {
-			new Thread(this, "BarcodeGenerator").start();	
-		}
-	}
-	
-	public void dataChanged()	{
-		return;
-	}
+    /*
+    		Panel buttons = new Panel();
+    		buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+    */
 
-	public void run() {
-		set = seqId.lockSequenceList();
+    /*
+    buttons.add(calc);
+    add(buttons, BorderLayout.SOUTH);
+    */
+  }
 
-		if(set == null) {
-			seqId.unlockSequenceList();
-			return;
-		}
-			
+  public void itemStateChanged(ItemEvent e) {}
 
-		int 	overlap = choice_overlap.getSelectedIndex();
-		int	num_sequences_should_match = 2;
-		int 	count = 0;
+  public void actionPerformed(ActionEvent e) {
+    if (e.getSource().equals(calc)) {
+      new Thread(this, "BarcodeGenerator").start();
+    }
+  }
 
-		if(overlap == 0) { // all sequences
-			num_sequences_should_match = -1;
-		} else if(overlap == 1) { // min 2
-			num_sequences_should_match = 2;
-		} else if(overlap == 2) { // min 1
-			num_sequences_should_match = 1;
-		}
+  public void dataChanged() {
+    return;
+  }
 
-//		System.err.println("Number of sequences which should match: " + num_sequences_should_match);
-		
-		ProgressDialog delay = ProgressDialog.create(seqId.getFrame(), "Please wait, generating sequence barcodes ...", "Please wait, sequence barcodes are being generated. This may take a while.", 0);
+  public void run() {
+    set = seqId.lockSequenceList();
 
-		delay.begin();
+    if (set == null) {
+      seqId.unlockSequenceList();
+      return;
+    }
 
-		// first, collate into species groups
-		Vector groups = new Vector(); 
-		Iterator i = set.iterator();
-		count = 0;
-		while(i.hasNext()) {
-			boolean found = false;
-			Sequence seq = (Sequence) i.next();
+    int overlap = choice_overlap.getSelectedIndex();
+    int num_sequences_should_match = 2;
+    int count = 0;
 
-			count++;
-			try {
-				delay.delay(count, set.count() * 2);
-			} catch(DelayAbortedException e) {
-				delay.end();
-				seqId.unlockSequenceList();
-				return;
-			}
+    if (overlap == 0) { // all sequences
+      num_sequences_should_match = -1;
+    } else if (overlap == 1) { // min 2
+      num_sequences_should_match = 2;
+    } else if (overlap == 2) { // min 1
+      num_sequences_should_match = 1;
+    }
 
-			// if there's no spName, we'll put it by itself
-			if(seq.getSpeciesName() != null) {
-				Iterator group_i = groups.iterator();
-				while(group_i.hasNext()) {
-					Vector	v	= (Vector) group_i.next();
-					Sequence seq2	= (Sequence) v.get(0);
+    //		System.err.println("Number of sequences which should match: " + num_sequences_should_match);
 
-					if(seq2.getSpeciesName() == null)
-						continue;
-	
-					if(seq.getSpeciesName().equals(seq2.getSpeciesName())) {
-						v.add(seq);
-						found = true;
-						break;
-					}
-				}
+    ProgressDialog delay =
+        ProgressDialog.create(
+            seqId.getFrame(),
+            "Please wait, generating sequence barcodes ...",
+            "Please wait, sequence barcodes are being generated. This may take a while.",
+            0);
 
-				if(found)
-					continue;
-			}
+    delay.begin();
 
-			Vector vec = new Vector();
-			vec.add(seq);
-			groups.add(vec);
-		}
+    // first, collate into species groups
+    Vector groups = new Vector();
+    Iterator i = set.iterator();
+    count = 0;
+    while (i.hasNext()) {
+      boolean found = false;
+      Sequence seq = (Sequence) i.next();
 
-//		System.err.println("Number of groups: " + groups.size());
+      count++;
+      try {
+        delay.delay(count, set.count() * 2);
+      } catch (DelayAbortedException e) {
+        delay.end();
+        seqId.unlockSequenceList();
+        return;
+      }
 
-		//
-		// Important stuff: this SequenceSet is NOT the nice,
-		// locked, SequenceSet. Because of the way Sequence
-		// now caches our pairwise distances, you can NOT
-		// calculate distances on this SequenceSet. Luckily,
-		// you don't have to - we just make it up, write it
-		// out into SequenceSet, and it's all good. 
-		// 
-		SequenceList results = new SequenceList();
+      // if there's no spName, we'll put it by itself
+      if (seq.getSpeciesName() != null) {
+        Iterator group_i = groups.iterator();
+        while (group_i.hasNext()) {
+          Vector v = (Vector) group_i.next();
+          Sequence seq2 = (Sequence) v.get(0);
 
-		// now, we compress each group into a single sequence.
-		i = groups.iterator();		
-		
-		count = 0;
-		try {
-		while(i.hasNext()) {
-			Vector group = (Vector) i.next();
+          if (seq2.getSpeciesName() == null) continue;
 
-			count++;
-			delay.delay(set.count() + count, set.count() * 2);
-			
-			if(group.size() == 1) {
-				results.add((Sequence)group.get(0));	
-			} else {
-				int count_sequences = group.size();
-				int length = set.getMaxLength();
-				StringBuffer buff = new StringBuffer();
-				String name = "";
+          if (seq.getSpeciesName().equals(seq2.getSpeciesName())) {
+            v.add(seq);
+            found = true;
+            break;
+          }
+        }
 
-				for(int x = 0; x < length; x++) {
-					int found_in = 0;
-					char ch = '?';
-					char ch2 = '?';
-					
-					for(int y = 0; y < count_sequences; y++) {
-						String str = ((Sequence)group.get(y)).getSequence();
+        if (found) continue;
+      }
 
-						if(name.equals("")) {
-							name = ((Sequence)group.get(y)).getSpeciesName();
-						}
-						
-						if(x < str.length())
-							ch2 = str.charAt(x);
-						else
-							ch2 = '?';
-						
-						if(ch == '?')
-							ch = ch2;
-						
-						if(Sequence.identical(ch, ch2)) {
-							found_in++;
-						} 
-						
-						ch = Sequence.consensus(ch, ch2);
-						if(ch == '_')
-							ch = '-';
-					}
+      Vector vec = new Vector();
+      vec.add(seq);
+      groups.add(vec);
+    }
 
-					if(num_sequences_should_match == -1) {
-						// everything goes!
-						buff.append(ch);
-					} else if(found_in >= num_sequences_should_match) {
-						buff.append(ch);
-					} else {
-						// not enough matched!
-						//
-						// we make it 'N' here, but later on
-						// leading and lagging 'N's are converted into gaps 
-						buff.append('N');
-					}
-				}
+    //		System.err.println("Number of groups: " + groups.size());
 
-				for(int x = 0; x < buff.length(); x++) {
-					if(buff.charAt(x) == '-') {
-						// go on
-					} else if(buff.charAt(x) == 'N') {
-						// turn into gap!
-						buff.setCharAt(x, '-');
-					} else {
-						// lead over!
-						break;
-					}
-				}
+    //
+    // Important stuff: this SequenceSet is NOT the nice,
+    // locked, SequenceSet. Because of the way Sequence
+    // now caches our pairwise distances, you can NOT
+    // calculate distances on this SequenceSet. Luckily,
+    // you don't have to - we just make it up, write it
+    // out into SequenceSet, and it's all good.
+    //
+    SequenceList results = new SequenceList();
 
-				for(int x = buff.length() - 1; x >= 0; x--) {
-					if(buff.charAt(x) == '-') {
-						// go on
-					} else if(buff.charAt(x) == 'N') {
-						// turn into gap!
-						buff.setCharAt(x, '-');
-					} else {
-						// lead over!
-						break;
-					}
-				}
+    // now, we compress each group into a single sequence.
+    i = groups.iterator();
 
-				String str = buff.toString().replace('_', '-');
-//				System.err.println("Consensus of " + name + " (" + count_sequences + "): " + str);
-				results.add(new Sequence(name + " (barcode of " + count_sequences + " sequences)", str));
-			}
-		}
+    count = 0;
+    try {
+      while (i.hasNext()) {
+        Vector group = (Vector) i.next();
 
-		// now, we either spawn a new instance of SpeciesIdentifier, or
-		// export into Fasta file.
-		// 
-		// we export. SOOOOO much simpler 
-		FileDialog fd = new FileDialog(seqId.getFrame(), "Save species barcodes as FASTA file ...", FileDialog.SAVE);
-		fd.setVisible(true);
+        count++;
+        delay.delay(set.count() + count, set.count() * 2);
 
-		if(fd.getDirectory() != null && fd.getFile() != null) {
-			File file = new File(fd.getDirectory() + fd.getFile());
+        if (group.size() == 1) {
+          results.add((Sequence) group.get(0));
+        } else {
+          int count_sequences = group.size();
+          int length = set.getMaxLength();
+          StringBuffer buff = new StringBuffer();
+          String name = "";
 
-			com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
-			ff.writeFile(file, new SequenceList(results), null);
-			file = null;
-		}
+          for (int x = 0; x < length; x++) {
+            int found_in = 0;
+            char ch = '?';
+            char ch2 = '?';
 
-		results = null;
-		
-		} catch(SequenceException e) {
-			MessageBox.messageBox(seqId.getFrame(), "Error: sequence incorrect", "An incorrect sequence was generated. This is an error in the program. Please inform the programmer.\n\nTechnical description: " + e);
-			e.printStackTrace();
-		} catch(IOException e) {
-			MessageBox.messageBox(seqId.getFrame(), "Error: could not write file", "The following error was reported while trying to write the Fasta file: " + e);
-		} catch(DelayAbortedException e) {
-			MessageBox.messageBox(seqId.getFrame(), "Calculation aborted", "This calculation has been aborted as requested.");
-		} finally {
-			delay.end();
-			seqId.unlockSequenceList();
-		}
-	}
-	
-	public String getShortName() {		return "Consensus Barcode Generator"; 	}
-	public String getDescription() {	return "Generates a consensus sequence for every species in the dataset"; }
-	public boolean addCommandsToMenu(Menu commandMenu) {	return false; }
-	public Panel getPanel() {
-		return this;
-	}
+            for (int y = 0; y < count_sequences; y++) {
+              String str = ((Sequence) group.get(y)).getSequence();
+
+              if (name.equals("")) {
+                name = ((Sequence) group.get(y)).getSpeciesName();
+              }
+
+              if (x < str.length()) ch2 = str.charAt(x);
+              else ch2 = '?';
+
+              if (ch == '?') ch = ch2;
+
+              if (Sequence.identical(ch, ch2)) {
+                found_in++;
+              }
+
+              ch = Sequence.consensus(ch, ch2);
+              if (ch == '_') ch = '-';
+            }
+
+            if (num_sequences_should_match == -1) {
+              // everything goes!
+              buff.append(ch);
+            } else if (found_in >= num_sequences_should_match) {
+              buff.append(ch);
+            } else {
+              // not enough matched!
+              //
+              // we make it 'N' here, but later on
+              // leading and lagging 'N's are converted into gaps
+              buff.append('N');
+            }
+          }
+
+          for (int x = 0; x < buff.length(); x++) {
+            if (buff.charAt(x) == '-') {
+              // go on
+            } else if (buff.charAt(x) == 'N') {
+              // turn into gap!
+              buff.setCharAt(x, '-');
+            } else {
+              // lead over!
+              break;
+            }
+          }
+
+          for (int x = buff.length() - 1; x >= 0; x--) {
+            if (buff.charAt(x) == '-') {
+              // go on
+            } else if (buff.charAt(x) == 'N') {
+              // turn into gap!
+              buff.setCharAt(x, '-');
+            } else {
+              // lead over!
+              break;
+            }
+          }
+
+          String str = buff.toString().replace('_', '-');
+          //				System.err.println("Consensus of " + name + " (" + count_sequences + "): " + str);
+          results.add(new Sequence(name + " (barcode of " + count_sequences + " sequences)", str));
+        }
+      }
+
+      // now, we either spawn a new instance of SpeciesIdentifier, or
+      // export into Fasta file.
+      //
+      // we export. SOOOOO much simpler
+      FileDialog fd =
+          new FileDialog(
+              seqId.getFrame(), "Save species barcodes as FASTA file ...", FileDialog.SAVE);
+      fd.setVisible(true);
+
+      if (fd.getDirectory() != null && fd.getFile() != null) {
+        File file = new File(fd.getDirectory() + fd.getFile());
+
+        com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff =
+            new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
+        ff.writeFile(file, new SequenceList(results), null);
+        file = null;
+      }
+
+      results = null;
+
+    } catch (SequenceException e) {
+      MessageBox.messageBox(
+          seqId.getFrame(),
+          "Error: sequence incorrect",
+          "An incorrect sequence was generated. This is an error in the program. Please inform the programmer.\n\nTechnical description: "
+              + e);
+      e.printStackTrace();
+    } catch (IOException e) {
+      MessageBox.messageBox(
+          seqId.getFrame(),
+          "Error: could not write file",
+          "The following error was reported while trying to write the Fasta file: " + e);
+    } catch (DelayAbortedException e) {
+      MessageBox.messageBox(
+          seqId.getFrame(),
+          "Calculation aborted",
+          "This calculation has been aborted as requested.");
+    } finally {
+      delay.end();
+      seqId.unlockSequenceList();
+    }
+  }
+
+  public String getShortName() {
+    return "Consensus Barcode Generator";
+  }
+
+  public String getDescription() {
+    return "Generates a consensus sequence for every species in the dataset";
+  }
+
+  public boolean addCommandsToMenu(Menu commandMenu) {
+    return false;
+  }
+
+  public Panel getPanel() {
+    return this;
+  }
 }

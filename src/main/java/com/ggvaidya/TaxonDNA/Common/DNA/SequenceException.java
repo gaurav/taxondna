@@ -1,8 +1,7 @@
-/** 	
- * 	A SequenceException is thrown if a sequence is wrong for some
- * 	reason. `Wrong' includes having non-valid nucleotides,
- * 	length/sequence disparity, and anything else the Sequence class
- * 	might need to communicate with the user.	
+/**
+ * A SequenceException is thrown if a sequence is wrong for some reason. `Wrong' includes having
+ * non-valid nucleotides, length/sequence disparity, and anything else the Sequence class might need
+ * to communicate with the user.
  */
 
 /*
@@ -27,38 +26,39 @@
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
 public class SequenceException extends Exception {
-	/**
-	 * A generated serialVersionUID
-	 */
-	private static final long serialVersionUID = -2662237531930486828L;
-	private String fullName = "";
+  /** A generated serialVersionUID */
+  private static final long serialVersionUID = -2662237531930486828L;
 
-	public String getMalformedSequenceName() {
-		if(fullName.equals(""))
-			return "(I can't understand the name either!)";
+  private String fullName = "";
 
-		return fullName;
-	}
-	
-	public SequenceException(String name, String message) {
-		super(message);
+  public String getMalformedSequenceName() {
+    if (fullName.equals("")) return "(I can't understand the name either!)";
 
-		fullName = name;
-	}
+    return fullName;
+  }
 
-	public SequenceException(String name, String message, Throwable cause) {
-		super(message, cause);
+  public SequenceException(String name, String message) {
+    super(message);
 
-		fullName = name;
-	}
+    fullName = name;
+  }
 
-	public SequenceException(String name, Throwable cause) {
-		super(cause);
+  public SequenceException(String name, String message, Throwable cause) {
+    super(message, cause);
 
-		fullName = name;
-	}
+    fullName = name;
+  }
 
-	public String getMessage() {
-		return "While processing the sequence named '" + fullName + "', the following occured: " + super.getMessage();
-	}
+  public SequenceException(String name, Throwable cause) {
+    super(cause);
+
+    fullName = name;
+  }
+
+  public String getMessage() {
+    return "While processing the sequence named '"
+        + fullName
+        + "', the following occured: "
+        + super.getMessage();
+  }
 }

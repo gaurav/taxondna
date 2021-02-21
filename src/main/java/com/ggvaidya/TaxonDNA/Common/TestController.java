@@ -1,13 +1,12 @@
 /**
- * A TestController carries out Tests by calling the 'test()' method
- * of Testable objects. The test signals results back to TestController
- * via four methods: testInformation(title, description), testBegin(title),
- * testSuccess(title), testFailure(title, description).
+ * A TestController carries out Tests by calling the 'test()' method of Testable objects. The test
+ * signals results back to TestController via four methods: testInformation(title, description),
+ * testBegin(title), testSuccess(title), testFailure(title, description).
  *
- * The Testable objects are responsible for their own issues - the
- * TestController will only report test status back to the user.
+ * <p>The Testable objects are responsible for their own issues - the TestController will only
+ * report test status back to the user.
  *
- * @author Gaurav Vaidya gaurav@ggvaidya.com 
+ * @author Gaurav Vaidya gaurav@ggvaidya.com
  */
 
 /*
@@ -27,7 +26,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- * 
+ *
  */
 
 package com.ggvaidya.TaxonDNA.Common;
@@ -35,15 +34,21 @@ package com.ggvaidya.TaxonDNA.Common;
 import java.io.*;
 
 public interface TestController {
-	public void begin(String title);
-	public void done();
+  public void begin(String title);
 
-	public void beginTest(String testName);
-	public void failed(String description);
-	public void succeeded();
-	public void information(String information);
-	
-	public File file(String name);
-	public File tempfile();
-	public boolean isIdentical(File x, File y);
+  public void done();
+
+  public void beginTest(String testName);
+
+  public void failed(String description);
+
+  public void succeeded();
+
+  public void information(String information);
+
+  public File file(String name);
+
+  public File tempfile();
+
+  public boolean isIdentical(File x, File y);
 }
