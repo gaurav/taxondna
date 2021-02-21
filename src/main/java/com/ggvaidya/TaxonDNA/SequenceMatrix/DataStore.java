@@ -38,9 +38,7 @@ package com.ggvaidya.TaxonDNA.SequenceMatrix;
 import java.util.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
 
 public class DataStore extends SequenceGrid {
 	// Defines: should we ignore differently sized sequences in the same sequence list?

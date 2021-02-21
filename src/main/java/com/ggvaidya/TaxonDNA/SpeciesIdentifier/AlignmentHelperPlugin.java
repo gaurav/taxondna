@@ -58,9 +58,9 @@ import java.awt.*;
 import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionListener {	
@@ -218,7 +218,7 @@ public class AlignmentHelperPlugin extends Panel implements UIExtension, ActionL
 		if(set_map == null) 
 			set_map = new SequenceList();
 
-		FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+		FastaFile ff = new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
 		String error_occured_in = "";
 
 		// Load up the datafile 

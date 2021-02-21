@@ -31,8 +31,8 @@ import java.awt.*;
 import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class BarcodeGenerator extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
@@ -302,7 +302,7 @@ public class BarcodeGenerator extends Panel implements UIExtension, ActionListen
 		if(fd.getDirectory() != null && fd.getFile() != null) {
 			File file = new File(fd.getDirectory() + fd.getFile());
 
-			com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+			com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
 			ff.writeFile(file, new SequenceList(results), null);
 			file = null;
 		}

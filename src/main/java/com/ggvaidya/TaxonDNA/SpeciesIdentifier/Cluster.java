@@ -31,8 +31,8 @@ import java.awt.event.*;
 import java.awt.datatransfer.*;	// for clipboard
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class Cluster extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
@@ -61,7 +61,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
 	// helper function
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 	public Cluster(SpeciesIdentifier view) {
@@ -827,7 +827,7 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 			}
 
 			// Save file somewhere
-			com.ggvaidya.TaxonDNA.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile();
+			com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff = new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
 			try {
 				ff.writeFile(
 					new java.io.File(file_to.getAbsolutePath() + "_lumped.txt"),

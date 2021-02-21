@@ -32,9 +32,9 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.datatransfer.*;
 
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.Others.BrowserLauncher;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.Others.BrowserLauncher;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class SequenceEdit extends Panel implements UIExtension, ActionListener, ItemListener, FocusListener {	

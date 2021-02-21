@@ -33,13 +33,9 @@ import java.util.*;
 import java.util.regex.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
 
 public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 // ALL THE FOLLOWING VARIABLES ARE INHERITED FROM DISPLAYMODE
@@ -295,7 +291,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
 
 	/** Convenience function */
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 	public void setValueAt(String colName, String seqName, Object aValue) {

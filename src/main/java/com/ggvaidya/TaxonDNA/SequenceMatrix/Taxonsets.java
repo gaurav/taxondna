@@ -29,17 +29,9 @@ package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
 import java.util.*;
 
-import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
-import javax.swing.table.*;
-
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class Taxonsets implements WindowListener, ItemListener, ActionListener {
 	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object

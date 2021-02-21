@@ -44,9 +44,9 @@ import java.io.*;
 import java.util.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class FileManager implements FormatListener {
 

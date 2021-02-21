@@ -27,12 +27,11 @@ package com.ggvaidya.TaxonDNA.SpeciesIdentifier;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.datatransfer.*;	// for clipboard
 import java.io.*;		// for export
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class PairwiseExplorer extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {	
 	private SpeciesIdentifier	identifier;
@@ -290,11 +289,11 @@ public class PairwiseExplorer extends Panel implements UIExtension, ActionListen
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 	private boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.identical(x, y);
 	}
 
 	/* Pad a string to a size */

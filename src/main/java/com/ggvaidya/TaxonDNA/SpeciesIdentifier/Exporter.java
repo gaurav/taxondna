@@ -36,8 +36,8 @@ import java.awt.event.*;
 import java.awt.datatransfer.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class Exporter extends Panel implements Runnable, UIExtension, ActionListener, ItemListener {	
 	private SpeciesIdentifier	seqId;

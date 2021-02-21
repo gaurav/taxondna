@@ -32,7 +32,6 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import java.util.prefs.*;
 import java.awt.dnd.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
@@ -41,9 +40,9 @@ import javax.swing.tree.*;
 import javax.swing.text.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class ViewManager implements MouseListener {
 	private GenBankExplorer explorer = 	null;			// the GenBankExplorer object

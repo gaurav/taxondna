@@ -42,9 +42,8 @@ import javax.swing.*;
 
 // TaxonDNA stuff
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class GenBankExplorer implements ActionListener, ItemListener, DropTargetListener {
 	// Shared between all GBXs

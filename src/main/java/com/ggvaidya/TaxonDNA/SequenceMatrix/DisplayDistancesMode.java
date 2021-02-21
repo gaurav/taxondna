@@ -28,12 +28,7 @@
 
 package com.ggvaidya.TaxonDNA.SequenceMatrix;
 
-import java.io.*;
 import java.util.*;
-import java.util.regex.*;
-
-import java.net.*;		// for URLConnection, etc.
-import java.lang.reflect.*;	// Reflection
 
 import java.awt.Color;
 import java.awt.Component;
@@ -42,13 +37,9 @@ import java.awt.CheckboxMenuItem;
 import java.awt.event.*;
 
 import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
 import javax.swing.table.*;
 
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
 
 public class DisplayDistancesMode extends DisplayMode implements ItemListener { 
 	// change this if the no of additionalColumns increase!
@@ -119,8 +110,8 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 			if(s.getName().equals(seqName_top))
 				return +1;
 
-			return constant * ((int)(com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(getPairwise()) 
-				- com.ggvaidya.TaxonDNA.DNA.Settings.makeLongFromDouble(s.getPairwise())));
+			return constant * ((int)(com.ggvaidya.TaxonDNA.Common.DNA.Settings.makeLongFromDouble(getPairwise())
+				- com.ggvaidya.TaxonDNA.Common.DNA.Settings.makeLongFromDouble(s.getPairwise())));
 		}
 	};
 
@@ -476,7 +467,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 
 	/** Convenience function */
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 	public void setValueAt(String colName, String rowName, Object aValue) {
@@ -676,7 +667,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
 
 	/** For convenience */
 	public boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.identical(x, y);
 	}
 }
 

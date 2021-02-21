@@ -12,8 +12,8 @@ import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class SequencePanel extends Panel implements UIExtension, ActionListener, ItemListener, ItemSelectable {
 	private SpeciesIdentifier	seqId = null;

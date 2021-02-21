@@ -42,9 +42,9 @@ import java.io.*;
 import java.util.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class SpeciesIdentifier implements WindowListener, ActionListener, ItemListener, DropTargetListener {
 	// the following information is shared amongst all TaxonDNAs.
@@ -448,7 +448,7 @@ public class SpeciesIdentifier implements WindowListener, ActionListener, ItemLi
 		}
 
 		if(sequences.getFormatHandler() == null)
-			sequences.setFormatHandler(new com.ggvaidya.TaxonDNA.DNA.formats.FastaFile());
+			sequences.setFormatHandler(new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile());
 
 		try {
 			sequences.writeToFile(ProgressDialog.create(

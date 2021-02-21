@@ -33,14 +33,9 @@ import java.awt.datatransfer.*; // For the Clipboard.
 import java.io.*;
 import java.util.*;
 
-import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
-import javax.swing.table.*;
-
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class FindDistances implements WindowListener, ActionListener {
 	private SequenceMatrix 		matrix 	= null;			// the SequenceMatrix object
@@ -277,7 +272,7 @@ public class FindDistances implements WindowListener, ActionListener {
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 

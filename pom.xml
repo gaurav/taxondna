@@ -1,5 +1,16 @@
 <!-- A pom.xml file for TaxonDNA -->
-<!-- We used Ant files until Feb 2021, when we switched over to TaxonDNA -->
+
+<!--
+  We used Ant files [1] until Feb 2021, when I switched over to Maven.
+
+  For now, I'll copy the way in which we implemented this in Ant back in 2006,
+  which is to create multiple JAR files for each "software" (SpeciesIdentifier,
+  SequenceMatrix, and so on). Eventually, the right thing to do would be to split
+  the Common code into a separate package and then include it into the other
+  softwares.
+
+  [1] https://github.com/gaurav/taxondna/blob/1842c7329d2c32fe76bf5c352720712c2cc7d46d/build.xml
+-->
 
 <project>
   <modelVersion>4.0.0</modelVersion>
@@ -17,6 +28,7 @@
   </properties>
 
   <build>
+    <!-- Compilation configuration -->
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -31,6 +43,88 @@
         </configuration>
       </plugin>
     </plugins>
-  </build>
 
+    <!--
+      Create multiple JAR files, one for each 'software'.
+    -->
+    <plugin>
+      <artifactId>maven-jar-plugin</artifactId>
+      <executions>
+          <!-- SpeciesIdentifier -->
+          <execution>
+              <id>SpeciesIdentifier</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>jar</goal>
+              </goals>
+              <configuration>
+                  <archive>
+                      <index>true</index>
+                      <manifest>
+                          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                      </manifest>
+                  </archive>
+
+                  <classifier>SpeciesIdentifier</classifier>
+                  <includes>
+                      <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                      <include>com/ggvaidya/SpeciesIdentifier/**</include>
+                  </includes>
+              </configuration>
+          </execution>
+
+          <!-- GenBankExplorer -->
+          <execution>
+              <id>GenBankExplorer</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>jar</goal>
+              </goals>
+              <configuration>
+                  <archive>
+                      <index>true</index>
+                      <manifest>
+                          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                      </manifest>
+                  </archive>
+
+                  <classifier>GenBankExplorer</classifier>
+                  <includes>
+                      <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                      <include>com/ggvaidya/GenBankExplorer/**</include>
+                  </includes>
+              </configuration>
+          </execution>
+
+          <!-- SequenceMatrix -->
+          <execution>
+              <id>SequenceMatrix</id>
+              <phase>package</phase>
+              <goals>
+                  <goal>jar</goal>
+              </goals>
+              <configuration>
+                  <archive>
+                      <index>true</index>
+                      <manifest>
+                          <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                      </manifest>
+                  </archive>
+
+                  <classifier>SequenceMatrix</classifier>
+                  <includes>
+                      <include>com/ggvaidya/TaxonDNA/Common/**</include>
+                      <include>com/ggvaidya/SequenceMatrix/**</include>
+                  </includes>
+              </configuration>
+          </execution>
+
+          <!--
+            In build.xml, there was a reference to something called 'DClusters',
+            in com.ggvaidya.TaxonDNA.DClusters, but this no longer appears to be
+            part of the source. Oh well!
+          -->
+      </executions>
+    </build>
+  </plugin>
 </project>

@@ -31,8 +31,8 @@ import java.awt.event.*;
 
 import java.util.prefs.*;		// for Preferences
 
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class Configuration extends Panel implements UIExtension, ActionListener, FocusListener {

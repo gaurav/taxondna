@@ -49,13 +49,12 @@ import java.awt.datatransfer.*;	// for drag-n-drop
 
 // Swing stuff
 import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.table.*;
 
 // TaxonDNA stuff
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.formats.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class SequenceMatrix implements WindowListener, ActionListener, ItemListener, DropTargetListener {
 	// The following variables create and track our user interface

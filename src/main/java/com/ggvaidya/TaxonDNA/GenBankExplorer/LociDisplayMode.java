@@ -27,20 +27,11 @@
 
 package com.ggvaidya.TaxonDNA.GenBankExplorer;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
 import java.util.*;
-import java.util.prefs.*;
 
-import javax.swing.*;		// "Come, thou Tortoise, when?"
-import javax.swing.event.*;
 import javax.swing.tree.*;
 
-import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.DNA.formats.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
 
 public class LociDisplayMode extends DisplayMode {
 	public LociDisplayMode(ViewManager man) {

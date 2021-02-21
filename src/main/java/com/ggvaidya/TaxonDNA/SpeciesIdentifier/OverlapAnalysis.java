@@ -38,8 +38,8 @@ import java.awt.datatransfer.*;
 import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class OverlapAnalysis extends Panel implements UIExtension, ActionListener, ItemListener, Runnable {
 	private SpeciesIdentifier	seqId = null;
@@ -211,7 +211,7 @@ public class OverlapAnalysis extends Panel implements UIExtension, ActionListene
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 	
 	public String getShortName() {		return "Overlap Analysis"; 	}

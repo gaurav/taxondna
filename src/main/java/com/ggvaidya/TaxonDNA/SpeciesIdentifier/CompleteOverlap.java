@@ -31,11 +31,10 @@ import java.io.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.datatransfer.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 public class CompleteOverlap extends Panel implements UIExtension, Runnable, ActionListener {
 	private SpeciesIdentifier	seqId = null;

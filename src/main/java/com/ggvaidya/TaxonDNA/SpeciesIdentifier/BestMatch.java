@@ -33,8 +33,8 @@ import java.awt.datatransfer.*;
 import java.awt.event.*;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.DNA.*;
-import com.ggvaidya.TaxonDNA.UI.*;
+import com.ggvaidya.TaxonDNA.Common.DNA.*;
+import com.ggvaidya.TaxonDNA.Common.UI.*;
 
 
 public class BestMatch extends Panel implements UIExtension, ActionListener, Runnable {
@@ -496,11 +496,11 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
 	}
 
 	private double percentage(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.percentage(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(x, y);
 	}
 
 	private boolean identical(double x, double y) {
-		return com.ggvaidya.TaxonDNA.DNA.Settings.identical(x, y);
+		return com.ggvaidya.TaxonDNA.Common.DNA.Settings.identical(x, y);
 	}
 	
 	public String getShortName() {		return "Best Match/Best Close Match"; 	}
