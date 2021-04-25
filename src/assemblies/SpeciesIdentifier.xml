@@ -21,7 +21,7 @@
   </fileSets>
   <files>
     <file>
-      <source>target/TaxonDNA-${pom.version}-SpeciesIdentifier.jar</source>
+      <source>target/TaxonDNA-${project.version}-SpeciesIdentifier.jar</source>
       <destName>SpeciesIdentifier.jar</destName>
     </file>
   </files>

@@ -180,7 +180,7 @@
                   <descriptors>
                     <descriptor>src/assemblies/SpeciesIdentifier.xml</descriptor>
                   </descriptors>
-                  <finalName>SpeciesIdentifier-${pom.version}</finalName>
+                  <finalName>SpeciesIdentifier-${project.version}</finalName>
                 </configuration>
             </execution>
             <execution>
@@ -194,7 +194,7 @@
                   <descriptors>
                     <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
                   </descriptors>
-                  <finalName>SequenceMatrix-${pom.version}</finalName>
+                  <finalName>SequenceMatrix-${project.version}</finalName>
                 </configuration>
             </execution>
         </executions>
