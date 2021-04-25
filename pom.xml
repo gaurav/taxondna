@@ -183,6 +183,20 @@
                   <finalName>SpeciesIdentifier-${pom.version}</finalName>
                 </configuration>
             </execution>
+            <execution>
+                <id>SequenceMatrix</id>
+                <phase>package</phase>
+                <goals>
+                    <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
+                  </descriptors>
+                  <finalName>SequenceMatrix-${pom.version}</finalName>
+                </configuration>
+            </execution>
         </executions>
       </plugin>
     </plugins>
