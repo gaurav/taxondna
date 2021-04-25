@@ -1,6 +1,7 @@
-Release/*.jar
 Releases/*
-build/
+
+# Ignore .DS_Store Mac-specific preview file.
+**/.DS_Store
 
 # Added Eclipse.gitignore from https://github.com/github/gitignore/blob/218a941be92679ce67d0484547e3e142b2f5f6f0/Global/Eclipse.gitignore
 .metadata
