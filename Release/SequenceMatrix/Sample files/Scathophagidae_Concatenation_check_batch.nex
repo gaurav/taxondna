@@ -1,0 +1,142 @@
+#NEXUS
+[INSTRUCTIONS:
+1. Execute batch file from file folder with the input gene files and the concatenated matrix
+2. Confirm the 'data set resets' when PAUP* requests them
+2. For each gene PAUP* will determine the number constant, variable, and parsimony-informative characters of the data in the input file and the same data within the concatenated matrix
+3. These numbers will be logged to one log file for each ribosomal gene and three files for protein-encoding genes with codon information
+4. Open the log files and compare the character statistics; they should be the same for the data in the input file and within the concatenated matrix
+5. Batch file can be modified for any concatenation job through search-and-replace of the gene names]
+
+set WarnRedef=no;
+set autoclose;
+log file=SCATH12S.log start replace;
+execute Scathophagidae.nex;
+exclude all; include SCATH12S;
+cstatus;
+execute SCATH12S.nex;
+cstatus;
+log stop;
+
+log file=SCATH16S.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATH16S;
+cstatus;
+execute SCATH16S.nex;
+cstatus;
+log stop;
+
+log file=SCATH28Sac.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATH28Sac;
+cstatus;
+execute SCATH28Sac.nex;
+cstatus;
+log stop;
+
+log file=SCATHCOI-1st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCOI; excl pos2; excl pos3;
+cstatus;
+execute SCATHCOI.nex;
+excl all; incl pos1;
+cstatus;
+log stop;
+
+log file=SCATHCOI-2st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCOI; excl pos1; excl pos3;
+cstatus;
+execute SCATHCOI.nex;
+excl all; incl pos2;
+cstatus;
+log stop;
+
+log file=SCATHCOI-3rd.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCOI; excl pos1; excl pos2;
+cstatus;
+execute SCATHCOI.nex;
+excl all; incl pos3;
+cstatus;
+log stop;
+
+log file=SCATHEF1A-1st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHEF1A; excl pos2; excl pos3;
+cstatus;
+execute SCATHEF1A.nex;
+excl all; incl pos1;
+cstatus;
+log stop;
+
+log file=SCATHEF1A-2st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHEF1A; excl pos1; excl pos3;
+cstatus;
+execute SCATHEF1A.nex;
+excl all; incl pos2;
+cstatus;
+log stop;
+
+log file=SCATHEF1A-3rd.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHEF1A; excl pos1; excl pos2;
+cstatus;
+execute SCATHEF1A.nex;
+excl all; incl pos3;
+cstatus;
+log stop;
+
+log file=SCATHCYTB-1st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCYTB; excl pos2; excl pos3;
+cstatus;
+execute SCATHCYTB.nex;
+excl all; incl pos1;
+cstatus;
+log stop;
+
+log file=SCATHCYTB-2st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCYTB; excl pos1; excl pos3;
+cstatus;
+execute SCATHCYTB.nex;
+excl all; incl pos2;
+cstatus;
+log stop;
+
+log file=SCATHCYTB-3rd.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHCYTB; excl pos1; excl pos2;
+cstatus;
+execute SCATHCYTB.nex;
+excl all; incl pos3;
+cstatus;
+log stop;
+
+log file=SCATHrpol-1st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHrpol; excl pos2; excl pos3;
+cstatus;
+execute SCATHrpol.nex;
+excl all; incl pos1;
+cstatus;
+log stop;
+
+log file=SCATHrpol-2st.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHrpol; excl pos1; excl pos3;
+cstatus;
+execute SCATHrpol.nex;
+excl all; incl pos2;
+cstatus;
+log stop;
+
+log file=SCATHrpol-3rd.log start replace;
+execute Scathophagidae.nex;
+excl all; incl SCATHrpol; excl pos1; excl pos2;
+cstatus;
+execute SCATHrpol.nex;
+excl all; incl pos3;
+cstatus;
+log stop;
