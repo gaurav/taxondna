@@ -1,0 +1,28 @@
+<assembly>
+  <id>SpeciesIdentifier</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>Release/SpeciesIdentifier</directory>
+      <includes>
+        <include>**</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <includes>
+        <include>README*</include>
+        <include>COPYING</include>
+        <include>Changes.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>target/TaxonDNA-${pom.version}-SpeciesIdentifier.jar</source>
+      <destName>SpeciesIdentifier.jar</destName>
+    </file>
+  </files>
+</assembly>
