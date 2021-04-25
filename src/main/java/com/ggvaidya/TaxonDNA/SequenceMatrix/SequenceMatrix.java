@@ -300,13 +300,19 @@ public class SequenceMatrix
                   + getCitation()
                   + "\n---\n"
                   + getName()
-                  + ", Copyright (C) 2006-07 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n\n");
+                  + ", Copyright (C) 2006-07 Gaurav Vaidya. \nSequenceMatrix comes with ABSOLUTELY NO WARRANTY. This is free software, and you are welcome to redistribute it under certain conditions; check the COPYING file you should have recieved along with this package.\n");
+
+      String memoryUsage = SequenceMatrix.summarizeMemory();
 
       MessageBox mb =
           new MessageBox(
               mainFrame,
               "About this program",
               copyrightNotice
+                  + "\n"
+                  + "\n---\n"
+                  + memoryUsage
+                  + "\n---\n"
                   + "Written by Gaurav Vaidya\nIf I had time to put something interesting here, there'd be something in the help menu too. All apologies.\n\n"
                   + "This program was written with Vim (http://vim.org) with occasional help from Eclipse (http://eclipse.org/). Compilation was handled by Ant (http://ant.apache.org/).");
       mb.showMessageBox();
@@ -316,6 +322,59 @@ public class SequenceMatrix
     // END OF MAIN MENU
     //
 
+  }
+
+  private static String summarizeMemory() {
+    StringBuffer buffer = new StringBuffer();
+    Runtime runtime = Runtime.getRuntime();
+
+    buffer.append(
+        "Number of processors available: " + runtime.availableProcessors() + " processors\n");
+    buffer.append("\n");
+    buffer.append(
+        "Maximum memory available for use:             " + printMemory(runtime.maxMemory()) + "\n");
+    buffer.append(
+        "Total memory available for use at the moment: "
+            + printMemory(runtime.totalMemory())
+            + "\n");
+    buffer.append(
+        "Free memory available for use at the moment:  "
+            + printMemory(runtime.freeMemory())
+            + " ("
+            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                runtime.freeMemory(), runtime.totalMemory())
+            + "%)\n");
+
+    long totalUsedMemory = runtime.totalMemory() - runtime.freeMemory();
+    long totalFreeMemory = runtime.maxMemory() - totalUsedMemory;
+    buffer.append("\n");
+    buffer.append(
+        "Total memory used: "
+            + printMemory(totalUsedMemory)
+            + " ("
+            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                totalUsedMemory, runtime.maxMemory())
+            + "%)\n");
+    buffer.append(
+        "Total memory free: "
+            + printMemory(totalFreeMemory)
+            + " ("
+            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                totalFreeMemory, runtime.maxMemory())
+            + "%)\n");
+
+    return buffer.toString();
+  }
+
+  private static String printMemory(long memory) {
+    // return DNA.Settings.percentage(memory, 1024) + " KB, or " + DNA.Settings.percentage(memory,
+    // 1024 * 1024) + " MB";
+    if (memory == Long.MAX_VALUE) return "No limit";
+
+    return com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / (1024 * 1024))
+        + " MB\t("
+        + com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / 1024)
+        + " KB)";
   }
 
   //
@@ -620,7 +679,8 @@ public class SequenceMatrix
     Menu help = new Menu("Help");
     help.add("About SequenceMatrix");
     help.addActionListener(this);
-    // menubar.add(help);
+    menubar.add(help);
+    menubar.setHelpMenu(help);
 
     return menubar;
   }
