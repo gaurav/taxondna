@@ -18,7 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v1.8.1]: April 17, 2020
 
 ## Older versions
-- [v1.8]: June 22, 2015
+- [1.8]: June 22, 2015
     - Used 'codesign' to sign "Sequence Matrix.app" as this might prevent
       it from being recognized on MacOS X systems.
        - Thanks to Shiyu Phan for this suggestion!
