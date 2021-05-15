@@ -1,0 +1,28 @@
+<assembly>
+  <id>SequenceMatrix</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <fileSets>
+    <fileSet>
+      <directory>Release/SequenceMatrix</directory>
+      <includes>
+        <include>**</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <includes>
+        <include>README*</include>
+        <include>COPYING</include>
+        <include>Changes.txt</include>
+      </includes>
+    </fileSet>
+  </fileSets>
+  <files>
+    <file>
+      <source>target/TaxonDNA-${pom.version}-SequenceMatrix.jar</source>
+      <destName>SequenceMatrix.jar</destName>
+    </file>
+  </files>
+</assembly>
