@@ -249,13 +249,13 @@ public class SequenceMatrix
     //
     // Export -> Export as NEXUS.
     //
-    if (cmd.equals("Export sequences as NEXUS (interleaved, 1000 bp)"))
+    if (cmd.equals("Export dataset in interleaved Nexus format (1000 bp)"))
       fileManager.quickExportAsNexus();
 
-    if (cmd.equals("Export sequences as NEXUS (non-interleaved)"))
+    if (cmd.equals("Export dataset in non-interleaved Nexus format"))
       fileManager.quickExportAsNexusNonInterleaved();
 
-    if (cmd.equals("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"))
+    if (cmd.equals("Export dataset in simplified \"naked\" Nexus format"))
       fileManager.quickExportAsNakedNexus();
 
     // Here if it's ever needed.
@@ -269,7 +269,7 @@ public class SequenceMatrix
 
     //
     // Export -> Export as PHYLIP
-    if (cmd.equals("Export sequences for RAxML analyses on CIPRES"))
+    if (cmd.equals("Export dataset in Phylip format"))
       fileManager.quickExportAsPhylip();
 
     //
@@ -627,13 +627,13 @@ public class SequenceMatrix
 
     export.addSeparator();
 
-    export.add(new MenuItem("Export sequences as TNT"));
+    export.add(new MenuItem("Export dataset in TNT format"));
     export.add(
         new MenuItem(
-            "Export sequences as NEXUS (interleaved, 1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
-    export.add(new MenuItem("Export sequences as NEXUS (non-interleaved)"));
-    export.add(new MenuItem("Export sequences as NEXUS (\"naked\", e.g. for GARLI)"));
-    export.add(new MenuItem("Export sequences for RAxML analyses on CIPRES"));
+            "Export dataset in interleaved Nexus format (1000 bp)", new MenuShortcut(KeyEvent.VK_N)));
+    export.add(new MenuItem("Export dataset in non-interleaved Nexus format"));
+    export.add(new MenuItem("Export dataset in simplified \"naked\" Nexus format"));
+    export.add(new MenuItem("Export dataset in Phylip format"));
 
     export.addSeparator();
 
