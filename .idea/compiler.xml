@@ -10,7 +10,7 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="TaxonDNA" target="11" />
+      <module name="TaxonDNA" target="15" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
