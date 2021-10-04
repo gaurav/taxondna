@@ -240,7 +240,7 @@ public class SequenceMatrix
     if (cmd.equals("Export table as tab-delimited")) fileManager.exportTableAsTabDelimited();
 
     // Export -> One file per column.
-    if (cmd.equals("Export sequences (one file per column)")) fileManager.exportSequencesByColumn();
+    if (cmd.equals("Split concatenated dataset into individual loci")) fileManager.exportSequencesByColumn();
 
     // Export -> Group columns randomly in groups of X
     if (cmd.equals("Export columns grouped randomly"))
@@ -637,7 +637,7 @@ public class SequenceMatrix
 
     export.addSeparator();
 
-    export.add(new MenuItem("Export sequences (one file per column)"));
+    export.add(new MenuItem("Split concatenated dataset into individual loci"));
 
     export.addSeparator();
 
