@@ -174,6 +174,31 @@
             </execution>
         </executions>
       </plugin>
+
+      <!-- We need maven-site-plugin 3.7.1 for checkstyle to produce a report. -->
+      <plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-site-plugin</artifactId>
+	<version>3.9.1</version>
+      </plugin>
     </plugins>
   </build>
+
+  <!-- We use CheckStyle to check the code style. -->
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-checkstyle-plugin</artifactId>
+	<version>3.1.2</version>
+	<reportSets>
+	  <reportSet>
+	    <reports>
+              <report>checkstyle</report>
+	    </reports>
+	  </reportSet>
+	</reportSets>
+      </plugin>
+    </plugins>
+  </reporting>
 </project>
