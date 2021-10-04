@@ -590,9 +590,9 @@ public class TableManager implements ActionListener {
       delThisCol.setActionCommand("COLUMN_DELETE:" + colName);
       pm.add(delThisCol);
 
-      MenuItem pdmThisCol = new MenuItem("Display pairwise distances");
-      pdmThisCol.setActionCommand("DO_PDM:" + colName);
-      pm.add(pdmThisCol);
+      // MenuItem pdmThisCol = new MenuItem("Display pairwise distances");
+      // pdmThisCol.setActionCommand("DO_PDM:" + colName);
+      // pm.add(pdmThisCol);
     }
     pm.addSeparator();
 
