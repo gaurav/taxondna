@@ -61,6 +61,7 @@
         -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+	<version>3.2.0</version>
         <executions>
           <!-- SpeciesIdentifier -->
           <execution>
@@ -181,24 +182,29 @@
 	<artifactId>maven-site-plugin</artifactId>
 	<version>3.9.1</version>
       </plugin>
-    </plugins>
-  </build>
 
-  <!-- We use CheckStyle to check the code style. -->
-  <reporting>
-    <plugins>
+      <!-- We use CheckStyle to check the code style. -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
 	<artifactId>maven-checkstyle-plugin</artifactId>
 	<version>3.1.2</version>
-	<reportSets>
-	  <reportSet>
-	    <reports>
-              <report>checkstyle</report>
-	    </reports>
-	  </reportSet>
-	</reportSets>
+	<executions>
+	  <execution>
+	    <id>validate</id>
+	    <phase>validate</phase>
+	    <goals>
+              <goal>check</goal>
+	    </goals>
+	  </execution>
+	</executions>
+	<configuration>
+	  <configLocation>google_checks.xml</configLocation>
+	  <encoding>UTF-8</encoding>
+     	  <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+	</configuration>
       </plugin>
     </plugins>
-  </reporting>
+  </build>
 </project>
