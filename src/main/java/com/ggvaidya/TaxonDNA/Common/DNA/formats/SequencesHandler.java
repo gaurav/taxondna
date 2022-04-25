@@ -60,50 +60,50 @@ package com.ggvaidya.TaxonDNA.Common.DNA.formats;
 import com.ggvaidya.TaxonDNA.Common.DNA.*;
 
 public interface SequencesHandler {
-  /**
-   * A 'local command' line was read by SequencesFile.
-   *
-   * @param cmdLine The command line which was read in, including the initial '^'
-   * @param seq The sequence currently being processed. Note that the sequence is guaranteed
-   *     complete: local commands are only processed AFTER the entire sequence is read (i.e. once
-   *     the next sequence begins), IN the order that they appeared.
-   * @return true, if you understood this command and 'consumed' it.
-   */
-  public boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException;
+    /**
+     * A 'local command' line was read by SequencesFile.
+     *
+     * @param cmdLine The command line which was read in, including the initial '^'
+     * @param seq The sequence currently being processed. Note that the sequence is guaranteed
+     *     complete: local commands are only processed AFTER the entire sequence is read (i.e. once
+     *     the next sequence begins), IN the order that they appeared.
+     * @return true, if you understood this command and 'consumed' it.
+     */
+    public boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException;
 
-  /**
-   * A 'global' command line was read by SequencesFile.
-   *
-   * @param cmdLine The command line which was read in, including the initial '@'
-   * @param list The SequenceList on which this command is expected to work. Note that this is the
-   *     complete sequence list, as global commands are processed after loading is complete.
-   * @return true, if you understood this command and 'consumed' it.
-   */
-  public boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException;
+    /**
+     * A 'global' command line was read by SequencesFile.
+     *
+     * @param cmdLine The command line which was read in, including the initial '@'
+     * @param list The SequenceList on which this command is expected to work. Note that this is the
+     *     complete sequence list, as global commands are processed after loading is complete.
+     * @return true, if you understood this command and 'consumed' it.
+     */
+    public boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException;
 
-  /**
-   * An opportunity to write a local command line for a particular sequence.
-   *
-   * @return The local command line to write, or 'null' if you don't have one. Try not to send back
-   *     zero-length strings, as we might write them into the file as a blank line, not to mention
-   *     adding them to the header. You can write multiple commands by separating them with
-   *     newlines.
-   */
-  public String writeLocalCommand(Sequence seq);
+    /**
+     * An opportunity to write a local command line for a particular sequence.
+     *
+     * @return The local command line to write, or 'null' if you don't have one. Try not to send
+     *     back zero-length strings, as we might write them into the file as a blank line, not to
+     *     mention adding them to the header. You can write multiple commands by separating them
+     *     with newlines.
+     */
+    public String writeLocalCommand(Sequence seq);
 
-  /**
-   * An opportunity to write a global command line for a particular sequence.
-   *
-   * @return The global command line to write, or 'null' if you don't have one. Try not to send back
-   *     zero-length strings, as we might write them into the file as a blank line, not to mention
-   *     adding them to the header. You can write multiple commands by separating them with
-   *     newlines.
-   */
-  public String writeGlobalCommand(SequenceList list);
+    /**
+     * An opportunity to write a global command line for a particular sequence.
+     *
+     * @return The global command line to write, or 'null' if you don't have one. Try not to send
+     *     back zero-length strings, as we might write them into the file as a blank line, not to
+     *     mention adding them to the header. You can write multiple commands by separating them
+     *     with newlines.
+     */
+    public String writeGlobalCommand(SequenceList list);
 
-  /**
-   * Return the 'name' used by this module. This is the same name which we'll use in the header, so
-   * no spaces. All spaces will be summarily turned into '_'.
-   */
-  public String getSequencesHandlerName();
+    /**
+     * Return the 'name' used by this module. This is the same name which we'll use in the header,
+     * so no spaces. All spaces will be summarily turned into '_'.
+     */
+    public String getSequencesHandlerName();
 }

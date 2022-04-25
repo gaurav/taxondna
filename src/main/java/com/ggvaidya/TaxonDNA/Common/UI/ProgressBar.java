@@ -35,80 +35,81 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import java.awt.*;
 
 public class ProgressBar extends Canvas implements DelayCallback {
-  private int done = 0;
-  private int total = 100;
-  private String text = "";
+    private int done = 0;
+    private int total = 100;
+    private String text = "";
 
-  /** Creates a ProgressBar with no text. */
-  public ProgressBar() {
-    setBackground(SystemColor.inactiveCaption);
-    setSize(20, 20);
-  }
-
-  /** Creates a ProgressBar with a specified text. */
-  public ProgressBar(String text) {
-    this();
-    this.text = text;
-  }
-
-  /**
-   * Changes the "indicator" of the bar. The change should be continually increasing, or the bar
-   * will stay "stuck" at the higher point until the values catch up again.
-   */
-  public void changeIndicator(int done, int total) {
-    this.done = done;
-    this.total = total;
-
-    invalidate();
-    if (isShowing()) {
-      paint(getGraphics());
+    /** Creates a ProgressBar with no text. */
+    public ProgressBar() {
+        setBackground(SystemColor.inactiveCaption);
+        setSize(20, 20);
     }
-  }
 
-  public void setText(String text) {
-    this.text = text;
-  }
-
-  /** Paints the progress bar */
-  public void paint(Graphics g) {
-    int width = (int) ((float) getWidth() * ((float) done / total));
-
-    g.setColor(SystemColor.inactiveCaption);
-    g.fillRect(width, 0, getWidth(), getHeight());
-    g.setColor(SystemColor.activeCaption);
-    g.fillRect(0, 0, width, getHeight());
-
-    if (!text.equals("")) {
-      String display = text + " (" + (int) ((float) done / total * 100) + "%)";
-
-      int stringWidth = g.getFontMetrics().stringWidth(display);
-      int stringX = (getWidth() - stringWidth) / 2;
-      int stringY =
-          g.getFontMetrics().getHeight() + (getHeight() - g.getFontMetrics().getHeight()) / 4;
-
-      //			g.setColor(SystemColor.activeCaption);
-      //			g.setXORMode(SystemColor.inactiveCaption);
-      g.setColor(Color.WHITE);
-      g.drawString(display, stringX, stringY);
+    /** Creates a ProgressBar with a specified text. */
+    public ProgressBar(String text) {
+        this();
+        this.text = text;
     }
-  }
 
-  // Delay callback methods
-  //
-  public void begin() {
-    setText("Please wait ...");
-  }
+    /**
+     * Changes the "indicator" of the bar. The change should be continually increasing, or the bar
+     * will stay "stuck" at the higher point until the values catch up again.
+     */
+    public void changeIndicator(int done, int total) {
+        this.done = done;
+        this.total = total;
 
-  public void delay(int done, int total) {
-    changeIndicator(done, total);
-  }
+        invalidate();
+        if (isShowing()) {
+            paint(getGraphics());
+        }
+    }
 
-  public void end() {
-    setText("All done!");
-    changeIndicator(100, 100);
-  }
+    public void setText(String text) {
+        this.text = text;
+    }
 
-  public void addWarning(String x) {
-    throw new RuntimeException("ProgressBars cannot indicate warnings to users, sorry!");
-  }
+    /** Paints the progress bar */
+    public void paint(Graphics g) {
+        int width = (int) ((float) getWidth() * ((float) done / total));
+
+        g.setColor(SystemColor.inactiveCaption);
+        g.fillRect(width, 0, getWidth(), getHeight());
+        g.setColor(SystemColor.activeCaption);
+        g.fillRect(0, 0, width, getHeight());
+
+        if (!text.equals("")) {
+            String display = text + " (" + (int) ((float) done / total * 100) + "%)";
+
+            int stringWidth = g.getFontMetrics().stringWidth(display);
+            int stringX = (getWidth() - stringWidth) / 2;
+            int stringY =
+                    g.getFontMetrics().getHeight()
+                            + (getHeight() - g.getFontMetrics().getHeight()) / 4;
+
+            //			g.setColor(SystemColor.activeCaption);
+            //			g.setXORMode(SystemColor.inactiveCaption);
+            g.setColor(Color.WHITE);
+            g.drawString(display, stringX, stringY);
+        }
+    }
+
+    // Delay callback methods
+    //
+    public void begin() {
+        setText("Please wait ...");
+    }
+
+    public void delay(int done, int total) {
+        changeIndicator(done, total);
+    }
+
+    public void end() {
+        setText("All done!");
+        changeIndicator(100, 100);
+    }
+
+    public void addWarning(String x) {
+        throw new RuntimeException("ProgressBars cannot indicate warnings to users, sorry!");
+    }
 }

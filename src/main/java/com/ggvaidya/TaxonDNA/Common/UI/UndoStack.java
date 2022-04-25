@@ -29,33 +29,33 @@
 package com.ggvaidya.TaxonDNA.Common.UI;
 
 public class UndoStack {
-  private UndoTask[] tasks;
+    private UndoTask[] tasks;
 
-  public UndoStack(int size) {
-    tasks = new UndoTask[size];
-  }
-
-  public int getSize() {
-    return tasks.length;
-  }
-
-  public UndoTask getTask(int x) {
-    if (x < tasks.length) return tasks[x];
-    return null;
-  }
-
-  public void push(UndoTask push) {
-    tasks[0] = null; // die, old task, die!
-    for (int x = 1; x < tasks.length - 1; x++) {
-      tasks[x - 1] = tasks[x]; // shift up
+    public UndoStack(int size) {
+        tasks = new UndoTask[size];
     }
-    tasks[tasks.length - 1] = push; // last one is shifted into [$#tasks], in perl terms
-  }
 
-  public UndoTask pop() {
-    for (int x = 1; x < tasks.length - 1; x++) {
-      // ***************
+    public int getSize() {
+        return tasks.length;
     }
-    return null;
-  }
+
+    public UndoTask getTask(int x) {
+        if (x < tasks.length) return tasks[x];
+        return null;
+    }
+
+    public void push(UndoTask push) {
+        tasks[0] = null; // die, old task, die!
+        for (int x = 1; x < tasks.length - 1; x++) {
+            tasks[x - 1] = tasks[x]; // shift up
+        }
+        tasks[tasks.length - 1] = push; // last one is shifted into [$#tasks], in perl terms
+    }
+
+    public UndoTask pop() {
+        for (int x = 1; x < tasks.length - 1; x++) {
+            // ***************
+        }
+        return null;
+    }
 }

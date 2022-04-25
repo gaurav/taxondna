@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- A pom.xml file for TaxonDNA -->
 <!--
   We used Ant files [1] until Feb 2021, when I switched over to Maven.
@@ -36,8 +37,9 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>11</maven.compiler.source>
-    <maven.compiler.target>11</maven.compiler.target>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <spotless.version>2.22.2</spotless.version>
   </properties>
 
   <build>
@@ -61,14 +63,15 @@
         -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
+        <version>3.2.0</version>
         <executions>
           <!-- SpeciesIdentifier -->
           <execution>
             <id>SpeciesIdentifier</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -88,10 +91,10 @@
           <!-- GenBankExplorer -->
           <execution>
             <id>GenBankExplorer</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -111,10 +114,10 @@
           <!-- SequenceMatrix -->
           <execution>
             <id>SequenceMatrix</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -139,29 +142,62 @@
         </executions>
       </plugin>
 
-      <!-- Use Spotless to check and fix style: https://github.com/diffplug/spotless/tree/master/plugin-maven -->
+      <!-- We use Spotless to check style -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
-        <version>2.8.1</version>
+        <version>${spotless.version}</version>
         <configuration>
+          <formats>
+            <!-- you can define as many formats as you want, each is independent -->
+            <format>
+              <!-- define the files to apply to -->
+              <includes>
+                <include>.gitignore</include>
+              </includes>
+              <!-- define the steps to apply to those files -->
+              <trimTrailingWhitespace></trimTrailingWhitespace>
+              <endWithNewline></endWithNewline>
+              <indent>
+                <tabs>true</tabs>
+                <spacesPerTab>4</spacesPerTab>
+              </indent>
+            </format>
+          </formats>
+
+          <!-- define a language-specific format -->
           <java>
+            <!-- no need to specify files, inferred automatically, but you can if you want -->
+
+            <!-- apply a specific flavor of google-java-format and reflow long strings -->
             <googleJavaFormat>
-              <version>1.6</version>
-              <style>GOOGLE</style>
+              <version>1.13.0</version>
+              <style>AOSP</style>
+              <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
-            <removeUnusedImports />
           </java>
+
+          <!-- Format Markdown files -->
+          <markdown>
+            <includes>
+              <!-- You have to set the target manually -->
+              <include>**/*.md</include>
+            </includes>
+
+            <flexmark></flexmark>
+            <!-- has its own section below -->
+          </markdown>
+
+          <!-- Format this POM file -->
+          <pom>
+            <!-- These are the defaults, you can override if you want -->
+            <includes>
+              <include>pom.xml</include>
+            </includes>
+
+            <sortPom></sortPom>
+          </pom>
         </configuration>
-        <executions>
-          <execution>
-            <id>test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>check</goal>
-            </goals>
-          </execution>
-        </executions>
       </plugin>
 
       <!-- We use the Assembly plugin to build the releases. -->
@@ -169,34 +205,34 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>3.3.0</version>
         <executions>
-            <execution>
-                <id>SpeciesIdentifier</id>
-                <phase>package</phase>
-                <goals>
-                    <goal>single</goal>
-                </goals>
-                <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <descriptors>
-                    <descriptor>src/assemblies/SpeciesIdentifier.xml</descriptor>
-                  </descriptors>
-                  <finalName>SpeciesIdentifier-${project.version}</finalName>
-                </configuration>
-            </execution>
-            <execution>
-                <id>SequenceMatrix</id>
-                <phase>package</phase>
-                <goals>
-                    <goal>single</goal>
-                </goals>
-                <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <descriptors>
-                    <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
-                  </descriptors>
-                  <finalName>SequenceMatrix-${project.version}</finalName>
-                </configuration>
-            </execution>
+          <execution>
+            <id>SpeciesIdentifier</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assemblies/SpeciesIdentifier.xml</descriptor>
+              </descriptors>
+              <finalName>SpeciesIdentifier-${project.version}</finalName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>SequenceMatrix</id>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <phase>package</phase>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
+              </descriptors>
+              <finalName>SequenceMatrix-${project.version}</finalName>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
     </plugins>

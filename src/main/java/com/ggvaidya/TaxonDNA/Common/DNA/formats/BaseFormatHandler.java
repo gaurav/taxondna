@@ -30,49 +30,49 @@ import java.io.*;
 import java.util.*;
 
 public class BaseFormatHandler implements FormatHandler {
-  protected Vector formatListeners = new Vector();
+    protected Vector formatListeners = new Vector();
 
-  public String getShortName() {
-    return "Base Format Handler";
-  }
-
-  public String getExtension() {
-    return "txt";
-  }
-
-  public String getFullName() {
-    return "Base for all Format Handlers in TaxonDNA";
-  }
-
-  public SequenceList readFile(File file, DelayCallback delay)
-      throws IOException, SequenceException, FormatException, DelayAbortedException {
-    return null;
-  }
-
-  public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
-      throws IOException, SequenceException, FormatException, DelayAbortedException {}
-
-  public void writeFile(File file, SequenceList set, DelayCallback delay)
-      throws IOException, DelayAbortedException {}
-
-  public boolean mightBe(File file) {
-    return false;
-  }
-
-  public void addFormatListener(FormatListener listener) {
-    if (!formatListeners.contains(listener)) formatListeners.add(listener);
-  }
-
-  public void removeFormatListener(FormatListener listener) {
-    formatListeners.remove(listener);
-  }
-
-  public void fireEvent(FormatHandlerEvent evt) throws FormatException {
-    Iterator i = formatListeners.iterator();
-    while (i.hasNext()) {
-      FormatListener fl = (FormatListener) i.next();
-
-      if (fl.eventOccured(evt)) return; // event consumed! get out of here!
+    public String getShortName() {
+        return "Base Format Handler";
     }
-  }
+
+    public String getExtension() {
+        return "txt";
+    }
+
+    public String getFullName() {
+        return "Base for all Format Handlers in TaxonDNA";
+    }
+
+    public SequenceList readFile(File file, DelayCallback delay)
+            throws IOException, SequenceException, FormatException, DelayAbortedException {
+        return null;
+    }
+
+    public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
+            throws IOException, SequenceException, FormatException, DelayAbortedException {}
+
+    public void writeFile(File file, SequenceList set, DelayCallback delay)
+            throws IOException, DelayAbortedException {}
+
+    public boolean mightBe(File file) {
+        return false;
+    }
+
+    public void addFormatListener(FormatListener listener) {
+        if (!formatListeners.contains(listener)) formatListeners.add(listener);
+    }
+
+    public void removeFormatListener(FormatListener listener) {
+        formatListeners.remove(listener);
+    }
+
+    public void fireEvent(FormatHandlerEvent evt) throws FormatException {
+        Iterator i = formatListeners.iterator();
+        while (i.hasNext()) {
+            FormatListener fl = (FormatListener) i.next();
+
+            if (fl.eventOccured(evt)) return; // event consumed! get out of here!
+        }
+    }
 }

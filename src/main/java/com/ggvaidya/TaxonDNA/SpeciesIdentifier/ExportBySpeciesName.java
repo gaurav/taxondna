@@ -35,171 +35,173 @@ import java.io.*; // For the BufferedReader, mostly
 import java.util.*;
 
 public class ExportBySpeciesName extends Panel implements UIExtension, ActionListener {
-  private SpeciesIdentifier seqId = null;
+    private SpeciesIdentifier seqId = null;
 
-  // This is where we'll get our species list.
-  private TextArea text_main = new TextArea();
+    // This is where we'll get our species list.
+    private TextArea text_main = new TextArea();
 
-  private Button btn_Calculate = new Button("Export sequences with the following species names");
-  private Button btn_Copy;
+    private Button btn_Calculate = new Button("Export sequences with the following species names");
+    private Button btn_Copy;
 
-  public ExportBySpeciesName(SpeciesIdentifier seqId) {
-    this.seqId = seqId;
+    public ExportBySpeciesName(SpeciesIdentifier seqId) {
+        this.seqId = seqId;
 
-    setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
 
-    Panel top = new Panel();
-    RightLayout rl = new RightLayout(top);
-    top.setLayout(rl);
+        Panel top = new Panel();
+        RightLayout rl = new RightLayout(top);
+        top.setLayout(rl);
 
-    btn_Calculate.addActionListener(this);
-    rl.add(btn_Calculate, RightLayout.NEXTLINE | RightLayout.FILL_4);
+        btn_Calculate.addActionListener(this);
+        rl.add(btn_Calculate, RightLayout.NEXTLINE | RightLayout.FILL_4);
 
-    add(top, BorderLayout.NORTH);
+        add(top, BorderLayout.NORTH);
 
-    add(text_main);
+        add(text_main);
 
-    text_main.setText("Enter species list here");
+        text_main.setText("Enter species list here");
 
-    Panel buttons = new Panel();
-    buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        Panel buttons = new Panel();
+        buttons.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
-    btn_Copy = new Button("Copy to Clipboard");
-    btn_Copy.addActionListener(this);
-    buttons.add(btn_Copy);
+        btn_Copy = new Button("Copy to Clipboard");
+        btn_Copy.addActionListener(this);
+        buttons.add(btn_Copy);
 
-    add(buttons, BorderLayout.SOUTH);
-  }
-
-  public void actionPerformed(ActionEvent e) {
-    String cmd = e.getActionCommand();
-
-    if (cmd.equals("Copy to Clipboard") || cmd.equals("Oops, try again?")) {
-      try {
-        Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
-        StringSelection selection = new StringSelection(text_main.getText());
-
-        clip.setContents(selection, selection);
-      } catch (IllegalStateException ex) {
-        btn_Copy.setLabel("Oops, try again?");
-      }
-      btn_Copy.setLabel("Copy to Clipboard");
+        add(buttons, BorderLayout.SOUTH);
     }
 
-    if (e.getSource().equals(btn_Calculate)) {
-      exportSequences();
+    public void actionPerformed(ActionEvent e) {
+        String cmd = e.getActionCommand();
+
+        if (cmd.equals("Copy to Clipboard") || cmd.equals("Oops, try again?")) {
+            try {
+                Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
+                StringSelection selection = new StringSelection(text_main.getText());
+
+                clip.setContents(selection, selection);
+            } catch (IllegalStateException ex) {
+                btn_Copy.setLabel("Oops, try again?");
+            }
+            btn_Copy.setLabel("Copy to Clipboard");
+        }
+
+        if (e.getSource().equals(btn_Calculate)) {
+            exportSequences();
+        }
     }
-  }
 
-  public void exportSequences() {
-    // Step 1. Make a list of 'chosen' species
-    SequenceList list = seqId.lockSequenceList();
-    try {
-      String line;
-      Vector vec_species_names = new Vector();
+    public void exportSequences() {
+        // Step 1. Make a list of 'chosen' species
+        SequenceList list = seqId.lockSequenceList();
+        try {
+            String line;
+            Vector vec_species_names = new Vector();
 
-      // Read the names off text_main
-      BufferedReader reader = new BufferedReader(new StringReader(text_main.getText()));
-      while ((line = reader.readLine()) != null) {
-        line = line.trim();
-        if (line.length() == 0) {
-          // blank line, ignore
-        } else {
-          vec_species_names.add(line);
+            // Read the names off text_main
+            BufferedReader reader = new BufferedReader(new StringReader(text_main.getText()));
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.length() == 0) {
+                    // blank line, ignore
+                } else {
+                    vec_species_names.add(line);
+                }
+            }
+
+            int[] sequence_counts = new int[vec_species_names.size()];
+
+            // Go through the sequence list
+            SequenceList to_export = new SequenceList();
+
+            Iterator i = list.iterator();
+            while (i.hasNext()) {
+                Sequence seq = (Sequence) i.next();
+
+                Iterator i_names = vec_species_names.iterator();
+                int x = 0;
+                while (i_names.hasNext()) {
+                    String name = (String) i_names.next();
+
+                    if (seq.getSpeciesName().equalsIgnoreCase(name)) {
+                        // match!
+                        to_export.add(seq);
+                        sequence_counts[x]++;
+                        break;
+                    }
+                    x++;
+                }
+            }
+
+            // Now: export!
+            FileDialog fd =
+                    new FileDialog(
+                            seqId.getFrame(),
+                            "Where would you like me to extract "
+                                    + to_export.count()
+                                    + " sequences as FASTA?",
+                            FileDialog.SAVE);
+            fd.setVisible(true);
+
+            File f_output;
+            if (fd.getFile() == null) {
+                // cancel
+                return;
+            }
+
+            // go for it!
+            if (fd.getDirectory() != null) f_output = new File(fd.getDirectory(), fd.getFile());
+            else f_output = new File(fd.getFile());
+
+            // export
+            com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff =
+                    new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
+            ff.writeFile(f_output, to_export, null);
+
+            // yay done!
+            // write out stuff to tell the user what happened, etc.
+            StringBuilder results = new StringBuilder();
+            results.append("Export successful!\n\n");
+
+            i = vec_species_names.iterator();
+            int x = 0;
+            while (i.hasNext()) {
+                String name = (String) i.next();
+
+                results.append("\t" + name + "\t" + sequence_counts[x] + "\tsequences exported.\n");
+                x++;
+            }
+
+            text_main.setText(results.toString());
+        } catch (Exception e) {
+            new MessageBox(
+                    seqId.getFrame(),
+                    "Error: could not export sequences!",
+                    "There was a problem exporting sequences. The technical description is: "
+                            + e.getMessage());
+        } finally {
+            seqId.unlockSequenceList();
         }
-      }
+    }
 
-      int[] sequence_counts = new int[vec_species_names.size()];
-
-      // Go through the sequence list
-      SequenceList to_export = new SequenceList();
-
-      Iterator i = list.iterator();
-      while (i.hasNext()) {
-        Sequence seq = (Sequence) i.next();
-
-        Iterator i_names = vec_species_names.iterator();
-        int x = 0;
-        while (i_names.hasNext()) {
-          String name = (String) i_names.next();
-
-          if (seq.getSpeciesName().equalsIgnoreCase(name)) {
-            // match!
-            to_export.add(seq);
-            sequence_counts[x]++;
-            break;
-          }
-          x++;
-        }
-      }
-
-      // Now: export!
-      FileDialog fd =
-          new FileDialog(
-              seqId.getFrame(),
-              "Where would you like me to extract " + to_export.count() + " sequences as FASTA?",
-              FileDialog.SAVE);
-      fd.setVisible(true);
-
-      File f_output;
-      if (fd.getFile() == null) {
-        // cancel
+    // DataChanged()? Not like we care.
+    public void dataChanged() {
         return;
-      }
-
-      // go for it!
-      if (fd.getDirectory() != null) f_output = new File(fd.getDirectory(), fd.getFile());
-      else f_output = new File(fd.getFile());
-
-      // export
-      com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile ff =
-          new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile();
-      ff.writeFile(f_output, to_export, null);
-
-      // yay done!
-      // write out stuff to tell the user what happened, etc.
-      StringBuilder results = new StringBuilder();
-      results.append("Export successful!\n\n");
-
-      i = vec_species_names.iterator();
-      int x = 0;
-      while (i.hasNext()) {
-        String name = (String) i.next();
-
-        results.append("\t" + name + "\t" + sequence_counts[x] + "\tsequences exported.\n");
-        x++;
-      }
-
-      text_main.setText(results.toString());
-    } catch (Exception e) {
-      new MessageBox(
-          seqId.getFrame(),
-          "Error: could not export sequences!",
-          "There was a problem exporting sequences. The technical description is: "
-              + e.getMessage());
-    } finally {
-      seqId.unlockSequenceList();
     }
-  }
 
-  // DataChanged()? Not like we care.
-  public void dataChanged() {
-    return;
-  }
+    public String getShortName() {
+        return "Export by Species Name";
+    }
 
-  public String getShortName() {
-    return "Export by Species Name";
-  }
+    public String getDescription() {
+        return "Allows you to export species by species name";
+    }
 
-  public String getDescription() {
-    return "Allows you to export species by species name";
-  }
+    public boolean addCommandsToMenu(Menu commandMenu) {
+        return false;
+    }
 
-  public boolean addCommandsToMenu(Menu commandMenu) {
-    return false;
-  }
-
-  public Panel getPanel() {
-    return this;
-  }
+    public Panel getPanel() {
+        return this;
+    }
 }

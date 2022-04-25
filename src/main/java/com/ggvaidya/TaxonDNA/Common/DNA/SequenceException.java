@@ -26,39 +26,39 @@
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
 public class SequenceException extends Exception {
-  /** A generated serialVersionUID */
-  private static final long serialVersionUID = -2662237531930486828L;
+    /** A generated serialVersionUID */
+    private static final long serialVersionUID = -2662237531930486828L;
 
-  private String fullName = "";
+    private String fullName = "";
 
-  public String getMalformedSequenceName() {
-    if (fullName.equals("")) return "(I can't understand the name either!)";
+    public String getMalformedSequenceName() {
+        if (fullName.equals("")) return "(I can't understand the name either!)";
 
-    return fullName;
-  }
+        return fullName;
+    }
 
-  public SequenceException(String name, String message) {
-    super(message);
+    public SequenceException(String name, String message) {
+        super(message);
 
-    fullName = name;
-  }
+        fullName = name;
+    }
 
-  public SequenceException(String name, String message, Throwable cause) {
-    super(message, cause);
+    public SequenceException(String name, String message, Throwable cause) {
+        super(message, cause);
 
-    fullName = name;
-  }
+        fullName = name;
+    }
 
-  public SequenceException(String name, Throwable cause) {
-    super(cause);
+    public SequenceException(String name, Throwable cause) {
+        super(cause);
 
-    fullName = name;
-  }
+        fullName = name;
+    }
 
-  public String getMessage() {
-    return "While processing the sequence named '"
-        + fullName
-        + "', the following occured: "
-        + super.getMessage();
-  }
+    public String getMessage() {
+        return "While processing the sequence named '"
+                + fullName
+                + "', the following occured: "
+                + super.getMessage();
+    }
 }

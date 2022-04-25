@@ -42,54 +42,54 @@ import java.io.*;
 import java.util.*;
 
 public class CommandLine {
-  LinkedList files = new LinkedList(); // files specified to be opened (List of Files)
-  LinkedList unknown = new LinkedList(); // unknown arguments (List of Strings)
+    LinkedList files = new LinkedList(); // files specified to be opened (List of Files)
+    LinkedList unknown = new LinkedList(); // unknown arguments (List of Strings)
 
-  /**
-   * Creates a CommandLine object, by parsing the command line. The execute function then 'makes
-   * sense of it all'
-   */
-  public CommandLine(String[] args) {
-    for (int x = 0; x < args.length; x++) {
-      String arg = args[x];
+    /**
+     * Creates a CommandLine object, by parsing the command line. The execute function then 'makes
+     * sense of it all'
+     */
+    public CommandLine(String[] args) {
+        for (int x = 0; x < args.length; x++) {
+            String arg = args[x];
 
-      // if we don't know what it is, assume it's a file
-      File f = new File(arg);
-      if (f.exists()) {
-        files.add(f);
-        continue;
-      }
+            // if we don't know what it is, assume it's a file
+            File f = new File(arg);
+            if (f.exists()) {
+                files.add(f);
+                continue;
+            }
 
-      // no? then it's unknown!
-      unknown.add(arg);
-    }
-  }
-
-  /** Uses the information gathered from parsing the command line to do stuff. */
-  public void execute() {
-    boolean inGuiMode = true;
-
-    // Are we in 'command line' mode or 'GUI' mode?
-    // For now, there's only GUI mode
-
-    if (inGuiMode) {
-      // warn the user about unknown options
-
-      // are there any files specified?
-      if (files.size() == 0) new SpeciesIdentifier();
-      else {
-        Iterator i = files.iterator();
-
-        while (i.hasNext()) {
-          SpeciesIdentifier td = new SpeciesIdentifier();
-          td.loadFile((File) i.next(), null);
+            // no? then it's unknown!
+            unknown.add(arg);
         }
-      }
     }
-  }
 
-  public static void processCommandLine(String[] args) {
-    CommandLine cl = new CommandLine(args);
-    cl.execute();
-  }
+    /** Uses the information gathered from parsing the command line to do stuff. */
+    public void execute() {
+        boolean inGuiMode = true;
+
+        // Are we in 'command line' mode or 'GUI' mode?
+        // For now, there's only GUI mode
+
+        if (inGuiMode) {
+            // warn the user about unknown options
+
+            // are there any files specified?
+            if (files.size() == 0) new SpeciesIdentifier();
+            else {
+                Iterator i = files.iterator();
+
+                while (i.hasNext()) {
+                    SpeciesIdentifier td = new SpeciesIdentifier();
+                    td.loadFile((File) i.next(), null);
+                }
+            }
+        }
+    }
+
+    public static void processCommandLine(String[] args) {
+        CommandLine cl = new CommandLine(args);
+        cl.execute();
+    }
 }

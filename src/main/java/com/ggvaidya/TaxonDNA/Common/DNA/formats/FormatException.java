@@ -27,21 +27,21 @@
 package com.ggvaidya.TaxonDNA.Common.DNA.formats;
 
 public class FormatException extends Exception {
-  private static final long serialVersionUID = -8796431763478134968L;
+    private static final long serialVersionUID = -8796431763478134968L;
 
-  public FormatException() {
-    super();
-  }
+    public FormatException() {
+        super();
+    }
 
-  public FormatException(String message) {
-    super(message);
-  }
+    public FormatException(String message) {
+        super(message);
+    }
 
-  public FormatException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public FormatException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public FormatException(Throwable cause) {
-    super(cause);
-  }
+    public FormatException(Throwable cause) {
+        super(cause);
+    }
 }

@@ -29,14 +29,14 @@
 package com.ggvaidya.TaxonDNA.Common;
 
 public interface Testable {
-  /**
-   * The test which is used to test this object. Results are signalled to the TestController via the
-   * passed TestController interface.
-   *
-   * <p>Since 'test' might take a while, a DelayCallback can be used to let the user know.
-   *
-   * <p>This really ought to be static, but this Cannot Be in the java world. So I'm going to rely
-   * on implementations of 'test' to not confuse themselves with the core class itself.
-   */
-  public void test(TestController controller, DelayCallback delay) throws DelayAbortedException;
+    /**
+     * The test which is used to test this object. Results are signalled to the TestController via
+     * the passed TestController interface.
+     *
+     * <p>Since 'test' might take a while, a DelayCallback can be used to let the user know.
+     *
+     * <p>This really ought to be static, but this Cannot Be in the java world. So I'm going to rely
+     * on implementations of 'test' to not confuse themselves with the core class itself.
+     */
+    public void test(TestController controller, DelayCallback delay) throws DelayAbortedException;
 }

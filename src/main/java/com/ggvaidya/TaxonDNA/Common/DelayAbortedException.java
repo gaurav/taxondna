@@ -29,22 +29,22 @@
 package com.ggvaidya.TaxonDNA.Common;
 
 public class DelayAbortedException extends Exception {
-  /** A generated serialVersionUID */
-  private static final long serialVersionUID = -470511092703466979L;
+    /** A generated serialVersionUID */
+    private static final long serialVersionUID = -470511092703466979L;
 
-  public DelayAbortedException() {
-    super();
-  }
+    public DelayAbortedException() {
+        super();
+    }
 
-  public DelayAbortedException(String message) {
-    super(message);
-  }
+    public DelayAbortedException(String message) {
+        super(message);
+    }
 
-  public DelayAbortedException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public DelayAbortedException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public DelayAbortedException(Throwable cause) {
-    super(cause);
-  }
+    public DelayAbortedException(Throwable cause) {
+        super(cause);
+    }
 }

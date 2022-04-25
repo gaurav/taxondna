@@ -40,70 +40,70 @@ import com.ggvaidya.TaxonDNA.Common.DNA.*;
 import java.io.*;
 
 public interface FormatHandler {
-  /**
-   * Returns the short name of this file format. E.g. "NEXUS", "MEGA", or "FASTA". Think about
-   * whether you could put it into a sentence as "This is the ___ file format."
-   */
-  public String getShortName();
+    /**
+     * Returns the short name of this file format. E.g. "NEXUS", "MEGA", or "FASTA". Think about
+     * whether you could put it into a sentence as "This is the ___ file format."
+     */
+    public String getShortName();
 
-  /** Returns the extension (ideally lowercase, no fullstops) for this kind of file. */
-  public String getExtension();
+    /** Returns the extension (ideally lowercase, no fullstops) for this kind of file. */
+    public String getExtension();
 
-  /**
-   * Returns the full name of this file format handler. E.g. "Nexus file format v2 and below". You
-   * ought to put in something about what versions of the software you support. But not too long:
-   * think about whether you could display it in a list.
-   */
-  public String getFullName();
+    /**
+     * Returns the full name of this file format handler. E.g. "Nexus file format v2 and below". You
+     * ought to put in something about what versions of the software you support. But not too long:
+     * think about whether you could display it in a list.
+     */
+    public String getFullName();
 
-  /**
-   * Read this file into the specified SequenceList. This will read all the files straight into this
-   * sequence list, in the correct order.
-   *
-   * @throws IOException if there was an error doing I/O
-   * @throws SequenceException if a Sequence is malformed - incorrect bases, etc.
-   * @throws FormatException if there was an error in the format of the file.
-   * @throws DelayAbortedException if the DelayCallback was aborted by the user.
-   */
-  public SequenceList readFile(File file, DelayCallback delay)
-      throws IOException, SequenceException, FormatException, DelayAbortedException;
+    /**
+     * Read this file into the specified SequenceList. This will read all the files straight into
+     * this sequence list, in the correct order.
+     *
+     * @throws IOException if there was an error doing I/O
+     * @throws SequenceException if a Sequence is malformed - incorrect bases, etc.
+     * @throws FormatException if there was an error in the format of the file.
+     * @throws DelayAbortedException if the DelayCallback was aborted by the user.
+     */
+    public SequenceList readFile(File file, DelayCallback delay)
+            throws IOException, SequenceException, FormatException, DelayAbortedException;
 
-  /**
-   * Append this file to the specified SequenceList. This will read in all the sequences from the
-   * file and append them directly onto the end of this SequenceList.
-   *
-   * @throws IOException if there was an error doing I/O
-   * @throws SequenceException if a Sequence is malformed - incorrect bases, etc.
-   * @throws FormatException if there was an error in the format of the file.
-   * @throws DelayAbortedException if the DelayCallback was aborted by the user.
-   */
-  public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
-      throws IOException, SequenceException, FormatException, DelayAbortedException;
+    /**
+     * Append this file to the specified SequenceList. This will read in all the sequences from the
+     * file and append them directly onto the end of this SequenceList.
+     *
+     * @throws IOException if there was an error doing I/O
+     * @throws SequenceException if a Sequence is malformed - incorrect bases, etc.
+     * @throws FormatException if there was an error in the format of the file.
+     * @throws DelayAbortedException if the DelayCallback was aborted by the user.
+     */
+    public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
+            throws IOException, SequenceException, FormatException, DelayAbortedException;
 
-  /**
-   * Writes the content of this sequence list into a file. The file is overwritten. The order of the
-   * sequences written into the file is guaranteed to be the same as in the list.
-   *
-   * @throws IOException if there was a problem creating/writing to the file.
-   * @throws DelayAbortedException if the DelayCallback was aborted by the user.
-   */
-  public void writeFile(File file, SequenceList set, DelayCallback delay)
-      throws IOException, DelayAbortedException;
+    /**
+     * Writes the content of this sequence list into a file. The file is overwritten. The order of
+     * the sequences written into the file is guaranteed to be the same as in the list.
+     *
+     * @throws IOException if there was a problem creating/writing to the file.
+     * @throws DelayAbortedException if the DelayCallback was aborted by the user.
+     */
+    public void writeFile(File file, SequenceList set, DelayCallback delay)
+            throws IOException, DelayAbortedException;
 
-  /**
-   * Checks to see if this file *might* be of this format. Good for internal loops.
-   *
-   * <p>No exceptions: implementors, please swallow them all up. If the file does not exist, it's
-   * not very likely to be of this format, is it?
-   */
-  public boolean mightBe(File file);
+    /**
+     * Checks to see if this file *might* be of this format. Good for internal loops.
+     *
+     * <p>No exceptions: implementors, please swallow them all up. If the file does not exist, it's
+     * not very likely to be of this format, is it?
+     */
+    public boolean mightBe(File file);
 
-  /**
-   * Add a new FormatListener to this FormatHandler. We'll keep the Listener notified during a
-   * parse, so that he can chug up any other information which we can't stuff into the file.
-   */
-  public void addFormatListener(FormatListener listener);
+    /**
+     * Add a new FormatListener to this FormatHandler. We'll keep the Listener notified during a
+     * parse, so that he can chug up any other information which we can't stuff into the file.
+     */
+    public void addFormatListener(FormatListener listener);
 
-  /** Removes a FormatListener from this FormatHandler. */
-  public void removeFormatListener(FormatListener listener);
+    /** Removes a FormatListener from this FormatHandler. */
+    public void removeFormatListener(FormatListener listener);
 }
