@@ -29,21 +29,21 @@
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
 public class SequenceListException extends Exception {
-  private static final long serialVersionUID = 485570581694822010L;
+    private static final long serialVersionUID = 485570581694822010L;
 
-  public SequenceListException() {
-    super();
-  }
+    public SequenceListException() {
+        super();
+    }
 
-  public SequenceListException(String message) {
-    super(message);
-  }
+    public SequenceListException(String message) {
+        super(message);
+    }
 
-  public SequenceListException(String message, Throwable cause) {
-    super(message, cause);
-  }
+    public SequenceListException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-  public SequenceListException(Throwable cause) {
-    super(cause);
-  }
+    public SequenceListException(Throwable cause) {
+        super(cause);
+    }
 }

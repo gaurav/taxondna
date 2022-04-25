@@ -37,210 +37,211 @@ import com.ggvaidya.TaxonDNA.Common.*;
 import java.util.*;
 
 public class SpeciesDetails {
-  SequenceList list = null;
-  SequenceList seqs_with_conspecifics = null;
+    SequenceList list = null;
+    SequenceList seqs_with_conspecifics = null;
 
-  // counts
-  private int count_sequences = 0;
-  private int count_species = 0;
-  private int count_sequences_without_a_name = 0; // sequences which don't have a speciesName
-  private int count_sequences_invalid = 0;
+    // counts
+    private int count_sequences = 0;
+    private int count_species = 0;
+    private int count_sequences_without_a_name = 0; // sequences which don't have a speciesName
+    private int count_sequences_invalid = 0;
 
-  private HashMap<String, SpeciesDetail> details = new HashMap<String, SpeciesDetail>();
+    private HashMap<String, SpeciesDetail> details = new HashMap<String, SpeciesDetail>();
 
-  /** This class can only be created with a SequenceList. */
-  private SpeciesDetails() {}
+    /** This class can only be created with a SequenceList. */
+    private SpeciesDetails() {}
 
-  /**
-   * Tell me which list you need to calculate, and give me a DelayCallback to report to, and I'll
-   * figure things out.
-   */
-  public SpeciesDetails(SequenceList a_list, DelayCallback delay) throws DelayAbortedException {
+    /**
+     * Tell me which list you need to calculate, and give me a DelayCallback to report to, and I'll
+     * figure things out.
+     */
+    public SpeciesDetails(SequenceList a_list, DelayCallback delay) throws DelayAbortedException {
 
-    // Make sure the list is valid.
-    this.list = a_list;
-    if (list == null) return;
+        // Make sure the list is valid.
+        this.list = a_list;
+        if (list == null) return;
 
-    // setup the arrays which track the data
-    details = new HashMap<String, SpeciesDetail>();
-    seqs_with_conspecifics = new SequenceList();
+        // setup the arrays which track the data
+        details = new HashMap<String, SpeciesDetail>();
+        seqs_with_conspecifics = new SequenceList();
 
-    // Time to start work!
-    list.lock();
-    if (delay != null) delay.begin();
+        // Time to start work!
+        list.lock();
+        if (delay != null) delay.begin();
 
-    // setup our initial variables
-    for (Object o_seq : list) {
-      Sequence seq = (Sequence) o_seq;
-      String species_name = seq.getSpeciesName();
+        // setup our initial variables
+        for (Object o_seq : list) {
+            Sequence seq = (Sequence) o_seq;
+            String species_name = seq.getSpeciesName();
 
-      // Update delay.
-      if (delay != null) {
-        try {
-          delay.delay(count_sequences, list.count());
-        } catch (DelayAbortedException e) {
-          list.unlock();
-          throw e;
+            // Update delay.
+            if (delay != null) {
+                try {
+                    delay.delay(count_sequences, list.count());
+                } catch (DelayAbortedException e) {
+                    list.unlock();
+                    throw e;
+                }
+            }
+
+            // What do we know already?
+            count_sequences++;
+
+            // Can't do any processing without species names.
+            if (species_name == null) {
+                count_sequences_without_a_name++;
+                continue;
+            }
+
+            // Is this the first time we've seen this species?
+            if (!details.containsKey(species_name)) {
+                // Yes, it's the first of its kind.
+                details.put(species_name, new SpeciesDetail(species_name));
+            } else {
+                // We've seen this species name before!
+                // This species name has conspecifics.
+
+                // Unfortunately, this is a number we're not
+                // actually interested in for now.
+            }
+
+            // Add this sequence to the detail.
+            details.get(species_name).add(seq);
+
+            // Count any invalid sequences (total length < overlap).
+            if (seq.getLength() < Sequence.getMinOverlap()) count_sequences_invalid++;
         }
-      }
 
-      // What do we know already?
-      count_sequences++;
+        // All done!
+        list.unlock();
 
-      // Can't do any processing without species names.
-      if (species_name == null) {
-        count_sequences_without_a_name++;
-        continue;
-      }
-
-      // Is this the first time we've seen this species?
-      if (!details.containsKey(species_name)) {
-        // Yes, it's the first of its kind.
-        details.put(species_name, new SpeciesDetail(species_name));
-      } else {
-        // We've seen this species name before!
-        // This species name has conspecifics.
-
-        // Unfortunately, this is a number we're not
-        // actually interested in for now.
-      }
-
-      // Add this sequence to the detail.
-      details.get(species_name).add(seq);
-
-      // Count any invalid sequences (total length < overlap).
-      if (seq.getLength() < Sequence.getMinOverlap()) count_sequences_invalid++;
-    }
-
-    // All done!
-    list.unlock();
-
-    if (delay != null) {
-      delay.end();
-    }
-  }
-
-  /** @return The number of sequences passed to SpeciesDetails. */
-  public int getSequencesCount() {
-    return count_sequences;
-  }
-
-  /** @return The number of species in this SpeciesDetails. */
-  public int getSpeciesCount() {
-    return count_species;
-  }
-
-  /** @return The number of SpeciesDetail objects in this SpeciesDetails. */
-  public int count() {
-    return details.size();
-  }
-
-  /**
-   * @param The species name to retrieve details on.
-   * @return The SpeciesDetail object corresponding to that species name.
-   */
-  public SpeciesDetail getSpeciesDetailsByName(String name) {
-    return (SpeciesDetail) details.get(name);
-  }
-
-  /** @return The number of sequences without a species name. */
-  public int getSequencesWithoutASpeciesNameCount() {
-    return count_sequences_without_a_name;
-  }
-
-  /** @return The number of invalid sequences (sequences shorter than the minimum overlap). */
-  public int getSequencesInvalidCount() {
-    return count_sequences_invalid;
-  }
-
-  /**
-   * @return The number of species with atleast one valid sequences.
-   *     <p>Note that one valid sequence actually means *two* valid sequences, as they will be valid
-   *     to each other.
-   */
-  public int getValidSpeciesCount() {
-    int species_with_valid_sequences = 0;
-
-    for (SpeciesDetail sdet : details.values()) {
-      if (sdet.getSequencesWithValidConspecificsCount() > 0) species_with_valid_sequences++;
-    }
-
-    return species_with_valid_sequences;
-  }
-
-  /**
-   * @return The number of sequences with atleast one valid conspecific match somewhere in the
-   *     dataset.
-   */
-  public int getSequencesWithValidConspecificsCount() {
-    int count_seqs_with_valid_consp = 0;
-
-    for (SpeciesDetail sdet : details.values()) {
-      count_seqs_with_valid_consp += sdet.getSequencesWithValidConspecificsCount();
-    }
-
-    return count_seqs_with_valid_consp;
-  }
-
-  /**
-   * Generate a count of sequences with valid conspecifics. This is only used in one place, so I'm
-   * going to do the generation here instead of butting into any of the other, already-working code.
-   *
-   * @return A count of such sequences.
-   */
-  public SequenceList getSequencesWithValidConspecifics() {
-    SequenceList list_valid_consp = new SequenceList();
-
-    for (Object o_seq : list) {
-      Sequence seq = (Sequence) o_seq;
-      String species_name = seq.getSpeciesName();
-
-      if (species_name == null) continue;
-
-      for (Object o_seq_inner : list) {
-        Sequence seq_inner = (Sequence) o_seq_inner;
-
-        // Ignore identicals.
-        if (seq_inner.equals(seq)) continue;
-
-        // Conspecifics only.
-        if (!seq_inner.getSpeciesName().equals(seq_inner.getSpeciesName())) continue;
-
-        // Valid?
-        if (seq_inner.hasMinOverlap(seq)) {
-          // Ah! Valid non-identical conspecifics.
-          list_valid_consp.add(seq);
-          break;
+        if (delay != null) {
+            delay.end();
         }
-      }
     }
 
-    return list_valid_consp;
-  }
+    /** @return The number of sequences passed to SpeciesDetails. */
+    public int getSequencesCount() {
+        return count_sequences;
+    }
 
-  /**
-   * Returns an iterator over the list of species names in the dataset. But we can't just give them
-   * an iterator over the species names, since they can't get the details easily. Or can they?
-   * Tricky stuff.
-   *
-   * <p>Answer: we return an Iterator over Strings (the keys of our Hashtable). You can use
-   * getSpeciesDetailsByName(name) to get the SpeciesDetail
-   *
-   * <p>As a free bonus, we give you names in Alphabetic Order!
-   */
-  public Iterator getSpeciesNamesIterator() {
-    LinkedList ll = new LinkedList(details.keySet());
-    Collections.sort(ll);
-    return ll.iterator();
-  }
+    /** @return The number of species in this SpeciesDetails. */
+    public int getSpeciesCount() {
+        return count_species;
+    }
 
-  /*
-  public List getSpeciesNamesWithMultipleValidSequencesList() {
-  }
+    /** @return The number of SpeciesDetail objects in this SpeciesDetails. */
+    public int count() {
+        return details.size();
+    }
 
-  public Iterator getSpeciesNamesWithMultipleValidSequencesIterator() {
-  	return vector_speciesWithMultipleValidSequences.iterator();
-  }
-  *
-  */
+    /**
+     * @param The species name to retrieve details on.
+     * @return The SpeciesDetail object corresponding to that species name.
+     */
+    public SpeciesDetail getSpeciesDetailsByName(String name) {
+        return (SpeciesDetail) details.get(name);
+    }
+
+    /** @return The number of sequences without a species name. */
+    public int getSequencesWithoutASpeciesNameCount() {
+        return count_sequences_without_a_name;
+    }
+
+    /** @return The number of invalid sequences (sequences shorter than the minimum overlap). */
+    public int getSequencesInvalidCount() {
+        return count_sequences_invalid;
+    }
+
+    /**
+     * @return The number of species with atleast one valid sequences.
+     *     <p>Note that one valid sequence actually means *two* valid sequences, as they will be
+     *     valid to each other.
+     */
+    public int getValidSpeciesCount() {
+        int species_with_valid_sequences = 0;
+
+        for (SpeciesDetail sdet : details.values()) {
+            if (sdet.getSequencesWithValidConspecificsCount() > 0) species_with_valid_sequences++;
+        }
+
+        return species_with_valid_sequences;
+    }
+
+    /**
+     * @return The number of sequences with atleast one valid conspecific match somewhere in the
+     *     dataset.
+     */
+    public int getSequencesWithValidConspecificsCount() {
+        int count_seqs_with_valid_consp = 0;
+
+        for (SpeciesDetail sdet : details.values()) {
+            count_seqs_with_valid_consp += sdet.getSequencesWithValidConspecificsCount();
+        }
+
+        return count_seqs_with_valid_consp;
+    }
+
+    /**
+     * Generate a count of sequences with valid conspecifics. This is only used in one place, so I'm
+     * going to do the generation here instead of butting into any of the other, already-working
+     * code.
+     *
+     * @return A count of such sequences.
+     */
+    public SequenceList getSequencesWithValidConspecifics() {
+        SequenceList list_valid_consp = new SequenceList();
+
+        for (Object o_seq : list) {
+            Sequence seq = (Sequence) o_seq;
+            String species_name = seq.getSpeciesName();
+
+            if (species_name == null) continue;
+
+            for (Object o_seq_inner : list) {
+                Sequence seq_inner = (Sequence) o_seq_inner;
+
+                // Ignore identicals.
+                if (seq_inner.equals(seq)) continue;
+
+                // Conspecifics only.
+                if (!seq_inner.getSpeciesName().equals(seq_inner.getSpeciesName())) continue;
+
+                // Valid?
+                if (seq_inner.hasMinOverlap(seq)) {
+                    // Ah! Valid non-identical conspecifics.
+                    list_valid_consp.add(seq);
+                    break;
+                }
+            }
+        }
+
+        return list_valid_consp;
+    }
+
+    /**
+     * Returns an iterator over the list of species names in the dataset. But we can't just give
+     * them an iterator over the species names, since they can't get the details easily. Or can
+     * they? Tricky stuff.
+     *
+     * <p>Answer: we return an Iterator over Strings (the keys of our Hashtable). You can use
+     * getSpeciesDetailsByName(name) to get the SpeciesDetail
+     *
+     * <p>As a free bonus, we give you names in Alphabetic Order!
+     */
+    public Iterator getSpeciesNamesIterator() {
+        LinkedList ll = new LinkedList(details.keySet());
+        Collections.sort(ll);
+        return ll.iterator();
+    }
+
+    /*
+    public List getSpeciesNamesWithMultipleValidSequencesList() {
+    }
+
+    public Iterator getSpeciesNamesWithMultipleValidSequencesIterator() {
+    	return vector_speciesWithMultipleValidSequences.iterator();
+    }
+    *
+    */
 }

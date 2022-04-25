@@ -26,48 +26,48 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class CloseableWindow implements WindowListener, KeyListener {
-  private static CloseableWindow singleton = null;
+    private static CloseableWindow singleton = null;
 
-  private CloseableWindow() {}
+    private CloseableWindow() {}
 
-  private static CloseableWindow getInstance() {
-    if (singleton == null) singleton = new CloseableWindow();
-    return singleton;
-  }
-
-  /** Creates a default button named "OK". */
-  public static Window wrap(Window wrap) {
-    wrap.addWindowListener(CloseableWindow.getInstance());
-    // wrap.addKeyListener(CloseableWindow.getInstance());	-- DOESN'T WORK!
-    return wrap;
-  }
-
-  public void windowActivated(WindowEvent e) {}
-
-  public void windowClosed(WindowEvent e) {}
-
-  public void windowClosing(WindowEvent e) {
-    Window w = (Window) e.getSource();
-    w.setVisible(false);
-  }
-
-  public void windowDeactivated(WindowEvent e) {}
-
-  public void windowDeiconified(WindowEvent e) {}
-
-  public void windowIconified(WindowEvent e) {}
-
-  public void windowOpened(WindowEvent e) {}
-
-  public void keyPressed(KeyEvent e) {
-    if (Window.class.isAssignableFrom(e.getSource().getClass())) {
-      if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
-        ((Window) e.getSource()).setVisible(false);
-      }
+    private static CloseableWindow getInstance() {
+        if (singleton == null) singleton = new CloseableWindow();
+        return singleton;
     }
-  }
 
-  public void keyReleased(KeyEvent e) {}
+    /** Creates a default button named "OK". */
+    public static Window wrap(Window wrap) {
+        wrap.addWindowListener(CloseableWindow.getInstance());
+        // wrap.addKeyListener(CloseableWindow.getInstance());	-- DOESN'T WORK!
+        return wrap;
+    }
 
-  public void keyTyped(KeyEvent e) {}
+    public void windowActivated(WindowEvent e) {}
+
+    public void windowClosed(WindowEvent e) {}
+
+    public void windowClosing(WindowEvent e) {
+        Window w = (Window) e.getSource();
+        w.setVisible(false);
+    }
+
+    public void windowDeactivated(WindowEvent e) {}
+
+    public void windowDeiconified(WindowEvent e) {}
+
+    public void windowIconified(WindowEvent e) {}
+
+    public void windowOpened(WindowEvent e) {}
+
+    public void keyPressed(KeyEvent e) {
+        if (Window.class.isAssignableFrom(e.getSource().getClass())) {
+            if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                ((Window) e.getSource()).setVisible(false);
+            }
+        }
+    }
+
+    public void keyReleased(KeyEvent e) {}
+
+    public void keyTyped(KeyEvent e) {}
 }

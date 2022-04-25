@@ -30,111 +30,116 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class SystemUsage extends Panel implements UIExtension, ActionListener, ComponentListener {
-  private TextArea text_main = new TextArea();
-  private Button button_Refresh = new Button("Optimize and refresh");
+    private TextArea text_main = new TextArea();
+    private Button button_Refresh = new Button("Optimize and refresh");
 
-  public SystemUsage(SpeciesIdentifier seqId) {
-    // layouting
-    setLayout(new BorderLayout());
+    public SystemUsage(SpeciesIdentifier seqId) {
+        // layouting
+        setLayout(new BorderLayout());
 
-    button_Refresh.addActionListener(this);
-    add(button_Refresh, BorderLayout.NORTH);
+        button_Refresh.addActionListener(this);
+        add(button_Refresh, BorderLayout.NORTH);
 
-    text_main.setEditable(false);
-    text_main.setFont(new Font("Monospaced", Font.PLAIN, 12));
-    addComponentListener(this);
-    add(text_main);
-  }
+        text_main.setEditable(false);
+        text_main.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        addComponentListener(this);
+        add(text_main);
+    }
 
-  public void itemStateChanged(ItemEvent e) {}
+    public void itemStateChanged(ItemEvent e) {}
 
-  public void actionPerformed(ActionEvent evt) {
-    // collect garbage!
-    Runtime.getRuntime().gc();
-    resetMemory();
-  }
+    public void actionPerformed(ActionEvent evt) {
+        // collect garbage!
+        Runtime.getRuntime().gc();
+        resetMemory();
+    }
 
-  public void componentHidden(ComponentEvent e) {}
+    public void componentHidden(ComponentEvent e) {}
 
-  public void componentMoved(ComponentEvent e) {}
+    public void componentMoved(ComponentEvent e) {}
 
-  public void componentResized(ComponentEvent e) {}
+    public void componentResized(ComponentEvent e) {}
 
-  public void componentShown(ComponentEvent e) {
-    resetMemory();
-  }
+    public void componentShown(ComponentEvent e) {
+        resetMemory();
+    }
 
-  public void resetMemory() {
-    // listener only set on the TextArea
-    StringBuffer buffer = new StringBuffer();
-    Runtime runtime = Runtime.getRuntime();
+    public void resetMemory() {
+        // listener only set on the TextArea
+        StringBuffer buffer = new StringBuffer();
+        Runtime runtime = Runtime.getRuntime();
 
-    buffer.append(
-        "Number of processors available: " + runtime.availableProcessors() + " processors\n");
-    buffer.append("\n");
-    buffer.append(
-        "Maximum memory available for use:             " + printMemory(runtime.maxMemory()) + "\n");
-    buffer.append(
-        "Total memory available for use at the moment: "
-            + printMemory(runtime.totalMemory())
-            + "\n");
-    buffer.append(
-        "Free memory available for use at the moment:  "
-            + printMemory(runtime.freeMemory())
-            + " ("
-            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
-                runtime.freeMemory(), runtime.totalMemory())
-            + "%)\n");
+        buffer.append(
+                "Number of processors available: "
+                        + runtime.availableProcessors()
+                        + " processors\n");
+        buffer.append("\n");
+        buffer.append(
+                "Maximum memory available for use:             "
+                        + printMemory(runtime.maxMemory())
+                        + "\n");
+        buffer.append(
+                "Total memory available for use at the moment: "
+                        + printMemory(runtime.totalMemory())
+                        + "\n");
+        buffer.append(
+                "Free memory available for use at the moment:  "
+                        + printMemory(runtime.freeMemory())
+                        + " ("
+                        + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                                runtime.freeMemory(), runtime.totalMemory())
+                        + "%)\n");
 
-    long totalUsedMemory = runtime.totalMemory() - runtime.freeMemory();
-    long totalFreeMemory = runtime.maxMemory() - totalUsedMemory;
-    buffer.append("\n");
-    buffer.append(
-        "Total memory used: "
-            + printMemory(totalUsedMemory)
-            + " ("
-            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
-                totalUsedMemory, runtime.maxMemory())
-            + "%)\n");
-    buffer.append(
-        "Total memory free: "
-            + printMemory(totalFreeMemory)
-            + " ("
-            + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
-                totalFreeMemory, runtime.maxMemory())
-            + "%)\n");
+        long totalUsedMemory = runtime.totalMemory() - runtime.freeMemory();
+        long totalFreeMemory = runtime.maxMemory() - totalUsedMemory;
+        buffer.append("\n");
+        buffer.append(
+                "Total memory used: "
+                        + printMemory(totalUsedMemory)
+                        + " ("
+                        + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                                totalUsedMemory, runtime.maxMemory())
+                        + "%)\n");
+        buffer.append(
+                "Total memory free: "
+                        + printMemory(totalFreeMemory)
+                        + " ("
+                        + com.ggvaidya.TaxonDNA.Common.DNA.Settings.percentage(
+                                totalFreeMemory, runtime.maxMemory())
+                        + "%)\n");
 
-    text_main.setText(buffer.toString());
-  }
+        text_main.setText(buffer.toString());
+    }
 
-  private String printMemory(long memory) {
-    // return DNA.Settings.percentage(memory, 1024) + " KB, or " + DNA.Settings.percentage(memory,
-    // 1024 * 1024) + " MB";
-    if (memory == Long.MAX_VALUE) return "No limit";
+    private String printMemory(long memory) {
+        // return DNA.Settings.percentage(memory, 1024) + " KB, or " +
+        // DNA.Settings.percentage(memory,
+        // 1024 * 1024) + " MB";
+        if (memory == Long.MAX_VALUE) return "No limit";
 
-    return com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / (1024 * 1024))
-        + " MB\t("
-        + com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / 1024)
-        + " KB)";
-  }
+        return com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / (1024 * 1024))
+                + " MB\t("
+                + com.ggvaidya.TaxonDNA.Common.DNA.Settings.roundOff(memory / 1024)
+                + " KB)";
+    }
 
-  public void dataChanged() {
-    return;
-  }
+    public void dataChanged() {
+        return;
+    }
 
-  public String getShortName() {
-    return "System Usage";
-  }
+    public String getShortName() {
+        return "System Usage";
+    }
 
-  public String getDescription() {
-    return "Displays the current system usage";
-  }
+    public String getDescription() {
+        return "Displays the current system usage";
+    }
 
-  public boolean addCommandsToMenu(Menu commandMenu) {
-    return false;
-  }
+    public boolean addCommandsToMenu(Menu commandMenu) {
+        return false;
+    }
 
-  public Panel getPanel() {
-    return this;
-  }
+    public Panel getPanel() {
+        return this;
+    }
 }

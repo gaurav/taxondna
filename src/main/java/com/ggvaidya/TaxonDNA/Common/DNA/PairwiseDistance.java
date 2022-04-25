@@ -26,49 +26,49 @@
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
 public class PairwiseDistance implements Comparable {
-  private double distance = -1;
+    private double distance = -1;
 
-  public double getDistance() {
-    return distance;
-  }
+    public double getDistance() {
+        return distance;
+    }
 
-  private Sequence seqA = null;
+    private Sequence seqA = null;
 
-  public Sequence getSequenceA() {
-    return seqA;
-  }
+    public Sequence getSequenceA() {
+        return seqA;
+    }
 
-  private Sequence seqB = null;
+    private Sequence seqB = null;
 
-  public Sequence getSequenceB() {
-    return seqB;
-  }
+    public Sequence getSequenceB() {
+        return seqB;
+    }
 
-  public PairwiseDistance(Sequence a, Sequence b) {
-    seqA = a;
-    seqB = b;
+    public PairwiseDistance(Sequence a, Sequence b) {
+        seqA = a;
+        seqB = b;
 
-    distance = seqA.getPairwise(seqB);
-  }
+        distance = seqA.getPairwise(seqB);
+    }
 
-  public boolean isMentioned(Sequence seq) {
-    return (seq.equals(seqA) || seq.equals(seqB));
-  }
+    public boolean isMentioned(Sequence seq) {
+        return (seq.equals(seqA) || seq.equals(seqB));
+    }
 
-  public int compareTo(Object o) {
-    // we 'naturally' sort by distance as smallest first
-    PairwiseDistance pd = (PairwiseDistance) o;
+    public int compareTo(Object o) {
+        // we 'naturally' sort by distance as smallest first
+        PairwiseDistance pd = (PairwiseDistance) o;
 
-    return (int) Settings.makeLongFromDouble(getDistance() - pd.getDistance());
-  }
+        return (int) Settings.makeLongFromDouble(getDistance() - pd.getDistance());
+    }
 
-  public String toString() {
-    return super.toString()
-        + ": "
-        + getDistance()
-        + " between "
-        + getSequenceA()
-        + " and "
-        + getSequenceB();
-  }
+    public String toString() {
+        return super.toString()
+                + ": "
+                + getDistance()
+                + " between "
+                + getSequenceA()
+                + " and "
+                + getSequenceB();
+    }
 }

@@ -60,252 +60,260 @@ package com.ggvaidya.TaxonDNA.Common.DNA;
 import com.ggvaidya.TaxonDNA.Common.Others.UUID; // UUIDs
 
 public class BaseSequence extends Sequence {
-  private UUID id = new UUID(); // just call them "UUIDs" and gag me with a spoon ...
+    private UUID id = new UUID(); // just call them "UUIDs" and gag me with a spoon ...
 
-  //
-  //	1.	STATIC FUNCTIONS. Handle our two "constants": ambiguousBasesAllowed and minOverlap
-  //
-  // none, m'lord!
-  //
-  //
-  //	2. CONSTRUCTORS.
-  //
-  /**
-   * Empty constructor. Creates a blank, zero-length sequence. This is actually fairly important,
-   * since this is the ONLY way of creating a Sequence without throwing a SequenceException.
-   */
-  public BaseSequence() {
-    changeName("Empty sequence");
-    try {
-      changeSequence("");
-    } catch (SequenceException e) {
-      throw new RuntimeException(
-          "Internal error: changeSequence() doesn't seem to be working properly!");
-    }
-  }
-
-  /**
-   * Most basic constructor. Give me a name (which I'll use to interpret the full name from) and the
-   * sequence, and I'll set things up.
-   *
-   * @throws SequenceException if there is a problem with understanding the sequence.
-   */
-  public BaseSequence(String name, String seq) throws SequenceException {
-    changeName(name);
-    changeSequence(seq);
-  }
-
-  /** The constructor to "bind them all" :P */
-  public static Sequence createSequence(String name, String seq) throws SequenceException {
-    try {
-      return new Sequence(name, seq);
-    } catch (SequenceException e) {
-      return new BaseSequence(name, seq);
-    }
-  }
-
-  public static Sequence promoteSequence(Sequence x) {
-    if (BaseSequence.class.isAssignableFrom(x.getClass())) {
-      try {
-        return new Sequence(x.getFullName(), x.getSequence());
-      } catch (SequenceException e) {
-        return x;
-      }
-    } else
-      // if it's not a BaseSequence, there isn't anything
-      // to 'promote' to! (yet)
-      return x;
-  }
-
-  /**
-   * Normally, getSequenceExpanded(char x, char y) would 'expand' a Sequence. You can't expand a
-   * BaseSequence. However, we will replace '['...']' with the characters you specify.
-   */
-  public String getSequenceExpanded(char begin, char end) {
-    return getSequence().replace('[', begin).replace(']', end);
-  }
-
-  /** Returns a string representation of this object. */
-  public String toString() {
-    if (len < 20)
-      return "DNA.BaseSequence(" + getName() + ", length: " + len + "): " + new String(seq);
-    else return "DNA.BaseSequence(" + getName() + ", length: " + len + ")";
-  }
-
-  public int getLength() {
-    // we have to go through to figure this out.
-    // what a pain
-    return len;
-  }
-
-  public int getActualLength() {
-    // how are we ever really going to handle this?!
-    int actualLength = 0;
-    int bracket_level = 0;
-
-    for (int x = 0; x < seq.length; x++) {
-      char ch = seq[x];
-
-      if (ch == '[') bracket_level++;
-      else if (ch == ']') bracket_level--;
-
-      if (bracket_level > 0) continue;
-
-      if ((isGap(ch) && !isInternalGap(ch)) || isMissing(ch)) {
-      } else {
-        actualLength++;
-      }
+    //
+    //	1.	STATIC FUNCTIONS. Handle our two "constants": ambiguousBasesAllowed and minOverlap
+    //
+    // none, m'lord!
+    //
+    //
+    //	2. CONSTRUCTORS.
+    //
+    /**
+     * Empty constructor. Creates a blank, zero-length sequence. This is actually fairly important,
+     * since this is the ONLY way of creating a Sequence without throwing a SequenceException.
+     */
+    public BaseSequence() {
+        changeName("Empty sequence");
+        try {
+            changeSequence("");
+        } catch (SequenceException e) {
+            throw new RuntimeException(
+                    "Internal error: changeSequence() doesn't seem to be working properly!");
+        }
     }
 
-    return actualLength;
-  }
-
-  /**
-   * Returns a subsequence of this sequence. If the subsequence is completely 'valid', we might
-   * return a Sequence! Otherwise, we return a BaseSequence.
-   */
-  public Sequence getSubsequence(int from, int to) throws SequenceException {
-    // make sure we're not being fed garbage
-    if (from < 1
-        || // the first char is index = 1
-        to > getLength() // the 'to' field must not be greater than the length of the sequence
-    )
-      throw new SequenceException(
-          this.getFullName(),
-          "There is no subsequence at (" + from + ", " + to + ") in sequence " + this);
-
-    if (to < from) {
-      throw new SequenceException(
-          this.getFullName(),
-          "I cannot generate the reverse-complement of this sequence, since I do not understand what sort of data it is.");
+    /**
+     * Most basic constructor. Give me a name (which I'll use to interpret the full name from) and
+     * the sequence, and I'll set things up.
+     *
+     * @throws SequenceException if there is a problem with understanding the sequence.
+     */
+    public BaseSequence(String name, String seq) throws SequenceException {
+        changeName(name);
+        changeSequence(seq);
     }
 
-    // so, now we have a 'from' and a 'to'.
-    // Let's get cracking!
-    java.io.StringReader r = new java.io.StringReader(getSequence());
-    StringBuffer output = new StringBuffer();
+    /** The constructor to "bind them all" :P */
+    public static Sequence createSequence(String name, String seq) throws SequenceException {
+        try {
+            return new Sequence(name, seq);
+        } catch (SequenceException e) {
+            return new BaseSequence(name, seq);
+        }
+    }
 
-    // System.err.println("Base.cut: from: " + from + " to: " + to);
+    public static Sequence promoteSequence(Sequence x) {
+        if (BaseSequence.class.isAssignableFrom(x.getClass())) {
+            try {
+                return new Sequence(x.getFullName(), x.getSequence());
+            } catch (SequenceException e) {
+                return x;
+            }
+        } else
+            // if it's not a BaseSequence, there isn't anything
+            // to 'promote' to! (yet)
+            return x;
+    }
 
-    boolean writing = false;
-    int char_at = 0;
-    try {
-      while (r.ready()) {
-        int x = r.read();
+    /**
+     * Normally, getSequenceExpanded(char x, char y) would 'expand' a Sequence. You can't expand a
+     * BaseSequence. However, we will replace '['...']' with the characters you specify.
+     */
+    public String getSequenceExpanded(char begin, char end) {
+        return getSequence().replace('[', begin).replace(']', end);
+    }
 
-        if (x == -1) throw new java.io.EOFException();
+    /** Returns a string representation of this object. */
+    public String toString() {
+        if (len < 20)
+            return "DNA.BaseSequence(" + getName() + ", length: " + len + "): " + new String(seq);
+        else return "DNA.BaseSequence(" + getName() + ", length: " + len + ")";
+    }
 
-        if (char_at == from - 1) // off by one, here
-        writing = true;
+    public int getLength() {
+        // we have to go through to figure this out.
+        // what a pain
+        return len;
+    }
 
-        if (char_at == to) // off by one, here too, but for a slightly different reason
-        writing = false;
+    public int getActualLength() {
+        // how are we ever really going to handle this?!
+        int actualLength = 0;
+        int bracket_level = 0;
 
-        if (x == '(' || x == '[') {
-          int initial_char = x;
-          int final_char = ' ';
+        for (int x = 0; x < seq.length; x++) {
+            char ch = seq[x];
 
-          if (x == '(') final_char = ')';
-          else final_char = ']';
+            if (ch == '[') bracket_level++;
+            else if (ch == ']') bracket_level--;
 
-          // convert brackets to the Real Thing
-          if (writing) output.append('[');
+            if (bracket_level > 0) continue;
 
-          while (x != ']') {
-            x = r.read();
-
-            if (x == final_char) x = ']';
-
-            if (x == -1) throw new java.io.EOFException();
-
-            if (writing) output.append((char) x);
-          }
-        } else {
-          if (writing) output.append((char) x);
+            if ((isGap(ch) && !isInternalGap(ch)) || isMissing(ch)) {
+            } else {
+                actualLength++;
+            }
         }
 
-        char_at++;
-      }
-    } catch (java.io.EOFException e) {
-      // okay, done.
-      // did you know that
-    } catch (java.io.IOException e) {
-      throw new RuntimeException("Why is reading from a string causing an IOException?! " + e);
+        return actualLength;
     }
 
-    String seq_str = output.toString();
-    // System.err.println("What've we got: " + seq_str);
-    Sequence seq =
-        BaseSequence.createSequence(
-            getFullName() + " (segment:" + from + "-" + to + ":inclusive)", seq_str);
+    /**
+     * Returns a subsequence of this sequence. If the subsequence is completely 'valid', we might
+     * return a Sequence! Otherwise, we return a BaseSequence.
+     */
+    public Sequence getSubsequence(int from, int to) throws SequenceException {
+        // make sure we're not being fed garbage
+        if (from < 1
+                || // the first char is index = 1
+                to > getLength() // the 'to' field must not be greater than the length of the
+        // sequence
+        )
+            throw new SequenceException(
+                    this.getFullName(),
+                    "There is no subsequence at (" + from + ", " + to + ") in sequence " + this);
 
-    // System.err.println("Ended up with: " + seq);
+        if (to < from) {
+            throw new SequenceException(
+                    this.getFullName(),
+                    "I cannot generate the reverse-complement of this sequence, since I do not"
+                            + " understand what sort of data it is.");
+        }
 
-    return seq;
-  }
+        // so, now we have a 'from' and a 'to'.
+        // Let's get cracking!
+        java.io.StringReader r = new java.io.StringReader(getSequence());
+        StringBuffer output = new StringBuffer();
 
-  //
-  //	4.	SETTERS. Functions to set values in Sequence. This includes
-  //		both simple setters (such as 'setWarningFlag') all the way
-  //		to complicated functions (such as 'changeName').
-  //
-  /**
-   * Changes the sequence itself. BaseSequence doesn't care what sequence you try feeding in here.
-   */
-  public void changeSequence(String seq) throws SequenceException {
-    StringBuffer buff = new StringBuffer();
+        // System.err.println("Base.cut: from: " + from + " to: " + to);
 
-    // important step: is this sequence actually 'valid' (are all the brackets closed?)
+        boolean writing = false;
+        int char_at = 0;
+        try {
+            while (r.ready()) {
+                int x = r.read();
+
+                if (x == -1) throw new java.io.EOFException();
+
+                if (char_at == from - 1) // off by one, here
+                writing = true;
+
+                if (char_at == to) // off by one, here too, but for a slightly different reason
+                writing = false;
+
+                if (x == '(' || x == '[') {
+                    int initial_char = x;
+                    int final_char = ' ';
+
+                    if (x == '(') final_char = ')';
+                    else final_char = ']';
+
+                    // convert brackets to the Real Thing
+                    if (writing) output.append('[');
+
+                    while (x != ']') {
+                        x = r.read();
+
+                        if (x == final_char) x = ']';
+
+                        if (x == -1) throw new java.io.EOFException();
+
+                        if (writing) output.append((char) x);
+                    }
+                } else {
+                    if (writing) output.append((char) x);
+                }
+
+                char_at++;
+            }
+        } catch (java.io.EOFException e) {
+            // okay, done.
+            // did you know that
+        } catch (java.io.IOException e) {
+            throw new RuntimeException(
+                    "Why is reading from a string causing an IOException?! " + e);
+        }
+
+        String seq_str = output.toString();
+        // System.err.println("What've we got: " + seq_str);
+        Sequence seq =
+                BaseSequence.createSequence(
+                        getFullName() + " (segment:" + from + "-" + to + ":inclusive)", seq_str);
+
+        // System.err.println("Ended up with: " + seq);
+
+        return seq;
+    }
+
     //
-    // Also: convert round brackets into 'system-standard' (i.e. TaxonDNA specific) square brackets.
+    //	4.	SETTERS. Functions to set values in Sequence. This includes
+    //		both simple setters (such as 'setWarningFlag') all the way
+    //		to complicated functions (such as 'changeName').
     //
-    int count = 0;
-    int length = 0;
-    for (int x = 0; x < seq.length(); x++) {
-      char ch = seq.charAt(x);
+    /**
+     * Changes the sequence itself. BaseSequence doesn't care what sequence you try feeding in here.
+     */
+    public void changeSequence(String seq) throws SequenceException {
+        StringBuffer buff = new StringBuffer();
 
-      // convert round brackets to square
-      if (ch == '(') ch = '[';
-      else if (ch == ')') ch = ']';
+        // important step: is this sequence actually 'valid' (are all the brackets closed?)
+        //
+        // Also: convert round brackets into 'system-standard' (i.e. TaxonDNA specific) square
+        // brackets.
+        //
+        int count = 0;
+        int length = 0;
+        for (int x = 0; x < seq.length(); x++) {
+            char ch = seq.charAt(x);
 
-      // count the brackets!
-      if (ch == '[') count++;
-      if (ch == ']') count--;
+            // convert round brackets to square
+            if (ch == '(') ch = '[';
+            else if (ch == ')') ch = ']';
 
-      // this way, we delete this *once*
-      if (count == 0) length++;
+            // count the brackets!
+            if (ch == '[') count++;
+            if (ch == ']') count--;
 
-      buff.append(ch);
+            // this way, we delete this *once*
+            if (count == 0) length++;
+
+            buff.append(ch);
+        }
+
+        if (count != 0)
+            throw new SequenceException(
+                    getFullName(),
+                    "This sequence cannot be changed to the specified sequence, as the brackets are"
+                        + " not properly closed. Please ensure that all brackets are closed, and"
+                        + " try again.");
+
+        seq = buff.toString(); // hey, if we _can_ ...
+
+        synchronized (this) {
+            this.id = new UUID();
+            this.seq = seq.toCharArray();
+            this.len = length;
+        }
     }
 
-    if (count != 0)
-      throw new SequenceException(
-          getFullName(),
-          "This sequence cannot be changed to the specified sequence, as the brackets are not properly closed. Please ensure that all brackets are closed, and try again.");
+    /**
+     * Converts external gaps to missing characters. Basically just a raw replace of '_'s to '?'s.
+     */
+    public void convertExternalGapsToMissingChars() {
+        // front sweep
+        for (int x = 0; x < seq.length; x++) {
+            if (seq[x] == '-') seq[x] = '?';
+            else break;
+        }
 
-    seq = buff.toString(); // hey, if we _can_ ...
+        // reverse sweep
+        for (int x = seq.length - 1; x >= 0; x--) {
+            if (seq[x] == '-') seq[x] = '?';
+            else break;
+        }
 
-    synchronized (this) {
-      this.id = new UUID();
-      this.seq = seq.toCharArray();
-      this.len = length;
+        // done!
     }
-  }
-
-  /** Converts external gaps to missing characters. Basically just a raw replace of '_'s to '?'s. */
-  public void convertExternalGapsToMissingChars() {
-    // front sweep
-    for (int x = 0; x < seq.length; x++) {
-      if (seq[x] == '-') seq[x] = '?';
-      else break;
-    }
-
-    // reverse sweep
-    for (int x = seq.length - 1; x >= 0; x--) {
-      if (seq[x] == '-') seq[x] = '?';
-      else break;
-    }
-
-    // done!
-  }
 }

@@ -32,68 +32,69 @@ import com.ggvaidya.TaxonDNA.Common.DNA.*;
 import java.io.*;
 
 public class FormatHandlerEvent {
-  /** There was no event */
-  public static final int NO_EVENT = 0;
+    /** There was no event */
+    public static final int NO_EVENT = 0;
 
-  /**
-   * A file-wide character set was detected; the FormatHandler would like to inform you of the same.
-   */
-  public static final int CHARACTER_SET_FOUND = 1;
+    /**
+     * A file-wide character set was detected; the FormatHandler would like to inform you of the
+     * same.
+     */
+    public static final int CHARACTER_SET_FOUND = 1;
 
-  // environment info
-  private File f = null;
+    // environment info
+    private File f = null;
 
-  public File getFile() {
-    return f;
-  }
+    public File getFile() {
+        return f;
+    }
 
-  private FormatHandler fh = null;
+    private FormatHandler fh = null;
 
-  public FormatHandler getFormatHandler() {
-    return fh;
-  }
+    public FormatHandler getFormatHandler() {
+        return fh;
+    }
 
-  private SequenceList sl = null;
+    private SequenceList sl = null;
 
-  public SequenceList getSequenceList() {
-    return sl;
-  }
+    public SequenceList getSequenceList() {
+        return sl;
+    }
 
-  private int id = NO_EVENT;
+    private int id = NO_EVENT;
 
-  public int getId() {
-    return id;
-  }
+    public int getId() {
+        return id;
+    }
 
-  // event specific info
-  public String name = null;
-  public Sequence sequence = null;
-  public int from = 0;
-  public int to = 0;
+    // event specific info
+    public String name = null;
+    public Sequence sequence = null;
+    public int from = 0;
+    public int to = 0;
 
-  /** Standard constructor. You can specify 'null' to any of these. */
-  public FormatHandlerEvent(File f, FormatHandler fh, SequenceList sl) {
-    this.f = f;
-    this.fh = fh;
-    this.sl = sl;
-  }
+    /** Standard constructor. You can specify 'null' to any of these. */
+    public FormatHandlerEvent(File f, FormatHandler fh, SequenceList sl) {
+        this.f = f;
+        this.fh = fh;
+        this.sl = sl;
+    }
 
-  /**
-   * Specify a CHARACTER_SET_FOUND event. Note the following about CHARACTER_SET_FOUND events: 1.
-   * There may be multiple character sets. 2. Each character set might cover multiple areas. Each
-   * area will be called in ONCE and SEPARATELY! Hence, YOU (and you alone) are responsible for
-   * figuring out: 1. which areas are redundant (used in two or more features already) 2. which
-   * areas are called out multiple times. 3. any other issue you might have with this system.
-   *
-   * <p>It's quite new and quite rocky yet. Apologies.
-   */
-  public FormatHandlerEvent makeCharacterSetFoundEvent(String called, int from, int to) {
-    FormatHandlerEvent evt = new FormatHandlerEvent(f, fh, sl);
-    evt.id = CHARACTER_SET_FOUND;
-    evt.name = called;
-    evt.from = from;
-    evt.to = to;
+    /**
+     * Specify a CHARACTER_SET_FOUND event. Note the following about CHARACTER_SET_FOUND events: 1.
+     * There may be multiple character sets. 2. Each character set might cover multiple areas. Each
+     * area will be called in ONCE and SEPARATELY! Hence, YOU (and you alone) are responsible for
+     * figuring out: 1. which areas are redundant (used in two or more features already) 2. which
+     * areas are called out multiple times. 3. any other issue you might have with this system.
+     *
+     * <p>It's quite new and quite rocky yet. Apologies.
+     */
+    public FormatHandlerEvent makeCharacterSetFoundEvent(String called, int from, int to) {
+        FormatHandlerEvent evt = new FormatHandlerEvent(f, fh, sl);
+        evt.id = CHARACTER_SET_FOUND;
+        evt.name = called;
+        evt.from = from;
+        evt.to = to;
 
-    return evt;
-  }
+        return evt;
+    }
 }

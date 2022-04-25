@@ -22,17 +22,17 @@ package com.ggvaidya.TaxonDNA.Common.UI;
 import java.io.*;
 
 public class DirectoryFilenameFilter implements FilenameFilter {
-  public DirectoryFilenameFilter() {
-    // What more can I say?
-  }
+    public DirectoryFilenameFilter() {
+        // What more can I say?
+    }
 
-  public boolean accept(File dir, String name) {
-    File file = new File(dir, name);
+    public boolean accept(File dir, String name) {
+        File file = new File(dir, name);
 
-    System.err.println("Testing " + file);
+        System.err.println("Testing " + file);
 
-    if (file.isDirectory()) return true;
+        if (file.isDirectory()) return true;
 
-    return false;
-  }
+        return false;
+    }
 }

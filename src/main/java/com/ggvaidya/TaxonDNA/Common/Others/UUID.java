@@ -29,43 +29,43 @@
 package com.ggvaidya.TaxonDNA.Common.Others;
 
 public class UUID {
-  private static long lastAllocated = 0;
-  private static int lastSequenceNo = 0;
-  private long myTimestamp = 0;
-  private int mySequenceNo = 0;
-  private static Object lock = new Object();
+    private static long lastAllocated = 0;
+    private static int lastSequenceNo = 0;
+    private long myTimestamp = 0;
+    private int mySequenceNo = 0;
+    private static Object lock = new Object();
 
-  public UUID() {
-    synchronized (lock) {
-      myTimestamp = System.currentTimeMillis();
-      mySequenceNo = 1;
+    public UUID() {
+        synchronized (lock) {
+            myTimestamp = System.currentTimeMillis();
+            mySequenceNo = 1;
 
-      if (myTimestamp == lastAllocated) mySequenceNo = lastSequenceNo + 1;
+            if (myTimestamp == lastAllocated) mySequenceNo = lastSequenceNo + 1;
 
-      lastAllocated = myTimestamp;
-      lastSequenceNo = mySequenceNo;
+            lastAllocated = myTimestamp;
+            lastSequenceNo = mySequenceNo;
+        }
+        //		System.err.println("Unique ID allocated: " + toString());
     }
-    //		System.err.println("Unique ID allocated: " + toString());
-  }
 
-  // equals()? Only if you're another UUID, mate
-  public boolean equals(Object o) {
-    return equals((UUID) o);
-  }
+    // equals()? Only if you're another UUID, mate
+    public boolean equals(Object o) {
+        return equals((UUID) o);
+    }
 
-  // equals()? Only if the UIDs match, mate
-  public boolean equals(UUID uid2) {
-    return uid2.getUUID().equals(getUUID());
-  }
+    // equals()? Only if the UIDs match, mate
+    public boolean equals(UUID uid2) {
+        return uid2.getUUID().equals(getUUID());
+    }
 
-  // if you're "one of us" ... you get to know this
-  // otherwise, please, just use equals(Object) and be happy with it ...
-  protected String getUUID() {
-    return myTimestamp + "_" + mySequenceNo;
-  }
+    // if you're "one of us" ... you get to know this
+    // otherwise, please, just use equals(Object) and be happy with it ...
+    protected String getUUID() {
+        return myTimestamp + "_" + mySequenceNo;
+    }
 
-  // guaranteed to be unique
-  public String toString() {
-    return getUUID();
-  }
+    // guaranteed to be unique
+    public String toString() {
+        return getUUID();
+    }
 }

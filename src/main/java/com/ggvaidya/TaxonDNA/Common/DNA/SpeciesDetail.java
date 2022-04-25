@@ -28,89 +28,90 @@ package com.ggvaidya.TaxonDNA.Common.DNA;
 import java.util.*;
 
 public class SpeciesDetail {
-  private String species_name;
-  private int length_longestSequence = 0;
-  private ArrayList<Sequence> sequences = new ArrayList<Sequence>();
+    private String species_name;
+    private int length_longestSequence = 0;
+    private ArrayList<Sequence> sequences = new ArrayList<Sequence>();
 
-  /** You can't create a SpeciesDetail unless you, err, provide the details. */
-  private SpeciesDetail() {}
+    /** You can't create a SpeciesDetail unless you, err, provide the details. */
+    private SpeciesDetail() {}
 
-  /** Our most useful constructor. */
-  public SpeciesDetail(String species_name) {
-    this.species_name = species_name;
-  }
-
-  /** Add a sequence to this "species". */
-  public void add(Sequence seq) {
-    if (!seq.getSpeciesName().equals(species_name))
-      throw new RuntimeException("Tried to add " + seq + " to a species detail of " + species_name);
-
-    // Process all the numbers.
-    if (seq.getLength() > length_longestSequence) {
-      length_longestSequence = seq.getLength();
+    /** Our most useful constructor. */
+    public SpeciesDetail(String species_name) {
+        this.species_name = species_name;
     }
 
-    // Add this sequence to our list.
-    sequences.add(seq);
-  }
+    /** Add a sequence to this "species". */
+    public void add(Sequence seq) {
+        if (!seq.getSpeciesName().equals(species_name))
+            throw new RuntimeException(
+                    "Tried to add " + seq + " to a species detail of " + species_name);
 
-  /** @return A list of sequences associated with this species detail. */
-  public List<Sequence> getSequences() {
-    return (List<Sequence>) sequences;
-  }
-
-  /** @return The number of sequences in this species detail. */
-  public int getSequencesCount() {
-    return sequences.size();
-  }
-
-  /**
-   * Determine how many sequences have a "valid match", i.e. a conspecific which has less than the
-   * minimum overlap.
-   *
-   * @return The number of such sequences.
-   */
-  public int getSequencesWithValidConspecificsCount() {
-    int valid_matches = 0;
-
-    for (Sequence seq : sequences) {
-      for (Sequence seq_inner : sequences) {
-        if (seq_inner == seq) continue;
-
-        if (seq.hasMinOverlap(seq_inner)) {
-          valid_matches++;
-          break; // Will break out of inner, but not outer, loop.
+        // Process all the numbers.
+        if (seq.getLength() > length_longestSequence) {
+            length_longestSequence = seq.getLength();
         }
-      }
+
+        // Add this sequence to our list.
+        sequences.add(seq);
     }
 
-    return valid_matches;
-  }
-
-  /**
-   * Determine how many sequences *don't* have a valid match, i.e. a conspecific which has less than
-   * the minimum overlap.
-   *
-   * @return The number of such sequences.
-   */
-  public int getSequencesWithoutValidConspecificsCount() {
-    return getSequencesCount() - getSequencesWithValidConspecificsCount();
-  }
-
-  /** @return The length of the longest sequence in this SpeciesDetail. */
-  public int getLongestSequenceLength() {
-    return length_longestSequence;
-  }
-
-  /** @return a list of GI numbers as a concatenated string. */
-  public String getGINumbersAsString() {
-    StringBuffer buff = new StringBuffer();
-
-    for (Sequence seq : sequences) {
-      if (seq.getGI() != null) buff.append("gi|" + seq.getGI() + "| ");
-      else buff.append("(Sequence with unknown GI number) ");
+    /** @return A list of sequences associated with this species detail. */
+    public List<Sequence> getSequences() {
+        return (List<Sequence>) sequences;
     }
 
-    return buff.toString();
-  }
+    /** @return The number of sequences in this species detail. */
+    public int getSequencesCount() {
+        return sequences.size();
+    }
+
+    /**
+     * Determine how many sequences have a "valid match", i.e. a conspecific which has less than the
+     * minimum overlap.
+     *
+     * @return The number of such sequences.
+     */
+    public int getSequencesWithValidConspecificsCount() {
+        int valid_matches = 0;
+
+        for (Sequence seq : sequences) {
+            for (Sequence seq_inner : sequences) {
+                if (seq_inner == seq) continue;
+
+                if (seq.hasMinOverlap(seq_inner)) {
+                    valid_matches++;
+                    break; // Will break out of inner, but not outer, loop.
+                }
+            }
+        }
+
+        return valid_matches;
+    }
+
+    /**
+     * Determine how many sequences *don't* have a valid match, i.e. a conspecific which has less
+     * than the minimum overlap.
+     *
+     * @return The number of such sequences.
+     */
+    public int getSequencesWithoutValidConspecificsCount() {
+        return getSequencesCount() - getSequencesWithValidConspecificsCount();
+    }
+
+    /** @return The length of the longest sequence in this SpeciesDetail. */
+    public int getLongestSequenceLength() {
+        return length_longestSequence;
+    }
+
+    /** @return a list of GI numbers as a concatenated string. */
+    public String getGINumbersAsString() {
+        StringBuffer buff = new StringBuffer();
+
+        for (Sequence seq : sequences) {
+            if (seq.getGI() != null) buff.append("gi|" + seq.getGI() + "| ");
+            else buff.append("(Sequence with unknown GI number) ");
+        }
+
+        return buff.toString();
+    }
 }

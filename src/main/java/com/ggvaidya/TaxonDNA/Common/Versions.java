@@ -27,8 +27,8 @@
 package com.ggvaidya.TaxonDNA.Common;
 
 public class Versions {
-  /** Returns the common version string for the entire TaxonDNA package. */
-  public static String getTaxonDNA() {
-    return Versions.class.getPackage().getImplementationVersion();
-  }
+    /** Returns the common version string for the entire TaxonDNA package. */
+    public static String getTaxonDNA() {
+        return Versions.class.getPackage().getImplementationVersion();
+    }
 }

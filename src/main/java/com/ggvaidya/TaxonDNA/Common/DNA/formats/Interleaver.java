@@ -25,51 +25,51 @@ import com.ggvaidya.TaxonDNA.Common.DNA.*;
 import java.util.*;
 
 public class Interleaver {
-  private Hashtable seqs = new Hashtable(); // String(name) -> Sequence
-  private Vector sequenceNames = new Vector(); // sequenceNames, in the order they were added
+    private Hashtable seqs = new Hashtable(); // String(name) -> Sequence
+    private Vector sequenceNames = new Vector(); // sequenceNames, in the order they were added
 
-  public Interleaver() {}
+    public Interleaver() {}
 
-  /**
-   * Get the sequence with the specified name. This is the sequence 'to date': so please don't ask
-   * us before you're all done giving us the data.
-   */
-  public Sequence getSequence(String name) {
-    return (Sequence) seqs.get(name);
-  }
-
-  /** Set OR REPLACE the sequence with the specified name. */
-  public void setSequence(String name, Sequence seq) {
-    if (seqs.get(name) == null) sequenceNames.add(name);
-    seqs.put(name, seq);
-  }
-
-  /**
-   * Append OR CREATE a sequence with the specified name. Note that this is not tested.
-   *
-   * @throws SequenceException if there is an error in the combined Sequence
-   */
-  public void appendSequence(String name, String sequence) throws SequenceException {
-    appendSequence(name, BaseSequence.createSequence(name, sequence));
-  }
-
-  public void appendSequence(String name, Sequence seq) {
-    if (seqs.get(name) == null) {
-      sequenceNames.add(name);
-      seqs.put(name, seq);
-    } else {
-      // append it onto the currently existing 'Sequence'
-      Sequence our_seq = (Sequence) seqs.get(name);
-      our_seq = our_seq.concatSequence(seq);
-      seqs.put(name, our_seq);
+    /**
+     * Get the sequence with the specified name. This is the sequence 'to date': so please don't ask
+     * us before you're all done giving us the data.
+     */
+    public Sequence getSequence(String name) {
+        return (Sequence) seqs.get(name);
     }
-  }
 
-  /**
-   * Returns an iterator to a list of species names. You can call getSequence() to get the Sequences
-   * themselves.
-   */
-  public Iterator getSequenceNamesIterator() {
-    return sequenceNames.iterator();
-  }
+    /** Set OR REPLACE the sequence with the specified name. */
+    public void setSequence(String name, Sequence seq) {
+        if (seqs.get(name) == null) sequenceNames.add(name);
+        seqs.put(name, seq);
+    }
+
+    /**
+     * Append OR CREATE a sequence with the specified name. Note that this is not tested.
+     *
+     * @throws SequenceException if there is an error in the combined Sequence
+     */
+    public void appendSequence(String name, String sequence) throws SequenceException {
+        appendSequence(name, BaseSequence.createSequence(name, sequence));
+    }
+
+    public void appendSequence(String name, Sequence seq) {
+        if (seqs.get(name) == null) {
+            sequenceNames.add(name);
+            seqs.put(name, seq);
+        } else {
+            // append it onto the currently existing 'Sequence'
+            Sequence our_seq = (Sequence) seqs.get(name);
+            our_seq = our_seq.concatSequence(seq);
+            seqs.put(name, our_seq);
+        }
+    }
+
+    /**
+     * Returns an iterator to a list of species names. You can call getSequence() to get the
+     * Sequences themselves.
+     */
+    public Iterator getSequenceNamesIterator() {
+        return sequenceNames.iterator();
+    }
 }

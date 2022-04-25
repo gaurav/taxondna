@@ -23,23 +23,23 @@
 package com.ggvaidya.TaxonDNA.Common.UI;
 
 public class UndoTask {
-  // use these or make your own!
-  public static final int UNDO_ADD = 0;
-  public static final int UNDO_DELETE = 0;
+    // use these or make your own!
+    public static final int UNDO_ADD = 0;
+    public static final int UNDO_DELETE = 0;
 
-  private int type = 0;
-  private Object target = null;
+    private int type = 0;
+    private Object target = null;
 
-  public UndoTask(int type, Object target) {
-    this.type = type;
-    this.target = target;
-  }
+    public UndoTask(int type, Object target) {
+        this.type = type;
+        this.target = target;
+    }
 
-  public int getType() {
-    return type;
-  }
+    public int getType() {
+        return type;
+    }
 
-  public Object getTarget() {
-    return target;
-  }
+    public Object getTarget() {
+        return target;
+    }
 }

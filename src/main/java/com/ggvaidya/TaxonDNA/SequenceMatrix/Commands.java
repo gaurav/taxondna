@@ -32,51 +32,51 @@ import java.io.*;
 import java.util.*;
 
 public class Commands {
-  private static SequenceMatrix matrix = null; // the SequenceMatrix object
+    private static SequenceMatrix matrix = null; // the SequenceMatrix object
 
-  /** Executes a set of commands coming off the command line */
-  public static void executeCmdLine(SequenceMatrix input_matrix, List commands) {
-    matrix = input_matrix; // Set this up.
+    /** Executes a set of commands coming off the command line */
+    public static void executeCmdLine(SequenceMatrix input_matrix, List commands) {
+        matrix = input_matrix; // Set this up.
 
-    Vector cmds = new Vector(commands);
+        Vector cmds = new Vector(commands);
 
-    // Now, we should split this into words, and "recognize" commands
-    // by the leading '--'. These commands are presented to an
-    // execute(List) method, which takes the command and all necessary
-    // arguments, and then returns control.
-    while (cmds.size() > 0) {
-      String cmd = (String) cmds.remove(0);
+        // Now, we should split this into words, and "recognize" commands
+        // by the leading '--'. These commands are presented to an
+        // execute(List) method, which takes the command and all necessary
+        // arguments, and then returns control.
+        while (cmds.size() > 0) {
+            String cmd = (String) cmds.remove(0);
 
-      if (cmd.substring(0, 2).equals("--")) {
-        // A command!
-        cmd = cmd.substring(2);
+            if (cmd.substring(0, 2).equals("--")) {
+                // A command!
+                cmd = cmd.substring(2);
 
-        execute(cmd, cmds);
-      } else {
-        output(cmd + " is not a valid command.");
-      }
+                execute(cmd, cmds);
+            } else {
+                output(cmd + " is not a valid command.");
+            }
+        }
     }
-  }
 
-  /** Executes a simple command, possibly getting other arguments off a queue. */
-  public static void execute(String cmd, List arguments) {
-    cmd = cmd.toLowerCase();
+    /** Executes a simple command, possibly getting other arguments off a queue. */
+    public static void execute(String cmd, List arguments) {
+        cmd = cmd.toLowerCase();
 
-    if (cmd.equals("version")) {
-      output("This is SequenceMatrix v" + Versions.getTaxonDNA());
-    } else if (cmd.equals("add")) {
-      String filename = (String) arguments.remove(0);
+        if (cmd.equals("version")) {
+            output("This is SequenceMatrix v" + Versions.getTaxonDNA());
+        } else if (cmd.equals("add")) {
+            String filename = (String) arguments.remove(0);
 
-      matrix.getFileManager().addFile(new File(filename));
-    } else if (cmd.equals("quit") || cmd.equals("exit")) {
-      System.exit(0);
-    } else {
-      output("Unable to understand command: " + cmd);
+            matrix.getFileManager().addFile(new File(filename));
+        } else if (cmd.equals("quit") || cmd.equals("exit")) {
+            System.exit(0);
+        } else {
+            output("Unable to understand command: " + cmd);
+        }
     }
-  }
 
-  /** How to provide output. */
-  public static void output(String s) {
-    System.err.println(s);
-  }
+    /** How to provide output. */
+    public static void output(String s) {
+        System.err.println(s);
+    }
 }
