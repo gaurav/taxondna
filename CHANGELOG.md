@@ -5,6 +5,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+- Updated minimum Java version from Java 11 to Java 17 (current LTS).
+- Used Spotless to clean up pom.xml, Markdown and Java files.
+- Added .mvn/jvm.config to work around an issue with Spotless.
+- Removed IDEA (IntelliJ) files.
+- Added a GitHub Action to check style, test and package.
+
 ## [v1.9]: May 14, 2021
 
 - Replaced Ant-based build process with Maven build.
