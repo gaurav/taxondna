@@ -141,42 +141,6 @@
         </executions>
       </plugin>
 
-      <!-- We use the Assembly plugin to build the releases. -->
-      <plugin>
-        <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.3.0</version>
-        <executions>
-            <execution>
-                <id>SpeciesIdentifier</id>
-                <phase>package</phase>
-                <goals>
-                    <goal>single</goal>
-                </goals>
-                <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <descriptors>
-                    <descriptor>src/assemblies/SpeciesIdentifier.xml</descriptor>
-                  </descriptors>
-                  <finalName>SpeciesIdentifier-${project.version}</finalName>
-                </configuration>
-            </execution>
-            <execution>
-                <id>SequenceMatrix</id>
-                <phase>package</phase>
-                <goals>
-                    <goal>single</goal>
-                </goals>
-                <configuration>
-                  <appendAssemblyId>false</appendAssemblyId>
-                  <descriptors>
-                    <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
-                  </descriptors>
-                  <finalName>SequenceMatrix-${project.version}</finalName>
-                </configuration>
-            </execution>
-        </executions>
-      </plugin>
-
       <!-- We use Spotless to check style -->
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
@@ -212,6 +176,42 @@
             </googleJavaFormat>
           </java>
         </configuration>
+      </plugin>
+
+      <!-- We use the Assembly plugin to build the releases. -->
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>3.3.0</version>
+        <executions>
+          <execution>
+            <id>SpeciesIdentifier</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assemblies/SpeciesIdentifier.xml</descriptor>
+              </descriptors>
+              <finalName>SpeciesIdentifier-${project.version}</finalName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>SequenceMatrix</id>
+            <phase>package</phase>
+            <goals>
+              <goal>single</goal>
+            </goals>
+            <configuration>
+              <appendAssemblyId>false</appendAssemblyId>
+              <descriptors>
+                <descriptor>src/assemblies/SequenceMatrix.xml</descriptor>
+              </descriptors>
+              <finalName>SequenceMatrix-${project.version}</finalName>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
