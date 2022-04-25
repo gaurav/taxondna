@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!-- A pom.xml file for TaxonDNA -->
 <!--
   We used Ant files [1] until Feb 2021, when I switched over to Maven.
@@ -62,15 +63,15 @@
         -->
       <plugin>
         <artifactId>maven-jar-plugin</artifactId>
-	<version>3.2.0</version>
+        <version>3.2.0</version>
         <executions>
           <!-- SpeciesIdentifier -->
           <execution>
             <id>SpeciesIdentifier</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -90,10 +91,10 @@
           <!-- GenBankExplorer -->
           <execution>
             <id>GenBankExplorer</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -113,10 +114,10 @@
           <!-- SequenceMatrix -->
           <execution>
             <id>SequenceMatrix</id>
-            <phase>package</phase>
             <goals>
               <goal>jar</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <archive>
                 <index>true</index>
@@ -155,8 +156,8 @@
                 <include>.gitignore</include>
               </includes>
               <!-- define the steps to apply to those files -->
-              <trimTrailingWhitespace/>
-              <endWithNewline/>
+              <trimTrailingWhitespace></trimTrailingWhitespace>
+              <endWithNewline></endWithNewline>
               <indent>
                 <tabs>true</tabs>
                 <spacesPerTab>4</spacesPerTab>
@@ -178,11 +179,13 @@
 
           <!-- Format Markdown files -->
           <markdown>
-            <includes> <!-- You have to set the target manually -->
+            <includes>
+              <!-- You have to set the target manually -->
               <include>**/*.md</include>
             </includes>
 
-            <flexmark/> <!-- has its own section below -->
+            <flexmark></flexmark>
+            <!-- has its own section below -->
           </markdown>
 
           <!-- Format this POM file -->
@@ -192,7 +195,7 @@
               <include>pom.xml</include>
             </includes>
 
-            <sortPom />
+            <sortPom></sortPom>
           </pom>
         </configuration>
       </plugin>
@@ -204,10 +207,10 @@
         <executions>
           <execution>
             <id>SpeciesIdentifier</id>
-            <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
@@ -218,10 +221,10 @@
           </execution>
           <execution>
             <id>SequenceMatrix</id>
-            <phase>package</phase>
             <goals>
               <goal>single</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <appendAssemblyId>false</appendAssemblyId>
               <descriptors>
