@@ -184,6 +184,16 @@
 
             <flexmark/> <!-- has its own section below -->
           </markdown>
+
+          <!-- Format this POM file -->
+          <pom>
+            <!-- These are the defaults, you can override if you want -->
+            <includes>
+              <include>pom.xml</include>
+            </includes>
+
+            <sortPom />
+          </pom>
         </configuration>
       </plugin>
 
