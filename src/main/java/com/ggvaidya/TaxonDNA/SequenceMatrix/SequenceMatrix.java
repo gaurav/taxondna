@@ -273,8 +273,7 @@ public class SequenceMatrix
 
         //
         // Export -> Export as PHYLIP
-        if (cmd.equals("Export dataset in Phylip format"))
-            fileManager.quickExportAsPhylip();
+        if (cmd.equals("Export dataset in Phylip format")) fileManager.quickExportAsPhylip();
 
         //
         // Settings -> Taxonsets. Allows you to manipulate taxonsets.
