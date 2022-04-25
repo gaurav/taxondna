@@ -152,7 +152,6 @@
             <format>
               <!-- define the files to apply to -->
               <includes>
-                <include>*.md</include>
                 <include>.gitignore</include>
               </includes>
               <!-- define the steps to apply to those files -->
@@ -164,6 +163,7 @@
               </indent>
             </format>
           </formats>
+
           <!-- define a language-specific format -->
           <java>
             <!-- no need to specify files, inferred automatically, but you can if you want -->
@@ -175,6 +175,15 @@
               <reflowLongStrings>true</reflowLongStrings>
             </googleJavaFormat>
           </java>
+
+          <!-- Format Markdown files -->
+          <markdown>
+            <includes> <!-- You have to set the target manually -->
+              <include>**/*.md</include>
+            </includes>
+
+            <flexmark/> <!-- has its own section below -->
+          </markdown>
         </configuration>
       </plugin>
 
