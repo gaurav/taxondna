@@ -1,0 +1,35 @@
+# A GitHub Action to run code format checks and (eventually) testing.
+# Based on https://github.com/diffplug/spotless/blob/2baab0c62dcec9861109a63c1f97955736d76c70/.github/workflows/ci.yml
+
+on:
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        javaVersion: [ '8', '11', '17', '21' ]
+    name: Basic checks on Java ${{ matrix.JavaVersion }}
+    env:
+      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
+      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Temurin Java ${{ matrix.JavaVersion }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.JavaVersion }}
+          cache: 'maven'
+      - name: Check code formatting with Spotless
+        run: mvn -B spotless:check
+      - name: Check that we can build the project
+        run: mvn -B package
