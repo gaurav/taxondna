@@ -102,7 +102,7 @@ public class ExportBySpeciesName extends Panel implements UIExtension, ActionLis
             BufferedReader reader = new BufferedReader(new StringReader(text_main.getText()));
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
-                if (line.length() == 0) {
+                if (line.isEmpty()) {
                     // blank line, ignore
                 } else {
                     vec_species_names.add(line);

@@ -120,17 +120,23 @@ public class SpeciesDetails {
         }
     }
 
-    /** @return The number of sequences passed to SpeciesDetails. */
+    /**
+     * @return The number of sequences passed to SpeciesDetails.
+     */
     public int getSequencesCount() {
         return count_sequences;
     }
 
-    /** @return The number of species in this SpeciesDetails. */
+    /**
+     * @return The number of species in this SpeciesDetails.
+     */
     public int getSpeciesCount() {
         return count_species;
     }
 
-    /** @return The number of SpeciesDetail objects in this SpeciesDetails. */
+    /**
+     * @return The number of SpeciesDetail objects in this SpeciesDetails.
+     */
     public int count() {
         return details.size();
     }
@@ -143,12 +149,16 @@ public class SpeciesDetails {
         return (SpeciesDetail) details.get(name);
     }
 
-    /** @return The number of sequences without a species name. */
+    /**
+     * @return The number of sequences without a species name.
+     */
     public int getSequencesWithoutASpeciesNameCount() {
         return count_sequences_without_a_name;
     }
 
-    /** @return The number of invalid sequences (sequences shorter than the minimum overlap). */
+    /**
+     * @return The number of invalid sequences (sequences shorter than the minimum overlap).
+     */
     public int getSequencesInvalidCount() {
         return count_sequences_invalid;
     }

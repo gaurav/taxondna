@@ -273,8 +273,7 @@ public class SequenceMatrix
 
         //
         // Export -> Export as PHYLIP
-        if (cmd.equals("Export dataset in Phylip format"))
-            fileManager.quickExportAsPhylip();
+        if (cmd.equals("Export dataset in Phylip format")) fileManager.quickExportAsPhylip();
 
         //
         // Settings -> Taxonsets. Allows you to manipulate taxonsets.
@@ -410,6 +409,7 @@ public class SequenceMatrix
     public void windowIconified(WindowEvent e) {}
 
     public void windowOpened(WindowEvent e) {}
+
     /** If somebody tries to close the window, call our local exit() to shut things down. */
     public void windowClosing(WindowEvent e) {
         exit();
@@ -466,6 +466,7 @@ public class SequenceMatrix
 
     /** This really ought to be a static variable in the itemStateChanged function. Ah, well. */
     private CheckboxMenuItem last_chmi = null;
+
     /** An item listener, used for the sort sub-menu. */
     public void itemStateChanged(ItemEvent e) {
         CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();

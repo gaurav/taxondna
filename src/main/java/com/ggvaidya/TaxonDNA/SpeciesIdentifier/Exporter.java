@@ -330,7 +330,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
             if (seqName == null) // skip the nameless ones
             continue;
 
-            if (lastName.equals("")) {
+            if (lastName.isEmpty()) {
                 // first name, prime it!
                 lastName = seqName;
                 best_seq = seq;
@@ -487,7 +487,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
                     if (!s.getFamilyName().equals(lastFamily)) {
                         lastFamily = s.getFamilyName();
                         String familyName = lastFamily.replace(' ', '_');
-                        if (familyName.equals("")) familyName = "Unknown";
+                        if (familyName.isEmpty()) familyName = "Unknown";
 
                         // dump current_file onto the buffer, unless it's empty
                         if (current_file.length() > 0) {
@@ -541,7 +541,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
 
         text_main.setText(buffer.toString());
 
-        if (status.equals("")) tf_status.setText("No problems encountered!");
+        if (status.isEmpty()) tf_status.setText("No problems encountered!");
         else tf_status.setText("I had to change some things. For instance: " + status);
 
         // forget all the new names we have found
@@ -806,7 +806,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
         if (evt.getSource().equals(choice_sizeRestrictions)) {
             String str = (String) evt.getItem();
 
-            int index = str.indexOf("[");
+            int index = str.indexOf('[');
             if (index != -1) {
                 index++;
 
@@ -819,7 +819,7 @@ public class Exporter extends Panel implements Runnable, UIExtension, ActionList
         if (evt.getSource().equals(choice_taxonIndicatingCharacters)) {
             String str = (String) evt.getItem();
 
-            int index = str.indexOf("[");
+            int index = str.indexOf('[');
             if (index != -1) {
                 index++;
 

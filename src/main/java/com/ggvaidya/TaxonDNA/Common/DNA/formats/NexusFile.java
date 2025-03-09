@@ -869,7 +869,7 @@ public class NexusFile extends BaseFormatHandler {
             int pos, FormatHandlerEvent evt, NexusTokenizer tok, boolean actuallyAdd)
             throws FormatException, IOException {
         // I can't remember if 1.5 does autoboxing, so I'll manualbox.
-        String position = new Integer(pos).toString();
+        String position = Integer.toString(pos);
 
         // System.err.println("CodonPosSet detected at " + pos + (actuallyAdd ? " and will be
         // added." :
@@ -1533,7 +1533,7 @@ public class NexusFile extends BaseFormatHandler {
             while (buff.ready()) {
                 String str = buff.readLine().trim();
 
-                if (str.equals("")) continue;
+                if (str.isEmpty()) continue;
 
                 if (str.equalsIgnoreCase("#nexus")) {
                     // we find signature!

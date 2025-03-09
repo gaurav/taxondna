@@ -295,6 +295,7 @@ public class Configuration extends Panel implements UIExtension, ActionListener,
     }
 
     private boolean pre_lockDownState = false;
+
     /**
      * Starts or stops a 'lockdown'. This puts up a special message, and is otherwise identical to
      * lock()/unlock().

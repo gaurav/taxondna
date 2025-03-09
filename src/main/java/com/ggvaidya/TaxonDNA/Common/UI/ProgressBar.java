@@ -78,7 +78,7 @@ public class ProgressBar extends Canvas implements DelayCallback {
         g.setColor(SystemColor.activeCaption);
         g.fillRect(0, 0, width, getHeight());
 
-        if (!text.equals("")) {
+        if (!text.isEmpty()) {
             String display = text + " (" + (int) ((float) done / total * 100) + "%)";
 
             int stringWidth = g.getFontMetrics().stringWidth(display);

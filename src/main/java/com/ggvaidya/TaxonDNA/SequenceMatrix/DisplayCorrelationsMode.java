@@ -64,6 +64,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
             -1; // the row component of the sequence to ignore while calculating correlation
 
     private String override_reference_sequence = null; // try not to think about this ;-)
+
     // okay: for testCorrelation(), this will over-ride
     // the reference sequence.
 
@@ -72,6 +73,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
         private String name = "";
         private double pairwise = 0.0;
         private int constant = +1; // a multiplier; set the constant to '-1'
+
         // to sort in opposite-to-natural order
 
         /**
@@ -294,7 +296,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
                 }
             }
 
-            totalScore = totalScore / count;
+            totalScore /= count;
 
             scores.add(new Score(seqName, totalScore));
         }
@@ -568,6 +570,7 @@ public class DisplayCorrelationsMode extends DisplayMode implements MouseListene
     // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
     //
     double[][] correlations = null;
+
     /**
      * Calculates and returns the correlation between two columns; in this case indicated by indices
      * into the arrays used by us.

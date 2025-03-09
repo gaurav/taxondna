@@ -231,7 +231,7 @@ public class BarcodeGenerator extends Panel
                         for (int y = 0; y < count_sequences; y++) {
                             String str = ((Sequence) group.get(y)).getSequence();
 
-                            if (name.equals("")) {
+                            if (name.isEmpty()) {
                                 name = ((Sequence) group.get(y)).getSpeciesName();
                             }
 

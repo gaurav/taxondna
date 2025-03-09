@@ -364,6 +364,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
 
     /** This really ought to be a static variable in the itemStateChanged function. Ah, well. */
     private CheckboxMenuItem last_chmi = null;
+
     /** An item listener, used for the sort sub-menu. */
     public void itemStateChanged(ItemEvent e) {
         CheckboxMenuItem chmi = (CheckboxMenuItem) e.getSource();
@@ -591,7 +592,7 @@ public class GenBankExplorer implements ActionListener, ItemListener, DropTarget
     public SequenceList getSelectedSequenceList(DelayCallback delay)
             throws SequenceException, DelayAbortedException {
         java.util.List list = viewManager.getSelectedContainers();
-        if (list == null || list.size() == 0) return null;
+        if (list == null || list.isEmpty()) return null;
 
         return exporter.combineContainers(list, delay);
     }

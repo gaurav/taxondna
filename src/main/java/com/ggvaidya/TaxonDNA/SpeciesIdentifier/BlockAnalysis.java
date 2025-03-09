@@ -139,7 +139,7 @@ public class BlockAnalysis extends Panel
         if (e.getSource().equals(btn_recalculate)) {
             // Recalculate!
             btn_recalculate.setLabel("Recalculate");
-            if (text_threshold.getText().equals("")) { // no threshold specified
+            if (text_threshold.getText().isEmpty()) { // no threshold specified
                 MessageBox mb =
                         new MessageBox(
                                 seqId.getFrame(),

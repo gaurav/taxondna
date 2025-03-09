@@ -45,14 +45,19 @@ public class MessageBox extends Dialog implements ActionListener {
     // both for type and for return by show()
     /** The "OK" button was pressed */
     public static final int MB_OK = 0x0001;
+
     /** The "YES" button was pressed */
     public static final int MB_YES = 0x0002;
+
     /** The "NO" button was pressed */
     public static final int MB_NO = 0x0004;
+
     /** The "CANCEL" button was pressed */
     public static final int MB_CANCEL = 0x0008;
+
     /** The "Yes to all" button was pressed */
     public static final int MB_YESTOALL = 0x000F;
+
     /** The "No to all" button was pressed */
     public static final int MB_NOTOALL = 0x0010;
 
@@ -62,6 +67,7 @@ public class MessageBox extends Dialog implements ActionListener {
      * this particular message.
      */
     public static final int MB_TITLE_IS_UNIQUE = 0x0100;
+
     /**
      * Specify that the message is unique to the entire program, and can be used to uniquely
      * identify this particular message.
@@ -70,12 +76,16 @@ public class MessageBox extends Dialog implements ActionListener {
 
     /** Create an "simple" messageBox, with a single "OK" button. */
     public static final int MB_SIMPLE = 0x1000;
+
     /** Create an "error" messageBox, with a single "OK" button. */
     public static final int MB_ERROR = 0x1000;
+
     /** Create a yes/no messageBox */
     public static final int MB_YESNO = 0x2000;
+
     /** Create a yes/no messageBox, with a single "CANCEL" button. */
     public static final int MB_YESNOCANCEL = 0x4000;
+
     /**
      * Create a yes/no/yes to all/no to all messageBox. You must set MB_TITLE_IS_UNIQUE or
      * MB_MESSAGE_IS_UNIQUE if you use this option

@@ -193,6 +193,7 @@ public class ProgressDialog extends Dialog
     }
 
     private float lastPercentage = 0;
+
     /**
      * The delay function. Right now, we just change our text to report the percentage done, and
      * inform our ProgressBar about the change.

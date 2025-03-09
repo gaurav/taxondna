@@ -402,7 +402,7 @@ public class Exporter implements SequencesHandler {
 
         // do we have *anything*?
         String str_tmp = buff.toString().trim();
-        if (str_tmp.length() == 0) return null;
+        if (str_tmp.isEmpty()) return null;
 
         return str_tmp;
     }

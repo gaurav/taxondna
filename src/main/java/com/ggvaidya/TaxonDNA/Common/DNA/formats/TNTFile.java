@@ -694,7 +694,7 @@ public class TNTFile extends BaseFormatHandler {
                     // throw formatException(tok, "Expecting the group id, but found '" +
                     // (char)tok.ttype + "'
                     // instead!");
-                    group_id = new Integer(++last_group_id_used).toString();
+                    group_id = Integer.toString(++last_group_id_used);
                 } else {
                     group_id = tok.sval;
                 }
@@ -1234,7 +1234,7 @@ public class TNTFile extends BaseFormatHandler {
             while (buff.ready()) {
                 String str = buff.readLine().trim();
 
-                if (str.equals("")) continue;
+                if (str.isEmpty()) continue;
 
                 if (str.toLowerCase().indexOf("xread") != -1) {
                     // we find xread!

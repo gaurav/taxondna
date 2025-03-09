@@ -67,6 +67,7 @@ public abstract class DisplayMode implements TreeModel, TreeSelectionListener {
     public void removeTreeModelListener(TreeModelListener l) {
         treeListeners.remove(l);
     }
+
     /**
      * Fires a tree event at all listening TreeModelListeners. Warning: this will ONLY fire the
      * event as a treeStructureChanged(TreeModelEvent). If you need a less powerful event to be
@@ -88,6 +89,7 @@ public abstract class DisplayMode implements TreeModel, TreeSelectionListener {
     // The current plan is to have a single, overloadable function
     // which is:
     protected abstract java.util.List getSubnodes(Object node);
+
     // Calling getSubnodes() will return a List of
     // all the sub-objects of node, in the order required. It can
     // also return 'null' to indicate that it's on a node.
@@ -99,6 +101,7 @@ public abstract class DisplayMode implements TreeModel, TreeSelectionListener {
     // Of course, we need to start somewhere, so you'll also have to
     // define:
     public abstract Object getRoot();
+
     //
     // And that's it!
     //

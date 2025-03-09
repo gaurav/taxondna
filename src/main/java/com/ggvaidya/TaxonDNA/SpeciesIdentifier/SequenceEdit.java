@@ -230,7 +230,7 @@ public class SequenceEdit extends Panel
             String speciesName = seq.getSpeciesName();
             if (speciesName != null) {
                 String subspecies = seq.getSubspeciesName().trim();
-                if (subspecies.equals("")) {
+                if (subspecies.isEmpty()) {
                     text_species.setText(speciesName.trim());
                 } else {
                     text_species.setText(speciesName.trim() + " (" + subspecies + ")");
@@ -332,6 +332,7 @@ public class SequenceEdit extends Panel
         if (e.getSource().equals(text_sequence))
             focusGained_sequence = text_sequence.getText().trim();
     }
+
     /** When our editable fields loose foci, we need to update the information */
     public void focusLost(FocusEvent e) {
         if (currentSequence == null) return;

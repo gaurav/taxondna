@@ -86,7 +86,7 @@ public class GenBankFile {
         public Section getSection(String s) {
             List v = getSections(s);
 
-            if (v.size() == 0) return null;
+            if (v.isEmpty()) return null;
             if (v.size() == 1) return (Section) v.get(0);
 
             throw new RuntimeException(
@@ -521,7 +521,7 @@ public class GenBankFile {
 
         public Location getLocation() {
             List l = getValues("@location");
-            if (l == null || l.size() == 0) return null;
+            if (l == null || l.isEmpty()) return null;
             return (Location) l.get(0);
         }
 
@@ -578,7 +578,7 @@ public class GenBankFile {
             Locus locus = getLocus();
 
             List list = locus.getSections("ORIGIN");
-            if (list == null || list.size() == 0) return new SequenceList(); // no origin
+            if (list == null || list.isEmpty()) return new SequenceList(); // no origin
 
             // okay, we have *ATLEAST* one origin
             // what if we have more than one?
@@ -948,7 +948,7 @@ public class GenBankFile {
                             // we pick up the ' ', then trim it out, so in case the string ends at
                             // (until + 1), we
                             // won't throw an exception.
-                            if (x.length() == 0) x = " ";
+                            if (x.isEmpty()) x = " ";
 
                             // tricky, dicky: do NOT appent the end of ORIGIN, since this is crap
                             // and useless to
@@ -981,7 +981,7 @@ public class GenBankFile {
                             s.append(line);
                         } else {
                             // continuation?
-                            if (line.length() >= 10 && line.substring(0, 10).trim().equals("")) {
+                            if (line.length() >= 10 && line.substring(0, 10).trim().isEmpty()) {
                                 // yes!
                                 s.append(line);
                             } else

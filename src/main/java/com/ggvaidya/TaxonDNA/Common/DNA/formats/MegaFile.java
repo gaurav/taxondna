@@ -177,7 +177,7 @@ public class MegaFile extends BaseFormatHandler implements Testable {
             String line;
             while ((line = read.readLine()) != null) {
                 line = line.trim();
-                if (!line.equals("")) {
+                if (!line.isEmpty()) {
                     if (line.toLowerCase().equals("#mega")) return true;
                     else {
                         return false;

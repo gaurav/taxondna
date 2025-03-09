@@ -52,10 +52,13 @@ public class Preferences implements ActionListener {
     //
     /** Nexus output should be interleaved. Returned by getNexusOutput(). */
     public static final int PREF_NEXUS_INTERLEAVED = 3;
+
     /** Nexus output should be in blocks. Returned by getNexusOutput(). */
     public static final int PREF_NEXUS_BLOCKS = 1;
+
     /** Nexus output should be in single, long lines. Returned by getNexusOutput(). */
     public static final int PREF_NEXUS_SINGLE_LINE = 2;
+
     /**
      * "Naked" Nexus: Nexus without anything but the core data. Please 'OR' this with a valid
      * getNexusOutput() format so everything stays just the way it is.

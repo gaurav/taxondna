@@ -76,7 +76,7 @@ public class CommandLine {
             // warn the user about unknown options
 
             // are there any files specified?
-            if (files.size() == 0) new SpeciesIdentifier();
+            if (files.isEmpty()) new SpeciesIdentifier();
             else {
                 Iterator i = files.iterator();
 

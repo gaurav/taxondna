@@ -372,7 +372,7 @@ public class ClustalMapping implements ActionListener {
                 // no == 0 if there was an error in parseInt
                 // but no cannot be zero (unless ... UUID is
                 // really zero, which would be odd).
-                if (!no.equals("")) {
+                if (!no.isEmpty()) {
                     // it's valid; so let's change.
 
                     Iterator iMap = set_map.iterator();
@@ -455,7 +455,7 @@ public class ClustalMapping implements ActionListener {
             Sequence seq = (Sequence) i.next();
 
             String id = seq.getGI();
-            if (id == null || id.equals("")) {
+            if (id == null || id.isEmpty()) {
                 // no id? no problem! we 'get' the id from the seq
                 // assuming we've given it a uniqueId before ...
                 Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
@@ -464,7 +464,7 @@ public class ClustalMapping implements ActionListener {
             }
 
             // now, let's see what this here id is *really* made of
-            if (id == null || id.equals("")) {
+            if (id == null || id.isEmpty()) {
                 // there is no GI
                 //				if(!warned) {
                 //					mb = new MessageBox(getFrame(), "Sequences without GI numbers detected!",
@@ -565,7 +565,7 @@ public class ClustalMapping implements ActionListener {
                 Sequence seq = (Sequence) i.next();
                 String id = seq.getGI();
 
-                if (id == null || id.equals("")) {
+                if (id == null || id.isEmpty()) {
                     // since we've run it thru createUniqueIds(), this is guaranteed to work ...
                     Pattern p = Pattern.compile("\\[uniqueid:(.*)\\]");
                     Matcher m = p.matcher(seq.getFullName());

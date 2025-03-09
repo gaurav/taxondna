@@ -44,17 +44,17 @@ public interface FormatHandler {
      * Returns the short name of this file format. E.g. "NEXUS", "MEGA", or "FASTA". Think about
      * whether you could put it into a sentence as "This is the ___ file format."
      */
-    public String getShortName();
+    String getShortName();
 
     /** Returns the extension (ideally lowercase, no fullstops) for this kind of file. */
-    public String getExtension();
+    String getExtension();
 
     /**
      * Returns the full name of this file format handler. E.g. "Nexus file format v2 and below". You
      * ought to put in something about what versions of the software you support. But not too long:
      * think about whether you could display it in a list.
      */
-    public String getFullName();
+    String getFullName();
 
     /**
      * Read this file into the specified SequenceList. This will read all the files straight into
@@ -65,7 +65,7 @@ public interface FormatHandler {
      * @throws FormatException if there was an error in the format of the file.
      * @throws DelayAbortedException if the DelayCallback was aborted by the user.
      */
-    public SequenceList readFile(File file, DelayCallback delay)
+    SequenceList readFile(File file, DelayCallback delay)
             throws IOException, SequenceException, FormatException, DelayAbortedException;
 
     /**
@@ -77,7 +77,7 @@ public interface FormatHandler {
      * @throws FormatException if there was an error in the format of the file.
      * @throws DelayAbortedException if the DelayCallback was aborted by the user.
      */
-    public void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
+    void appendFromFile(SequenceList appendTo, File fileFrom, DelayCallback delay)
             throws IOException, SequenceException, FormatException, DelayAbortedException;
 
     /**
@@ -87,7 +87,7 @@ public interface FormatHandler {
      * @throws IOException if there was a problem creating/writing to the file.
      * @throws DelayAbortedException if the DelayCallback was aborted by the user.
      */
-    public void writeFile(File file, SequenceList set, DelayCallback delay)
+    void writeFile(File file, SequenceList set, DelayCallback delay)
             throws IOException, DelayAbortedException;
 
     /**
@@ -96,14 +96,14 @@ public interface FormatHandler {
      * <p>No exceptions: implementors, please swallow them all up. If the file does not exist, it's
      * not very likely to be of this format, is it?
      */
-    public boolean mightBe(File file);
+    boolean mightBe(File file);
 
     /**
      * Add a new FormatListener to this FormatHandler. We'll keep the Listener notified during a
      * parse, so that he can chug up any other information which we can't stuff into the file.
      */
-    public void addFormatListener(FormatListener listener);
+    void addFormatListener(FormatListener listener);
 
     /** Removes a FormatListener from this FormatHandler. */
-    public void removeFormatListener(FormatListener listener);
+    void removeFormatListener(FormatListener listener);
 }

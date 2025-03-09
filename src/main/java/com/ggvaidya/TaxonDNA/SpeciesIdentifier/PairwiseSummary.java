@@ -344,13 +344,13 @@ public class PairwiseSummary extends Panel implements UIExtension, ActionListene
             Vector distances_intra = intra.getDistancesBetween(0, 1);
             Vector distances_inter = inter.getDistancesBetween(0, 1);
 
-            if (distances_intra.size() == 0) { // no distances for intra
+            if (distances_intra.isEmpty()) { // no distances for intra
                 println(str, "Total overlap:\t No intraspecific distances present.");
                 println(
                         str,
                         "Overlap with 5% error margs on both ends:\t No intraspecific distances"
                                 + " present.");
-            } else if (distances_inter.size() == 0) { // no distance for inter
+            } else if (distances_inter.isEmpty()) { // no distance for inter
                 println(str, "Total overlap:\t No interspecific distances present.");
                 println(
                         str,

@@ -170,7 +170,7 @@
             <!-- no need to specify files, inferred automatically, but you can if you want -->
 
             <!-- Use CleanThat for... something. -->
-            <cleanthat />
+            <cleanthat></cleanthat>
 
             <!-- apply a specific flavor of google-java-format and reflow long strings -->
             <googleJavaFormat>
@@ -180,8 +180,8 @@
             </googleJavaFormat>
 
             <!-- Other options -->
-            <removeUnusedImports />
-            <formatAnnotations />
+            <removeUnusedImports></removeUnusedImports>
+            <formatAnnotations></formatAnnotations>
           </java>
 
           <!-- Format Markdown files -->

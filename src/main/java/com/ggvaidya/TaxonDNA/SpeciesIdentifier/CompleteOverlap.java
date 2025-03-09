@@ -190,6 +190,7 @@ public class CompleteOverlap extends Panel implements UIExtension, Runnable, Act
 
         return buff.toString();
     }
+
     /* Pad a string to a size */
     private String pad_string(String x, int size) {
         StringBuffer buff = new StringBuffer();

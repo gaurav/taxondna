@@ -227,7 +227,7 @@ public class BrowserLauncher {
                 errorMessage = "Invalid MRJ version: " + mrjVersion;
             }
         } else if (osName.startsWith("Windows")) {
-            if (osName.indexOf("9") != -1) {
+            if (osName.indexOf('9') != -1) {
                 jvm = WINDOWS_9x;
             } else {
                 jvm = WINDOWS_NT;

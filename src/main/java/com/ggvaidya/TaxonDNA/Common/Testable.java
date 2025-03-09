@@ -38,5 +38,5 @@ public interface Testable {
      * <p>This really ought to be static, but this Cannot Be in the java world. So I'm going to rely
      * on implementations of 'test' to not confuse themselves with the core class itself.
      */
-    public void test(TestController controller, DelayCallback delay) throws DelayAbortedException;
+    void test(TestController controller, DelayCallback delay) throws DelayAbortedException;
 }

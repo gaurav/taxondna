@@ -102,6 +102,7 @@ public class TableManager implements ActionListener {
     // what to remove when we switch modes.
     //
     private JFrame lastAdditionalFrame = null; // last additional frame, the additional panel
+
     // is put onto this thing.
 
     //
@@ -373,7 +374,7 @@ public class TableManager implements ActionListener {
     public void renameSequence(String oldName, String newName) {
         if (oldName.equals(newName)) return; // don't do same name transforms
         // neither shalt thou rename to nothingness
-        if (newName == null || newName.equals("")) return;
+        if (newName == null || newName.isEmpty()) return;
 
         String complaints = dataStore.testRenameSequence(oldName, newName);
         if ((complaints != null) && (complaints.length() != 0)) {
@@ -691,7 +692,7 @@ public class TableManager implements ActionListener {
         if (cmd.length() >= 14 && cmd.substring(0, 14).equals("MAKE_OUTGROUP:")) {
             String seqName = cmd.substring(14);
 
-            if (seqName.equals("")) setReferenceSequence(null);
+            if (seqName.isEmpty()) setReferenceSequence(null);
             else setReferenceSequence(seqName);
         }
     }
@@ -817,7 +818,7 @@ class ToolbarManager implements ActionListener {
     }
 
     public void setToolbarStatus(String colName, String seqName) {
-        if (colName != null && !colName.equals("")) {
+        if (colName != null && !colName.isEmpty()) {
             tf_colName.setText(colName);
 
             currentColName = colName;
@@ -833,7 +834,7 @@ class ToolbarManager implements ActionListener {
             currentColName = null;
         }
 
-        if (seqName != null && !seqName.equals("")) {
+        if (seqName != null && !seqName.isEmpty()) {
             tf_seqName.setText(seqName);
             currentSeqName = seqName;
         } else {

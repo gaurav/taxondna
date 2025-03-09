@@ -33,12 +33,13 @@ public interface SequenceContainer {
      * @throws SequenceException if there was a problem in retrieving or creating the one sequence
      *     (e.g. if the sequence is hosted remotely, and the server returned an error).
      */
-    public SequenceList getAsSequenceList() throws SequenceException;
+    SequenceList getAsSequenceList() throws SequenceException;
+
     /**
      * Returns a List contains all the other SequenceContainers that this SequenceContainer
      * 'contains'.
      *
      * @return aforementioned list, or an EMPTY list (NEVER null)
      */
-    public List alsoContains();
+    List alsoContains();
 }
