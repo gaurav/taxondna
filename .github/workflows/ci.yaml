@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        javaVersion: [ '11', '17', '21' ]
+        javaVersion: [ '17', '21', '23' ]
     name: Basic checks on Java ${{ matrix.JavaVersion }}
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
