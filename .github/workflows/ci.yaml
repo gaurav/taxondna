@@ -14,7 +14,7 @@ jobs:
     strategy:
       matrix:
         javaVersion: [ '17', '21', '23' ]
-    name: Basic checks on Java ${{ matrix.JavaVersion }}
+    name: Code formatting checks on Temurin Java ${{ matrix.JavaVersion }}
     env:
       buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
       buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
