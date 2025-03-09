@@ -16,7 +16,7 @@
 
   <groupId>com.ggvaidya</groupId>
   <artifactId>TaxonDNA</artifactId>
-  <version>1.10-SNAPSHOT</version>
+  <version>1.10</version>
 
   <name>TaxonDNA</name>
   <description>Taxonomy-aware DNA sequence processing toolkit.</description>
