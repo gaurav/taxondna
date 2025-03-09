@@ -15,7 +15,6 @@
       <includes>
         <include>README*</include>
         <include>COPYING</include>
-        <include>Changes.txt</include>
       </includes>
     </fileSet>
   </fileSets>
