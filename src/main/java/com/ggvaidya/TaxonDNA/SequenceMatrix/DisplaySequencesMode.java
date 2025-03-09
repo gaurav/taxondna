@@ -303,7 +303,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
     }
 
     public Menu getDisplayModeMenu() {
-        Menu m = new Menu("Sequences");
+        Menu m = new Menu("Sorting");
 
         if (chmi_name == null) { // not initialised?
             chmi_name = new CheckboxMenuItem("Sort by name");
