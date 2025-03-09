@@ -83,13 +83,13 @@ public class SequenceList implements List, Testable {
 
     /** Returns a vector containing all format handlers known to us right now. */
     public static Vector getFormatHandlers() {
-        if (formatHandlers.size() == 0) initFormatHandlers();
+        if (formatHandlers.isEmpty()) initFormatHandlers();
         return formatHandlers;
     }
 
     /** Initialises the whole format-handler mechanism. */
     private static void initFormatHandlers() {
-        if (formatHandlers.size() == 0) {
+        if (formatHandlers.isEmpty()) {
             formatHandlers.add(new com.ggvaidya.TaxonDNA.Common.DNA.formats.FastaFile());
             // formatHandlers.add(new com.ggvaidya.TaxonDNA.Common.DNA.formats.MegaFile());
             formatHandlers.add(new com.ggvaidya.TaxonDNA.Common.DNA.formats.NexusFile());
@@ -403,6 +403,7 @@ public class SequenceList implements List, Testable {
     private static Object sequenceListLock = new Object(); // The <Object> we synchronize on
     private Runnable threadLockingUs = null; // The <Thread> who currently holds the lock
     private int sequenceListLockCount = 0; // The number of locks issued (by the
+
     // threadLockingUs); we're only unlocked
     // once ALL of these have been 'unwound'
     // by unlock()

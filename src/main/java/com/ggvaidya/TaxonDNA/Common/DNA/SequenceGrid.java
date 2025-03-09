@@ -66,6 +66,7 @@ public class SequenceGrid {
 
     /** The actual data itself. This is a Perlism, I know. I'm sorry. */
     private Hashtable hash_master = new Hashtable(); // the master hash:
+
     // Hashtable[colName] = Hashtable[seqName] = Sequence
     // Hashtable[colName] = Hashtable[""] = Integer(max_length)
     // Hashtable[""] = Hashtable[seqName] = Integer(count_sequence)
@@ -90,7 +91,7 @@ public class SequenceGrid {
      */
     private void validateColName(String colName) {
         // da rulez: a colName can't be "" or null. Everything else is okay.
-        if (colName == null || colName.equals(""))
+        if (colName == null || colName.isEmpty())
             throw new IllegalArgumentException(
                     "DataStore.validateColName(): Column name '" + colName + "' is invalid!");
     }
@@ -101,7 +102,7 @@ public class SequenceGrid {
      */
     private void validateSeqName(String seqName) {
         // da rulez: a seqName can't be "" or null. Everything else is okay.
-        if (seqName == null || seqName.equals(""))
+        if (seqName == null || seqName.isEmpty())
             throw new IllegalArgumentException(
                     "DataStore.validateSeqName(): Sequence name '" + seqName + "' is invalid!");
     }

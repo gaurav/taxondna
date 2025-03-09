@@ -169,6 +169,7 @@ public class SortedSequenceList {
  */
 class SortedSequenceComparator implements Comparator {
     private Sequence query;
+
     /** Constructor for this sequence. You need to provide the query. */
     public SortedSequenceComparator(Sequence seq) {
         this.query = seq;

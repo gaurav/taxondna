@@ -132,7 +132,7 @@ public class FileInputPanel extends Panel implements ActionListener, TextListene
     public File getFile() {
 
         // if the file is empty, you get NOTHING!
-        if (tf.getText().trim().equals("")) return null;
+        if (tf.getText().trim().isEmpty()) return null;
 
         // if the file is NOT empty, things get very tricky very quickly:
         File f = new File(tf.getText());

@@ -34,21 +34,21 @@ package com.ggvaidya.TaxonDNA.Common;
 import java.io.*;
 
 public interface TestController {
-    public void begin(String title);
+    void begin(String title);
 
-    public void done();
+    void done();
 
-    public void beginTest(String testName);
+    void beginTest(String testName);
 
-    public void failed(String description);
+    void failed(String description);
 
-    public void succeeded();
+    void succeeded();
 
-    public void information(String information);
+    void information(String information);
 
-    public File file(String name);
+    File file(String name);
 
-    public File tempfile();
+    File tempfile();
 
-    public boolean isIdentical(File x, File y);
+    boolean isIdentical(File x, File y);
 }

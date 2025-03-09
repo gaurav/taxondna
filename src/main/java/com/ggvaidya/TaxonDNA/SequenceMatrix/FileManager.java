@@ -55,6 +55,7 @@ public class FileManager implements FormatListener {
     public static final int PREF_USE_FULL_NAME = 0;
     public static final int PREF_USE_SPECIES_NAME = 1;
     private static int pref_useWhichName = PREF_NOT_SET_YET;
+
     /**
      * Once we've displayed the Nexus warning, we'll set this flag to true and never display that
      * warning, ever again.
@@ -94,6 +95,7 @@ public class FileManager implements FormatListener {
 
         return null;
     }
+
     // Types to use in reportIOException().
     private static final int IOE_READING = 0;
     private static final int IOE_WRITING = 1;
@@ -269,14 +271,14 @@ public class FileManager implements FormatListener {
                 // here rather than letting it progress indefinitely.
 
             }
-            if (sequence_name == null || sequence_name.equals("")) {
+            if (sequence_name == null || sequence_name.isEmpty()) {
                 throw new RuntimeException(
                         "Sequence name not defined or blank. This should never happen.");
             }
 
             // Note that if we can't determine the species name, we have
             // to use the sequence name. No two ways around that.
-            if (species_name == null || species_name.equals("")) {
+            if (species_name == null || species_name.isEmpty()) {
                 name = sequence_name;
                 continue;
             }
@@ -1006,11 +1008,9 @@ public class FileManager implements FormatListener {
 
         choice_exportAs.select(matrix.getPrefs().getPreference("exportAsNexus_exportAs", 0, 0, 1));
         tf_interleaveAt.setText(
-                new Integer(
-                                matrix.getPrefs()
-                                        .getPreference(
-                                                "exportAsNexus_interleaveAt", 1000, 0, 1000000))
-                        .toString());
+                Integer.toString(
+                        matrix.getPrefs()
+                                .getPreference("exportAsNexus_interleaveAt", 1000, 0, 1000000)));
         finp.setFile(
                 new File(matrix.getPrefs().getPreference("exportSequencesByColumn_fileName", "")));
 
@@ -1693,7 +1693,7 @@ public class FileManager implements FormatListener {
     public boolean eventOccured(FormatHandlerEvent evt) throws FormatException {
         switch (evt.getId()) {
 
-                // What happened?
+            // What happened?
             case FormatHandlerEvent.CHARACTER_SET_FOUND:
                 String name = evt.name;
                 int from = evt.from;

@@ -208,6 +208,7 @@ public class NexusTokenizer {
 
     private char lastChar = '@';
     private char ch = '@';
+
     /**
      * @return TT_NULL, TT_EOF, TT_WORD or (if reportNewlines is on) TT_EOL
      * @throws IOException if something went wrong while reading the file (note that EOFException

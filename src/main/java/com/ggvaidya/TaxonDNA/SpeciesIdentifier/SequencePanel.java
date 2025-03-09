@@ -110,6 +110,7 @@ public class SequencePanel extends Panel
     }
 
     private Sequence savedListState = null;
+
     /**
      * Stores the selected sequence of the SequenceSet internally. The next call to restoreState()
      * will restore this state.

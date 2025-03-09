@@ -79,7 +79,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
             seqName_top = tableManager.getReferenceSequence();
             if (seqName_top == null) {
                 List l = tableManager.getSequenceNames();
-                if (l == null || l.size() == 0)
+                if (l == null || l.isEmpty())
                     throw new RuntimeException("Can't sort relative to a non-existant sequence!");
                 seqName_top = (String) l.get(0);
             }
@@ -220,7 +220,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
         // Sequence.getPairwiseDistanceMethod());
 
         // step 0: is there anything to sort?
-        if (sequences.size() == 0) {
+        if (sequences.isEmpty()) {
             sortedSequences = new LinkedList();
             return sortedSequences;
         }
@@ -321,7 +321,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
                 }
             }
 
-            totalScore = totalScore / count;
+            totalScore /= count;
 
             scores.add(new Score(seqName, totalScore));
         }
@@ -499,6 +499,7 @@ public class DisplayDistancesMode extends DisplayMode implements ItemListener {
     // MATHEMATICS BACKING THE CORRELATION CALCULATIONS
     //
     double[][] correlations = null;
+
     /**
      * Calculates and returns the correlation between two columns; in this case indicated by indices
      * into the arrays used by us.

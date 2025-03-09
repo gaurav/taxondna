@@ -33,10 +33,10 @@ package com.ggvaidya.TaxonDNA.Common;
 
 public interface DelayCallback {
     /** This function is called when the delay begins. */
-    public void begin();
+    void begin();
 
     /** This function is called when the delay ends. */
-    public void end();
+    void end();
 
     /**
      * This function is called during the delay.
@@ -45,12 +45,12 @@ public interface DelayCallback {
      * @param total number of steps which have to be done
      * @throws DelayAbortedException if the delay was interrupted (presumably by the user)
      */
-    public void delay(int done, int total) throws DelayAbortedException;
+    void delay(int done, int total) throws DelayAbortedException;
 
     /**
      * This func-err, method - can be called by the delaying component to indicate a *warning* which
      * isn't serious enough to stop the process, but the user should be informed. The DelayCallback
      * should inform the user after end() gets called.
      */
-    public void addWarning(String warning);
+    void addWarning(String warning);
 }

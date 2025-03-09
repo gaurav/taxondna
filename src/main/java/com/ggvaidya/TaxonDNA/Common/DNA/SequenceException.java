@@ -32,7 +32,7 @@ public class SequenceException extends Exception {
     private String fullName = "";
 
     public String getMalformedSequenceName() {
-        if (fullName.equals("")) return "(I can't understand the name either!)";
+        if (fullName.isEmpty()) return "(I can't understand the name either!)";
 
         return fullName;
     }

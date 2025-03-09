@@ -259,7 +259,7 @@ public class DisplaySequencesMode extends DisplayMode implements ItemListener {
         if (seq.getProperty("position_1") != null) str_positions += "1";
         if (seq.getProperty("position_2") != null) str_positions += "2";
         if (seq.getProperty("position_3") != null) str_positions += "3";
-        if (!str_positions.equals("")) str_positions = "[" + str_positions + "]";
+        if (!str_positions.isEmpty()) str_positions = "[" + str_positions + "]";
 
         int internalGaps = seq.countInternalGaps();
         int n_chars = seq.countBases('N');

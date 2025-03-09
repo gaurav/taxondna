@@ -123,7 +123,7 @@ public class BestMatch extends Panel implements UIExtension, ActionListener, Run
         if (e.getSource().equals(btn_recalculate)) {
             // Recalculate!
             btn_recalculate.setLabel("Recalculate!");
-            if (text_threshold.getText().trim().equals("")) { // no threshold specified
+            if (text_threshold.getText().trim().isEmpty()) { // no threshold specified
                 MessageBox mb =
                         new MessageBox(
                                 seqId.getFrame(),

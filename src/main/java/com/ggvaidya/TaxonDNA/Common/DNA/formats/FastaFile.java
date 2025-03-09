@@ -180,7 +180,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
                 // Ignore comment lines
             } else if ((m = pNameNotEmpty.matcher(line)).matches()) {
                 // add the previous entry
-                if (!name.equals("")) {
+                if (!name.isEmpty()) {
                     try {
                         Sequence x = makeSequence(delay, name, seq);
                         list.add(x);
@@ -205,7 +205,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
                 }
             } else if ((m = pName.matcher(line)).matches()) {
                 // add the previous entry
-                if (!name.equals("")) {
+                if (!name.isEmpty()) {
                     try {
                         Sequence x = makeSequence(delay, name, seq);
                         list.add(x);
@@ -245,7 +245,7 @@ public class FastaFile extends BaseFormatHandler implements Testable {
         reader.close();
 
         // is there anything in the buffers?
-        if (!name.equals("")) {
+        if (!name.isEmpty()) {
             try {
                 Sequence x = makeSequence(delay, name, seq);
                 list.add(x);

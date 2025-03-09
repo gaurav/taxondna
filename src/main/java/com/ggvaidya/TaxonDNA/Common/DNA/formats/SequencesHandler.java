@@ -69,7 +69,7 @@ public interface SequencesHandler {
      *     the next sequence begins), IN the order that they appeared.
      * @return true, if you understood this command and 'consumed' it.
      */
-    public boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException;
+    boolean readLocalCommand(String cmdLine, Sequence seq) throws FormatException;
 
     /**
      * A 'global' command line was read by SequencesFile.
@@ -79,7 +79,7 @@ public interface SequencesHandler {
      *     complete sequence list, as global commands are processed after loading is complete.
      * @return true, if you understood this command and 'consumed' it.
      */
-    public boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException;
+    boolean readGlobalCommand(String cmdLine, SequenceList list) throws FormatException;
 
     /**
      * An opportunity to write a local command line for a particular sequence.
@@ -89,7 +89,7 @@ public interface SequencesHandler {
      *     mention adding them to the header. You can write multiple commands by separating them
      *     with newlines.
      */
-    public String writeLocalCommand(Sequence seq);
+    String writeLocalCommand(Sequence seq);
 
     /**
      * An opportunity to write a global command line for a particular sequence.
@@ -99,11 +99,11 @@ public interface SequencesHandler {
      *     mention adding them to the header. You can write multiple commands by separating them
      *     with newlines.
      */
-    public String writeGlobalCommand(SequenceList list);
+    String writeGlobalCommand(SequenceList list);
 
     /**
      * Return the 'name' used by this module. This is the same name which we'll use in the header,
      * so no spaces. All spaces will be summarily turned into '_'.
      */
-    public String getSequencesHandlerName();
+    String getSequencesHandlerName();
 }

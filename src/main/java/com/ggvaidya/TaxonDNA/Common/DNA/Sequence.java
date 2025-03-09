@@ -70,6 +70,7 @@ public class Sequence implements Comparable, Testable {
     // it is false, the ambiguous bases will be silently
     // converted into '?' (or 'N')
     private Properties properties = null;
+
     // used by getProperty(String) and setProperty(String, Object)
     // to handle properties
 
@@ -252,11 +253,11 @@ public class Sequence implements Comparable, Testable {
         if (getSpeciesName() != null) {
             name = getSpeciesName();
 
-            if (!subspecies.equals("")) {
+            if (!subspecies.isEmpty()) {
                 name += " (" + subspecies + ")";
             }
 
-            if (!family.equals("")) {
+            if (!family.isEmpty()) {
                 name += " (Family " + family + ")";
             }
 
@@ -444,7 +445,7 @@ public class Sequence implements Comparable, Testable {
      * Returns the species/genus name. If we haven't been able to figure one out, we'll return null.
      */
     public String getSpeciesName() {
-        if (species.equals("") || genus.equals("")) return null;
+        if (species.isEmpty() || genus.isEmpty()) return null;
 
         return genus + " " + species;
     }
@@ -465,7 +466,7 @@ public class Sequence implements Comparable, Testable {
      * @return null, if no GI is defined
      */
     public String getGI() {
-        if (gi.equals("")) return null;
+        if (gi.isEmpty()) return null;
 
         return gi;
     }
@@ -1586,6 +1587,7 @@ public class Sequence implements Comparable, Testable {
 
     private static Hashtable pairwise_buffer =
             new Hashtable(); // maps '<UUID1>' to a Hashtable, which
+
     // in turn maps '<UUID2>' to a pairwise
     // distance (specified as a Double)
     /**

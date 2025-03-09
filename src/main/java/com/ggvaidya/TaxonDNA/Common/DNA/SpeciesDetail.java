@@ -55,12 +55,16 @@ public class SpeciesDetail {
         sequences.add(seq);
     }
 
-    /** @return A list of sequences associated with this species detail. */
+    /**
+     * @return A list of sequences associated with this species detail.
+     */
     public List<Sequence> getSequences() {
         return (List<Sequence>) sequences;
     }
 
-    /** @return The number of sequences in this species detail. */
+    /**
+     * @return The number of sequences in this species detail.
+     */
     public int getSequencesCount() {
         return sequences.size();
     }
@@ -98,12 +102,16 @@ public class SpeciesDetail {
         return getSequencesCount() - getSequencesWithValidConspecificsCount();
     }
 
-    /** @return The length of the longest sequence in this SpeciesDetail. */
+    /**
+     * @return The length of the longest sequence in this SpeciesDetail.
+     */
     public int getLongestSequenceLength() {
         return length_longestSequence;
     }
 
-    /** @return a list of GI numbers as a concatenated string. */
+    /**
+     * @return a list of GI numbers as a concatenated string.
+     */
     public String getGINumbersAsString() {
         StringBuffer buff = new StringBuffer();
 
