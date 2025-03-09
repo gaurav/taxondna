@@ -703,6 +703,45 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
         }
     }
 
+    /**
+     * Generate the clusters based on the provided parameters. Note that these clusters are defined PURELY based on
+     * the pairwise distance between sequences -- it is NOT in any way hierarchical or representative of phylogenetic
+     * relationships.
+     *
+     * The algorithm we use can be simplified to a maximum pairwise threshold of `max_pairwise`:
+     * 1. Start with an empty vector of clusters, `clusters`.
+     * 2. For every sequence `seq` loaded into SpeciesIdentifier, assign it to the first cluster that includes a
+     *    sequence `compare` that has a valid pairwise distance less than or equal to the threshold `max_pairwise`.
+     *    - If there are multiple clusters that meet this property, merge all of them into the first matching cluster.
+     *
+     * A more detailed description of the algorithm for a maximum pairwise threshold of `max_pairwise`:
+     * 1. Make an empty list of clusters called `clusters`.
+     * 2. For every sequence `seq` loaded into SpeciesIdentifier:
+     *  1. Create an uninitialized vector called `accumulating_cluster`.
+     *  2. For every vector `current_cluster`, which is a cluster inside `clusters` at index `cluster_index`:
+     *      1. For every sequence `compare` inside cluster `current_cluster`:
+     *          1. If sequence `seq` and `compare` do not have a valid pairwise distance (e.g. if they have
+     *              insufficient overlap, or if one of the sequences in invalid), then continue on to the next
+     *              sequence.
+     *          2. If sequence `seq` and `compare` have a pairwise distance less than or equal to `max_pairwise`:
+     *              1. If `accumulating_cluster` has not yet been set:
+     *                  1. Add `seq` to `current_cluster`.
+     *                  2. Set `accumulating_cluster` to `current_cluster`.
+     *                  3. Skip the remaining sequences in this cluster (by setting `current_sequence` to 0) and
+     *                     continue on to the next cluster as `current_cluster`.
+     *              2. Else if `accumulating_cluster` has been set:
+     *                  1. Add every sequence in `current_cluster` into `accumulating_cluster`.
+     *                  2. Delete `current_cluster` from the vector `clusters`.
+     *                  3. Skip the remaining sequences in this cluster (by setting `current_sequence` to 0) and
+     *                     continue on to the next cluster as `current_cluster`.
+     *  3. If by this point the vector `accumulating_cluster` has not been set, that means that none of the clusters
+     *     in `clusters` is within the pairwise distance threshold of `seq`.
+     *      1. Create a new cluster for this sequence and add it to the end of `clusters`.
+     *      2. Continue on to the next sequence as `seq`.
+     *
+     * This is not a very elegant algorithm, but I was only an undergraduate biology student at the time.
+     *
+     */
     public void run() {
         set = seqId.lockSequenceList();
 
@@ -736,10 +775,15 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
             Iterator iter = set.iterator();
             int c = 0;
             while (iter.hasNext()) {
-                boolean done = false;
+                // Go to the next sequence in our sequence list.
                 Sequence seq = (Sequence) iter.next();
-                Vector our_first_bin = null;
 
+                // As we go through the clusters, we'll designate the first one within the max_pairwise threshold as
+                // `accumulating_cluster` -- if we find others, we'll merge them into this cluster by (1) adding all
+                // their sequences to `accumulating_cluster`, and then (2) deleting them from `clusters`.
+                Vector accumulating_cluster = null;
+
+                // Let the ProgressDialog know about our progress.
                 try {
                     pb.delay(c, set.count());
                 } catch (DelayAbortedException e) {
@@ -749,45 +793,63 @@ public class Cluster extends Panel implements UIExtension, ActionListener, ItemL
 
                 c++; // only used to drive the pb.delay
 
-                int cluster = clusters.size();
-                while (cluster > 0) {
-                    cluster--;
+                // Iterate through all the clusters in `clusters`.
+                int cluster_index = clusters.size();
+                while (cluster_index > 0) {
+                    cluster_index--;
 
-                    Vector v = (Vector) clusters.get(cluster);
+                    // This is the current cluster in `clusters` that we're iterating through.
+                    Vector current_cluster = (Vector) clusters.get(cluster_index);
 
-                    int current = v.size();
-                    while (current > 0) {
-                        current--;
+                    // Go through every sequence in `current_cluster`. Note that we iterate backwards through
+                    // this list. This allows us to break out of it very easily by setting current_sequence = 0.
+                    // Why not just use `break`? You'll have to ask 2005 me if you can find me, but probably there
+                    // was another loop in here at some point.
+                    int current_sequence = current_cluster.size();
+                    while (current_sequence > 0) {
+                        current_sequence--;
 
-                        Sequence compare = (Sequence) v.get(current);
+                        Sequence compare = (Sequence) current_cluster.get(current_sequence);
 
+                        // Ignore this comparison if there isn't a valid pairwise difference (e.g. if there is insufficient
+                        // overlap, or one of the sequences is invalid).
                         if (seq.getPairwise(compare) < 0) continue;
 
+                        // If `compare` is within the max_pairwise threshold of `seq`:
                         if (seq.getPairwise(compare) <= max_pairwise) {
-                            if (done) {
-                                // merge them bins
-                                Iterator i = v.iterator();
+                            if (accumulating_cluster == null) {
+                                // This is the first cluster we have come across that is within the pairwise distance
+                                // threshold. We therefore designate it as the accumulating_cluster and add the current
+                                // sequence to it.
+                                current_cluster.add(seq);
+                                accumulating_cluster = current_cluster;
+
+                                // Break to the next cluster.
+                                current_sequence = 0;
+                            } else {
+                                // We have already found an accumulating cluster for this sequence, but now we've
+                                // found another that is within the threshold! Since this sequence connects these
+                                // two clusters together, we will copy all of its sequences into the accumulating_cluster
+                                // and then delete the `current_cluster` from `clusters`.
+                                Iterator i = current_cluster.iterator();
 
                                 while (i.hasNext()) {
-                                    our_first_bin.add(i.next());
+                                    accumulating_cluster.add(i.next());
                                 }
 
-                                clusters.remove(v);
-                                current = 0; // i.e. break out of inner loop
-                            } else {
-                                // add this sequence
-                                v.add(seq);
-                                our_first_bin = v;
+                                clusters.remove(current_cluster);
 
-                                current = 0; // i.e. no need to look in this bin any more
-                                done = true;
+                                // Break to the next cluster.
+                                current_sequence = 0; // i.e. break out of inner loop
                             }
                         }
                     }
                 }
 
-                if (!done) {
-                    // new cluster
+                if (accumulating_cluster == null) {
+                    // If we've reached here, then `seq` was not within the pairwise distance threshold of any of the
+                    // clusters we have at present. We therefore create a new cluster just for it, and add it to the
+                    // end of `clusters`.
                     Vector vec = new Vector();
                     vec.add(seq);
                     clusters.add(vec);
