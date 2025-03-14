@@ -107,3 +107,8 @@ supports defining your own gap/missing data specifier.
 
 ## Contacting us
 
+You can get in touch with the developers in our 
+[GitHub repository](https://github.com/gaurav/taxondna), specifically
+by [opening an issue](https://github.com/gaurav/taxondna/issues/new)
+if something doesn't work correctly. You can also e-mail me
+at <tt>gaurav</tt> at <tt>ggvaidya dot com</tt>.
