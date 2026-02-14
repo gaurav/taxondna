@@ -21,6 +21,7 @@ mvn spotless:apply           # Auto-fix code formatting
 Output JARs go to `target/` (e.g., `TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar`).
 
 To run an application:
+
 ```bash
 java -Xmx16G -jar target/TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
 ```
@@ -51,3 +52,4 @@ No external dependencies — pure Java with zero third-party libraries. Each app
 - UI uses Java AWT and Swing (not JavaFX)
 - Sequences are stored as `char[]` arrays; applications are memory-intensive and require `-Xmx` flags for large datasets
 - Species names are parsed from FASTA title strings; hyphens are gaps, question marks are missing data
+
