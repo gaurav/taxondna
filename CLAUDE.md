@@ -14,6 +14,7 @@ TaxonDNA is a taxonomy-aware DNA sequence processing toolkit written in Java and
 
 ```bash
 mvn package                  # Build all JARs and ZIP distributions
+mvn test                     # Run unit tests (Kotest + JUnit 5)
 mvn spotless:check           # Check code formatting (runs in CI)
 mvn spotless:apply           # Auto-fix code formatting
 ```
@@ -26,7 +27,7 @@ To run an application:
 java -Xmx16G -jar target/TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
 ```
 
-There are no unit tests. The `Tests/` directory contains sample data files, not test code.
+The `Tests/` directory contains sample data files, not test code. Unit tests live in `src/test/kotlin/` and use Kotest FunSpec style. See [TESTING.md](TESTING.md) for the testability roadmap.
 
 ## Code Formatting
 
@@ -44,7 +45,7 @@ Java source lives under `src/main/java/com/ggvaidya/TaxonDNA/`, Kotlin source un
 - **`SequenceMatrix/`** — Uses DisplayMode pattern: `DataStore` holds the model, `TableManager` handles JTable UI, display modes (Sequences, Distances, Correlations) control rendering. `FileManager` (largest file) handles all I/O.
 - **`GenBankExplorer/`** — Simpler architecture for browsing GenBank files
 
-The only external dependency is `kotlin-stdlib`. Each application is packaged as a self-contained shaded JAR (via `maven-shade-plugin`) that bundles the `Common` classes and all dependencies.
+Runtime dependencies: `kotlin-stdlib`. Test dependencies: Kotest (`kotest-runner-junit5-jvm`, `kotest-assertions-core-jvm`, `kotest-property-jvm`). Each application is packaged as a self-contained shaded JAR (via `maven-shade-plugin`) that bundles the `Common` classes and all runtime dependencies.
 
 ## Key Conventions
 
@@ -54,4 +55,5 @@ The only external dependency is `kotlin-stdlib`. Each application is packaged as
 - UI uses Java AWT and Swing (not JavaFX)
 - Sequences are stored as `char[]` arrays; applications are memory-intensive and require `-Xmx` flags for large datasets
 - Species names are parsed from FASTA title strings; hyphens are gaps, question marks are missing data
+- Kotlin test files need `@file:Suppress("ktlint:standard:package-name")` because the Java package names use uppercase (e.g., `Common.DNA`), which ktlint disallows
 

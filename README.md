@@ -54,7 +54,13 @@ directory.
 
 ## Tests
 
-We do not currently have tests. But someday we will!
+Unit tests use [Kotest](https://kotest.io/) (FunSpec style) with JUnit 5. Run them with:
+
+```shell
+$ mvn test
+```
+
+See [TESTING.md](TESTING.md) for the full testability assessment and roadmap.
 
 ## Running TaxonDNA
 

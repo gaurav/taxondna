@@ -16,7 +16,7 @@ These files have no UI or I/O dependencies and can be tested with simple unit te
 
 |                 File                 | Lines | Status  |                              Notes                               |
 |--------------------------------------|------:|---------|------------------------------------------------------------------|
-| `DNA/FromToPair.java`                |   130 | Tested  | Constructor validation, compareTo, overlaps                      |
+| `DNA/FromToPair.java`                |   129 | Tested  | Constructor validation, compareTo (uses generics), overlaps      |
 | `DNA/Settings.java`                  |   124 | Tested  | Static math utilities; uses static state (save/restore in tests) |
 | `DNA/Sequence.java` (static methods) |  ~300 | Tested  | isValid, isAmbiguous, complement, consensus, etc.                |
 | `DNA/SpeciesDetail.java`             |   125 | Next    | Simple data holder with equals/toString                          |
