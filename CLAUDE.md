@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-TaxonDNA is a taxonomy-aware DNA sequence processing toolkit written entirely in Java. It provides three desktop GUI applications for bioinformatics researchers:
+TaxonDNA is a taxonomy-aware DNA sequence processing toolkit written in Java and Kotlin. It provides three desktop GUI applications for bioinformatics researchers:
 
 - **SpeciesIdentifier** — DNA barcoding and species identification (entry: `com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier`)
 - **SequenceMatrix** — Multi-gene dataset concatenation (entry: `com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix`)
@@ -14,6 +14,7 @@ TaxonDNA is a taxonomy-aware DNA sequence processing toolkit written entirely in
 
 ```bash
 mvn package                  # Build all JARs and ZIP distributions
+mvn test                     # Run unit tests (Kotest + JUnit 5)
 mvn spotless:check           # Check code formatting (runs in CI)
 mvn spotless:apply           # Auto-fix code formatting
 ```
@@ -26,15 +27,15 @@ To run an application:
 java -Xmx16G -jar target/TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
 ```
 
-There are no unit tests. The `Tests/` directory contains sample data files, not test code.
+The `Tests/` directory contains sample data files, not test code. Unit tests live in `src/test/kotlin/` and use Kotest FunSpec style. See [TESTING.md](TESTING.md) for the testability roadmap.
 
 ## Code Formatting
 
-Spotless enforces Google Java Format (AOSP style) via `spotless-maven-plugin`. CI runs `mvn spotless:check` on PRs across Java 17, 21, and 23. Always run `mvn spotless:apply` before committing Java changes.
+Spotless enforces Google Java Format (AOSP style) for Java and ktlint for Kotlin via `spotless-maven-plugin`. CI runs `mvn spotless:check` on PRs across Java 17, 21, and 23. Always run `mvn spotless:apply` before committing Java or Kotlin changes.
 
 ## Architecture
 
-All source lives under `src/main/java/com/ggvaidya/TaxonDNA/`:
+Java source lives under `src/main/java/com/ggvaidya/TaxonDNA/`, Kotlin source under `src/main/kotlin/`:
 
 - **`Common/`** — Shared library used by all three applications
   - **`Common/DNA/`** — Core data model: `Sequence` (individual DNA sequence), `SequenceList` (collection), `SequenceGrid` (grid-based storage), pairwise distance calculations
@@ -44,12 +45,15 @@ All source lives under `src/main/java/com/ggvaidya/TaxonDNA/`:
 - **`SequenceMatrix/`** — Uses DisplayMode pattern: `DataStore` holds the model, `TableManager` handles JTable UI, display modes (Sequences, Distances, Correlations) control rendering. `FileManager` (largest file) handles all I/O.
 - **`GenBankExplorer/`** — Simpler architecture for browsing GenBank files
 
-No external dependencies — pure Java with zero third-party libraries. Each application is packaged as a self-contained JAR including the `Common` classes.
+Runtime dependencies: `kotlin-stdlib`. Test dependencies: Kotest (`kotest-runner-junit5-jvm`, `kotest-assertions-core-jvm`, `kotest-property-jvm`). Each application is packaged as a self-contained shaded JAR (via `maven-shade-plugin`) that bundles the `Common` classes and all runtime dependencies.
 
 ## Key Conventions
 
 - Java 17 is the minimum supported version (source/target in pom.xml)
+- Kotlin 2.1.0 is configured for mixed compilation; Kotlin compiles before Java (via `kotlin-maven-plugin`)
+- New code can be written in Kotlin (`src/main/kotlin/`) with full Java interop
 - UI uses Java AWT and Swing (not JavaFX)
 - Sequences are stored as `char[]` arrays; applications are memory-intensive and require `-Xmx` flags for large datasets
 - Species names are parsed from FASTA title strings; hyphens are gaps, question marks are missing data
+- Kotlin test files need `@file:Suppress("ktlint:standard:package-name")` because the Java package names use uppercase (e.g., `Common.DNA`), which ktlint disallows
 

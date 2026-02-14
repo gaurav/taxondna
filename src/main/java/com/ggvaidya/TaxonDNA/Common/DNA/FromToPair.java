@@ -9,7 +9,7 @@ package com.ggvaidya.TaxonDNA.Common.DNA;
  * makes very little sense, except that Sequence.getSubsequence uses 1-based indexes, and I am NOT
  * modifying that method, since it is very very old and probably in use all over the place.
  */
-public class FromToPair implements Comparable {
+public class FromToPair implements Comparable<FromToPair> {
     public int from;
     public int to;
 
@@ -31,9 +31,7 @@ public class FromToPair implements Comparable {
         this.to = ftp.to;
     }
 
-    public int compareTo(Object o) {
-        FromToPair ftp = (FromToPair) o;
-
+    public int compareTo(FromToPair ftp) {
         return (this.from - ftp.from);
     }
 
