@@ -22,7 +22,7 @@ Output JARs go to `target/` (e.g., `TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
 
 To run an application:
 ```bash
-java -Xmx1024M -jar target/TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
+java -Xmx16G -jar target/TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar
 ```
 
 There are no unit tests. The `Tests/` directory contains sample data files, not test code.
