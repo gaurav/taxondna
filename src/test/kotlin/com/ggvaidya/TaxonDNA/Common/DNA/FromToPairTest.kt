@@ -4,8 +4,8 @@ package com.ggvaidya.TaxonDNA.Common.DNA
 
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.core.spec.style.FunSpec
-import io.kotest.matchers.ints.shouldBeNegative
-import io.kotest.matchers.ints.shouldBePositive
+import io.kotest.matchers.comparables.shouldBeGreaterThan
+import io.kotest.matchers.comparables.shouldBeLessThan
 import io.kotest.matchers.shouldBe
 
 class FromToPairTest :
@@ -64,19 +64,19 @@ class FromToPairTest :
             test("returns negative when this.from < other.from") {
                 val a = FromToPair(1, 5)
                 val b = FromToPair(3, 5)
-                (a.compareTo(b as Any) as Int).shouldBeNegative()
+                a shouldBeLessThan b
             }
 
             test("returns positive when this.from > other.from") {
                 val a = FromToPair(5, 10)
                 val b = FromToPair(2, 10)
-                (a.compareTo(b as Any) as Int).shouldBePositive()
+                a shouldBeGreaterThan b
             }
 
             test("returns zero when from values are equal") {
                 val a = FromToPair(3, 5)
                 val b = FromToPair(3, 10)
-                a.compareTo(b as Any) shouldBe 0
+                a.compareTo(b) shouldBe 0
             }
         }
 
