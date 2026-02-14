@@ -41,6 +41,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <kotlin.version>2.1.0</kotlin.version>
     <spotless.version>2.44.3</spotless.version>
+    <kotest.version>5.9.1</kotest.version>
   </properties>
 
   <dependencies>
@@ -48,6 +49,24 @@
       <groupId>org.jetbrains.kotlin</groupId>
       <artifactId>kotlin-stdlib</artifactId>
       <version>${kotlin.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-runner-junit5-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-assertions-core-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.kotest</groupId>
+      <artifactId>kotest-property-jvm</artifactId>
+      <version>${kotest.version}</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -120,6 +139,13 @@
             <phase>test-compile</phase>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Surefire for running tests (auto-detects JUnit Platform via Kotest) -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.3</version>
       </plugin>
 
       <!--
