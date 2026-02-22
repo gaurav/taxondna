@@ -29,12 +29,11 @@
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
 import com.ggvaidya.TaxonDNA.Common.*;
-import com.ggvaidya.TaxonDNA.Common.Others.UUID; // UUIDs
 import java.util.*; // hashtable
 import java.util.regex.*; // used to regex the species names
 
 public class Sequence implements Comparable, Testable {
-    protected UUID id = new UUID(); // just call them "UUIDs" and gag me with a spoon ...
+    protected UUID id = UUID.randomUUID(); // just call them "UUIDs" and gag me with a spoon ...
     protected String name; // the full name of the sequence
     protected char[] seq; // the sequence itself (as a char array)
     protected int len; // length of the sequence
@@ -847,7 +846,7 @@ public class Sequence implements Comparable, Testable {
         // we'd better synchronize this, so that sequences don't get one changed
         // and not the other.
         synchronized (this) {
-            this.id = new UUID();
+            this.id = UUID.randomUUID();
             this.seq = sequence;
             this.len = length;
         }

@@ -57,10 +57,10 @@
 
 package com.ggvaidya.TaxonDNA.Common.DNA;
 
-import com.ggvaidya.TaxonDNA.Common.Others.UUID; // UUIDs
+import java.util.UUID;
 
 public class BaseSequence extends Sequence {
-    private UUID id = new UUID(); // just call them "UUIDs" and gag me with a spoon ...
+    private UUID id = UUID.randomUUID(); // just call them "UUIDs" and gag me with a spoon ...
 
     //
     //	1.	STATIC FUNCTIONS. Handle our two "constants": ambiguousBasesAllowed and minOverlap
@@ -292,7 +292,7 @@ public class BaseSequence extends Sequence {
         seq = buff.toString(); // hey, if we _can_ ...
 
         synchronized (this) {
-            this.id = new UUID();
+            this.id = UUID.randomUUID();
             this.seq = seq.toCharArray();
             this.len = length;
         }

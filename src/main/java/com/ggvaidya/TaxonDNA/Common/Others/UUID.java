@@ -28,6 +28,7 @@
 
 package com.ggvaidya.TaxonDNA.Common.Others;
 
+@Deprecated
 public class UUID {
     private static long lastAllocated = 0;
     private static int lastSequenceNo = 0;
