@@ -1,7 +1,11 @@
-# A GitHub Action to run code format checks and (eventually) testing.
-# Based on https://github.com/diffplug/spotless/blob/2baab0c62dcec9861109a63c1f97955736d76c70/.github/workflows/ci.yml
+# Consolidated CI workflow: format checks → tests → build
+# Runs on PRs and pushes to main with fail-fast sequential job dependencies
+
+name: CI
 
 on:
+  push:
+    branches: [main]
   pull_request:
 
 concurrency:
@@ -9,27 +13,64 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  ci:
+  format-check:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        javaVersion: [ '17', '21', '23' ]
-    name: Code formatting checks on Temurin Java ${{ matrix.JavaVersion }}
-    env:
-      buildcacheuser: ${{ secrets.BUILDCACHE_USER }}
-      buildcachepass: ${{ secrets.BUILDCACHE_PASS }}
+        javaVersion: ['17', '21', '23']
+    name: Format check on Java ${{ matrix.javaVersion }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install Temurin Java ${{ matrix.JavaVersion }}
+      - name: Install Temurin Java ${{ matrix.javaVersion }}
         uses: actions/setup-java@v4
         with:
           distribution: "temurin"
-          java-version: ${{ matrix.JavaVersion }}
+          java-version: ${{ matrix.javaVersion }}
           cache: 'maven'
       - name: Check code formatting with Spotless
         run: mvn -B spotless:check
-      - name: Check that we can build the project
+
+  test:
+    needs: format-check
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        javaVersion: ['17', '21', '23']
+    name: Test on Java ${{ matrix.javaVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Temurin Java ${{ matrix.javaVersion }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.javaVersion }}
+          cache: 'maven'
+      - name: Run unit tests
+        run: mvn -B test
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        javaVersion: ['17', '21', '23']
+    name: Build on Java ${{ matrix.javaVersion }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install Temurin Java ${{ matrix.javaVersion }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: "temurin"
+          java-version: ${{ matrix.javaVersion }}
+          cache: 'maven'
+      - name: Build shaded JARs
         run: mvn -B package

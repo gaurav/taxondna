@@ -19,10 +19,8 @@ For other software, please cite this repository via Zenodo:
 
 ## System requirements
 
-TaxonDNA is written entirely in Java, with its interface written using
-either Java AWT or Swing. Its only requirement is a standard Java VM -
-except that since TaxonDNA 1.6 we've given up supporting Java 1.4, so
-you'll need to have atleast Java 1.5 since then.
+TaxonDNA is written in Java and Kotlin, with its interface written using
+either Java AWT or Swing. It requires Java 17 or later.
 
 There are a [long list of bugs](http://code.google.com/p/taxondna/issues/list),
 some of which prevent TaxonDNA from working well on multiple platforms. Note
@@ -56,7 +54,13 @@ directory.
 
 ## Tests
 
-We do not currently have tests. But someday we will!
+Unit tests use [Kotest](https://kotest.io/) (FunSpec style) with JUnit 5. Run them with:
+
+```shell
+$ mvn test
+```
+
+See [TESTING.md](TESTING.md) for the full testability assessment and roadmap.
 
 ## Running TaxonDNA
 
