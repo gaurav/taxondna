@@ -21,6 +21,16 @@ mvn spotless:apply           # Auto-fix code formatting
 
 Output JARs go to `target/` (e.g., `TaxonDNA-1.11-SNAPSHOT-SpeciesIdentifier.jar`).
 
+Native installers (macOS `.dmg`, Windows `.msi`, Linux `.deb`) are built via OS-specific profiles wired to `jpackage-maven-plugin`. Each profile must run on its target OS — jpackage cannot cross-compile.
+
+```bash
+mvn -Pmac-installer     package -Dapp.version=1.11.0   # macOS only
+mvn -Pwindows-installer package -Dapp.version=1.11.0   # Windows only; needs WiX 3
+mvn -Plinux-installer   package -Dapp.version=1.11.0   # Linux only; needs dpkg + fakeroot
+```
+
+`app.version` must be `MAJOR[.MINOR[.PATCH]]` with `MAJOR >= 1` (macOS rejects a leading zero). See [RELEASING.md](RELEASING.md) for the full release flow, the GitHub Actions pipeline, and the deferred macOS/Windows signing setup.
+
 To run an application:
 
 ```bash
@@ -56,4 +66,5 @@ Runtime dependencies: `kotlin-stdlib`. Test dependencies: Kotest (`kotest-runner
 - Sequences are stored as `char[]` arrays; applications are memory-intensive and require `-Xmx` flags for large datasets
 - Species names are parsed from FASTA title strings; hyphens are gaps, question marks are missing data
 - Kotlin test files need `@file:Suppress("ktlint:standard:package-name")` because the Java package names use uppercase (e.g., `Common.DNA`), which ktlint disallows
+- Kotlin 2.1.0's bundled IntelliJ `JavaVersion` parser rejects the string `"25.0.2"`, so `mvn test-compile` (and any goal that triggers it) fails on JDK 25. Workaround for local builds on JDK 25 is `-Dmaven.test.skip=true`; CI runs Java 17/21/23 and is unaffected. Tracked in [#123](https://github.com/gaurav/taxondna/issues/123).
 

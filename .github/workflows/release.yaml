@@ -1,0 +1,109 @@
+# Release pipeline: build native installers for macOS, Windows, and Linux
+# via jpackage, wrap each with docs + samples into an OS-specific zip, and
+# (on tag push) attach all six zips to a GitHub Release.
+#
+# Triggers:
+#   - push of a tag matching v* (cuts a real release)
+#   - workflow_dispatch (manual test build; uploads to workflow artifacts only)
+#
+# See RELEASING.md for the full release flow and macOS signing prerequisites.
+# Refs gaurav/taxondna#70.
+
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'jpackage --app-version (e.g. 1.11.0). MAJOR must be >= 1; macOS rejects a leading zero.'
+        required: true
+        default: '1.0.0'
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }} installers
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            profile: mac-installer
+            platform: macos
+          - os: windows-latest
+            profile: windows-installer
+            platform: windows
+          - os: ubuntu-latest
+            profile: linux-installer
+            platform: linux
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install Temurin Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      # On tag pushes, ${GITHUB_REF_NAME} is like "v1.11.0"; strip the leading
+      # "v". On workflow_dispatch, use the version input verbatim.
+      - name: Compute app version (POSIX shells)
+        if: matrix.os != 'windows-latest'
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "APP_VERSION=${{ github.event.inputs.version }}" >> "$GITHUB_ENV"
+          else
+            REF_NAME="${GITHUB_REF_NAME}"
+            echo "APP_VERSION=${REF_NAME#v}" >> "$GITHUB_ENV"
+          fi
+
+      - name: Compute app version (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          if ("${{ github.event_name }}" -eq "workflow_dispatch") {
+            "APP_VERSION=${{ github.event.inputs.version }}" | Out-File -FilePath $env:GITHUB_ENV -Append
+          } else {
+            $refName = "${{ github.ref_name }}"
+            "APP_VERSION=$($refName -replace '^v', '')" | Out-File -FilePath $env:GITHUB_ENV -Append
+          }
+
+      - name: Build installer and OS bundle
+        run: mvn -B -P${{ matrix.profile }} package -Dapp.version=${{ env.APP_VERSION }}
+
+      - name: Upload OS bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundles-${{ matrix.platform }}
+          path: target/*-${{ matrix.platform }}.zip
+          if-no-files-found: error
+
+  release:
+    name: Attach bundles to GitHub Release
+    needs: build
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download all OS bundles
+        uses: actions/download-artifact@v4
+        with:
+          pattern: bundles-*
+          path: bundles
+          merge-multiple: true
+
+      - name: Create / update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: bundles/*.zip
+          generate_release_notes: true
+          draft: true

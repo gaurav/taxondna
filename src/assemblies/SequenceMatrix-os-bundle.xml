@@ -1,0 +1,48 @@
+<!--
+    OS-specific release bundle for SequenceMatrix.
+
+    Wraps the native installer produced by jpackage (.dmg / .msi / .deb)
+    together with project docs and a directory of sample input files.
+    Invoked once per OS by the *-installer profiles in pom.xml; the
+    finalName from each profile picks the OS suffix (e.g. -linux.zip).
+-->
+<assembly>
+  <id>os-bundle</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+    <!-- Native installer from jpackage. Glob covers all OSes; only the
+         relevant artifact for the current profile will exist. -->
+    <fileSet>
+      <directory>target/installers</directory>
+      <includes>
+        <include>SequenceMatrix-*.dmg</include>
+        <include>SequenceMatrix-*.pkg</include>
+        <include>SequenceMatrix-*.msi</include>
+        <include>SequenceMatrix-*.exe</include>
+        <include>SequenceMatrix-*.deb</include>
+        <include>SequenceMatrix-*.rpm</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+
+    <!-- Sample input files so users can try the app immediately. -->
+    <fileSet>
+      <directory>Release/SequenceMatrix/Sample files</directory>
+      <outputDirectory>Sample files</outputDirectory>
+    </fileSet>
+
+    <!-- Top-level README, LICENSE. -->
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <includes>
+        <include>README*</include>
+        <include>COPYING</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>

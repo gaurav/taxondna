@@ -42,6 +42,15 @@
     <kotlin.version>2.1.0</kotlin.version>
     <spotless.version>2.44.3</spotless.version>
     <kotest.version>5.9.1</kotest.version>
+
+    <!--
+        Version string passed to jpackage as app-version. jpackage rejects
+        Maven-style SNAPSHOT suffixes and requires MAJOR[.MINOR[.PATCH]] where
+        MAJOR is at least 1 (macOS specifically refuses leading zero).
+        Override in CI from the git tag (e.g. -Dapp.version=1.11.0) or from
+        workflow_dispatch input. Local default is meaningless but valid.
+    -->
+    <app.version>1.0.0</app.version>
   </properties>
 
   <dependencies>
@@ -371,4 +380,301 @@
       </plugin>
     </plugins>
   </build>
+
+  <!--
+      Installer profiles. Each profile activates jpackage (via the panteleyev
+      wrapper around the JDK's jpackage tool) to produce a native installer
+      for one OS, plus a maven-assembly-plugin execution that wraps the
+      installer together with docs/examples into an OS-specific zip.
+
+      Build locally with:
+        mvn -Pmac-installer     package -Dapp.version=1.11.0
+        mvn -Pwindows-installer package -Dapp.version=1.11.0
+        mvn -Plinux-installer   package -Dapp.version=1.11.0
+
+      Each profile must run on its target OS; jpackage cannot cross-compile.
+      See RELEASING.md for the full release flow.
+  -->
+  <profiles>
+    <profile>
+      <id>mac-installer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <executions>
+              <execution>
+                <id>jpackage-speciesidentifier</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SpeciesIdentifier</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SpeciesIdentifier.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier</mainClass>
+                  <type>DMG</type>
+                  <javaOptions>
+                    <option>-Xmx4G</option>
+                  </javaOptions>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jpackage-sequencematrix</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SequenceMatrix</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SequenceMatrix.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</mainClass>
+                  <type>DMG</type>
+                  <javaOptions>
+                    <option>-Xmx8G</option>
+                  </javaOptions>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>SpeciesIdentifier-macos-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SpeciesIdentifier-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SpeciesIdentifier-${app.version}-macos</finalName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>SequenceMatrix-macos-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SequenceMatrix-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SequenceMatrix-${app.version}-macos</finalName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>windows-installer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <executions>
+              <execution>
+                <id>jpackage-speciesidentifier</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SpeciesIdentifier</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SpeciesIdentifier.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier</mainClass>
+                  <type>MSI</type>
+                  <javaOptions>
+                    <option>-Xmx4G</option>
+                  </javaOptions>
+                  <winDirChooser>true</winDirChooser>
+                  <winMenu>true</winMenu>
+                  <winShortcut>true</winShortcut>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jpackage-sequencematrix</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SequenceMatrix</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SequenceMatrix.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</mainClass>
+                  <type>MSI</type>
+                  <javaOptions>
+                    <option>-Xmx8G</option>
+                  </javaOptions>
+                  <winDirChooser>true</winDirChooser>
+                  <winMenu>true</winMenu>
+                  <winShortcut>true</winShortcut>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>SpeciesIdentifier-windows-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SpeciesIdentifier-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SpeciesIdentifier-${app.version}-windows</finalName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>SequenceMatrix-windows-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SequenceMatrix-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SequenceMatrix-${app.version}-windows</finalName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
+      <id>linux-installer</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.panteleyev</groupId>
+            <artifactId>jpackage-maven-plugin</artifactId>
+            <version>1.6.5</version>
+            <executions>
+              <execution>
+                <id>jpackage-speciesidentifier</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SpeciesIdentifier</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SpeciesIdentifier.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SpeciesIdentifier.SpeciesIdentifier</mainClass>
+                  <type>DEB</type>
+                  <javaOptions>
+                    <option>-Xmx4G</option>
+                  </javaOptions>
+                  <linuxShortcut>true</linuxShortcut>
+                </configuration>
+              </execution>
+              <execution>
+                <id>jpackage-sequencematrix</id>
+                <goals>
+                  <goal>jpackage</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <name>SequenceMatrix</name>
+                  <appVersion>${app.version}</appVersion>
+                  <vendor>Gaurav Vaidya</vendor>
+                  <copyright>Copyright (c) Gaurav Vaidya</copyright>
+                  <destination>${project.build.directory}/installers</destination>
+                  <input>${project.build.directory}</input>
+                  <mainJar>TaxonDNA-${project.version}-SequenceMatrix.jar</mainJar>
+                  <mainClass>com.ggvaidya.TaxonDNA.SequenceMatrix.SequenceMatrix</mainClass>
+                  <type>DEB</type>
+                  <javaOptions>
+                    <option>-Xmx8G</option>
+                  </javaOptions>
+                  <linuxShortcut>true</linuxShortcut>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <plugin>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>SpeciesIdentifier-linux-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SpeciesIdentifier-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SpeciesIdentifier-${app.version}-linux</finalName>
+                </configuration>
+              </execution>
+              <execution>
+                <id>SequenceMatrix-linux-bundle</id>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <phase>package</phase>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <descriptors>
+                    <descriptor>src/assemblies/SequenceMatrix-os-bundle.xml</descriptor>
+                  </descriptors>
+                  <finalName>SequenceMatrix-${app.version}-linux</finalName>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

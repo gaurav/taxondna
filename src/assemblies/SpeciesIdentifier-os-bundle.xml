@@ -1,0 +1,51 @@
+<!--
+    OS-specific release bundle for SpeciesIdentifier.
+
+    Wraps the native installer produced by jpackage (.dmg / .msi / .deb)
+    together with project docs and the user manual into a single zip.
+    Invoked once per OS by the *-installer profiles in pom.xml; the
+    finalName from each profile picks the OS suffix (e.g. -macos.zip).
+-->
+<assembly>
+  <id>os-bundle</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
+
+  <fileSets>
+    <!-- Native installer from jpackage. Glob covers all OSes; only the
+         relevant artifact for the current profile will exist. -->
+    <fileSet>
+      <directory>target/installers</directory>
+      <includes>
+        <include>SpeciesIdentifier-*.dmg</include>
+        <include>SpeciesIdentifier-*.pkg</include>
+        <include>SpeciesIdentifier-*.msi</include>
+        <include>SpeciesIdentifier-*.exe</include>
+        <include>SpeciesIdentifier-*.deb</include>
+        <include>SpeciesIdentifier-*.rpm</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+
+    <!-- User manual. -->
+    <fileSet>
+      <directory>Release/SpeciesIdentifier</directory>
+      <includes>
+        <include>*.pdf</include>
+      </includes>
+      <outputDirectory>docs</outputDirectory>
+    </fileSet>
+
+    <!-- Top-level README, LICENSE. -->
+    <fileSet>
+      <directory>${project.basedir}</directory>
+      <includes>
+        <include>README*</include>
+        <include>COPYING</include>
+      </includes>
+      <outputDirectory>.</outputDirectory>
+    </fileSet>
+  </fileSets>
+</assembly>
