@@ -53,3 +53,19 @@ No external dependencies — pure Java with zero third-party libraries. Each app
 - Sequences are stored as `char[]` arrays; applications are memory-intensive and require `-Xmx` flags for large datasets
 - Species names are parsed from FASTA title strings; hyphens are gaps, question marks are missing data
 
+## Known Performance Constraints
+
+SequenceMatrix is the bottleneck for large files. Users have requested support for Nexus files up to ~347 MB, which the current data model does not handle comfortably. Known dominant costs:
+
+- `char[]` storage in `Sequence`/`BaseSequence` uses 2 bytes per base (DNA fits in 2–4 bits — a 4×–8× packing opportunity).
+- `BaseSequence.getSubsequence()` round-trips through `char[] → String → StringReader → StringBuffer`, allocating 2–3 copies per call.
+- The Nexus parser loads the whole file before constructing `SequenceList`/`SequenceGrid`; no streaming.
+- Taxon/species name `String`s are not interned across sequences.
+
+Open roadmap issues:
+
+- [#116](https://github.com/gaurav/taxondna/issues/116) — in-Java memory optimization plan (packed encoding, streaming parser, profiling-first development order). This is the preferred path.
+- [#117](https://github.com/gaurav/taxondna/issues/117) — Rust port evaluation. Not recommended until #116 is exhausted; if revisited, the hybrid Java-UI + Rust-core option is the first architecture to consider, not a full rewrite.
+
+Profile (heap dump + JFR) on a representative large file before making non-trivial changes to the sequence data model or file-format readers.
+
