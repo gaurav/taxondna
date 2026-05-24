@@ -1,0 +1,88 @@
+doi	pubdate	source	number	text	software	ID	curation_label
+10.1186/s40851-021-00172-0	2021	Materials and methods	168	The sequences for the nuclear gene fragments were concatenated to generate a 2803-bp matrix in SequenceMatrix ([	SequenceMatrix	SM51323	software
+10.1186/s40851-021-00172-0	2021	Phylogenetic and biogeographic analyses	0	The sequences for the nuclear gene fragments were concatenated to generate a 2803-bp matrix in SequenceMatrix ([	SequenceMatrix	SM51323	software
+10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288	2013	Materials and Methods	8	Individual genes were concatenated using SequenceMatrix v1	SequenceMatrix	SM51323	software
+10.1080/21501203.2018.1461142	2018	Material and methods	7	Further analyses were carried out after concatenation using Sequence Matrix (Vaidya et al	Sequence Matrix	SM61024	not_curated
+10.1080/21501203.2018.1461142	2018	Data analyses	3	Further analyses were carried out after concatenation using Sequence Matrix (Vaidya et al	Sequence Matrix	SM61024	not_curated
+10.1080/14772000.2017.1317672	2018	Materials and methods	5	A supermatrix with a total length of 2,644 bp was formed by concatenating the five markers using SequenceMatrix (Vaidya, Lohman, & Meier, 	SequenceMatrix	SM51323	software
+10.1080/14772000.2017.1317672	2018	Ingroup phylogenetic analyses	1	A supermatrix with a total length of 2,644 bp was formed by concatenating the five markers using SequenceMatrix (Vaidya, Lohman, & Meier, 	SequenceMatrix	SM51323	software
+10.1080/14772000.2020.1787550	2020	Materials and methods	7	We concatenated the aligned, individual gene data sets using SEQUENCEMATRIX v	SEQUENCEMATRIX	SM385970	not_curated
+10.1080/14772000.2020.1787550	2020	Sequence alignment and characterization	1	We concatenated the aligned, individual gene data sets using SEQUENCEMATRIX v	SEQUENCEMATRIX	SM385970	not_curated
+10.3897/phytokeys.71.9203	2016	Material and methods	5	 Matrices were concatenated using SequenceMatrix (	SequenceMatrix	SM51323	software
+10.3897/phytokeys.71.9203	2016	Phylogenetic analyses	1	 Matrices were concatenated using SequenceMatrix (	SequenceMatrix	SM51323	software
+10.3897/zookeys.872.36288	2019	Materials and methods	7	Alignments of the separate markers were all concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.3897/zookeys.872.36288	2019	Molecular phylogenetic analyses	2	Alignments of the separate markers were all concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.7717/peerj.10804	2021	Material and Methods	12	 For this, we combined both sequences in the unified supermatrix via SequenceMatrix v	SequenceMatrix	SM51323	software
+10.7717/peerj.10804	2021	Species delimitation	5	 For this, we combined both sequences in the unified supermatrix via SequenceMatrix v	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0168464	2016	Materials and Methods	4	The coding regions of all segments for each five isolate were manually inspected, trimmed and then concatenated in the following sequence order of PB2, PB1, PA, HA, NP, NA, M and NS using the SequenceMatrix software [	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0168464	2016	Phylogenetics and sequence characterization	1	The coding regions of all segments for each five isolate were manually inspected, trimmed and then concatenated in the following sequence order of PB2, PB1, PA, HA, NP, NA, M and NS using the SequenceMatrix software [	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0200956	2018	Materials and methods	6	Using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0200956	2018	Phylogenetic analyses	1	Using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.3390/jof7040294	2021	2. Materials and Methods	11	For all isolates, ITS, tef1, and tub2 sequences were trimmed to a common length and concatenated using the Sequence Matrix software [	Sequence Matrix	SM61024	not_curated
+10.3390/jof7040294	2021	2.4. Molecular Identification and Phylogenetic Analyses	1	For all isolates, ITS, tef1, and tub2 sequences were trimmed to a common length and concatenated using the Sequence Matrix software [	Sequence Matrix	SM61024	not_curated
+10.3390/v12010096	2020	2. Materials and Methods	9	A multiple alignment of ten coding regions (VP1–VP7 and NS1–NS3) was performed using the Muscle algorithm of MEGA6 software and then FASTA files were concatenated using the SequenceMatrix tool [	SequenceMatrix	SM51323	software
+10.3390/v12010096	2020	2.6. Phylogenetic Analysis	1	A multiple alignment of ten coding regions (VP1–VP7 and NS1–NS3) was performed using the Muscle algorithm of MEGA6 software and then FASTA files were concatenated using the SequenceMatrix tool [	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0101375	2014	Materials and Methods	9	Individual genes were concatenated using SequenceMatrix v1	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0101375	2014	Phylogenetic analyses	3	Individual genes were concatenated using SequenceMatrix v1	SequenceMatrix	SM51323	software
+10.1038/s41559-018-0494-6	2018	Methods	14	We concatenated the 66 chunks from the filtered dataset into a single alignment using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41559-018-0494-6	2018	Phylogenetic analyses	12	We concatenated the 66 chunks from the filtered dataset into a single alignment using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41559-018-0494-6	2018	Data filtering	4	We concatenated the 66 chunks from the filtered dataset into a single alignment using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-14703-3	2017	Materials and Methods	85	Alignments of all genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-14703-3	2017	Phylogenetic analyses	80	Alignments of all genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-14703-3	2017	Dataset concatenation, partitioning and substitution model selection	0	Alignments of all genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-17145-z	2017	Materials and Methods	119	Alignments of individual genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-17145-z	2017	Phylogenetic analyses	114	Alignments of individual genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/s41598-017-17145-z	2017	Dataset concatenation, partitioning and substitution model selection	0	Alignments of individual genes were concatenated using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0112461	2014	Material and Methods	7	Multiple sequence alignments were first performed to each fragment using MUSCLE and the alignments were subsequently trimmed in Gblocks and concatenated using SequenceMatrix 	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0112461	2014	Phylogenetic analyses	3	Multiple sequence alignments were first performed to each fragment using MUSCLE and the alignments were subsequently trimmed in Gblocks and concatenated using SequenceMatrix 	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0112461	2014	Maximum likelihood approach	0	Multiple sequence alignments were first performed to each fragment using MUSCLE and the alignments were subsequently trimmed in Gblocks and concatenated using SequenceMatrix 	SequenceMatrix	SM51323	software
+10.1371/journal.pone.0128181	2015	Material and Methods	17	Aligned sequences were concatenated and analyzed using Sequence Matrix v1	Sequence Matrix	SM61024	not_curated
+10.1371/journal.pone.0128181	2015	Phylogenetic analyses	1	Aligned sequences were concatenated and analyzed using Sequence Matrix v1	Sequence Matrix	SM61024	not_curated
+10.1007/s11557-017-1290-4	2017	Materials and methods	534	Combined sequences of SSU, ITS, LSU, TEF and RPB2 were concatenated using Sequence Matrix for Windows version 1	Sequence Matrix	SM61024	not_curated
+10.1007/s11557-017-1290-4	2017	Phylogenetic analyses	531	Combined sequences of SSU, ITS, LSU, TEF and RPB2 were concatenated using Sequence Matrix for Windows version 1	Sequence Matrix	SM61024	not_curated
+10.1007/s11557-018-1396-3	2018	Materials and methods	3	The two matrixes were combined by SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1007/s11557-018-1396-3	2018	Molecular study and phylogenetic analysis	2	The two matrixes were combined by SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1007/s12229-018-9202-0	2018	Material and Methods	34	 As there were no instances of conflict at well-supported nodes, the matrices of the seven regions were concatenated for the downstream analyses, using the software SequenceMatrix version 1	SequenceMatrix	SM51323	software
+10.1007/s12229-018-9202-0	2018	Sequence Alignment and Phylogenetic Reconstruction	1	 As there were no instances of conflict at well-supported nodes, the matrices of the seven regions were concatenated for the downstream analyses, using the software SequenceMatrix version 1	SequenceMatrix	SM51323	software
+10.1038/srep13227	2015	Method	3	83, and the five loci were combined together by SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/srep13227	2015	Sequence analyses	0	83, and the five loci were combined together by SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1038/srep26486	2016	Methods	10	Multigene datasets were assembled using the concatenation software SequenceMatrix	SequenceMatrix	SM51323	software
+10.1038/srep26486	2016	Phylogenetic analyses	3	Multigene datasets were assembled using the concatenation software SequenceMatrix	SequenceMatrix	SM51323	software
+10.1111/eva.12696	2018	MATERIALS AND METHODS	3	In addition, the three mitochondrial genes of each individual were concatenated into a single sequence using SequenceMatrix v	SequenceMatrix	SM51323	software
+10.1111/eva.12696	2018	Mitochondrial gene amplification and genetic statistic estimation	2	In addition, the three mitochondrial genes of each individual were concatenated into a single sequence using SequenceMatrix v	SequenceMatrix	SM51323	software
+10.1126/sciadv.aaw6670	2019	MATERIALS AND METHODS	5	Using SequenceMatrix v1	SequenceMatrix	SM51323	software
+10.1126/sciadv.aaw6670	2019	Tree inference	2	Using SequenceMatrix v1	SequenceMatrix	SM51323	software
+10.1002/ece3.2853	2017	Materials and Methods	21	Individual genes and morphological matrices were concatenated using Sequence Matrix (Vaidya, Lohman, & Meier, 	Sequence Matrix	SM61024	not_curated
+10.1002/ece3.2853	2017	Alignment and dataset assembly	1	Individual genes and morphological matrices were concatenated using Sequence Matrix (Vaidya, Lohman, & Meier, 	Sequence Matrix	SM61024	not_curated
+10.1002/ece3.5301	2019	MATERIALS AND METHODS	6	 A concatenated sequence consisted of four mtDNA genes (Cox1 + Cox3 + CYTB + D‐loop) and one nuclear gene (vWF) fragment, and each marker was separately aligned and these sequences were then manually concatenated using the program Sequence Matrix v1	Sequence Matrix	SM61024	not_curated
+10.1002/ece3.5301	2019	Phylogenetic analysis	0	 A concatenated sequence consisted of four mtDNA genes (Cox1 + Cox3 + CYTB + D‐loop) and one nuclear gene (vWF) fragment, and each marker was separately aligned and these sequences were then manually concatenated using the program Sequence Matrix v1	Sequence Matrix	SM61024	not_curated
+10.1007/s10493-018-0256-9	2018	Materials and methods	220	Uncorrected and K2P (Kimura’s two parameter) pairwise genetic distances were calculated in the software Sequence Matrix (Vaidya et al	Sequence Matrix	SM61024	not_curated
+10.1007/s10493-018-0256-9	2018	Sequence editing, genetic distance and diversity indexes	2	Uncorrected and K2P (Kimura’s two parameter) pairwise genetic distances were calculated in the software Sequence Matrix (Vaidya et al	Sequence Matrix	SM61024	not_curated
+10.1007/s10592-020-01257-7	2020	Materials and methods	93	For phylogenetic analyses, two gene sequences were concatenated into one data matrix using SequenceMatrix ver	SequenceMatrix	SM51323	software
+10.1007/s10592-020-01257-7	2020	Mitochondrial DNA analysis	1	For phylogenetic analyses, two gene sequences were concatenated into one data matrix using SequenceMatrix ver	SequenceMatrix	SM51323	software
+10.1007/s11295-017-1113-4	2017	Materials and methods	3	All sequenced gene fragments for individuals were trimmed of poor flanking sequences and assembled with Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.1007/s11295-017-1113-4	2017	Nucleotide diversity and neutrality tests for nuclear DNA sequences	0	All sequenced gene fragments for individuals were trimmed of poor flanking sequences and assembled with Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.1007/s11295-017-1113-4	2017	Materials and methods	3	All sequenced gene fragments for individuals were trimmed of poor flanking sequences and assembled with Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.1007/s11295-017-1113-4	2017	Nucleotide diversity and neutrality tests for nuclear DNA sequences	0	All sequenced gene fragments for individuals were trimmed of poor flanking sequences and assembled with Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.2994/SAJH-D-17-00054.1	2018	MATERIALS AND METHODS	7	Sequences of all sampled genes were concatenated in Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.2994/SAJH-D-17-00054.1	2018	Molecular study	4	Sequences of all sampled genes were concatenated in Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.2994/SAJH-D-17-00054.1	2018	DNA extraction, sequencing, concatenation, partitioning	3	Sequences of all sampled genes were concatenated in Sequence Matrix version 1	Sequence Matrix	SM61024	not_curated
+10.1186/s12870-019-1771-5	2019	Methods	16	Starting with alignments from previous studies, we independently aligned all loci manually as needed using Geneious (Biomatters) and concatenated these alignments using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.1186/s12870-019-1771-5	2019	Phylogenetic reconstruction from a concatenated dataset	1	Starting with alignments from previous studies, we independently aligned all loci manually as needed using Geneious (Biomatters) and concatenated these alignments using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.1186/s12983-014-0081-x	2014	Introduction	2	 Software like SequenceMatrix [	SequenceMatrix	SM51323	software
+10.1186/s13027-016-0089-2	2016	Methods	6	The sequences of E6, E7 and L1 genes were subsequently assembled together using Sequence Matrixv 1	Sequence Matrixv	SM812391	not_curated
+10.1186/s13027-016-0089-2	2016	Phylogenetic analysis of HPV16 variants	1	The sequences of E6, E7 and L1 genes were subsequently assembled together using Sequence Matrixv 1	Sequence Matrixv	SM812391	not_curated
+10.1186/s12862-015-0445-7	2015	Methods	3	The five chloroplastic genes were concatenated into a single dataset using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1186/s12862-015-0445-7	2015	Phylogenetic reconstruction and molecular dating	0	The five chloroplastic genes were concatenated into a single dataset using SequenceMatrix 1	SequenceMatrix	SM51323	software
+10.1186/s12862-019-1477-1	2019	Methods	2	Sequence concatenations and file format conversions were implemented in Sequence Matrix [	Sequence Matrix	SM61024	not_curated
+10.1186/s12862-019-1477-1	2019	DNA extraction, PCR and sequencing analysis	1	Sequence concatenations and file format conversions were implemented in Sequence Matrix [	Sequence Matrix	SM61024	not_curated
+10.1186/s12864-017-3868-2	2017	Methods	2	 For the concatenation analysis, aligned gene sequences with at least 450 bp of overlapping sequence were concatenated into a single file using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.1186/s12864-017-3868-2	2017	Phylogenetic analysis	1	 For the concatenation analysis, aligned gene sequences with at least 450 bp of overlapping sequence were concatenated into a single file using SequenceMatrix [	SequenceMatrix	SM51323	software
+10.3389/fcimb.2020.618747	2021	Materials and Methods	4	Sequence Matrix 1	Sequence Matrix	SM61024	not_curated
+10.3389/fcimb.2020.618747	2021	Phylogenetic Analyses	0	Sequence Matrix 1	Sequence Matrix	SM61024	not_curated
+10.3389/fmicb.2019.01395	2019	Materials and Methods	5	 The sequences for the different loci were concatenated in sequenceMatrix (1	sequenceMatrix	SM723585	not_curated
+10.3389/fmicb.2019.01395	2019	Genetic Identity and Phylogeny	1	 The sequences for the different loci were concatenated in sequenceMatrix (1	sequenceMatrix	SM723585	not_curated
+10.3389/fpls.2017.02270	2018	Materials and methods	6	 The final sequences of the three cpDNA were concatenated using SequenceMatrix v	SequenceMatrix	SM51323	software
+10.3389/fpls.2017.02270	2018	cpDNA sequence data analysis	0	 The final sequences of the three cpDNA were concatenated using SequenceMatrix v	SequenceMatrix	SM51323	software
+10.3389/fpls.2020.00799	2020	Materials and Methods	13	 Individual sequence alignments were performed using MAFFT and then combined for each dataset using SequenceMatrix (	SequenceMatrix	SM51323	software
+10.3389/fpls.2020.00799	2020	Phylogenetic Analysis	0	 Individual sequence alignments were performed using MAFFT and then combined for each dataset using SequenceMatrix (	SequenceMatrix	SM51323	software
