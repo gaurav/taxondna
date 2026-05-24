@@ -48,25 +48,44 @@ script are kept here. See `citations/README.md` for the broader project plan.
 | `unique_mapped_to_software.txt` | Canonical (disambiguated) names with counts. Non-comm and publishers rows can't be disambiguated and are bucketed under `(not disambiguated …)`. |
 | `merge_hits.py` | Script that produced `sequencematrix_mentions.csv` from the three TSVs. |
 | `README.md` | This file. |
-| `dataset_README.md` would be the upstream dataset's own docs — not kept here, get it from the Dryad page if you want the original column schema. |
 
 The bulk downloads (`raw.tar.gz` 2.79 GB, `disambiguated.tar.gz` 1.07 GB, and
 the extracted `.tsv.gz` files inside) have been removed; re-download from
-Dryad if you need to re-run.
+Dryad if you need to re-run. The upstream dataset's own `README.md` (the
+authoritative column schema) is not kept here — fetch it from the Dryad
+landing page if you need to verify column meanings.
 
-## Source
+## Source and licensing
 
-- **Dataset:** Istrate, A.-M., Li, D., Taraborelli, D., Torkar, M., Veytsman,
-  B., & Williams, I. (2022). *A large dataset of software mentions in the
-  biomedical literature.* arXiv:[2209.00693](https://arxiv.org/abs/2209.00693).
-- **Data DOI:** [10.5061/dryad.6wwpzgn2c](https://doi.org/10.5061/dryad.6wwpzgn2c) (Dryad, CC0).
-- **Code:** https://github.com/chanzuckerberg/software-mentions
-- **Files downloaded on 2026-05-24 (via browser; Dryad's API requires OAuth):**
-  - `disambiguated.tar.gz` — SHA-256 `da7f6617…` (matches Dryad)
-  - `raw.tar.gz` — SHA-256 `a20670a2…` (matches Dryad)
+- **Dataset paper:** Istrate, A.-M., Li, D., Taraborelli, D., Torkar, M.,
+  Veytsman, B., & Williams, I. (2022). *A large dataset of software mentions
+  in the biomedical literature.*
+  arXiv:[2209.00693](https://arxiv.org/abs/2209.00693).
+- **Data DOI:** [10.5061/dryad.6wwpzgn2c](https://doi.org/10.5061/dryad.6wwpzgn2c)
+- **Dryad landing page:** https://datadryad.org/dataset/doi:10.5061/dryad.6wwpzgn2c
+- **Source code:** https://github.com/chanzuckerberg/software-mentions
+  (separately published as
+  Zenodo:[7041594](https://zenodo.org/record/7041594))
+- **Data license:** **CC0 1.0 Universal (Public Domain Dedication).** No
+  attribution legally required, but please cite the dataset paper above when
+  reusing the data.
+- **Code license:** MIT (per the GitHub repo).
 - The dataset is derived from PubMed Central plus papers contributed under
   agreement by various publishers (the "publishers' collection"). The PMC
-  corpus collection was October 2021.
+  corpus collection was October 2021. The dataset version on Dryad is
+  v11, published 2022-09-27.
+- **Files downloaded on 2026-05-24** (via Gaurav's browser; Dryad's
+  `/api/v2/files/{id}/download` endpoint returns 401 without an OAuth bearer
+  token, so anonymous CLI downloads do not work — go through the landing
+  page instead):
+  - `disambiguated.tar.gz` (1,067,929,681 bytes)
+    SHA-256: `da7f66172e9cb3862df27aecdf06e81f37c00fd13ae11c4cc1523e0f90e53e16`
+  - `raw.tar.gz` (2,788,799,205 bytes)
+    SHA-256: `a20670a29bba09c778bafbd7661fb8ab767fae641a57257606971f2b34e07c77`
+
+  Both checksums match the digests Dryad publishes in its
+  [`/api/v2/versions/198470/files`](https://datadryad.org/api/v2/versions/198470/files)
+  manifest.
 
 ## Method
 
@@ -93,13 +112,30 @@ Dryad if you need to re-run.
    (Column indices: `software` is col 10 in the PMC TSVs, col 6 in the publishers'
    TSV, which has a narrower schema. The disambiguated TSV adds `mapped_to_software`
    at col 14.)
+
+   **Platform gotcha:** the `tolower($n)` call above is portable, but the
+   first version used `BEGIN{IGNORECASE=1}` which is gawk-only and is
+   *silently ignored* by macOS's BSD `awk`. If you re-run this on macOS,
+   either keep the `tolower()` form or install GNU awk (`brew install gawk`)
+   and invoke it as `gawk`.
+
 3. Merge into one CSV with a unified schema: `python3 merge_hits.py`.
+   Python 3.9+ stdlib only — no third-party dependencies.
 4. Spot-check the 16 surface forms in `unique_software.txt`. All variants in
    our pull are genuine SequenceMatrix references; the disambiguator missed
    the 6 all-caps `SEQUENCEMATRIX` rows and the 1 `Java Sequence Matrix` row,
    which is why those show as `not_disambiguated` in the `mapped_to_software`
    field but **are** real hits and are kept in the CSV.
 5. Delete the bulk downloads and extracted gzipped TSVs.
+
+### Reproducing from scratch
+
+If the Dryad files were ever to disappear, the original CZI source code on
+GitHub plus a fresh PMC dump would reproduce a comparable extract — but the
+disambiguation cluster IDs would not match (they are tied to the 2022 run),
+and the publishers' collection is irretrievable without re-negotiating the
+CZI publisher agreements. So treat the Dryad snapshot as the authoritative
+source.
 
 ## Caveats and what's still missing
 
