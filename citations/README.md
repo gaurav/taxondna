@@ -2,7 +2,7 @@
 
 Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/issues/127): figure out how, where, and why the [SequenceMatrix paper](https://doi.org/10.1111/j.1096-0031.2010.00329.x) (Vaidya, Lohman & Meier 2011, *Cladistics*) is being cited, so we can plan future development with evidence rather than guesswork. Findings will also feed a proposal due **2026-06-08**.
 
-> **Status:** plan only. No code yet. See "Open questions" before starting.
+> **Status:** plan + one prior-art check done (CZ Software Mentions, see below). Phase 1 not yet started. See "Open questions" before starting.
 
 ## Anchor record
 
@@ -15,6 +15,21 @@ Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/is
 | Crossref cites | retrieve at runtime |
 
 The gap between Google Scholar and OpenAlex (~390 papers) is the rough size of the "long tail" we'll miss with open APIs. That's acceptable for trend analysis; Google Scholar has no usable API and scraping it is brittle and ToS-violating.
+
+## Prior-art check: CZ Software Mentions (done 2026-05-24)
+
+Before kicking off the OpenAlex pipeline, we checked whether the [CZ Software Mentions dump](https://doi.org/10.5061/dryad.6wwpzgn2c) (Istrate et al. 2022) had already done the hard part. It hadn't, but it gave us a useful by-product. Full extract, method, and CSV in [`citations/data/cz_software_mentions/`](data/cz_software_mentions/README.md).
+
+**Headline:** 457 sentence-level mentions across **372 unique-DOI papers** explicitly cite SequenceMatrix in the CZ corpora.
+
+**Why this isn't our answer:**
+- 372 papers is only ~14% of OpenAlex's ~2,597 citing works. The other ~86% live in taxonomy/zoology journals outside PMC and outside CZI's publisher agreements (*Cladistics* itself, *Zootaxa*, *Insect Systematics*, *Systematic Entomology*, etc.).
+- More importantly, **the CZ corpus collection cutoff is October 2021**. Since we particularly care about the last five years' usage to justify future development, this dataset essentially misses our window of interest. The rising year-on-year trend it does show (7 in 2012 → 89 in 2019 → 89 in 2020 → 75 in partial 2021) strongly suggests the bulk of recent citations are in 2022–2026 papers the CZ dump simply doesn't cover.
+
+**Why it's still worth what we spent on it:**
+1. **Practice corpus / pilot set for Phase 4.** Every CZ row already carries DOI, exact mention sentence, section name, and (for 370 of 372 PMC-indexed papers) the full text is freely available as section-tagged XML from Europe PMC. That's a perfect place to develop and tune the LLM extraction prompts before pointing them at the full OpenAlex corpus — no PDF scraping, no GROBID, no rate-limit headaches.
+2. **Fallback if OpenAlex stalls.** If the Phase 1 pipeline runs into API-key trouble, rate-limit walls, or schema issues we can't quickly debug, the CZ subset alone is enough to produce a first-pass usage analysis for the proposal. It just won't reflect anything published after October 2021.
+3. **Reference architecture for the spin-off tool.** The CZ dump is roughly what a generic "software-citation analyzer" looks like at scale; the fact that it stops in 2021 and excludes most taxonomy journals is precisely the gap a follow-on tool could fill.
 
 ## Phased plan
 
@@ -116,11 +131,11 @@ Full text:
 
 Software-mention extraction (in case we don't have to build the LLM bits from scratch):
 - [Softcite dataset and tool](https://github.com/softcite) — gold-standard corpus + a rule-based extractor that still beats most LLMs on F1.
-- [CZ Software Mentions](https://github.com/chanzuckerberg/software-mentions) — Chan-Zuckerberg-published ML-extracted software mentions across all of PubMed; we may be able to just **look SequenceMatrix up there** and skip a lot of work.
+- [CZ Software Mentions](https://github.com/chanzuckerberg/software-mentions) — Chan-Zuckerberg-published ML-extracted software mentions across PubMed + a CZI publishers' collection. **Already checked**, see the "Prior-art check" section above; we have 372 papers' worth of mentions in `citations/data/cz_software_mentions/` but the Oct 2021 cutoff means we still need OpenAlex for the recent literature.
 - [SoMeSci](https://data.gesis.org/somesci/) — software mentions knowledge graph with version/developer relations.
 - [BioWorkflow](https://academic.oup.com/bib/article/26/6/bbaf571/8315884) — recent (2025) LLM+RAG framework that recovers ~80% of workflow steps from bioinformatics papers; closest to what we want for Phase 4.
 
-**Action item before writing any code:** check whether SequenceMatrix already shows up in the CZ Software Mentions dump. If it does, Phases 3 + 4 collapse to "download their CSV, filter, analyze."
+~~**Action item before writing any code:** check whether SequenceMatrix already shows up in the CZ Software Mentions dump.~~ Done — it does (372 papers), but the Oct 2021 cutoff means it doesn't replace Phases 1 + 3. It does give us a free Phase 4 pilot corpus.
 
 ## Suggestions
 
