@@ -13,8 +13,16 @@ abstract: >-
 authors:
   - family-names: Vaidya
     given-names: Gaurav
+    alias: gaurav
     email: gaurav@ggvaidya.com
     orcid: https://orcid.org/0000-0003-0587-0454
+  - family-names: Lohman
+    given-names: David J.
+    alias: djlohman
+    orcid: https://orcid.org/0000-0002-0689-2906
+  - family-names: Meier
+    given-names: Rudolf
+    orcid: https://orcid.org/0000-0002-4452-2885
 version: 1.11-SNAPSHOT
 date-released: "2025-03-11"
 license: LGPL-2.0-or-later
@@ -34,10 +42,13 @@ references:
     authors:
       - family-names: Meier
         given-names: Rudolf
+        orcid: https://orcid.org/0000-0002-4452-2885
       - family-names: Kwong
         given-names: Sabrina
       - family-names: Vaidya
         given-names: Gaurav
+        alias: gaurav
+        orcid: https://orcid.org/0000-0003-0587-0454
       - family-names: Ng
         given-names: Peter K. L.
     journal: Systematic Biology
@@ -56,10 +67,14 @@ references:
     authors:
       - family-names: Vaidya
         given-names: Gaurav
+        alias: gaurav
+        orcid: https://orcid.org/0000-0003-0587-0454
       - family-names: Lohman
         given-names: David J.
+        orcid: https://orcid.org/0000-0002-0689-2906
       - family-names: Meier
         given-names: Rudolf
+        orcid: https://orcid.org/0000-0002-4452-2885
     journal: Cladistics
     volume: 27
     issue: 2
