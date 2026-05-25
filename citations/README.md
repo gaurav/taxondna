@@ -2,7 +2,7 @@
 
 Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/issues/127): figure out how, where, and why the [SequenceMatrix paper](https://doi.org/10.1111/j.1096-0031.2010.00329.x) (Vaidya, Lohman & Meier 2011, *Cladistics*) is being cited, so we can plan future development with evidence rather than guesswork. Findings will also feed a proposal due **2026-06-08**.
 
-> **Status:** plan + one prior-art check done (CZ Software Mentions, see below). Phase 1 not yet started. See "Open questions" before starting.
+> **Status:** Phase 1 done (OpenAlex pull, 2,509 citing works, 2026-05-24). Prior-art check done (CZ Software Mentions). Phase 2 not yet started.
 
 ## Anchor record
 
@@ -11,10 +11,10 @@ Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/is
 | DOI | `10.1111/j.1096-0031.2010.00329.x` |
 | OpenAlex work ID | `W2131473084` |
 | Google Scholar cites | 2,986 (1,740 since 2021) |
-| OpenAlex cites | 2,597 |
+| OpenAlex cites | 2,509 (fetched 2026-05-24) |
 | Crossref cites | retrieve at runtime |
 
-The gap between Google Scholar and OpenAlex (~390 papers) is the rough size of the "long tail" we'll miss with open APIs. That's acceptable for trend analysis; Google Scholar has no usable API and scraping it is brittle and ToS-violating.
+The gap between Google Scholar and OpenAlex (~480 papers, ~16%) is the rough size of the "long tail" we'll miss with open APIs. That's acceptable for trend analysis; Google Scholar has no usable API and scraping it is brittle and ToS-violating.
 
 ## Prior-art check: CZ Software Mentions (done 2026-05-24)
 
@@ -23,13 +23,56 @@ Before kicking off the OpenAlex pipeline, we checked whether the [CZ Software Me
 **Headline:** 457 sentence-level mentions across **372 unique-DOI papers** explicitly cite SequenceMatrix in the CZ corpora.
 
 **Why this isn't our answer:**
-- 372 papers is only ~14% of OpenAlex's ~2,597 citing works. The other ~86% live in taxonomy/zoology journals outside PMC and outside CZI's publisher agreements (*Cladistics* itself, *Zootaxa*, *Insect Systematics*, *Systematic Entomology*, etc.).
-- More importantly, **the CZ corpus collection cutoff is October 2021**. Since we particularly care about the last five years' usage to justify future development, this dataset essentially misses our window of interest. The rising year-on-year trend it does show (7 in 2012 → 89 in 2019 → 89 in 2020 → 75 in partial 2021) strongly suggests the bulk of recent citations are in 2022–2026 papers the CZ dump simply doesn't cover.
+- 372 papers is only **~15% of OpenAlex's 2,509 citing works** (confirmed by the Phase 1 pull). The other ~85% live in taxonomy/zoology journals outside PMC and outside CZI's publisher agreements (*Cladistics* itself, *Zootaxa*, *Insect Systematics*, *Systematic Entomology*, etc.).
+- More importantly, **the CZ corpus collection cutoff is October 2021**, and we now know from OpenAlex that **1,114 papers (44% of all citations) were published in 2022 or later** — exactly the window the proposal needs to speak to, and exactly the window CZ cannot see. See the side-by-side comparison in "Phase 1 results" below.
 
 **Why it's still worth what we spent on it:**
 1. **Practice corpus / pilot set for Phase 4.** Every CZ row already carries DOI, exact mention sentence, section name, and (for 370 of 372 PMC-indexed papers) the full text is freely available as section-tagged XML from Europe PMC. That's a perfect place to develop and tune the LLM extraction prompts before pointing them at the full OpenAlex corpus — no PDF scraping, no GROBID, no rate-limit headaches.
 2. **Fallback if OpenAlex stalls.** If the Phase 1 pipeline runs into API-key trouble, rate-limit walls, or schema issues we can't quickly debug, the CZ subset alone is enough to produce a first-pass usage analysis for the proposal. It just won't reflect anything published after October 2021.
 3. **Reference architecture for the spin-off tool.** The CZ dump is roughly what a generic "software-citation analyzer" looks like at scale; the fact that it stops in 2021 and excludes most taxonomy journals is precisely the gap a follow-on tool could fill.
+
+## Phase 1 results: OpenAlex citing-works pull (done 2026-05-24)
+
+**2,509 unique citing works** retrieved from OpenAlex on 2026-05-24, spanning 2010–2026. Raw API pages, flattened JSONL, full methods, and the reproduction recipe are in [`citations/data/openalex/`](data/openalex/README.md).
+
+**Five-year coverage check (the answer the proposal needs):** **1,410 of 2,509 works (56%) were published in 2021 or later** — 1,339 across the five complete years 2021–2025, plus 71 so far in partial 2026. OpenAlex sees the proposal-relevant window clearly; we have evidence, not extrapolation, for any "still in active use" claim.
+
+### Per-year citation counts: OpenAlex vs CZ Software Mentions
+
+CZ counts are deduped by DOI (or PMCID where DOI is missing) so the columns compare apples-to-apples papers, not mention sentences. "CZ recall" is `CZ papers / OpenAlex citing works` for the same year — a rough proxy for the fraction of citing literature that PMC and CZI's publishers' collection together cover.
+
+| Year | OpenAlex citing works | CZ papers (deduped) | CZ recall |
+| ---: | ---: | ---: | ---: |
+| 2010 | 2   | 1  | 50%  |
+| 2011 | 3   | 1  | 33%  |
+| 2012 | 13  | 7  | 54%  |
+| 2013 | 29  | 5  | 17%  |
+| 2014 | 51  | 11 | 22%  |
+| 2015 | 71  | 18 | 25%  |
+| 2016 | 94  | 24 | 26%  |
+| 2017 | 156 | 39 | 25%  |
+| 2018 | 177 | 43 | 24%  |
+| 2019 | 244 | 76 | 31%  |
+| 2020 | 259 | 81 | 31%  |
+| 2021 | 296 | 66 | 22% *(CZ ends Oct)* |
+| 2022 | 267 | —  | 0% *(CZ cutoff)* |
+| 2023 | 228 | —  | 0%  |
+| 2024 | 283 | —  | 0%  |
+| 2025 | 265 | —  | 0%  |
+| 2026 | 71 *(partial)* | — | 0% |
+| **total** | **2,509** | **372** | **~15%** overall |
+
+Takeaways:
+- **CZ catches roughly a quarter to a third** of OpenAlex-known papers in pre-cutoff years. The shortfall is driven by taxonomy/zoology journals not in PMC and not in CZI's publisher agreements (*Cladistics*, *Zootaxa*, *Systematic Entomology*, etc.), not by NER misses.
+- **CZ catches zero of the 1,114 papers published since 2022.** That is the entire proposal-relevant window.
+- **The OpenAlex trend is steady at 250–300 citations/year through 2022–2025**, with no decline 15 years post-publication. This is the headline numeric claim to feature in the proposal.
+
+### Other metadata on the corpus
+
+- **70% open access** in some form: gold 955, green 306, diamond 183, bronze 175, hybrid 133 = 1,752 papers. The remaining 757 (30%) are closed. So Phase 3 (full-text acquisition) can in principle cover up to ~1,750 papers via Unpaywall + Europe PMC without touching paywalls.
+- **Composition:** 2,264 articles + 112 preprints + 38 dissertations + 13 reviews = >97% of the corpus; the remainder is peer-review records, datasets, errata, etc.
+- **9 records (~0.4%) have no DOI**, mostly grey literature and dissertations; these are kept in the JSONL with `doi: null` but won't be reachable in Phase 3.
+- **Recall vs Google Scholar:** GS reports 2,986; we have 2,509. The ~480-paper gap is the long tail of preprint quirks, theses, conference proceedings, and non-English regional journals that don't index in OpenAlex. For top-line claims and trend analysis this is fine.
 
 ## Phased plan
 
