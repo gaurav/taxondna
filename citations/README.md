@@ -2,7 +2,7 @@
 
 Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/issues/127): figure out how, where, and why the [SequenceMatrix paper](https://doi.org/10.1111/j.1096-0031.2010.00329.x) (Vaidya, Lohman & Meier 2011, *Cladistics*) is being cited, so we can plan future development with evidence rather than guesswork. Findings will also feed a proposal due **2026-06-08**.
 
-> **Status:** Phase 1 done (OpenAlex pull, 2,509 citing works, 2026-05-24). Prior-art check done (CZ Software Mentions). **Phase 2 done — see [`phase2_metadata.md`](phase2_metadata.md) for the proposal-ready digest and [`data/openalex/citing_works.csv`](data/openalex/citing_works.csv) for the flat table. The Phase 2 co-mention scan's tool vocabulary is grounded in CZ co-occurrence data — see [`data/cz_software_mentions/comentioned_software.csv`](data/cz_software_mentions/comentioned_software.csv) (1,672 tools across 402 papers).**
+> **Status:** Phase 1 done (OpenAlex pull, 2,509 citing works, 2026-05-24). Prior-art check done (CZ Software Mentions). Phase 2 done — see [`phase2_metadata.md`](phase2_metadata.md) for the proposal-ready digest and [`data/openalex/citing_works.csv`](data/openalex/citing_works.csv) for the flat table. The Phase 2 co-mention scan's tool vocabulary is grounded in CZ co-occurrence data — see [`data/cz_software_mentions/comentioned_software.csv`](data/cz_software_mentions/comentioned_software.csv) (1,672 tools across 402 papers). **Phase 3a done (full-text coverage table, no bytes downloaded) — see [`data/fulltext/coverage.csv`](data/fulltext/coverage.csv); 828 papers (33%) have section-tagged PMC XML, 912 more (36%) have an OA PDF, 760 (30%) are paywalled, 1,740 / 2,509 (69%) reachable for free.**
 
 ## Anchor record
 
@@ -69,10 +69,27 @@ Takeaways:
 
 ### Other metadata on the corpus
 
-- **70% open access** in some form: gold 955, green 306, diamond 183, bronze 175, hybrid 133 = 1,752 papers. The remaining 757 (30%) are closed. So Phase 3 (full-text acquisition) can in principle cover up to ~1,750 papers via Unpaywall + Europe PMC without touching paywalls.
+- **70% open access** in some form: gold 955, green 306, diamond 183, bronze 175, hybrid 133 = 1,752 papers. The remaining 757 (30%) are closed. Phase 3a (below) confirms this empirically — 69.4% of the corpus is reachable via Europe PMC + OpenAlex/Unpaywall OA URLs.
 - **Composition:** 2,264 articles + 112 preprints + 38 dissertations + 13 reviews = >97% of the corpus; the remainder is peer-review records, datasets, errata, etc.
 - **9 records (~0.4%) have no DOI**, mostly grey literature and dissertations; these are kept in the JSONL with `doi: null` but won't be reachable in Phase 3.
 - **Recall vs Google Scholar:** GS reports 2,986; we have 2,509. The ~480-paper gap is the long tail of preprint quirks, theses, conference proceedings, and non-English regional journals that don't index in OpenAlex. For top-line claims and trend analysis this is fine.
+
+## Phase 3a results: full-text coverage table (done 2026-05-25)
+
+We ran every paper's DOI through Europe PMC and combined the result with the OA URLs OpenAlex already had. **No bytes were downloaded** — this is a coverage check, not a download. Full method, schema, and per-year table in [`data/fulltext/README.md`](data/fulltext/README.md).
+
+| Strategy | Papers | % of corpus | What it means for Phase 4 |
+| --- | ---: | ---: | --- |
+| `pmc_xml` | **828** | **33.0%** | Section-tagged JATS XML in Europe PMC. No GROBID step. Best LLM input. |
+| `oa_pdf` | **912** | **36.3%** | OA PDF reachable from OpenAlex/Unpaywall's `oa_url`. Needs GROBID to recover sections. |
+| `paywalled` | 760 | 30.3% | Skipped per OA-only policy. |
+| `no_doi` | 9 | 0.4% | Not reachable via DOI-keyed APIs. |
+| **Reachable for free** | **1,740** | **69.4%** | |
+
+Takeaways:
+- **One in three citing papers ships with section-tagged JATS XML for free.** That's the cleanest Phase 4 input we can hope for — Methods/Results/Discussion already delimited.
+- **Coverage is stable at 70%+ for 2021–2026** — exactly the window the 2026-06-08 proposal cares about, and Phase 4 is not bandwidth-limited.
+- **OpenAlex's OA share (70%) matches our reachable count (69.4%) almost exactly** — OpenAlex's snapshot of Unpaywall is accurate, and querying Unpaywall directly would not have added meaningful coverage.
 
 ## Phased plan
 
