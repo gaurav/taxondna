@@ -41,19 +41,37 @@ script are kept here. See `citations/README.md` for the broader project plan.
 | File | Description |
 | --- | --- |
 | `sequencematrix_mentions.csv` | **Primary output.** All 457 mentions, unified schema (subset, pmcid, pmid, doi, pubdate, section, paragraph_number, software_mention, version, curation_label, mapped_to_software, text). |
+| `comentioned_software.csv` | **Co-mention vocabulary.** 1,672 distinct canonical tool names CZ also extracted from the 372 SM-citing papers, ranked by paper count (`canonical, n_papers, n_surface_forms, surface_forms`). Top entries (MrBayes, RAxML, MAFFT, MEGA, …) feed the Phase 2 software co-mention scan. |
+| `comentioned_per_paper.csv` | One row per (paper, co-mentioned canonical tool), with the surface forms CZ saw. Useful for QA on the vocabulary. |
 | `sm_hits_disambiguated.tsv` | Raw hits from the `comm` disambiguated TSV (338 rows + header). Has the `mapped_to_software` clustering field that the raw subsets lack. |
 | `sm_hits_non_comm.tsv` | Raw hits from PMC-OA non-commercial (32 rows + header). |
 | `sm_hits_publishers.tsv` | Raw hits from the CZI publishers' collection (87 rows + header). |
 | `unique_software.txt` | All 16 surface forms with combined counts, for eyeballing typos/variants. |
 | `unique_mapped_to_software.txt` | Canonical (disambiguated) names with counts. Non-comm and publishers rows can't be disambiguated and are bucketed under `(not disambiguated …)`. |
 | `merge_hits.py` | Script that produced `sequencematrix_mentions.csv` from the three TSVs. |
+| `_downloads/` | Gitignored; holds the bulk Dryad tarballs and the three extracted `.tsv.gz` files when present. Empty in the checked-in repo. |
 | `README.md` | This file. |
 
-The bulk downloads (`raw.tar.gz` 2.79 GB, `disambiguated.tar.gz` 1.07 GB, and
-the extracted `.tsv.gz` files inside) have been removed; re-download from
-Dryad if you need to re-run. The upstream dataset's own `README.md` (the
-authoritative column schema) is not kept here — fetch it from the Dryad
-landing page if you need to verify column meanings.
+The upstream dataset's own `README.md` (the authoritative column schema)
+is not kept here — fetch it from the Dryad landing page if you need to
+verify column meanings.
+
+### Bulk downloads (when present)
+
+The two bulk tarballs are re-downloaded into `_downloads/` only when the
+co-mention extract needs to be regenerated:
+
+| File | Size | SHA-256 |
+| --- | ---: | --- |
+| `raw.tar.gz` | 2,788,799,205 bytes | `a20670a29bba09c778bafbd7661fb8ab767fae641a57257606971f2b34e07c77` |
+| `disambiguated.tar.gz` | 1,067,929,681 bytes | `da7f66172e9cb3862df27aecdf06e81f37c00fd13ae11c4cc1523e0f90e53e16` |
+
+Both match Dryad's published digests at
+[`/api/v2/versions/198470/files`](https://datadryad.org/api/v2/versions/198470/files).
+Anonymous CLI download does not work (Dryad's API requires an OAuth
+bearer token); go through the landing page in a browser instead.
+After `extract_cz_comentions.py` finishes you can delete `_downloads/`
+to reclaim ~3.9 GB; the script will re-extract on the next run if asked.
 
 ## Source and licensing
 
@@ -74,18 +92,8 @@ landing page if you need to verify column meanings.
   agreement by various publishers (the "publishers' collection"). The PMC
   corpus collection was October 2021. The dataset version on Dryad is
   v11, published 2022-09-27.
-- **Files downloaded on 2026-05-24** (via Gaurav's browser; Dryad's
-  `/api/v2/files/{id}/download` endpoint returns 401 without an OAuth bearer
-  token, so anonymous CLI downloads do not work — go through the landing
-  page instead):
-  - `disambiguated.tar.gz` (1,067,929,681 bytes)
-    SHA-256: `da7f66172e9cb3862df27aecdf06e81f37c00fd13ae11c4cc1523e0f90e53e16`
-  - `raw.tar.gz` (2,788,799,205 bytes)
-    SHA-256: `a20670a29bba09c778bafbd7661fb8ab767fae641a57257606971f2b34e07c77`
-
-  Both checksums match the digests Dryad publishes in its
-  [`/api/v2/versions/198470/files`](https://datadryad.org/api/v2/versions/198470/files)
-  manifest.
+- **Files downloaded on 2026-05-24** (via Gaurav's browser; see the table
+  above for sizes and SHA-256s).
 
 ## Method
 
@@ -126,7 +134,60 @@ landing page if you need to verify column meanings.
    the 6 all-caps `SEQUENCEMATRIX` rows and the 1 `Java Sequence Matrix` row,
    which is why those show as `not_disambiguated` in the `mapped_to_software`
    field but **are** real hits and are kept in the CSV.
-5. Delete the bulk downloads and extracted gzipped TSVs.
+5. Delete the bulk downloads and extracted gzipped TSVs (optional — they
+   are gitignored under `_downloads/`).
+
+### Co-mention vocabulary build (`comentioned_software.csv`)
+
+To extend Phase 2's software co-mention scan beyond a hand-picked default
+list, we want every *other* software CZ extracted from the same 372
+SM-citing papers. This is done by
+[`../../scripts/extract_cz_comentions.py`](../../scripts/extract_cz_comentions.py)
+(stdlib-only Python; no `awk` gymnastics):
+
+```sh
+cd citations
+uv run scripts/extract_cz_comentions.py
+```
+
+The script:
+
+1. Verifies the SHA-256 of `_downloads/raw.tar.gz` and
+   `_downloads/disambiguated.tar.gz` against the digests in this README.
+2. Selectively `tar -x`s the three needed `.tsv.gz` files (it never
+   inflates them).
+3. Reads `sequencematrix_mentions.csv` to build three paper-ID sets:
+   - `comm` PMCIDs (331 unique)
+   - `non_comm` PMCIDs (31 unique)
+   - `publishers` DOIs (41 unique, lowercased for matching)
+4. Streams each gzipped TSV through `gzip.open` + `csv.DictReader`,
+   keeping rows whose paper-ID is in the matching set AND whose
+   `software` (and `mapped_to_software`, on the comm subset) does not
+   match `/sequence\s?matrix/i`. Each kept row contributes its
+   `mapped_to_software` (or surface form, where disambiguation is
+   absent) to a per-paper bag.
+5. Aggregates across all papers and writes `comentioned_software.csv`
+   ranked by paper count, plus the per-paper detail in
+   `comentioned_per_paper.csv`.
+
+Headline numbers from the 2026-05-24 run:
+
+- Scanned: 14.8M comm rows + 4.5M non_comm rows + 48.2M publishers rows.
+- Kept: 7,628 + 786 + 875 = 9,289 mention rows in our 372 papers.
+- Result: **402 unique (subset, paper) records with at least one other
+  tool, naming 1,672 distinct canonical co-mentioned software**.
+- Top 5 by paper count: MrBayes (206), RAxML (191), MAFFT (179),
+  MEGA (177), PartitionFinder (124).
+
+The 402 > 372 gap is because some PMC papers appear in both the `comm`
+and `non_comm` subsets (different licensing buckets, same paper).
+
+The top ~30 of these (≥15-paper threshold, NER noise filtered) are
+hand-curated into `TOOL_PATTERNS` in
+[`../../scripts/analyze_phase2.py`](../../scripts/analyze_phase2.py).
+The long tail stays in `comentioned_software.csv` for inspection — it
+is more useful as input to Phase 4 LLM extraction than as additional
+abstract-scan regexes.
 
 ### Reproducing from scratch
 

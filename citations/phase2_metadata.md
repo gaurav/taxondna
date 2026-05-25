@@ -257,9 +257,9 @@ Open-access status of the citing papers, year by year. Relevant to Phase 3 (full
 
 ## Software co-mentions in abstracts
 
-Scanned 2,042 abstracts for a curated list of 21 phylogenetics tools (see `scripts/analyze_phase2.py` for the regex list and TODOs for expansion via n-gram discovery and the CZ Software Mentions corpus). Case-sensitive word-boundary matches; in this domain false positives should be rare.
+Scanned 2,042 abstracts for **51 phylogenetics tools**. The vocabulary has two layers: a small curated list of the obvious neighbors (RAxML, MrBayes, BEAST, …) and an expansion drawn from [`data/cz_software_mentions/comentioned_software.csv`](data/cz_software_mentions/comentioned_software.csv), which lists every other tool CZ Software Mentions found in the same 372 papers (≥15-paper threshold, NER noise filtered). See `scripts/analyze_phase2.py` for the exact regexes.
 
-**32 of 2,509 papers (1.3%) name at least one tool from the list in their abstract.** Note: abstracts are short — the true workflow-co-occurrence rate from full text will be much higher. Phase 4 (LLM extraction over methods sections) will make this rigorous.
+**35 of 2,509 papers (1.4%) name at least one tool from the list in their abstract.** Note: abstracts are short — the true workflow-co-occurrence rate from full text will be much higher. Phase 4 (LLM extraction over methods sections) will make this rigorous.
 
 ### Co-mentioned tools (ranked)
 
@@ -269,22 +269,26 @@ Scanned 2,042 abstracts for a curated list of 21 phylogenetics tools (see `scrip
 | 2 | MrBayes | 7 | 0.3% | 0.3% |
 | 3 | IQ-TREE | 6 | 0.2% | 0.3% |
 | 4 | BLAST | 4 | 0.2% | 0.2% |
-| 5 | RAxML | 2 | 0.1% | 0.1% |
-| 6 | TNT | 2 | 0.1% | 0.1% |
-| 7 | Geneious | 2 | 0.1% | 0.1% |
-| 8 | PartitionFinder | 1 | 0.0% | 0.0% |
-| 9 | MAFFT | 1 | 0.0% | 0.0% |
-| 10 | PAUP | 1 | 0.0% | 0.0% |
-| 11 | MEGA | 1 | 0.0% | 0.0% |
+| 5 | Gblocks | 2 | 0.1% | 0.1% |
+| 6 | RAxML | 2 | 0.1% | 0.1% |
+| 7 | TNT | 2 | 0.1% | 0.1% |
+| 8 | MITOS | 2 | 0.1% | 0.1% |
+| 9 | Geneious | 2 | 0.1% | 0.1% |
+| 10 | PartitionFinder | 1 | 0.0% | 0.0% |
+| 11 | MAFFT | 1 | 0.0% | 0.0% |
+| 12 | MrModelTest | 1 | 0.0% | 0.0% |
+| 13 | PAUP | 1 | 0.0% | 0.0% |
+| 14 | DnaSP | 1 | 0.0% | 0.0% |
+| 15 | MEGA | 1 | 0.0% | 0.0% |
 
 ### How many tools per abstract
 
 | Tools named in abstract | Papers |
 | ---: | ---: |
-| 0 | 2477 |
-| 1 | 24 |
-| 2 | 7 |
-| 3 | 1 |
+| 0 | 2474 |
+| 1 | 26 |
+| 2 | 6 |
+| 3 | 3 |
 
 ## Reproducing this digest
 

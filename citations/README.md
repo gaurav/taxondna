@@ -2,7 +2,7 @@
 
 Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/issues/127): figure out how, where, and why the [SequenceMatrix paper](https://doi.org/10.1111/j.1096-0031.2010.00329.x) (Vaidya, Lohman & Meier 2011, *Cladistics*) is being cited, so we can plan future development with evidence rather than guesswork. Findings will also feed a proposal due **2026-06-08**.
 
-> **Status:** Phase 1 done (OpenAlex pull, 2,509 citing works, 2026-05-24). Prior-art check done (CZ Software Mentions). **Phase 2 done — see [`phase2_metadata.md`](phase2_metadata.md) for the proposal-ready digest and [`data/openalex/citing_works.csv`](data/openalex/citing_works.csv) for the flat table.**
+> **Status:** Phase 1 done (OpenAlex pull, 2,509 citing works, 2026-05-24). Prior-art check done (CZ Software Mentions). **Phase 2 done — see [`phase2_metadata.md`](phase2_metadata.md) for the proposal-ready digest and [`data/openalex/citing_works.csv`](data/openalex/citing_works.csv) for the flat table. The Phase 2 co-mention scan's tool vocabulary is grounded in CZ co-occurrence data — see [`data/cz_software_mentions/comentioned_software.csv`](data/cz_software_mentions/comentioned_software.csv) (1,672 tools across 402 papers).**
 
 ## Anchor record
 

@@ -1,0 +1,1673 @@
+canonical,n_papers,n_surface_forms,surface_forms
+MrBayes,206,3,MRBAYES; MrBayes; MrBayes3
+RAxML,191,4,RAXML; RAxML; RAxML8; RaxML
+MAFFT,179,4,MAFFT; MAFFT7; Mafft; mafft
+MEGA,177,4,MEGA; MEGA5; MEGA6; MEGA7
+PartitionFinder,124,6,Partition Finder; PartitionFinder; PartitionFinder2; PartitionFinder54; PartitionFinder59; Partitionfinder
+BLAST,105,10,BLAST; BLAST Tools; BLAST+; BLASTP; BLASTp; Basic Local Alignment Search Tool; BlastP; Blastp; blast; blastp
+Geneious,102,9,GENEIOUS; Geneious; Geneious Prime; Geneious R10; Geneious R11; Geneious R7; Geneious R8; Geneious R9; Geneious®
+Tracer,85,1,Tracer
+FigTree,79,2,FigTree; Figtree
+jModelTest,75,9,JModelTest; JModeltest; JmodelTest; Jmodeltest; jModel Test; jModelTest; jModelTest2; jModeltest; jmodeltest
+BEAST,72,6,*BEAST; *BEAST2; BEAST; BEAST2; BEAST34; Beast
+MUSCLE,71,3,MUSCLE; MUSCLE73; Muscle
+R,68,1,R
+tRNAscan-SE,64,8,tRNA scan-SE; tRNAScan-SE; tRNAscan-SE; tRNAscan-SE1; tRNAscan-SE2; tRNAscan-SE21; tRNAscan-SE38; tRNAscan‐SE Search Server
+BioEdit,61,3,BIOEDIT; BioEdit; Bioedit
+PAUP*,57,4,PAUP; PAUP*; PAUP*4; PAUP4
+BLASTN,53,4,BLASTN; BLASTn; BlastN; blastn
+DnaSP,50,3,DNASP; DNAsp; DnaSP
+TreeAnnotator,46,4,Tree Annotator; TreeAnnotator; TreeAnotator; Treeannotator
+MITOS,45,3,MITOS; MITOS18; MITOS2
+Gblocks,44,4,GBlocks; Gblocks; Gblocks0; gblocks
+ClustalW,43,5,CLUSTAL W; CLUSTALW; CLUSTAL_W; Clustal W; ClustalW
+IQ-TREE,37,2,IQ-TREE; IQ-TREE1
+Mesquite,36,2,Mesquite; Mesquite89
+MITObim,31,1,MITObim
+SPAdes,31,4,SPADES; SPAdes; SPAdes Genome Assembler; SPAdes-3
+MrModeltest,28,3,MrModelTest; MrModeltest; MrModeltest2
+LogCombiner,27,2,Log Combiner; LogCombiner
+Sequencher,26,2,Sequencher; Sequencher®
+ClustalX,25,6,CLUSTAL X; CLUSTALX; Clustal; Clustal X; ClustalX; ClustalX2
+TranslatorX,25,3,Translator X; TranslatorX; TranslatorX52
+Adobe Photoshop,24,5,Adobe Photoshop; Adobe Photoshop CC; Adobe Photoshop CS; Adobe Photoshop® CC; Photoshop
+Trimmomatic,21,1,Trimmomatic
+ModelFinder,21,4,Model Finder; Model-Finder; ModelFinder; Modelfinder
+raxmlGUI,21,2,raxmlGUI; raxmlGUI25
+OGDRAW,21,4,OGDRAW; OGDRAW1; OGDraw; OrganellarGenomeDRAW
+PhyML,20,4,PHYML; PhyML; PhyML3; phyML
+CLC Genomics Workbench,20,3,CLC Genomics Workbench; CLC Genomics workbench; CLC Main Workbench
+MFannot,20,1,MFannot
+CIPRES,19,2,CIPRES; CIPRES Science Gateway
+Mauve,19,2,MAUVE; Mauve
+NOVOPlasty,19,2,NOVO Plasty; NOVOPlasty
+ORF Finder,19,3,ORF Finder; ORF) Finder; Open Reading Frame Finder
+CGView,18,2,CGView; CGView40
+FastQC,17,3,FASTQC; FastQC; fastqc
+MEGA X,17,1,MEGA X
+DAMBE,17,3,DAMBE; DAMBE5; DAMBE6
+BLASTX,16,4,BLASTX; BLASTx; BlastX; blastx
+Arlequin,16,2,ARLEQUIN; Arlequin
+DOGMA,16,5,DOGMA; DOGMA19; Dual Organellar GenoMe Annotator; Dual Organellar GenoMe Annotator (DOGMA; Dual Organellar GenoMe Annotator (DOGMA)
+PAML,16,2,PAML; Phylogenetic Analysis by Maximum Likelihood (PAML)
+TNT,16,1,TNT
+REPuter,16,1,REPuter
+AliView,15,1,AliView
+XSEDE,15,1,XSEDE
+Mega,15,2,Mega; Mega7
+trimAl,14,4,TrimAL; TrimAl; trimAL; trimAl
+IQ-Tree,14,3,IQ-Tree; IQ-tree; iq-tree
+Modeltest,14,2,ModelTest; Modeltest
+Lasergene,14,1,Lasergene
+DNASTAR®,13,1,DNASTAR
+ARWEN,13,3,ARWEN; ARWEN20; ARWEN39
+PUBMED,13,1,PubMed
+Adobe Illustrator,12,3,Adobe Illustrator; Adobe Illustrator CS6; Illustrator CC
+SPSS,12,2,SPSS; SPSS Statistics
+phytools,12,4,R package Phytools; R package phytools; R-package phytools; phytools
+RAxML-HPC2,12,3,RAxML-HPC; RAxML-HPC2; RAxML-HPCv
+SeqMan,12,1,SeqMan
+Repeats Finder,12,1,Repeats Finder
+Tandem Repeats Finder,12,1,Tandem Repeats Finder
+STRUCTURE,11,1,STRUCTURE
+PhyloBayes,10,4,PhyloBayes; Phylobayes; Phylobayes32; phylobayes
+Bowtie,10,4,Bowtie; Bowtie2; bowtie-2; bowtie2
+Nexus,10,2,NEXUS; Nexus
+Genomics Workbench,10,1,Genomics Workbench
+SAMtools,9,3,SAMtools; Samtools; samtools
+PopART,9,4,POPART; PopART; popART; popart
+ape,9,4,R package Ape; R package ape; R-package ape; ape
+ImageJ,9,1,ImageJ
+TRACER,9,1,TRACER
+DNASTAR Lasergene,9,1,DNASTAR Lasergene
+ArcGIS,9,1,ArcGIS
+MitoZ,9,1,MitoZ
+PHYLIP,9,3,PHYLIP; Phylip; phylip
+PeerJ,9,1,PeerJ
+CLOCKSS,9,1,CLOCKSS
+Exonerate,9,2,Exonerate; exonerate
+SplitsTree,8,4,Splits Tree4; SplitsTree; SplitsTree4; Splitstree
+TreeGraph,8,2,TreeGraph; TreeGraph2
+RASP,8,2,RASP; RASP4
+ProtTest,8,2,ProtTest; ProtTest3
+Velvet,8,2,Velvet; velvet
+(AMOVA,8,2,(AMOVA; AMOVA
+tRNAscan-SE Search Server,8,1,tRNAscan-SE Search Server
+RNAmmer,8,1,RNAmmer
+Bayes,8,1,Bayes
+Primer3,8,4,PRIMER; Primer; Primer 350; Primer3
+AdapterRemoval,8,1,AdapterRemoval
+CodonCode Aligner,7,1,CodonCode Aligner
+RAxMLGUI,7,2,RAxML GUI; RAxMLGUI
+Network,7,1,Network
+CONSEL,7,1,CONSEL
+Trinity,7,1,Trinity
+custom Perl script,7,2,custom Perl script; custom Perl scripts
+Excel,7,1,Excel
+nrITS,7,1,nrITS
+Se-Al,7,1,Se-Al
+GenAlEx,7,3,GENALEX; GenAlEx; GenAlex
+ggplot2,7,2,ggplot; ggplot2
+IDBA-UD,7,2,IDBA-UD; IDBA-UD23
+SOAPdenovo,7,2,SOAPdenovo; SOAPdenovo2
+Sequence Manipulation Suite,7,1,Sequence Manipulation Suite
+GTRGAMMA,6,3,GTRGAMA; GTRGAMMA; GTRGAMMAI
+RStudio,6,1,RStudio
+MP,6,1,MP
+matK,6,1,matK
+BOLD Systems,6,3,BOLD; BOLD System; Barcode of Life Data System
+STACEY,6,1,STACEY
+Gateway,6,1,Gateway
+MaxEnt,6,2,MaxEnt; Maxent
+MIRA,6,3,MIRA; MIRA4; Mira
+Perl script,6,2,Perl script; Perl scripts
+-,6,1,-
+CODEML,6,1,CODEML
+ML,6,1,ML
+GraphPad Prism,6,3,Graph Pad Prism; GraphPad; GraphPad Prism
+TreeView,6,2,TreeView; Treeview
+treeBASE,6,1,TreeBASE
+GTRCAT,6,1,GTRCAT
+DIVA-GIS,6,2,DIVA-GIS; DIVA-GIS7
+STRUCTURE HARVESTER,6,2,STRUCTURE HARVESTER; Structure Harvester
+HMMER,6,1,HMMER
+RepeatMasker,6,1,RepeatMasker
+ngsShoRT,6,1,ngsShoRT
+Finder,6,1,Finder
+ASTRAL,5,1,ASTRAL
+dryad,5,1,Dryad
+TBLASTN,5,3,TBLASTN; tBLASTn; tblastn
+PhyloBayes MPI,5,1,PhyloBayes MPI
+transAlign,5,3,Trans Align; TransAlign; transAlign
+PhyloSuite,5,1,PhyloSuite
+BayesTraits,5,2,BayesTrait; BayesTraits
+CREx,5,1,CREx
+Dendroscope,5,2,Dendroscope; Dendroscope-3
+RAST,5,1,RAST
+Ensembl,5,2,ENSEMBL; Ensembl
+TimeTree,5,2,TimeTree; Timetrees
+Cytoscape,5,1,Cytoscape
+Circos,5,1,Circos
+MITOS Web Server,5,2,MITOS Web Server; MITOS WebServer
+IQ,5,1,IQ
+RAxML-HPC BlackBox,5,3,RAxML HPC BlackBox; RAxML-HPC BlackBox; RAxML-HPC Blackbox
+QGIS,5,2,QGIS; qgis
+BioGeoBEARS,5,1,BioGeoBEARS
+VARNA,5,1,VARNA
+DNAMAN,5,1,DNAMAN
+vegan,5,3,R package vegan; vegan; vegan R package
+bPTP,5,1,bPTP
+Statistica,5,2,STATISTICA; Statistica
+ggtree,5,3,GGTree; ggtree; ggtree R package
+MCMCglmm,5,1,MCMCglmm
+ModelGenerator,5,2,ModelGenerator; Modelgenerator
+BAMM,4,1,BAMM
+FastTree,4,1,FastTree
+Cutadapt,4,2,Cutadapt; cutadapt
+iTOL,4,1,iTOL
+MEGAX,4,1,MEGAX
+Datamonkey,4,2,DataMonkey; Datamonkey
+RAxML BlackBox,4,1,RAxML BlackBox
+JMODELTEST,4,2,JMODELTEST; jMODELTEST
+TREE-PUZZLE,4,1,TREE-PUZZLE
+ALTER,4,2,ALTER; Alter
+OrthoFinder,4,2,OrthoFinder; Orthofinder
+CGView Server,4,2,CGView Server; CGview Server
+SignalP,4,1,SignalP
+Image Frame Work,4,2,Image Frame Work; Image FrameWork
+megablast,4,3,Mega BLAST; Megablast; megablast
+EMBOSS,4,1,EMBOSS
+SH-aLRT,4,1,SH-aLRT
+GUIDANCE,4,2,GUIDANCE; GUIDANCE2
+PRANK,4,1,PRANK
+Leica Application Suite,4,2,Leica Application Suite; Leica Application Suite (LAS)
+TREEANNOTATOR,4,2,TREE ANNOTATOR; TREEANNOTATOR
+RNAviz,4,1,RNAviz
+MLGO,4,1,MLGO
+MCMCTree,4,2,MCMCTree; MCMCTree31
+FinchTV,4,1,FinchTV
+SeqState,4,1,SeqState
+LOCKSS,4,1,LOCKSS
+Geneious Pro,4,1,Geneious Pro
+Science Gateway,4,1,Science Gateway
+Sequin,4,1,Sequin
+DNAstart,4,1,DNAstar
+Perl,4,1,Perl
+BEAUTi,4,1,BEAUTi
+PERMANOVA+,4,1,PERMANOVA
+BWA,4,1,BWA
+BAMMtools,3,2,BAMMtools; R package BAMMtools
+geiger,3,2,R package geiger; geiger
+R package,3,1,R package
+FastGap,3,1,FastGap
+HybPiper,3,1,HybPiper
+rbcL,3,1,rbcL
+CLUSTAL,3,1,CLUSTAL
+PopArt,3,1,PopArt
+PHASE,3,1,PHASE
+coda,3,1,coda
+MacClade,3,1,MacClade
+R script,3,1,R script
+picante,3,2,R-package Picante; picante
+TargetP,3,1,TargetP
+SSPACE,3,1,SSPACE
+WorldClim2,3,2,WorldClim; Worldclim
+S-DIVA),3,1,S-DIVA
+stats,3,1,stats
+OrthoMCL,3,1,OrthoMCL
+antiSMASH,3,1,antiSMASH
+AUGUSTUS,3,2,AUGUSTUS; Augustus
+Basic Local Alignment Search Tool (BLAST),3,2,Basic Local Alignment Search Tool (BLAST); Basic Local Alignment Search Tool (Blast
+MUMmer,3,3,MUMmer; MuMMER; MuMmer
+DAVID,3,2,"DAVID; Database for Annotation, Visualization and Integrated Discovery (DAVID"
+Garli,3,1,Garli
+ITS2,3,1,ITS
+ContigExpress,3,1,ContigExpress
+Adobe,3,2,Adobe; Adobe®
+BEAUti,3,1,BEAUti
+Genetics,3,1,Genetics
+HyPhy,3,1,HyPhy
+GeSeq,3,1,GeSeq
+IQtree,3,1,IQtree
+SOAPdenovo-Trans,3,1,SOAPdenovo-Trans
+MEGA-X,3,1,MEGA-X
+ChromasPro,3,2,Chromas Pro; ChromasPro
+Jalview,3,3,JALVIEW; JalView; Jalview
+MEXICO,3,1,MEXICO
+Cipres,3,1,Cipres
+Sequencer,3,1,Sequencer
+POY,3,1,POY
+ExaBayes,3,1,ExaBayes
+P4,3,1,P4
+MACSE,3,1,MACSE
+ABGD,3,1,ABGD
+RAxML-NG,3,1,RAxML-NG
+MPI,3,1,MPI
+NGS QC Toolkit,3,3,NGS QC Tool Kit; NGS QC Toolkit; NGSQC-Toolkit
+W-IQ-TREE,3,1,W-IQ-TREE
+DIVALIKE,3,1,DIVALIKE
+Mfold,3,1,Mfold
+STRAP,3,1,strap
+R (R Development Core Team,3,1,R Development Core Team
+CAOS,3,1,CAOS
+Fiji,3,2,FIJI; Fiji
+GMYC,3,1,GMYC
+FIGTREE,3,1,FIGTREE
+NETWORK,3,1,NETWORK
+mVISTA,3,1,mVISTA
+Burrows,3,1,Burrows
+RogueNaRok,3,1,RogueNaRok
+MIRA assembler,3,1,MIRA assembler
+tRNAscan,3,2,tRNAScan; tRNAscan
+mlst,3,1,MLST
+Open,3,1,Open
+Frame Finder,3,1,Frame Finder
+bModelTest,3,1,bModelTest
+NGS Toolkit,3,2,NGS Toolkit; NGS-Toolkit
+Alignment (BWA),3,1,Alignment (BWA)
+Clustal Omega,3,1,Clustal Omega
+custom Python script,3,2,custom; custom Python script
+SumTrees,3,1,SumTrees
+adephylo,3,2,'adephylo; adephylo
+Python,3,1,Python
+Prokka,3,2,PROKKA; Prokka
+Linux®,3,1,Linux
+Pilon,3,1,Pilon
+MISA,3,1,MISA
+NewHybrids,3,2,NewHybrid; NewHybrids
+GeneMarker,3,2,GENEMARKER; GeneMarker
+nSSR,3,1,nSSR
+QUAST,3,2,QUAST; Quast
+TransDecoder,3,1,TransDecoder
+Tandem Repeat Finder,3,1,Tandem Repeat Finder
+Chromas,3,1,Chromas
+MEGA6,3,1,MEGA6
+RaxML,3,1,RaxML
+jModeltest,3,1,jModeltest
+BLASTn,3,1,BLASTn
+TreeBASE,3,1,TreeBASE
+PAUP,3,1,PAUP
+raster,2,2,raster; raster package
+Phred,2,2,PHRED; Phred
+MAFFTv7,2,1,MAFFTv
+Chem Station,2,1,ChemStation
+MarkerMiner,2,1,MarkerMiner
+makeblastdb,2,1,makeblastdb
+AMAS,2,1,AMAS
+mPTP,2,1,mPTP
+Aliview,2,1,Aliview
+TPSDig,2,2,TPSDig; TPSDig2
+splits,2,1,splits
+Gap Discovery,2,1,Gap Discovery
+StarBEAST2,2,1,StarBEAST2
+GARLI,2,1,GARLI
+geomorph,2,2,R package geomorph; R package “geomorph”
+caper,2,2,R package caper; caper
+OUwie,2,2,OUwie; R package OUwie
+HKA,2,1,HKA
+fastsimcoal2,2,2,Fastsimcoal; fastsimcoal2
+TCS,2,2,TCS; TCS1
+GeneSnap,2,1,GeneSnap
+pheatmap,2,2,R package pheatmap; pheatmap
+tree,2,1,tree
+FreeRate,2,1,FreeRate
+perl,2,1,perl
+SeaView,2,2,SeaView; Seaview
+PAL2NAL,2,1,PAL2NAL
+OrthoVenn,2,1,OrthoVenn
+Astral,2,1,Astral
+Trinotate,2,1,Trinotate
+DESeq2,2,2,Bioconductor DESeq2 package; DESeq2
+NOTUNG,2,1,NOTUNG
+Blast2GO,2,1,Blast2GO
+CLC Genomic Workbench,2,2,CLC Genomic Workbench; CLC Genomic workbench
+TMHMM,2,1,TMHMM
+aLRT,2,1,aLRT
+,2,1,not_disambiguated
+),2,1,)
+ApMAT,2,1,ApMAT
+Geneious (Biomatters,2,1,Geneious (Biomatters
+ade4,2,1,ade4
+surface,2,1,surface
+Geographic Distance Matrix Generator,2,1,Geographic Distance Matrix Generator
+Tarosoft,2,1,Tarosoft
+Xcalibur,2,1,Xcalibur
+Staden Package,2,2,Staden Package; Staden package
+maps,2,1,maps
+SMRTTM,2,1,SMRTTM
+Gepard,2,1,Gepard
+Open Reading Frame (ORF) Finder,2,1,Open Reading Frame (ORF) Finder
+NCBI ORFfinder,2,2,NCBI ORF finder; NCBI-ORF Finder
+Workbench,2,2,Workbench; workbench
+MALDI Biotyper,2,1,MALDI Biotyper
+Celera Assembler,2,1,Celera Assembler
+DNAPlotter,2,2,DNA plotter; DNAplotter
+MLSA,2,1,MLSA
+reads,2,1,reads
+Mrbayes,2,2,Mrbayes; Mrbayes3
+mega,2,1,mega
+MITOBim,2,1,MITOBim
+GetOrganelle,2,1,GetOrganelle
+Open Reading Frame,2,1,Open Reading Frame
+DIYABC,2,2,DIYABC; diyabc
+TREE,2,1,TREE
+SeqMan Pro,2,1,SeqMan Pro
+Fasta,2,1,Fasta
+Seqman Pro,2,1,Seqman Pro
+MRMODELTEST,2,1,MRMODELTEST
+LASERGENE,2,1,LASERGENE
+TREEGRAPH,2,1,TREEGRAPH
+Stata,2,1,STATA
+Trim Galore,2,2,Trim Galore; TrimGalore
+GLUE,2,1,GLUE
+NAME,2,1,NAME
+PHAST,2,1,PHAST
+Winclada,2,2,Winclada; winclada
+Assembly,2,1,Assembly
+xmult,2,1,xmult
+Corel Photo-Paint,2,1,Corel Photo-Paint
+ClustalW Multiple Alignment,2,1,ClustalW Multiple Alignment
+ExPASy ProtParam,2,1,ExPASy
+Phylogeny,2,1,Phylogeny
+BMGE,2,1,BMGE
+bGMYC,2,1,bGMYC
+speciesDA,2,1,speciesDA
+Symphytan,2,2,Symphyta; Symphytan
+MARNA,2,1,MARNA
+SSU-ALIGN,2,1,SSU-ALIGN
+FASTA,2,2,FASTA; fasta
+fastp,2,2,Fastp; fastp
+OrganellarGenomeDRAW (OGDRAW),2,2,OrganellarGenomeDRAW (OGDRAW); OrganellarGenomeDraw (OGDRAW)
+BASEML,2,1,BASEML
+(MEME),2,1,MEME
+G-INS,2,1,G-INS
+CREx (Common Interval Rearrangement Explorer),2,1,CREx (Common Interval Rearrangement Explorer)
+BBDuk,2,1,BBDuk
+phyloch,2,1,phyloch
+Cladograms,2,1,Cladogram
+DendroPy,2,1,DendroPy
+tr2,2,1,tr2
+JAVA,2,1,JAVA
+VIETNAM,2,1,VIETNAM
+Phobius,2,1,Phobius
+Perl script MISA,2,1,Perl script MISA
+EToL,2,1,EToL
+Gblock,2,1,Gblock
+MODELLER,2,1,MODELLER
+UFBoot,2,1,UFBoot2
+pLOS ONE,2,1,PLOS ONE
+genoPlotR,2,2,R library genoPlotR; genoPlotR
+assembler,2,2,Assemble; assembler
+GenomeVx,2,1,GenomeVx
+seqinr,2,2,R library seqinr; R package SeqinR
+PhySortR,2,2,PhySortR; R library PhySortR
+MIGRATE,2,1,MIGRATE
+GenDecoder,2,1,GenDecoder
+MXSCARNA,2,1,MXSCARNA
+TreeREx,2,1,TreeREx
+IQ‐Tree,2,1,IQ‐Tree
+NIS-Elements,2,2,NIS Elements; NIS-Elements
+Aliscore,2,1,Aliscore
+Cytb,2,1,Cytb
+SMART,2,2,SMART; Simple Modular Architecture Research Tool
+Primer Premier,2,1,Primer Premier
+UGENE,2,1,UGENE
+APE,2,1,APE
+TaxonDNA,2,1,TaxonDNA
+HP-RARE,2,1,HP-RARE
+r8s,2,1,r8s
+Leica,2,1,Leica
+LAS EZ,2,1,LAS EZ
+RNAstructure,2,1,RNAstructure
+MAKER,2,2,MAKER; MAKER2
+MATLAB,2,1,MATLAB
+MCMCtree,2,2,MCMCtree; MCMCtree31
+Jane,2,1,Jane
+R package car,2,1,R package car
+phylotools,2,2,Phylotools; R package phylotools
+CodeML,2,1,CodeML
+DnaSPv5,2,1,DnaSPv5
+(ANOSIM,2,1,ANOSIM
+USEARCH,2,1,USEARCH
+GBlock,2,1,GBlock
+PhyDesign,2,1,PhyDesign
+SNPRelate,2,2,R package SNPRelate; SNPRelate
+Stacks,2,1,Stacks
+FORMATOMATIC,2,1,FORMATOMATIC
+CLUMPP,2,1,CLUMPP
+BEDTools,2,2,BEDtools; bedtools
+Picard,2,1,PICARD
+GATK,2,1,GATK
+VCFtools,2,1,vcftools
+UNITE,2,1,UNITE
+Biopython,2,2,BioPython; Biopython
+Phyla-AMPHORA,2,2,Phyla-AMPHORA; Phyla_AMPHORA
+PAUP∗,2,2,PAUP∗; PAUP∗4
+ProTest,2,1,ProTest
+tracecomp,2,2,Tracecomp; tracecomp
+nlsLM,2,1,nlsLM
+GMATo,2,1,GMATo
+Cipres Science Gateway,2,1,Cipres Science Gateway
+Selecton,2,1,Selecton
+Microsatellite Analyzer (MSA),2,1,Microsatellite Analyzer (MSA)
+FSTAT,2,1,FSTAT
+InterProScan,2,1,InterProScan
+REPUTER,2,1,REPUTER
+MCMCTREE,2,1,MCMCTREE
+FASconCAT,2,1,FASconCAT
+NanoFilt,2,2,NanoFilt; Nanofilt
+Canu,2,1,Canu
+NUCmer,2,1,NUCmer
+bpcomp,2,1,bpcomp
+SIMMAP,2,1,SIMMAP
+R package BioGeoBEARS,2,1,R package BioGeoBEARS
+tRNAScan-SE server,2,1,tRNAScan-SE server
+MITOS WebSever,2,1,MITOS WebSever
+Gephi,2,1,Gephi
+BEAGLE,2,1,BEAGLE
+Ape,2,1,Ape
+MJN,2,1,MJN
+Statgraphics Plus,2,1,Statgraphics Plus
+Anvi’o,2,1,Anvi’o
+SiteStripper,2,1,SiteStripper
+DNAStar,2,1,DNAStar
+MRBAYES,2,1,MRBAYES
+TrEase,2,1,TrEase
+OGDraw,2,1,OGDraw
+Bowtie2,2,1,Bowtie2
+BUSCO,2,1,BUSCO
+BlastN,2,1,BlastN
+MEGA7,2,1,MEGA7
+CIPRES Science Gateway,2,1,CIPRES Science Gateway
+GBlocks,2,1,GBlocks
+PHYML,2,1,PHYML
+RAxML HPC BlackBox,2,1,RAxML HPC BlackBox
+pPCA,2,1,pPCA
+Phantom Camera Control,2,1,Phantom Camera Control
+easyWand,2,1,easyWand
+Freehand Selection,2,1,Freehand Selection
+DIVA,2,1,DIVA
+STRAPP,1,1,STRAPP
+R package coda (Plummer,1,1,R package coda (Plummer
+BayesRate,1,1,BayesRate
+CHELSA,1,1,CHELSA
+rjmcmc,1,1,rjmcmc
+GISH,1,1,GISH
+QUANT,1,1,QUANT®
+AxioVison,1,1,AxioVison
+Fastgap,1,1,Fastgap
+DualBrothers,1,1,DualBrothers
+Minin,1,1,Minin
+MyBayes,1,1,MyBayes
+HybPiper script,1,1,HybPiper script
+Retrieve,1,1,retrieve
+MLB,1,1,MLB
+TSA,1,1,TSA
+Trinity package,1,1,Trinity package
+SWISSPROT,1,1,trEMBL
+Tablet,1,1,Tablet
+Integrative Genomic Viewer,1,1,Integrative Genomic Viewer
+MetaCentrum,1,1,MetaCentrum
+Phylomatic,1,1,Phylomatic
+Nexus Class Library,1,1,Nexus Class Library
+phangorn,1,1,phangorn package
+corHMM,1,2,R package corHMM; corHMM
+NONETHFLAVO2,1,3,NONETHFLAVO; NONETHFLAVO1; NONETHFLAVO2
+ETHFLAVO,1,1,ETHFLAVO
+rita,1,1,rita
+L,1,1,L
+DALIN,1,1,DALIN
+DAGEO,1,1,DAGEO
+PerMANOVAs,1,1,PerMANOVA
+TPSUtil,1,1,TPSUtil
+MorphoJ,1,1,MorphoJ
+BioGeoBEARS R package,1,1,BioGeoBEARS R package
+ZEISS),1,1,ZEISS
+bipartite,1,1,R package bipartite
+contMap,1,1,contMap
+R packages geiger,1,1,R packages geiger
+Stochastic Mutational Mapping on Phylogenies (SIMMAP),1,1,Stochastic Mutational Mapping on Phylogenies (SIMMAP)
+MP-EST,1,1,MP-EST
+DensiTree,1,1,DensiTree
+RAVEN PRO,1,1,RAVEN PRO
+genetic analysis for recombinant detection (GARD),1,1,genetic analysis for recombinant detection (GARD)
+SITES,1,1,SITES
+STRAW,1,1,STRAW
+BAPS,1,1,BAPS
+abc,1,1,R package ABC
+arlsumstat,1,1,arlsumstats
+ABC,1,1,ABC
+Hedera,1,1,Hedera
+nrITS Beast,1,1,nrITS Beast
+R package LASER,1,1,R-package LASER
+MCC Beast,1,1,MCC Beast
+GenGank,1,1,GenGank
+IQ-TERR,1,1,IQ-TERR
+Mya,1,1,Mya
+MitoProt,1,1,Mitoprot
+CellR,1,1,CellR
+evecta,1,1,evecta
+GS De Novo Assembler,1,1,GS de novo Assembler
+iNaturalist,1,1,iNaturalist
+Avizo,1,1,Avizo
+Lite,1,1,Lite
+DataDryad,1,1,DataDryad
+Path Sampler,1,1,PathSampler
+Selection,1,1,Selection
+Lifeportal,1,1,Lifeportal
+popPriorScale,1,1,popPriorScale
+SpeciesDelimitationAnalyser,1,1,SpeciesDelimitationAnalyser
+DISSECT,1,1,DISSECT
+Stacey,1,1,Stacey
+RELTIME,1,1,RELTIME
+MuSSE,1,1,MuSSE
+GEIGER,1,1,GEIGER
+MuSSE (Multiple State Speciation and Extinction),1,1,MuSSE (Multiple State Speciation and Extinction)
+diversitree,1,1,diversitree
+GeoSSE,1,1,GeoSSE
+Bammtools,1,1,Bammtools
+Seqman,1,1,Seqman
+IBDWS,1,1,IBDWS
+Dispersal-Vicariance Analysis (S-DIVA),1,1,Dispersal–Vicariance Analysis (S-DIVA)
+Primula,1,1,Primula
+Statistical Dispersal-Vicariance Analysis (S-DIVA),1,2,Statistical Dispersal Vicariance Analysis (S-DIVA); Statistical Dispersal–Vicariance Analysis (S-DIVA)
+stats package of R,1,1,stats package of R
+MtOrt,1,1,MtOrt
+mtOrt,1,1,mtOrt
+mtREV,1,1,mtREV
+mtMam,1,1,mtMam
+MtArt,1,1,MtArt
+mtPan,1,2,mtPan; mtPan2013
+MtZOA,1,1,MtZOA
+mtFish,1,1,mtFish
+TreeCmp,1,1,TreeCmp
+mtInv,1,1,mtInv
+mtMet,1,1,mtMet
+mtZoa,1,1,mtZoa
+mtArt,1,1,mtArt
+mtOrt_tree,1,1,mtOrt_tree
+mtZoa_tree,1,1,mtZoa_tree
+LG_tree,1,1,LG_tree
+mtPro_tree,1,1,mtPro_tree
+JTT_tree,1,1,JTT_tree
+mtDeu_tree,1,1,mtDeu_tree
+WAG_tree,1,1,WAG_tree
+Dayhoff,1,1,Dayhoff
+mtMet_tree,1,1,mtMet_tree
+mtInv_tree,1,1,mtInv_tree
+mtPan2013_tree,1,1,mtPan2013_tree
+FastMG,1,1,FastMG
+XRate,1,1,XRate
+Phylo.io,1,1,Phylo.io
+DNAStar7,1,1,DNAStar
+ETE (Python Environment for Tree Exploration),1,1,ETE (Python Environment for Tree Exploration)
+MiSeq®,1,1,MiSeq
+YASS,1,1,YASS
+Q-INS-i,1,1,Q-INS-i
+GenBank 2 Sequin,1,1,GenBank 2 Sequin
+Evo-Devo,1,1,Evo-Devo
+Aligner,1,1,Aligner
+Sickle,1,1,Sickle
+CateGOrizer,1,1,CateGOrizer
+EGGnog,1,1,EGGnog
+CoGepedia,1,1,CoGepedia
+Significance Analysis of Microarrays,1,3,SAM; SAM4; SAM5
+SH-AU,1,1,SH-AU
+HMMPfam,1,1,HMMPfam
+Thermo Xcalibur LC-MS,1,1,Thermo Xcalibur LC-MS
+FIESC,1,1,FIESC
+Genealogical Concordance Phylogenetic Species Recognition (GCPSR),1,1,Genealogical Concordance Phylogenetic Species Recognition (GCPSR)
+FGENESH,1,1,FGENESH
+PacBio SMRT Analysis,1,1,PacBio SMRT Analysis
+Automatic Annotation Server,1,1,Automatic Annotation Server
+SigMol,1,1,SigMol
+CRISPRs Finder,1,1,CRISPRs Finder
+Viroblast,1,1,Viroblast
+Alike,1,1,Alike
+CoEvol,1,1,CoEvol
+QuickGO,1,1,QuickGO
+Ensembl BioMart,1,1,Ensembl Biomart
+MEPE,1,1,MEPE
+Q-Value,1,1,Q-Value
+VENNY,1,1,VENNY
+In-house,1,1,in-house
+ABySS assembler,1,1,AbySS assembler
+ILLUMINA,1,1,illumina
+Repandae,1,1,Repandae
+TPS,1,1,TPS
+Vector NTI Suite,1,1,Vector NTI Suite
+phyllotaxy,1,1,phyllotaxy
+PowerPoint,1,1,PowerPoint
+Isolation-by-Distance Web Service’ (IBDWS,1,1,Isolation-by-Distance Web Service’ (IBDWS
+GENEWIZ®,1,1,GENEWIZ
+MulTrees,1,1,MulTrees
+Photinia,1,1,Photinia
+(,1,1,(
+Molecular,1,1,Molecular
+Evolutionary,1,1,Evolutionary
+Analysis,1,1,Analysis
+MS-Cluster,1,1,MS-Cluster
+GNPS,1,1,GNPS
+Molecular Evolutionary Genetics Analysis (Mega BLAST),1,1,Molecular Evolutionary Genetics Analysis (Mega BLAST)
+ASSISTAT,1,1,ASSISTAT®
+Bloc,1,1,Bloc
+Vector NTI Advance,1,1,Vector NTI Advance
+LIAN,1,1,LIAN
+plotrix,1,1,plotrix
+iNEXT,1,1,R package “iNEXT”
+CLC Workbench,1,1,CLC workbench
+SIGI-HMM,1,1,SIGI-HMM
+IslandPath-DIMOB,1,1,IslandPath-DIMOB
+IslandPick,1,1,IslandPick
+APIweb,1,1,APIweb
+analysis (MLSA,1,1,analysis (MLSA
+IslandViewer,1,1,IslandViewer
+SIGH-HMM,1,1,SIGH-HMM
+PacBio®,1,1,PacBio
+ShinyGO,1,1,ShinyGO
+Virtual Footprint,1,1,Virtual Footprint
+ClueGO,1,1,ClueGO
+Annotation Subsystem Technology,1,1,Annotation Subsystem Technology
+Prokaryotic Genome Annotation Pipeline,1,1,Prokaryotic Genome Annotation Pipeline (PGAP
+CLCGWB,1,1,CLCGWB
+RESM,1,1,RESM
+eXpress,1,1,eXpress
+DIAMOND blastx,1,1,DIAMOND Blast
+Virtual Footprint suite,1,1,Virtual Footprint suite
+BioSamples,1,1,BioSample
+API20NE,1,1,API20NE
+Norgal,1,1,Norgal
+RevTrans,1,1,RevTrans
+MITOchondrial,1,1,MITOchondrial
+Genious,1,1,Genious
+IQ Tree,1,1,IQ Tree
+finder (TRF),1,1,finder (TRF)
+TranslatorX tool,1,1,TranslatorX tool
+TranAlign,1,1,Tran Align
+Package,1,1,Package
+MITO,1,1,MITO
+GapCloser,1,1,GapCloser
+Mr.Bayes,1,1,Mr.Bayes
+Frame,1,1,Frame
+GeneMapper,1,1,genemapper
+Micro-Checker,1,1,microchecker
+CombineZP,1,1,CombineZM
+Corel Draw X7,1,1,CorelDrawX7
+IQ‐TREE,1,1,IQ‐TREE
+TOPALi,1,1,TOPALi
+W‐IQ‐TREE,1,1,W‐IQ‐TREE
+NextSeq,1,1,Nextseq
+Bayesian Analysis (BA,1,1,Bayesian Analysis (BA
+mtSSU,1,1,mtSSU
+nuLSU,1,1,nuLSU
+Adobe Photoshop CS3 Extended,1,1,Adobe Photoshop CS3 Extended
+NIS-Elements Imaging,1,1,NIS-elements imaging
+cellSens,1,1,cellSens
+Leafhopper,1,1,Leafhopper
+ITS-BLAST,1,1,ITS-BLAST
+nrLSU-BLAST,1,1,nrLSU-BLAST
+Stemborer,1,1,Stemborer
+Macrogen®,1,1,Macrogen
+Discontiguous MegaBLAST,1,1,discontiguous megablast
+Iterative Refinement Meta-Assembler (IRMA),1,1,Iterative Refinement Meta-Assembler (IRMA
+Graph-incompatibility-based Reassortment Finder (GiRaF),1,1,Graph-incompatibility-based Assortment Finder (GiRaF)
+TempEst,1,1,TempEst
+SPREAD,1,1,SPREAD3
+GISAID),1,1,GISAID
+BTV-GLUE,1,1,BTV-GLUE
+BWA-MEM,1,1,BWA-MEM
+DiversiTools,1,1,DiversiTools
+Numerical Atmospheric-dispersion Modelling Environment (NAME),1,1,Numerical Atmospheric-dispersion Modelling Environment (NAME)
+Tool for Assessing Pest and Pathogen Airborne Spread (TAPPAS),1,1,Tool for Assessing Pest and Pathogen Airborne Spread (TAPPAS)
+SOLiD4,1,2,SOLiD; SOLiD®
+Gapped SOLiD Alignment,1,1,Gapped SOLiD Alignment
+CLC Sequence Viewer,1,1,CLC Sequence Viewer
+PHAST (PHAge Search Tool),1,1,PHAST (Phage Search Tool)
+BLAST (Basic Local Alignment Search Tool),1,1,BLAST (Basic Local Alignment Search Tool)
+antiSMASH (antibiotics and Secondary Metabolite Analysis Shell),1,1,antiSMASH (antibiotics and Secondary Metabolite Analysis Shell)
+PageBreakparaphyletic,1,1,PageBreakparaphyletic
+Imias,1,1,Imias
+RSA),1,1,RSA
+GYZ,1,1,GYZ
+CarBio,1,1,CarBio
+BioSCAN,1,1,BioSCAN
+SpeciesIdentifier,1,1,SpeciesIdentifier
+Final Cut Pro,1,1,Final Cut Pro
+PageBreaktest,1,1,PageBreaktest
+PANGLAO,1,1,PANGLAO
+MUSORSTOM,1,1,MUSORSTOM
+INVMAR,1,1,INVMAR
+Maxillule,1,1,Maxillule
+MIRIKY,1,1,MIRIKY
+MADEEP,1,1,MADEEP
+PageBreakPageBreakshield,1,1,PageBreakPageBreakshield
+Naturalis OpenStack,1,1,Naturalis OpenStack
+PhylOStack,1,1,PhylOstack
+Photogaphs,1,1,Photogaphs
+PageBreakPageBreakin IQ-TREE,1,1,PageBreakPageBreakin IQ-TREE
+A,1,1,A
+MAFFT FFT-NS-i,1,1,MAFFT FFT-NS-I
+RHODOLITH,1,1,RHODOLITH
+VI–HPC,1,1,VI–HPC
+Helicon Focus,1,1,Helicon Focus
+aquickie,1,1,aquickie
+T-REX,1,1,T-REX
+mrsFAST,1,1,mrsFAST
+mereps,1,1,mereps
+Interactive Tree of Life (iTOL),1,1,Interactive Tree of Life (ITOL)
+Candèze,1,1,Candèze
+RAX-ML,1,1,RAX-ML
+TARP,1,1,TARP
+Species File,1,1,Species File
+ATTA,1,1,ATTA
+NIS-Elements Microscope Imaging Software,1,1,NIS-Elements Microscope Imaging Software
+InDesign,1,1,InDesign
+Corel Photo,1,1,Corel Photo
+Paint,1,1,Paint
+MITFI,1,1,MITFI
+FORNA,1,1,FORNA
+SMS,1,1,SMS
+MiTFi,1,1,MiTFi
+Manipulation Suite (SMS),1,1,Manipulation Suite (SMS)
+RNAFold,1,1,RNAFold
+Tcbat,1,1,Tcbat
+Nucleotide Blast Tool (BLASTn),1,1,Nucleotide Blast Tool (BLASTn)
+ModelTest-NG,1,1,ModelTest-NG
+SPIDER (Species Identity and Evolution in R),1,1,SPIDER (Species Identity and Evolution in R)
+Bold Systems,1,1,Bold Systems
+Life,1,1,Life
+Affinity Designer,1,1,Affinity Designer
+SPIDER,1,1,SPIDER
+SPIDER package,1,1,SPIDER R package
+OriginPro,1,1,OriginPro
+Canopy,1,1,Canopy
+UFboot,1,1,UFboot2
+DIVALAKE,1,1,DIVALAKE
+PalaeoAtlas,1,1,PalaeoAtlas
+GPlates,1,1,GPlates
+mBLAST,1,1,mBLAST
+INS,1,1,INS
+uGENE,1,1,uGENE
+Microsoft R-Open and MKL,1,1,Microsoft R-Open and MKL
+STACEY (Species,1,1,STACEY (Species
+Tree,1,1,Tree
+J,1,1,J
+PALEOMAP PaleoAtlas,1,1,PALEOMAP PaleoAtlas
+figshare,1,1,Figshare
+Bayesian,1,1,Bayesian
+Iqtree,1,1,Iqtree
+RnaViz,1,1,RnaViz
+Hoplocampini,1,1,Hoplocampini
+Anhoplocampa,1,1,Anhoplocampa
+aBSREL,1,1,aBSREL
+Lighter,1,1,Lighter
+European Molecular Biology Open Software Suite (EMBOSS),1,1,European Molecular Biology Open Software Suite (EMBOSS)
+DATAMONKEY webserver,1,1,DATAMONKEY webserver
+TreeSAAP,1,1,TreeSAAP
+for Gene Order Analysis (MLGO,1,1,for Gene Order Analysis (MLGO
+FUBAR,1,1,FUBAR
+aBayes,1,1,aBayes
+Zoobank,1,1,Zoobank
+Open Reading Frame Finder (ORF Finder,1,1,Open Reading Frame Finder (ORF Finder
+GapFiller,1,1,GapFiller
+Tandem,1,1,Tandem
+Galaxy,1,1,Galaxy
+rjMCMC,1,1,rjMCMC
+seqphase,1,1,Seqphase
+BP&P,1,1,BP&P
+R package stats,1,1,R package ‘stats
+R CoreTeam,1,1,R CoreTeam
+ZONE,1,1,ZONE
+YBYRÁ,1,1,YBYRÁ
+QUIDDICH,1,1,QUIDDICH
+DeSignate,1,1,DeSignate
+BREMER,1,1,BREMER
+P-Elf,1,1,P-Elf
+P-Gnome,1,1,P-Gnome
+Dendrolims,1,1,Dendrolims
+Ligia,1,1,Ligia
+BPP,1,1,BPP
+MSDAs,1,1,MSDAs
+excisa,1,1,excisa
+FFT-NS-i,1,1,FFT-NS-i
+CIBIV,1,1,CIBIV
+UFbootstrap2,1,1,UFbootstrap2
+R We There Yet,1,1,R We There Yet
+(RWTY),1,1,(RWTY)
+ASTRAL-III,1,1,ASTRAL-III
+Discovery (ABGD),1,1,Discovery (ABGD)
+R-Open & MKL,1,1,R-Open & MKL
+dnaSP,1,1,dnaSP
+PTP,1,1,PTP
+Sound Forge Pro,1,1,Sound Forge Pro
+Prepollex,1,1,Prepollex
+TIMef,1,1,TIMef
+Hyptiocarpa,1,1,Hyptiocarpa
+Boostrap,1,1,Boostrap
+PAUP* PageBreakPageBreakPageBreak,1,1,PAUP* PageBreakPageBreakPageBreak
+BUILDER,1,1,BUILDER
+COMBINER,1,1,COMBINER
+PageBreakPageBreakare,1,1,PageBreakPageBreakare
+RAxM,1,1,RAxM
+ArcMap GIS,1,1,ArcMap GIS
+Google Earth Pro®,1,1,Google Earth Pro
+CONABIO,1,1,CONABIO
+CAOS (Character Attribute Organization System,1,1,CAOS (Character Attribute Organization System
+P-gnome,1,1,P-gnome
+AIC,1,1,AIC
+Smart Model Selection (SMS),1,1,Smart Model Selection (SMS)
+Haplonst,1,1,Haplonst
+STUCTURE,1,1,STUCTURE
+Madagascar,1,1,MADAGASCAR
+Webbia,1,1,Webbia
+Sumatra,1,1,SUMATRA
+MYANMAR,1,1,MYANMAR
+MALESIA,1,1,MALESIA
+Gagnep,1,1,Gagnep
+CUBA,1,1,CUBA
+BOLIVIA,1,1,BOLIVIA
+COLOMBIA,1,1,COLOMBIA
+GUATEMALA,1,1,GUATEMALA
+BELIZE -,1,1,BELIZE
+Metcalfe,1,1,Metcalf
+GPL3,1,1,GPL
+Tree-Puzzle,1,1,TreePuzzle
+Phyre2,1,2,PHYRE2; Phyre2
+Jmol,1,1,Jmol
+NetPhos,1,1,NETPHOS
+TREEBASE,1,1,TREEBASE
+BPTP,1,1,BPTP
+INTERPRO,1,1,INTERPRO
+UNIPROT3,1,1,UNIPROT
+PROSITE,1,1,PROSITE
+GPS-LIPID,1,1,GPS-LIPID
+Protein Model Portal,1,1,Protein Model Portal
+Kmernator,1,1,Kmernator
+Aligner (BWA),1,1,Aligner (BWA)
+Betancur-R,1,1,Betancur-R
+Euteleost,1,1,Euteleost
+Pro,1,1,Pro
+MAFFT aligner,1,1,MAFFT aligner53
+Builders,1,1,Builder
+treePL,1,1,treePL
+OneZoom,1,1,OneZoom
+DeepFin,1,1,DeepFin
+Infinity Camera,1,1,Infinity Camera
+Prism,1,1,Prism6
+MedCalc,1,1,MedCalc
+Quantitative Parasitology,1,1,Quantitative Parasitology
+webPRANK,1,1,webPRANK
+PAUP* v,1,1,PAUP* v
+ape package,1,1,ape package
+PhiPT,1,1,PhiPT
+PROCHECK,1,1,PROCHECK
+Verify,1,1,Verify
+Accelrys—Discovery Studio,1,1,Accelrys—Discovery Studio
+GROMACS,1,1,GROMACS
+Windows10,1,1,Windows
+ONE2,1,1,ONE
+Preflight Analysis and Conversion Engine ( PACE ),1,1,Preflight Analysis and Conversion Engine (PACE)
+PACE,1,1,PACE
+Tree Analysis,1,1,Tree analysis
+Rapp Py-Daniel,1,1,Rapp Py-Daniel
+Provenzano,1,1,Provenzano
+Rapp,1,1,Rapp
+explorer,1,1,Explorer
+GanBank,1,1,GanBank
+PhyLoTA,1,1,PhyLoTA
+Pthreads,1,1,Pthreads
+atpA,1,1,atpA
+Theory,1,1,Theory
+ChromEvol,1,1,Chromevol
+ESDM,1,1,ESDM
+Avisoft Triggering Harddisk Recorder,1,1,Avisoft Triggering Harddisk Recorder
+Avisoft-SASLab,1,1,Avisoft-SASLab
+MAXENT,1,1,MAXENT
+Agnotecous,1,1,Agnotecous
+Skyline Plot,1,1,Skyline Plots
+STRUCTURAMA,1,1,STRUCTURAMA
+Plots,1,1,Plots
+Genome Browser,1,1,Genome Browser
+UCSC genome browser,1,1,UCSC Genome Browser
+IMgc,1,1,IMgc
+Structure,1,1,Structure
+of,1,1,of
+CLC de,1,1,CLC de
+Mummer plotting,1,1,Mummer plotting
+UniMoG,1,1,UniMoG
+BLAST Ring Image Generator (BRIG),1,1,BLAST Ring Image Generator (BRIG) map
+I-TASSER,1,1,I-TASSER
+ArcMap,1,1,ArcMap
+Isolation by Distance,1,1,Isolation by Distance
+MtTERM,1,1,MtTERM
+Adobe Photoshop Creative Cloud,1,1,Adobe Photoshop Creative Cloud
+Character Attribute Organization System (CAOS),1,1,Character Attribute Organization System (CAOS
+GATC,1,1,GATC
+Clone Manager,1,1,Clone Manager
+CAOS workbench,1,2,CAOS Workbench; CAOS-workbench
+CAOS-Analyzer,1,1,CAOS-Analyzer
+CAOS-Barcoder,1,1,CAOS-Barcoder
+Decision Theory,1,1,Decision Theory
+TreeJuxtaposer,1,1,TreeJuxtaposer
+EINVERTED,1,1,EINVERTED
+MatK,1,1,MatK
+Inference,1,1,Inference
+MusselP,1,1,MusselP
+PROTGAMMAIMTART,1,1,PROTGAMMAIMTART
+AA,1,1,AA
+Matrix,1,1,Matrix
+in-house R script,1,1,in-house R script
+Quick Photo Camera,1,1,QuickPhoto Camera
+Parachela,1,1,Parachela
+Spitsb,1,1,Spitsb
+MAFFT G-INS-i,1,1,MAFFT G-INS-i
+G-INS-i,1,1,G-INS-i
+New Technology Search,1,1,New Technology Search
+AWTY,1,1,AWTY
+seqtk,1,1,Seqtk
+0,1,1,0
+TimeTree of Life,1,1,TimeTree of Life
+TreeRex,1,1,TreeRex
+Nikon®,1,1,Nikon
+E-INS-i,1,1,E-INS-i
+Beagle,1,1,Beagle
+Peak Scanner,1,1,PeakScanner
+R CRAN,1,1,R CRAN
+RawGeno,1,1,RawGeno
+AutoConverter,1,1,AutoConverter
+FlexControl,1,1,FlexControl
+Biotyper MBT Explorer,1,1,Biotyper MBT Explorer
+MSP Dendrogram Creation Standard Method,1,1,MSP Dendrogram Creation Standard Method
+TrichOKEY,1,2,TrichOKEY; TrichOKEY2
+MAFFT E-INS-i,1,1,MAFFT E-INS-i
+COTEC,1,1,COTEC
+Translation Align,1,1,Translation Align
+SAS,1,1,SAS
+Minitab,1,1,Minitab
+MrBays,1,1,MrBays
+CEGMA,1,1,CEGMA
+Pal_finder,1,1,Palfinder
+Garcia,1,1,Garcia
+mcmctree,1,1,mcmctree
+TreePar,1,1,TreePar
+AUTOhard,1,1,AUTOhard
+AUTOsoft,1,1,AUTOsoft
+IRsoft,1,1,IRsoft
+DEC*,1,1,DEC
+MAC,1,1,MAC
+IRhard,1,1,IRhard
+Mcmctree,1,1,Mcmctree
+rgene_gamma,1,1,rgene_gamma
+RAxML phylogram,1,1,RAxML phylogram
+sff_extract,1,1,sff_extract
+runMapping,1,1,runMapping
+Roche 454,1,1,Roche 454
+toAmos,1,1,toAmos
+bank-transact,1,1,bank-transact
+bank2contig,1,1,bank2contig
+AMOS,1,1,AMOS
+E-INS,1,1,E-INS
+Sequence Data Explorer,1,1,Sequence Data Explorer
+Nurudea,1,1,Nurudea
+pplacer,1,1,pplacer
+Usearch,1,1,Usearch
+ggsearch,1,1,ggsearch
+BioEdit Sequence Alignment Editor,1,1,BioEdit Sequence Alignment Editor
+Sequence Alignment,1,1,Sequence Alignment
+Coco,1,1,Coco
+ECDCT,1,1,ECDCT
+mreps,1,1,mreps
+RNAfold WebServer,1,1,RNAfold WebServer
+testcode,1,1,Testcode
+Mompha,1,1,Mompha
+Primer-BLAST,1,1,Primer-Blast
+Genome Compiler,1,1,Genome Compiler
+RAxMLv8,1,1,RAxMLv8
+adegenet,1,1,R package Adegenet
+SPLITS R-package,1,1,SPLITS R package
+GCView,1,1,GCView
+Delia,1,1,Delia
+Web of Sciences,1,1,Web of Sciences
+ITS+matK,1,1,ITS+matK
+SMOGD,1,1,SMOGD
+HP-Rare,1,1,HP-Rare
+Linda,1,1,linda
+CytB,1,1,CytB
+Bayesian Concordance Analysis (BCA),1,1,Bayesian Concordance Analysis (BCA)
+BUCKy,1,1,BUCKy
+mbsum,1,1,mbsum
+bucky,1,1,bucky
+MCMCMC,1,1,MCMCMC
+Gamotion,1,1,Gamotion
+Hedysarum,1,1,Hedysarum
+Mrmodeltest,1,1,Mrmodeltest
+locfit,1,1,R package Locfit
+Dictyoptera,1,1,Dictyoptera
+Lagrange,1,1,Lagrange
+OAXACA,1,1,OAXACA
+BLAST (BLASTn),1,1,BLAST (BLASTn)
+BLAST (BLASTp),1,1,BLAST (BLASTp)
+Common Interval Rearrangement Explorer),1,1,Common Interval Rearrangement Explorer)
+Dimeregramma,1,1,Dimeregramma
+Plagiogramma,1,1,Plagiogramma
+QCapture Pro,1,1,QCapture Pro
+dmfMeasure,1,1,dmfMeasure
+Likelihood RAxML,1,1,Likelihood (RAxML
+CWOCD - Clockwork,1,1,CWOCD - Clockwork
+ProSite,1,1,ProSite
+EBI Global Alignment,1,1,EBI Global Alignment
+SDS,1,1,SDS
+Parafit,1,1,Parafit
+Fastq,1,1,Fastq
+CASAVA,1,1,Casava
+bcl2fastq,1,1,bcl2fastq
+OrthoDb,1,1,OrthoDB
+PASTA,1,1,PASTA
+ExaML,1,1,ExaML
+PACo,1,1,PACo
+paco,1,1,paco
+phylorate,1,1,phylorate
+RASP (Reconstruct Ancestral State in Phylogenies),1,1,RASP (Reconstruct Ancestral State in Phylogenies)
+Cyberinfrastructure for Phylogenetic Research (CIPRES),1,1,Cyberinfrastructure for Phylogenetic Research (CIPRES)
+mat K,1,1,mat K
+multcomp,1,1,multcomp
+Pisione,1,1,Pisione
+mapdata,1,1,mapdata
+quantreg,1,1,quantreg
+PamlX,1,1,PamlX
+ClonalFrameML,1,1,ClonalFrameML
+Itol,1,1,Itol
+Interactive Tree of Life,1,1,Interactive Tree of Life
+phylomorphospace,1,1,phylomorphospace
+fastx,1,1,fastx
+VSEARCH,1,1,VSEARCH
+Analysis of Variance (PERMANOVA,1,1,analysis of variance (PERMANOVA)
+ecodist,1,1,ecodist
+EFForTS,1,1,EFForTS
+Sequence Analysis,1,1,Sequence Analysis
+ExcaliBAR,1,1,ExcaliBAR
+ENMeval,1,1,ENMeval
+STRUCTURE analyse,1,1,STRUCTURE analyse
+PCA3,1,1,PCA
+divMigrate‐online,1,1,divMigrate‐online
+MIGRPRIOR,1,1,MIGRPRIOR
+INTROGRESS,1,1,INTROGRESS
+DNASTAR Lasergene package,1,1,DNASTAR Lasergene package
+SOAP,1,1,SOAP
+PGDSpider,1,1,PGDSpider
+LOCPRIOR,1,1,LOCPRIOR
+DISTRUCT,1,1,DISTRUCT
+R package INTROGRESS,1,1,R package INTROGRESS
+EvolMarkers,1,1,EvolMarkers
+MYcoarray,1,1,MYcoarray
+FastUniq,1,1,FastUniq
+BWA‐MEM,1,1,BWA‐MEM
+RealignerTargetCreator,1,1,RealignerTargetCreator
+Indel Realigner,1,1,IndelRealigner
+mapDamage,1,1,mapDamage
+Qualimap,1,1,Qualimap
+mpileup,1,1,mpileup
+bcftools,1,1,bcftools
+vcflib,1,1,vcflib
+PLINK,1,1,PLINK
+Bayescan,1,1,Bayescan
+eBird,1,1,eBird
+hybpiper_stats,1,1,hybpiper_stats
+RAxML‐NG,1,1,RAxML‐NG
+Phyutility,1,1,Phyutility
+multifasta,1,1,multifasta
+WebGestalt,1,1,WebGestalt
+SIFT,1,1,SIFT
+pubmlst,1,1,PubMLST
+fastAnc,1,1,fastAnc
+GeneWise,1,1,GeneWise
+MiFFi,1,1,MiFFi
+Infernal,1,1,infernal
+StatSoft®,1,1,StatSoft
+Stereology,1,1,Stereology
+Neurolucida,1,1,Neurolucida
+NeuroExplorer,1,1,Neuroexplorer
+GZAC,1,1,GZAC
+GZUIFR CY,1,1,GZUIFR CY
+iqtree,1,1,iqtree
+Quast (QUality ASsesment Tool),1,1,Quast (QUality ASsesment Tool)
+DFAST,1,1,DFAST
+Distance Calculator,1,1,Distance Calculator
+ANI calculator,1,1,ANIcalculator
+DIFFIND,1,1,DIFFIND
+IDENTIFY,1,1,IDENTIFY
+Diffind,1,1,Diffind
+Sequence Read Archive (SRA),1,1,Sequence Read Archive (SRA)
+Ostiole,1,1,Ostiole
+Sequencing Project Management (SeqMan),1,1,Sequencing Project Management (SeqMan)
+T-BAS,1,1,T-BAS
+metaMDS,1,1,metaMDS
+UPARSE,1,1,UPARSE
+Tree-Based Alignment Selector (T-BAS),1,1,Tree-Based Alignment Selector (T-BAS)
+PERMDISP2,1,1,PERMDISP
+RVAideMemoire,1,1,R package RVAideMemoire
+compat.py,1,1,compat.py
+NMDS,1,1,NMDS
+Phyla,1,1,Phyla
+AMPHORA,1,2,AMPHORA; AMPHORA2
+BayesHammer,1,1,BayesHammer
+CONCOCT,1,1,CONCOCT
+PhyloSift,1,1,PhyloSift
+IMG,1,1,Integrated Microbial Genomes
+Microbiome Expert Reviewer (IMG/M ER),1,1,Microbiome Expert Reviewer (IMG/M ER)
+Rapid Annotations,1,1,Rapid Annotation
+SEED Technology),1,1,SEED Technology)
+CheckM,1,1,CheckM
+workflow suite,1,1,workflow suite
+MUSCLE align,1,1,MUSCLE align
+ARB,1,1,ARB
+PhyML (DNA),1,1,PhyML (DNA)
+Basic Local Alignment Tool (BLAST),1,1,Basic Local Alignment Tool (BLAST
+Parsimony,1,1,parsimony
+PHYML (Amino Acids),1,1,PHYML (Amino Acids)
+Cluster,1,1,Cluster
+ANI,1,1,ANI
+Phyla_Amphora,1,1,Phyla_Amphora
+SRM,1,1,SRM
+SOM,1,1,SOM
+Mitos,1,1,Mitos
+Mfannot,1,1,Mfannot
+RNAweasel webserver,1,1,RNAweasel webserver
+RNAweasel,1,1,RNAweasel
+Multivariate Analysis of Variance (PERMANOVA),1,1,Multivariate ANalysis Of Variance (PERMANOVA
+Canonical Analysis of Principal coordinates (CAP),1,1,Canonical Analysis of Principal Coordinates (CAP)
+Principal Coordinate Analysis (PCoA),1,1,Principal Coordinate Analysis (PCO
+SIMilarity PERcentage (SIMPER),1,1,SIMilarity PERcentage (SIMPER)
+SIMPER,1,1,SIMPER
+Panno,1,1,Panno
+BankIt,1,1,BankIt
+rapidnj,1,1,rapidnj
+Ocean Biogeographic Information System (OBIS),1,1,Ocean Biogeographic Information System (OBIS
+minpack.lm,1,1,minpack.lm
+nls.lm,1,1,nls.lm
+rootSolve,1,1,rootSolve
+Seqmatch,1,1,Seqmatch
+Agilent ChemStation,1,1,Agilent Chemstation
+Mayas,1,1,Mayas
+APG,1,1,APG
+Velvet assembler,1,1,Velvet Assembler
+SSPACE Premium,1,1,SSPACE premium
+BioNJ,1,1,BioNJ
+Genome DRAW,1,1,Genome DRAW
+Heatmapper,1,1,Heatmapper
+MISA-web,1,1,MISA-web
+Websat,1,1,Websat
+MICROCHEKER,1,1,MICROCHEKER
+PowerMarker,1,1,Powermarker
+GenAIEx,1,1,GenAIEx
+CladeAge,1,1,CladeAge
+GenA1Ex,1,1,GenA1Ex
+Computing (ABC,1,2,Computing (ABC; Computing (ABC)
+ABCtoolbox,1,1,ABC toolbox
+TMHMM Server,1,1,TMHMM Server
+STRUCTURE-nSSR,1,1,STRUCTURE-nSSR
+Ecological Niche Modeling (ENM),1,1,Ecological Niche Modeling (ENM
+GENEPOP,1,1,GenePop
+Free4,1,1,Free
+Populations,1,1,Populations
+Clumpp,1,1,Clumpp
+Distruct,1,1,Distruct
+Barrier,1,1,Barrier
+BayesAss,1,1,BayesAss
+MIGRATE-N,1,1,MIGRATE-N
+SDM,1,1,SDM
+for Interdisciplinary,1,1,for Interdisciplinary
+Earth System,1,1,Earth System
+ESM,1,1,ESM
+MIROC5,1,1,MIROC
+LASTZ,1,2,LASTZ; LASTz
+Geneious assembler,1,1,Geneious assembler
+ggbio,1,1,ggbio
+nona,1,1,nona
+ChloroSeq,1,1,ChloroSeq
+TopHat,1,1,tophat2
+IRscope,1,1,IRscope
+Ray,1,1,Ray
+GRIMM,1,1,GRIMM
+R package FactoMineR,1,1,FactoMineR
+EasyCodeML,1,1,EasyCodeML
+FASconCAT-G,1,1,FASconCAT-G
+FcC-G,1,1,FcC-G
+CONCATENATOR,1,1,CONCATENATOR
+matrix,1,1,2matrix
+SCaFoS,1,1,SCaFoS
+Windows PC,1,1,Windows PCs
+Mac OS®,1,1,Mac OS
+SPAdes Illumina,1,1,SPAdes-Illumina
+SOAPdenovo-Illumina,1,1,SOAPdenovo-Illumina
+SRA-Tools,1,1,SRA-Tools
+Mugsy,1,1,Mugsy
+PanGP,1,1,PanGP
+fastq-dump,1,1,fastq-dump
+SRA Toolkit,1,1,SRA Toolkit
+Vector NIT,1,1,Vector NIT
+cytb,1,1,cytb
+CURE-Chloroplast,1,1,CURE-Chloroplast
+PREP-Cp,1,1,PREP-Cp
+PREPACT,1,1,PREPACT
+flabellifer,1,1,flabellifer
+SOPMA,1,1,SOPMA
+Analyzer,1,1,analyze
+blastPlus,1,1,blastPlus
+RMBlast,1,1,RMBlast
+SortMeRNA,1,1,SortMeRNA
+RSEM,1,1,RSEM
+Trinity scripts,1,1,Trinity scripts
+tBLASTx,1,1,tBLASTx
+CAP3,1,1,CAP3
+REPFIND,1,1,REPFIND
+SmartBlast,1,1,SmartBlast
+ngs_te_mapper,1,1,ngs_te_mapper
+ALLMAPS,1,1,ALLMAPS
+Sequence Dereplicator and Database Curator (SDDC),1,1,Sequence Dereplicator and Database Curator (SDDC)
+getorf,1,1,getorf
+KaKs_Calculator,1,1,KaKs_calculator
+TimeTree of Life (TTOL),1,1,TimeTree of Life (TTOL)
+TTOL,1,1,TTOL
+PhyloPic,1,1,Phylopic
+MoSuMa,1,1,MoSuMa
+IQTree,1,1,IQTree
+OMA,1,1,OMA
+CAT,1,1,CAT
+Remipedia,1,1,Remipedia
+RASTtk,1,1,RASTtk
+custom R script,1,1,custom R script
+eggNOG-mapper,1,1,Eggnog Mapper
+Roary,1,1,Roary
+JSpecies,1,1,JSpecies
+car,1,1,car
+EcolUtils package,1,1,EcolUtils package
+pvclust,1,1,pvclust
+dendextend,1,1,dendextend
+betareg,1,1,betareg
+lmtest,1,1,lmtest
+emmeans,1,1,emmeans
+Bio3d,1,1,Bio3d
+pegas,1,1,pegas
+WebLogo,1,1,WebLogo
+PolyPhred,1,1,Polyphred
+Gonolabis,1,1,Gonolabis
+ISCapture,1,1,ISCapture
+Barcode of Life Data System (BOLD),1,1,Barcode of Life Data Systems (BOLD)
+combined *BEAST,1,1,combined *BEAST
+doBy,1,1,doBy
+Batch Entrez,1,1,Batch Entrez
+mega X,1,1,mega x
+xsede,1,1,xsede
+CAT-GTR,1,1,CAT-GTR
+BOOSTER,1,1,BOOSTER
+Mesepimeron,1,1,Mesepimeron
+ORF,1,1,ORF
+rRNA,1,1,2rRNA
+PCG12rRNA,1,1,PCG12rRNA
+PCGrRNA,1,1,PCGrRNA
+PCGRNA,1,1,PCGRNA
+SymTest,1,1,SymTest
+BEAST (Bayesian Evolutionary Analysis Sampling Trees),1,1,BEAST (Bayesian Evolutionary Analysis by Sampling Trees
+MetaVue,1,1,MetaVue
+Fluoview,1,1,Fluoview
+PATRIC,1,1,PATRIC
+OpenMP,1,1,OpenMP
+ENMtools,1,1,ENMtools
+Mosannona,1,1,Mosannona
+PAST,1,1,PAST
+Yap,1,1,Yap
+MFOLD,1,1,MFOLD
+SATé,1,1,SATé
+CALYPTOBLASTEA,1,1,CALYPTOBLASTEA
+HYDROIDA,1,1,HYDROIDA
+Statocyst,1,1,Statocysta
+GeneCodes Sequencer,1,1,GeneCodes Sequencer
+CIPRES portal,1,1,CIPRES portal150
+GeoMapApp,1,1,GeoMapApp
+CGView Comparison Tool (CCT),1,1,CG View Comparison Tool (CCT)
+MrMTgui,1,1,MrMTgui
+PRTtri,1,1,PRTtri
+PRtri,1,1,PRtri
+maptools,1,1,maptools
+Illustrator,1,1,Illustrator
+4SALE,1,1,4SALE52
+Phylogenetic Species Recognition58,1,1,Phylogenetic Species Recognition58
+iTOL (Interactive Tree of Life),1,1,ITOL (Interactive Tree Of Life)
+MESQUITE,1,1,MESQUITE
+Trinity de novo assembler,1,1,Trinity de novo Assembler
+Virtual Ribosome,1,1,Virtual Ribosome
+GBLOCKS,1,1,GBLOCKS
+CTMC,1,1,CTMC
+Parsimony Ancestral States,1,1,Parsimony Ancestral States
+R Phytools,1,1,R Phytools
+BioNumerics,1,1,BioNumerics
+PHYMLv3,1,1,PHYMLv3
+gplots,1,1,gplots
+StAMPP,1,2,StAMPP; StAMPP R
+tRNAscan-SE Search,1,1,tRNAscan-SE Search
+G-blocks,1,1,G-blocks
+BioGEOBEARS,1,1,BioGEOBEARS
+Fragment Analyzer,1,1,Fragment Analyzer
+to Reference,1,1,to Reference
+Geneious mapper,1,1,Geneious mapper
+Pancrustacea,1,1,Pancrustacea
+Copepoda,1,1,Copepoda
+PAUP⁄4,1,1,PAUP⁄4
+STACEY package for,1,1,STACEY package for
+Virsorter,1,1,Virsorter
+MetaVir,1,2,MetaVir; MetaVir2
+VirSorter,1,1,VirSorter
+RefseqVirus,1,1,RefseqVirus
+KronaTools,1,1,Kronatools
+Easyfig,1,1,Easyfig
+MetVir,1,1,MetVir
+CRISPRFinder,1,1,CRISPR finder
+vConTACT,1,1,vConTACT
+crAss,1,1,crAss
+Rfam,1,1,Rfam
+Dnasp,1,1,Dnasp
+Procrustean Approach to Cophylogeny (PACo),1,1,Procrustean Approach to Cophylogeny (PACo)
+Anathallis,1,1,Anathallis
+BaseClear,1,1,BaseClear
+PAUPRat,1,1,PAUPRat
+R Studio,1,1,R Studio
+simmap,1,1,simmap
+Multistate,1,1,Multistate
+btrtools,1,1,btrtools
+BTprocessR,1,1,BTprocessR
+L-INS-i,1,1,L-INS-I
+Automated Barcode Gap Discovery (ABGD),1,1,Automated Barcode Gap Discovery (ABGD)
+SPLITS,1,1,SPLITS
+BEAUTi (Bayesian Evolutionary Analysis Utility,1,1,BEAUTi (Bayesian Evolutionary Analysis Utility)
+mitos2,1,1,mitos
+mfold,1,1,mfold
+IQ tree,1,1,IQ tree
+SeqManTMII,1,1,SeqManTMII
+LoFreq,1,1,LoFreq
+gatk FastaAlternateReferenceMaker,1,1,gatk FastaAlternateReferenceMaker
+MAFFT L-INS-i,1,1,MAFFT LINSI
+Identifier,1,1,Identifier
+DNA,1,1,DNA
+RISTEKDIKTI,1,1,RISTEKDIKTI
+ARAGORN,1,1,ARAGORN
+brglm,1,1,R package brglm2
+lsmeans,1,2,R package lsmeans; lsmeans
+nnet,1,1,R package nnet
+MuMIn,1,1,MuMIn
+ApMat,1,1,ApMat
+SumLabels,1,1,SumLabels
+GCPSR,1,1,GCPSR
+BLASTn search,1,1,BLASTn search
+mfannot,1,1,mfannot
+Map,1,1,Map
+DataMonkey HyPhy server,1,1,DataMonkey HyPhy server
+SeqTrace,1,1,SeqTrace
+GPIP,1,1,GPIP
+MC1R,1,1,MC1R
+Repeat Finder,1,1,Repeat Finder
+(ARRIVE),1,1,ARRIVE
+kuenm,1,1,kuenm
+Corel Photo-Paint X6,1,1,Corel Photo-Paint X6
+cloglog,1,1,cloglog
+Office Excel,1,1,Office Excel
+JMP,1,1,JMP
+CLC,1,1,CLC
+RA×ML,1,1,RA×ML
+EFI-EST,1,1,EFI-EST
+TXISS,1,1,TXISS
+Enzyme Function Initiative toolset (EFI),1,1,Enzyme Function Initiative toolset (EFI)
+EFI Genome-Neighborhood Tool,1,1,EFI Genome-Neighborhood Tool
+Phyre2 (Protein Homology/analogY Recognition Engine,1,1,Phyre2 Protein Homology/analogy Recognition Engine
+Protean,1,1,Protean
+Magnifying Genome (MaGe) platform,1,1,Magnifying Genome (MaGe) platform
+EFI-Enzyme Similarity Tool (EFI-EST),1,1,EFI Enzyme Similarity Tool (EFI-EST
+Taxonomy Browser,1,1,Taxonomy Browser
+google,1,1,Google
+EFI-GNN,1,1,EFI-GNN
+RODEO,1,1,RODEO
+MicroScope/MaGe,1,1,MicroScope MaGe
+Gene Phyloprofile,1,1,Gene Phyloprofile
+Modettes,1,1,Modettes
+ABI Peak Scanner,1,1,ABI Peak Scanner
+Treebase,1,1,Treebase
+AxioVision,1,1,AxioVision
+Phylogenetic Species Recognition (GCPSR,1,1,Phylogenetic Species Recognition (GCPSR)
+BioEdit Alignment Editor,1,1,BioEdit Alignment Editor
+R Statistical,1,1,R Statistical
+DENDEXTEND,1,1,DENDEXTEND
+Olympus Software Imaging for,1,1,Olympus Software Imaging for
+Pascal,1,1,Pascal
+Zeiss LSM Image Browser,1,1,Zeiss LSM Image Browser
+BI-PCGRNA,1,1,BI-PCGRNA
+ML- PCGRNA,1,1,ML- PCGRNA
+AliGROOVE,1,1,AliGROOVE
+PRINSEQ,1,1,Prinseq
+Porechop,1,1,Porechop
+NanoLyse,1,1,NanoLyse
+Filtlong,1,1,Filtlong
+NanoStat,1,1,NanoStat
+NanoPlot,1,1,NanoPlot
+ZORRO,1,1,ZORRO
+minmax-chisq,1,1,minmax-chisq
+chisq,1,1,chisq
+SilVA,1,1,SILVA
+SINA,1,1,SINA
+eLife,1,1,eLife
+Phyla-AMPOHRA,1,1,Phyla-AMPOHRA
+AT-Skew,1,1,AT-Skew
+sumtrees,1,1,Sumtrees
+codeml,1,1,codeml
+RA × ML,1,1,RA × ML
+fmsb,1,1,fmsb
+SPSS Statistics,1,1,SPSS Statistics
+Morphogenera,1,1,Morphogenera
+MorphoSource,1,1,MorphoSource
+claddis,1,1,claddis
+R package phangorn,1,1,R package phangorn
+SeqMan II,1,1,SeqMan II
+Q-INS,1,1,Q-INS
+tracer,1,1,tracer
+Bremer.run,1,1,Bremer.run
+Winclada-ASADO,1,1,Winclada-ASADO
+AIDA,1,1,AIDA
+ExPASy,1,1,ExPASy
+DNAsp,1,1,DNAsp
+AIS,1,1,AIS
+MMDA,1,1,MMDA
+Cyclopes,1,1,Cyclopes
+Minimum Evolution (ME,1,1,Minimum Evolution (ME
+TrEase webserver,1,1,TrEase webserver
+DIAMOND,1,1,DIAMOND
+tRNA-scan-SE,1,1,tRNA-scan-SE
+ChloroP,1,1,ChloroP
+BLASTp,1,1,BLASTp
+L-INS,1,1,L-INS
+PhyloMCOA,1,1,PhyloMCOA
+IQTREE,1,1,IQTREE
+Nephromyces,1,1,Nephromyces
+CyVerse Atmosphere,1,1,CyVerse Atmosphere
+shell,1,1,shell
+ParaAT,1,1,ParaAT
+RMTA,1,1,RMTA
+CyVerse,1,1,CyVerse
+Discovery Environment,1,1,Discovery Environment
+Cufflinks,1,1,Cufflinks
+Phytools,1,1,Phytools
+DGT,1,1,DGT
+InferNetwork_ML,1,1,InferNetwork_ML
+PhyloNet,1,1,PhyloNet
+Tree Incongruence Checking in R (TICR),1,1,Tree Incongruence Checking in R (TICR)
+phylolm,1,1,phylolm
+Interaction Network,1,1,Interaction Network
+igraph,1,1,igraph
+Bioconductor,1,1,Bioconductor
+TICR,1,1,TICR
+pamlX,1,1,pamlX
+Quiver,1,1,Quiver
+MITOFY webserver,1,1,MITOFY webserver
+ORFfinder,1,1,ORFfinder
+HISAT2,1,1,HISAT2
+FreeBayes,1,1,FreeBayes
+SnpEff,1,1,SnpEff
+arguta,1,1,arguta
+NGSQCTOOLKIT,1,1,NGSQCTOOLKIT
+SOAPDENOVO2,1,1,SOAPDENOVO2
+GENEIOUS,1,1,GENEIOUS
+RAXML,1,1,RAXML
+RELAX,1,1,RELAX
+TerUAG,1,1,TerUAG
+RepeatModeler,1,1,RepeatModeler
+trimmomatic,1,1,trimmomatic
+SPAdes assembler,1,1,SPAdes assembler
+L_RNA_scaffolder,1,1,L_RNA_scaffolder
+BLAT,1,1,BLAT
+CLCgenomics,1,1,CLCgenomics
+SGA assembler,1,1,SGA assembler
+AdaptorRemoval,1,1,AdaptorRemoval
+CLC Genomics workbench,1,1,CLC Genomics workbench
+MITOS2,1,1,MITOS2
+CLC genomics workbench,1,1,CLC genomics workbench
+Universal Single Copy Orthologs BUSCO,1,1,Universal Single Copy Orthologs BUSCO
+Augustus,1,1,Augustus
+MAKER2,1,1,MAKER2
+preQC,1,1,preQC
+MORFFO,1,1,MORFFO
+PartitionFinder2,1,1,PartitionFinder2
+VecScreen,1,1,VecScreen
+Minimum Evolution,1,1,Minimum Evolution
+Ktreedist,1,1,Ktreedist
+lrRNA,1,1,lrRNA
+srRNA,1,1,srRNA
+Minimap2,1,1,Minimap2
+Clustal X,1,1,Clustal X
+Cucujiformia,1,1,Cucujiformia
+BLASTP,1,1,BLASTP
+Interactive Tree Of Life (iTOL),1,1,Interactive Tree Of Life (iTOL)
+Genome Analyzer IIx,1,1,Genome Analyzer IIx
+SOAP denovo,1,1,SOAP denovo
+GeneMark,1,1,GeneMark
+ES,1,1,ES
+fungiSMASH,1,1,fungiSMASH
+Domain Database (CDD),1,1,Domain Database (CDD)
+Prottest,1,1,Prottest
+MITOS webserver,1,1,MITOS webserver
+Adobe Photoshop CS,1,1,Adobe Photoshop CS
+Bankit,1,1,Bankit
+JModelTest,1,1,JModelTest
+Bremia,1,1,Bremia
+AxioVision LE,1,1,AxioVision LE
+obducens,1,1,obducens
+SeqMan Pro (DNASTAR,1,1,SeqMan Pro (DNASTAR
+MrModel,1,1,MrModel
+Mafft,1,1,Mafft
+Biolomics,1,1,Biolomics
+Leica IM1000,1,1,Leica IM1000
+Leica QWin,1,1,Leica QWin
+R Core Team,1,1,R Core Team
+BELGIUM,1,1,BELGIUM
+ENGLAND,1,1,ENGLAND
+NETHERLANDS,1,1,NETHERLANDS
+NORWAY,1,1,NORWAY
+Tislet,1,1,Tislet
+SWEDEN,1,1,SWEDEN
+ICELAND,1,1,ICELAND
+SVALBARD,1,1,SVALBARD
+MOROCCO,1,1,MOROCCO
+AUSTRIA,1,1,AUSTRIA
+Zaventem,1,1,Zaventem
+GERMANY,1,1,GERMANY
+DENMARK,1,1,DENMARK
+POLAND,1,1,POLAND
+Fortun,1,1,Fortun
+SCOTLAND,1,1,SCOTLAND
+ESTONIA,1,1,ESTONIA
+PERMANOVA,1,1,PERMANOVA
+FD,1,1,FD
+vegan R,1,1,vegan R
+pPCAs,1,1,pPCAs
+DLTdv,1,1,DLTdv
+MATLAB and Statistics Toolbox,1,1,MATLAB and Statistics Toolbox
+Momocs,1,1,Momocs
+Procrustes,1,1,Procrustes
+Caret,1,1,Caret
+inashape3d,1,1,inashape3d
+alphashape3d,1,1,alphashape3d
+R package sensiPhy,1,1,R package sensiPhy
+Muscle,1,1,Muscle
+T-Coffee,1,1,T-Coffee
+JModelTest2,1,1,JModelTest2
+JmodelTest,1,1,JmodelTest
+IQ-Tree-omp,1,1,IQ-Tree-omp
+Dendropy,1,1,Dendropy
+TreeSetVis,1,1,TreeSetVis
+RWTY,1,1,RWTY
+UFML,1,1,UFML
+Partition Finder,1,1,Partition Finder
+TreeSetViz,1,1,TreeSetViz
+IMA,1,1,IMA
+DNASTAR,1,1,DNASTAR
+Darriba,1,1,Darriba
+Q-bank,1,1,Q-bank
+Betancur,1,1,Betancur
+blastn,1,1,blastn
+discontiguous megablast,1,1,discontiguous megablast
+CLSM,1,1,CLSM
+CODONCODEALIGNER,1,1,CODONCODEALIGNER
+NADH,1,1,NADH
+SOMALIA,1,1,SOMALIA
+MADAGASCAR,1,1,MADAGASCAR
+BEAST2,1,1,BEAST2
+III,1,1,III
+FASTQC,1,1,FASTQC
+Python script,1,1,Python script
+Dryad,1,1,Dryad
+PHYLUCE,1,1,PHYLUCE
+custom,1,1,custom
+SortaDate,1,1,SortaDate
+tRNAScan,1,1,tRNAScan
+SE server,1,1,SE server
+MEGA5,1,1,MEGA5
+samtools,1,1,samtools
+mafft,1,1,mafft
+Perl scripts,1,1,Perl scripts
+DNAstar,1,1,DNAstar
+Mesquite302,1,1,Mesquite302
+Mega6,1,1,Mega6
+MrModeltest2,1,1,MrModeltest2
+RaxmlHPC,1,1,RaxmlHPC
+Clustal,1,1,Clustal
+divMigrate,1,1,divMigrate
+online,1,1,online
+PCA,1,1,PCA
+AMOVA,1,1,AMOVA
+MEME,1,1,MEME
+K2P,1,1,K2P
+paths,1,1,paths
+All,1,1,All
+ClustalW2,1,1,ClustalW2
+-LG,1,1,-LG
+BOTTLENECK,1,1,BOTTLENECK
+LOSITAN,1,1,LOSITAN
+TBAD,1,1,TBAD
+Partition,1,1,Partition
+Linux,1,1,Linux
+Windows PCs,1,1,Windows PCs
+Mac,1,1,Mac
+OS,1,1,OS
+FcC,1,1,FcC
+NEXUS,1,1,NEXUS
+Polyphred,1,1,Polyphred
+WorldClim,1,1,WorldClim
+Devo,1,1,Devo
+Evo,1,1,Evo
+Bioconductor DESeq2 package,1,1,Bioconductor DESeq2 package
+BLASTx,1,1,BLASTx
+PubMLST,1,1,PubMLST
+MLST,1,1,MLST
+minpack,1,1,minpack
+lm,1,1,lm
+NewHybrid,1,1,NewHybrid
+PRIMER3,1,1,PRIMER3
+Dual Organellar GenoMe Annotator,1,1,Dual Organellar GenoMe Annotator
+Geneious R7,1,1,Geneious R7

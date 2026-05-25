@@ -34,22 +34,27 @@ MD_OUT = ROOT / "phase2_metadata.md"
 # ---------------------------------------------------------------------------
 # Software co-mention vocabulary
 # ---------------------------------------------------------------------------
-# Curated default list per citations/README.md Phase 2 spec, expanded with the
-# obvious phylogenetics-pipeline neighbors. Patterns are case-sensitive
-# word-boundary regexes — in phylo abstracts the false-positive rate is low
-# because tool names are written as proper nouns / acronyms.
+# Vocabulary has two layers:
+#   1. Curated default list — the obvious phylogenetics-pipeline neighbors
+#      called out in citations/README.md.
+#   2. CZ-derived list — drawn from data/cz_software_mentions/comentioned_software.csv
+#      (built by scripts/extract_cz_comentions.py), which aggregates every
+#      OTHER software CZ Software Mentions found in the 372 SM-citing papers.
+#      We add tools appearing in >=15 of those papers, skipping obvious NER
+#      noise ("R" alone is too short, "Nexus" usually refers to the file
+#      format, "PUBMED"/"PeerJ"/"CLOCKSS" are databases/journals/archives,
+#      "STRUCTURE" is too generic to regex safely).
+#
+# Patterns are mostly case-sensitive word-boundary regexes; in phylo
+# abstracts the false-positive rate is low because tool names are written
+# as proper nouns / acronyms. Where surface forms vary in case (BioEdit /
+# BIOEDIT / Bioedit) we use re.IGNORECASE explicitly.
 #
 # TODO(phase2-followup): expand vocabulary with n-gram discovery — scan
 # abstracts for capitalized tokens not already matched and present a candidate
 # list for manual curation.
-#
-# TODO(phase2-followup): expand vocabulary with the CZ Software Mentions
-# co-occurrence list — for each of the 372 SequenceMatrix-mentioning papers
-# in data/cz_software_mentions/, pull every *other* software name CZ extracted
-# from the same paper. Requires re-downloading raw.tar.gz (2.79 GB) +
-# disambiguated.tar.gz (1.07 GB) from Dryad doi:10.5061/dryad.6wwpzgn2c and
-# filtering to our 370 PMC IDs.
 TOOL_PATTERNS: dict[str, re.Pattern[str]] = {
+    # --- Curated default list ---
     "MEGA": re.compile(r"\bMEGA(?:[\s-]?(?:X|\d+))?\b"),
     "MrBayes": re.compile(r"\bMrBayes\b"),
     "RAxML": re.compile(r"\bRAxML(?:[\s-]?NG)?\b"),
@@ -71,6 +76,37 @@ TOOL_PATTERNS: dict[str, re.Pattern[str]] = {
     "Garli": re.compile(r"\b(?:Garli|GARLI)\b"),
     "PhyML": re.compile(r"\bPhyML\b"),
     "TreeBase": re.compile(r"\bTreeBASE\b", re.IGNORECASE),
+    # --- CZ-derived (top ~30 by paper count, threshold >=15 papers) ---
+    "tRNAscan-SE": re.compile(r"\btRNA\s?scan[-\s]?SE\b", re.IGNORECASE),
+    "BioEdit": re.compile(r"\bBioEdit\b", re.IGNORECASE),
+    "DnaSP": re.compile(r"\bDnaSP\b", re.IGNORECASE),
+    "TreeAnnotator": re.compile(r"\bTree\s?Annotator\b", re.IGNORECASE),
+    "MITOS": re.compile(r"\bMITOS\d*\b"),
+    "Gblocks": re.compile(r"\bGblocks\b", re.IGNORECASE),
+    "MrModelTest": re.compile(r"\bMr\.?\s?Model\s?Test\d*\b", re.IGNORECASE),
+    "LogCombiner": re.compile(r"\bLog\s?Combiner\b", re.IGNORECASE),
+    "Sequencher": re.compile(r"\bSequencher\b"),
+    "TranslatorX": re.compile(r"\bTranslator[\s-]?X\b", re.IGNORECASE),
+    "SPAdes": re.compile(r"\bSPAdes\b", re.IGNORECASE),
+    "MITObim": re.compile(r"\bMITObim\b", re.IGNORECASE),
+    "Trimmomatic": re.compile(r"\bTrimmomatic\b"),
+    "ModelFinder": re.compile(r"\bModel\s?Finder\b"),
+    "raxmlGUI": re.compile(r"\braxmlGUI\d?\b", re.IGNORECASE),
+    "OGDRAW": re.compile(r"\bOGDRAW\b", re.IGNORECASE),
+    "CLC Genomics Workbench": re.compile(r"\bCLC\s+(?:Genomics|Main)\s+Workbench\b"),
+    "MFannot": re.compile(r"\bMFannot\b"),
+    "CIPRES": re.compile(r"\bCIPRES\b"),
+    "Mauve": re.compile(r"\bMauve\b"),
+    "NOVOPlasty": re.compile(r"\bNOVOPlasty\b"),
+    "ORF Finder": re.compile(r"\bORF\s?Finder\b"),
+    "CGView": re.compile(r"\bCGView\b"),
+    "FastQC": re.compile(r"\bFastQC\b"),
+    "DAMBE": re.compile(r"\bDAMBE\b"),
+    "Arlequin": re.compile(r"\bArlequin\b"),
+    "DOGMA": re.compile(r"\bDOGMA\b"),
+    "PAML": re.compile(r"\bPAML\b"),
+    "REPuter": re.compile(r"\bREPuter\b", re.IGNORECASE),
+    "AliView": re.compile(r"\bAliView\b"),
 }
 
 
@@ -544,12 +580,14 @@ def render_markdown(agg: Aggregates) -> str:
     push("## Software co-mentions in abstracts")
     push("")
     push(
-        f"Scanned {agg.n_with_abstract:,} abstracts for a curated list of "
-        f"{len(TOOL_PATTERNS)} phylogenetics tools (see "
-        "`scripts/analyze_phase2.py` for the regex list and TODOs for "
-        "expansion via n-gram discovery and the CZ Software Mentions corpus). "
-        "Case-sensitive word-boundary matches; in this domain false positives "
-        "should be rare."
+        f"Scanned {agg.n_with_abstract:,} abstracts for **{len(TOOL_PATTERNS)} "
+        "phylogenetics tools**. The vocabulary has two layers: a small "
+        "curated list of the obvious neighbors (RAxML, MrBayes, BEAST, …) "
+        "and an expansion drawn from "
+        "[`data/cz_software_mentions/comentioned_software.csv`](data/cz_software_mentions/comentioned_software.csv), "
+        "which lists every other tool CZ Software Mentions found in the same "
+        "372 papers (≥15-paper threshold, NER noise filtered). See "
+        "`scripts/analyze_phase2.py` for the exact regexes."
     )
     push("")
     push(
