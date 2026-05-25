@@ -76,15 +76,77 @@ or Crossref enrichments (if we ever run them) will append to it.
 | `topics` | list of object | OpenAlex topics with `display_name`, `score`, `subfield`, `field`, `domain` |
 | `sources` | list of str | provenance — currently `["openalex"]` |
 
-## Source
+## Source and licensing
 
-- **OpenAlex** (https://openalex.org), CC0 metadata.
-- API endpoint: `GET https://api.openalex.org/works?filter=cites:W2131473084&per-page=200&cursor=*`
-- Authentication via `Authorization: Bearer <key>` header (not query param,
-  to keep keys out of any logged URLs). Plus `mailto=` query for the polite
-  pool contact.
-- Documentation: https://docs.openalex.org/api-entities/works
-- Polite pool / API-key policy: https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication
+- **Dataset:** OpenAlex (https://openalex.org), a fully open index of
+  scholarly works run by OurResearch (the non-profit behind Unpaywall).
+- **Dataset citation:** Priem, J., Piwowar, H., & Orr, R. (2022).
+  *OpenAlex: A fully-open index of scholarly works, authors, venues,
+  institutions, and concepts.*
+  arXiv:[2205.01833](https://arxiv.org/abs/2205.01833).
+- **API documentation:** https://docs.openalex.org/api-entities/works
+- **Rate-limit and auth policy:**
+  https://docs.openalex.org/how-to-use-the-api/rate-limits-and-authentication
+- **Data license:** **CC0 1.0 Universal (Public Domain Dedication)**, full
+  text at https://creativecommons.org/publicdomain/zero/1.0/. No
+  attribution legally required, but please cite the dataset paper above
+  when reusing this data in publications.
+- **Backing infrastructure:** OpenAlex itself is not open-source software,
+  but a monthly bulk data snapshot is published to AWS Open Data
+  (`s3://openalex`); we use the live API here because the result set is
+  small (~2,500 records, ~90 MB raw JSON).
+- **No versioned snapshots from the API.** OpenAlex updates its index
+  continuously, so a re-fetch on a different day will return a slightly
+  different set as new citing papers are indexed and metadata is
+  refined. Treat the snapshot in this directory as authoritative for
+  any analysis written into the proposal; cite it by this repo's
+  commit SHA.
+- **Fetched on 2026-05-24** using httpx 0.28.1, tenacity 9.1.4,
+  python-dotenv 1.2.2 (exact pins in `citations/uv.lock`). OpenAlex
+  reported `meta.count = 2509`, `cost_usd = 0.0001` per page.
+
+## Exact query
+
+The fetcher walks paginated results from this base query:
+
+```
+GET https://api.openalex.org/works
+    ?filter=cites:W2131473084
+    &per-page=200
+    &cursor=*                    (* on first page; opaque next_cursor thereafter)
+    &mailto=<your-email>         (polite pool contact)
+
+Authorization: Bearer <OPENALEX_API_KEY>
+User-Agent: taxondna-citations/0.0.0 (mailto:<your-email>)
+```
+
+`W2131473084` is OpenAlex's stable work ID for the SequenceMatrix paper
+(DOI `10.1111/j.1096-0031.2010.00329.x`); confirm at
+https://api.openalex.org/works/W2131473084.
+
+Quick smoke test (no Python needed; just a key and `jq`):
+
+```sh
+OPENALEX_API_KEY=... OPENALEX_MAILTO=you@example.com
+curl -sS \
+  -H "Authorization: Bearer $OPENALEX_API_KEY" \
+  -H "User-Agent: taxondna-citations/0.0.0 (mailto:$OPENALEX_MAILTO)" \
+  "https://api.openalex.org/works?filter=cites:W2131473084&per-page=1&mailto=$OPENALEX_MAILTO" \
+  | jq '.meta'
+```
+
+That returns `meta.count`, which is the total citing-works count for
+W2131473084 *at the moment of the request*. If you see a number that is
+materially different from 2509, OpenAlex has re-indexed since our pull
+and you should re-fetch end-to-end rather than diff against this
+snapshot.
+
+**Cursor pagination warning:** OpenAlex no longer accepts `&page=N` for
+result sets larger than 10,000; the supported pattern is to read
+`meta.next_cursor` from page N and pass it as `&cursor=...` for page N+1
+until `next_cursor` comes back null. Our 2,509-record result fits in
+either scheme, but the fetcher uses cursors anyway for forward
+compatibility.
 
 ## Method
 
@@ -100,19 +162,29 @@ or Crossref enrichments (if we ever run them) will append to it.
    text. Duplicate `openalex_id`s are deduplicated (none were found this
    run, but the deduper is there for safety against pagination quirks).
 
-Run on 2026-05-24. Pages 1–13 SHA-256s:
+Run on 2026-05-24. Full SHA-256s for `raw/page_NNNN.json` (verify with
+`shasum -a 256 raw/page_*.json`):
 
 ```
 252eb5342248b211783b407937049ab9ff01a793a74db3a9f21ce3d2d8c430af  raw/page_0001.json
 6cdef7a324d79b266ab3b611e1dc833653dd6cc5a6a5b44e3ebc26a588d71fd4  raw/page_0002.json
 c5afb4c32b70877701d21b92493fc9bd3b510af4eace5bae9376264d758bb964  raw/page_0003.json
-(... full list: shasum -a 256 raw/page_*.json)
+d7c2dfd0b18b65cb64a7c6eeeaddbd4ad0e40d38ae607358d6e547ce4b150f5b  raw/page_0004.json
+3967050eb814fab518253a2040f21e3b552e434897263d41e9406822f968ada0  raw/page_0005.json
+343aed80d4d627383d12fe7c9c90cb48425a156834a43d2a7028de8ad8a8ef92  raw/page_0006.json
+e504f0e9c023aad15b8140bd3a009c628d44e41fbe7f63b90c1c2857634f93d5  raw/page_0007.json
+5f17249eb7ed0ad01ab47eaa969504dbc98a09095d0dcb4171afadab088fbe19  raw/page_0008.json
+3ccb63fafaae29e58fa1cecbd7c9f18ccb5b780509127c5d97f5ab4ec2219830  raw/page_0009.json
+0cad8d58c5144c033203bd8d616af903d50bf224f852446928edd2d7aed66295  raw/page_0010.json
+8fb7ba2a9b4ee86cd27ab26d33a40bde4dac017fc9e7028e617eb37f18c9c1a5  raw/page_0011.json
+25702aa3c35602391b728e4ffd6aa64b0395f373965afbe55a33982d8e1b3c6e  raw/page_0012.json
+71db5a4d4ad03e7ac72afde8dd6cc5eeb95f75e2dc3e554298c82152e741ea10  raw/page_0013.json
 ```
 
-OpenAlex updates its corpus continuously, so a re-fetch will return a
-slightly different result set. Treat the snapshot here as authoritative
-for the analysis written into the proposal; cite this directory by commit
-SHA when referencing the numbers.
+Because OpenAlex doesn't snapshot, a re-fetch will not byte-equal the
+hashes above. They exist so you can detect *unintended* changes to the
+checked-in JSON (a botched git operation, an accidental reformat), not
+to certify reproducibility against a re-pull from OpenAlex.
 
 ## Reproducing from scratch
 
