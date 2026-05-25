@@ -16,6 +16,33 @@ Working notes and scripts for [issue #127](https://github.com/gaurav/taxondna/is
 
 The gap between Google Scholar and OpenAlex (~480 papers, ~16%) is the rough size of the "long tail" we'll miss with open APIs. That's acceptable for trend analysis; Google Scholar has no usable API and scraping it is brittle and ToS-violating.
 
+## Reproducing the analysis end-to-end
+
+Environment setup (one-time):
+
+```sh
+cd citations
+cp .env.example .env       # fill in OPENALEX_API_KEY (free, openalex.org) and OPENALEX_MAILTO
+uv sync                    # installs httpx, tenacity, python-dotenv per uv.lock
+```
+
+Pipeline scripts, in dependency order. Each is idempotent — cached upstream responses live on disk and re-runs are cheap. Per-script details (schema, license, source citations, headline numbers from the canonical 2026-05-24/25 run) are in the linked subdir README.
+
+| # | Script | Reads | Writes | See |
+| --: | --- | --- | --- | --- |
+| 1 | `scripts/fetch_openalex_citing.py` | OpenAlex API (cursor-paginated) | `data/openalex/raw/page_*.json` | [`data/openalex/README.md`](data/openalex/README.md) |
+| 2 | `scripts/build_citing_works.py` | `data/openalex/raw/` | `data/openalex/citing_works.jsonl` | same |
+| 3 | `scripts/analyze_phase2.py` | `data/openalex/citing_works.jsonl` | `data/openalex/citing_works.csv`, [`phase2_metadata.md`](phase2_metadata.md) | digest is self-documenting |
+| 4 | `scripts/extract_cz_comentions.py` | `data/cz_software_mentions/_downloads/{raw,disambiguated}.tar.gz` (browser-downloaded from Dryad doi:10.5061/dryad.6wwpzgn2c), `data/cz_software_mentions/sequencematrix_mentions.csv` | `data/cz_software_mentions/comentioned_{software,per_paper}.csv` | [`data/cz_software_mentions/README.md`](data/cz_software_mentions/README.md) |
+| 5 | `scripts/build_fulltext_coverage.py` | `data/openalex/citing_works.jsonl`, Europe PMC API | `data/fulltext/coverage.csv` | [`data/fulltext/README.md`](data/fulltext/README.md) |
+
+Notes:
+
+- **Steps 3 and 4 are independent.** Step 3's curated tool list was originally informed by step 4's output (top CZ co-mentioned tools above a 15-paper threshold), but the resulting `TOOL_PATTERNS` is hand-curated and frozen in `analyze_phase2.py`. You can run step 3 without step 4.
+- **Step 4 needs ~3.9 GB of bulk Dryad downloads** that are not checked in. SHA-256s and the download recipe are in the CZ README; the script verifies SHA-256s before extracting.
+- **Step 5 is OA-only by policy** — `paywalled` papers are tagged but not pursued. The script trusts OpenAlex's OA fields (sourced from Unpaywall) rather than re-querying Unpaywall directly; the only API actually called is Europe PMC.
+- **No bytes of full text are downloaded yet.** Phase 3b (actual PDF / JATS-XML download) is gated on the Phase 4 scope decision and not implemented.
+
 ## Prior-art check: CZ Software Mentions (done 2026-05-24)
 
 Before kicking off the OpenAlex pipeline, we checked whether the [CZ Software Mentions dump](https://doi.org/10.5061/dryad.6wwpzgn2c) (Istrate et al. 2022) had already done the hard part. It hadn't, but it gave us a useful by-product. Full extract, method, and CSV in [`citations/data/cz_software_mentions/`](data/cz_software_mentions/README.md).
