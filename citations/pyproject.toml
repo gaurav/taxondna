@@ -9,5 +9,19 @@ dependencies = [
     "tenacity>=9.0",
 ]
 
+[dependency-groups]
+# Everything the Analysis.ipynb notebook needs. Kept out of the core
+# dependencies so the data-collection scripts stay lightweight.
+#   uv sync --group notebook
+notebook = [
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "wordcloud>=1.9",
+    "jupyter>=1.1",
+    "nbformat>=5.10",
+    "nbconvert>=7.16",
+    "ipykernel>=6.29",
+]
+
 [tool.uv]
 package = false

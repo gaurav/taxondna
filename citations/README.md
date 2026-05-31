@@ -43,6 +43,16 @@ Notes:
 - **Step 5 is OA-only by policy** — `paywalled` papers are tagged but not pursued. The script trusts OpenAlex's OA fields (sourced from Unpaywall) rather than re-querying Unpaywall directly; the only API actually called is Europe PMC.
 - **No bytes of full text are downloaded yet.** Phase 3b (actual PDF / JATS-XML download) is gated on the Phase 4 scope decision and not implemented.
 
+### Visual summary notebook
+
+[`Analysis.ipynb`](Analysis.ipynb) is a read-only companion that loads `data/openalex/citing_works.csv` (step 3 above) and renders the proposal-ready figures: citations-per-year bar chart, top-10 journals and authors, and a title word cloud. It hits no network APIs. The notebook source is generated from [`scripts/build_analysis_notebook.py`](scripts/build_analysis_notebook.py) for diff-friendly edits:
+
+```sh
+uv sync --group notebook
+uv run --group notebook scripts/build_analysis_notebook.py          # regenerate cells
+uv run --group notebook jupyter nbconvert --to notebook --execute --inplace Analysis.ipynb
+```
+
 ## Prior-art check: CZ Software Mentions (done 2026-05-24)
 
 Before kicking off the OpenAlex pipeline, we checked whether the [CZ Software Mentions dump](https://doi.org/10.5061/dryad.6wwpzgn2c) (Istrate et al. 2022) had already done the hard part. It hadn't, but it gave us a useful by-product. Full extract, method, and CSV in [`citations/data/cz_software_mentions/`](data/cz_software_mentions/README.md).
