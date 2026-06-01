@@ -16,7 +16,6 @@ dependencies = [
 notebook = [
     "pandas>=2.2",
     "matplotlib>=3.9",
-    "wordcloud>=1.9",
     "jupyter>=1.1",
     "nbformat>=5.10",
     "nbconvert>=7.16",

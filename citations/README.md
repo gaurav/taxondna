@@ -45,7 +45,7 @@ Notes:
 
 ### Visual summary notebook
 
-[`Analysis.ipynb`](Analysis.ipynb) is a read-only companion that loads `data/openalex/citing_works.csv` (step 3 above) and renders the proposal-ready figures: citations-per-year bar chart, top-10 journals and authors, and a title word cloud. It hits no network APIs. The notebook source is generated from [`scripts/build_analysis_notebook.py`](scripts/build_analysis_notebook.py) for diff-friendly edits:
+[`Analysis.ipynb`](Analysis.ipynb) is a read-only companion that loads `data/openalex/citing_works.csv` (step 3 above) and renders the proposal-ready figures: a publication-type breakdown, citations-per-year bar chart, top-10 journals and authors, and the most common two-word phrases in citing-paper titles. It hits no network APIs. The notebook source is generated from [`scripts/build_analysis_notebook.py`](scripts/build_analysis_notebook.py) for diff-friendly edits:
 
 ```sh
 uv sync --group notebook

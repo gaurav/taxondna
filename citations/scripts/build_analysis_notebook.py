@@ -45,9 +45,10 @@ OpenAlex `W2131473084`).
 This notebook is the **read-only, show-the-numbers** companion to the data
 pipeline. It loads the flat table the pipeline produced and renders:
 
-1. a bar chart of citations per year since publication,
-2. the top-10 journals and top-10 authors,
-3. a word cloud of the citing-paper titles.
+1. a breakdown of the corpus by publication type,
+2. a bar chart of citations per year since publication,
+3. the top-10 journals and top-10 authors,
+4. the most common two-word phrases in the citing-paper titles.
 
 All of the collection and methodology lives in
 [`citations/README.md`](README.md); this notebook only *reads* the cached
@@ -140,6 +141,36 @@ def split_multi() -> str:
         "    )"
     )
 
+
+# --------------------------------------------------------------------------
+md(
+    r"""
+## What kind of works cite SequenceMatrix?
+
+Before the trends, a sanity check on the *shape* of the corpus. OpenAlex tags
+each work with a `type` from its
+[work-type vocabulary](https://docs.openalex.org/api-entities/works/work-object#type)
+(`article`, `preprint`, `dissertation`, …). The corpus is overwhelmingly
+**peer-reviewed journal articles** — the audience the proposal cares about — with
+a tail of preprints, theses, and reviews. (`peer-review` here is OpenAlex's label
+for standalone peer-review reports, not a quality flag on the articles.)
+"""
+)
+
+code(
+    r"""
+by_type = (
+    df["type"]
+    .fillna("(unknown)")
+    .value_counts()
+    .rename_axis("Publication type")
+    .reset_index(name="Works")
+)
+by_type["% of corpus"] = (100 * by_type["Works"] / by_type["Works"].sum()).round(1)
+by_type.index += 1
+by_type
+"""
+)
 
 # --------------------------------------------------------------------------
 md(
@@ -239,44 +270,84 @@ top_authors
 # --------------------------------------------------------------------------
 md(
     r"""
-## Word cloud of citing-paper titles
+## Most common two-word phrases in citing-paper titles
 
-A quick qualitative read on *what kind of study* cites SequenceMatrix. We strip
-generic research-paper filler ("new", "study", "analysis", "based", …) so the
-domain signal — *phylogeny / phylogenetic, species, genus, genetic, molecular,
-mitochondrial* — comes through. This is impressionistic; the curated topic and
-software-co-mention breakdowns in
+A quick qualitative read on *what kind of study* cites SequenceMatrix. Rather
+than a word cloud, we count **two-word phrases** in the titles — bigrams carry
+the domain signal that single words wash out (*"molecular phylogeny"*,
+*"species delimitation"*, *"mitochondrial genome"*). We strip generic
+research-paper filler ("new", "study", "analysis", "based", …) and the
+taxonomic abbreviations ("sp.", "nov.") so only content phrases remain.
+
+Counts are **document frequency**: the number of distinct citing papers whose
+title contains the phrase. We list phrases down to a floor of **10 papers** —
+below that the long tail is mostly one-off taxon names, not a usage pattern.
+This is impressionistic; the curated topic and software-co-mention breakdowns in
 [`phase2_metadata.md`](phase2_metadata.md) are the rigorous version.
+
+The phrases that surface here — *molecular phylogeny, phylogenetic relationships,
+species complex, integrative taxonomy, species delimitation* — are the raw
+material for the next step: picking a handful of **usage markers** (e.g.
+*"phylogenetic analysis"*, *"sp. nov."*, *"gen. nov."*) and plotting them over
+time to see which workflows are growing or fading.
 """
 )
 
 code(
     r"""
-from wordcloud import STOPWORDS, WordCloud
+import re
+from collections import Counter
 
-# Domain-agnostic filler that would otherwise dominate any biology corpus.
-EXTRA_STOPWORDS = {
-    "new", "study", "studies", "analysis", "analyses", "based", "using", "use",
-    "data", "first", "record", "records", "note", "notes", "description",
-    "two", "three", "within", "reveals", "revealed", "insights", "evidence",
-    "case", "sp", "nov", "n", "spp", "approach", "review", "results",
+# Generic research-paper filler plus taxonomic abbreviations ("sp. nov.") that
+# would otherwise dominate any biology corpus. A phrase is dropped if *either*
+# of its two words is in here.
+PHRASE_STOPWORDS = {
+    "the", "and", "for", "from", "with", "within", "into", "via", "between",
+    "among", "new", "study", "studies", "analysis", "analyses", "based",
+    "using", "use", "used", "data", "first", "record", "records", "note",
+    "notes", "description", "two", "three", "reveals", "revealed", "insights",
+    "evidence", "case", "sp", "nov", "spp", "gen", "approach", "review",
+    "results", "their", "this", "that", "these", "those", "its", "are", "was",
+    "were", "not", "more", "most", "some", "such", "than", "then", "both",
 }
-stopwords = set(STOPWORDS) | EXTRA_STOPWORDS
 
-titles = " ".join(df["title"].dropna().astype(str)).lower()
+MIN_PAPERS = 10   # drop phrases seen in fewer titles than this — long-tail noise
+TOP_N = 50        # cap the table length even if more clear the floor
 
-wc = WordCloud(
-    width=1200, height=600, background_color="white",
-    stopwords=stopwords, collocations=True, colormap="viridis",
-    max_words=150, prefer_horizontal=0.9, random_state=42,
-).generate(titles)
 
-fig, ax = plt.subplots(figsize=(13, 6.5))
-ax.imshow(wc, interpolation="bilinear")
-ax.axis("off")
-ax.set_title(f"Titles of {df['title'].notna().sum():,} works citing SequenceMatrix", fontsize=13)
-fig.tight_layout()
-plt.show()
+def title_phrases(titles):
+    '''Document frequency of two-word phrases across a column of titles.
+
+    Each phrase is counted at most once per title, so the count reads as
+    "number of citing papers" rather than raw occurrences.
+    '''
+    counts = Counter()
+    for title in titles.dropna().astype(str):
+        words = re.findall(r"[a-z]+", title.lower())
+        seen = set()
+        for w1, w2 in zip(words, words[1:]):
+            if len(w1) < 3 or len(w2) < 3:
+                continue
+            if w1 in PHRASE_STOPWORDS or w2 in PHRASE_STOPWORDS:
+                continue
+            seen.add(f"{w1} {w2}")
+        counts.update(seen)
+    return counts
+
+
+phrase_counts = title_phrases(df["title"])
+
+top_phrases = (
+    pd.Series(dict(phrase_counts.most_common()))
+    .loc[lambda s: s >= MIN_PAPERS]
+    .head(TOP_N)
+    .rename_axis("Phrase")
+    .reset_index(name="Papers")
+)
+top_phrases.index += 1
+print(f"{len(top_phrases)} phrases in ≥10 of "
+      f"{df['title'].notna().sum():,} titles (floor {MIN_PAPERS}, cap {TOP_N})")
+top_phrases
 """
 )
 
@@ -287,6 +358,9 @@ md(
 
 This notebook covers the metadata-only picture (Phases 1–2). The repo also has:
 
+- **Usage markers over time** — the immediate next step: track a curated set of
+  title/abstract phrases (*"phylogenetic analysis"*, *"sp. nov."*, *"gen. nov."*,
+  …) year by year to see which SequenceMatrix workflows are growing or fading.
 - **Full-text coverage** — 69% of the corpus is reachable for free
   ([`data/fulltext/coverage.csv`](data/fulltext/coverage.csv)); see Phase 3a in
   [`README.md`](README.md#phase-3a-results-full-text-coverage-table-done-2026-05-25).
