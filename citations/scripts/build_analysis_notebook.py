@@ -354,6 +354,63 @@ top_phrases
 # --------------------------------------------------------------------------
 md(
     r"""
+## Random sample by time band
+
+To ground-truth how SequenceMatrix usage has evolved, we draw two random samples
+of citing papers stratified by time:
+
+| Band | Years | Sample size |
+| --- | --- | --- |
+| `recent` | 2025–2026 | 10 |
+| `earlier` | up to 2024 | 10 |
+
+The sample is written to **`random/citations-by-time.csv`** (relative to the
+`citations/` directory) for manual review. Add your own columns there — the file
+is intentionally sparse so it stays easy to fill in by hand.
+
+A fixed random seed (`RANDOM_SEED = 42`) makes the draw reproducible; re-running
+the pipeline with the same data produces the same 20 rows.
+"""
+)
+
+code(
+    r"""
+import os
+
+RANDOM_SEED = 42
+SAMPLE_N = 10
+
+recent_mask = df["publication_year"].ge(2025)
+earlier_mask = df["publication_year"].le(2024)
+
+sample_recent = df.loc[recent_mask].sample(n=SAMPLE_N, random_state=RANDOM_SEED)
+sample_earlier = df.loc[earlier_mask].sample(n=SAMPLE_N, random_state=RANDOM_SEED)
+
+sample_recent = sample_recent.assign(band="recent (2025–2026)")
+sample_earlier = sample_earlier.assign(band="earlier (up to 2024)")
+
+SAMPLE_COLS = [
+    "band", "openalex_id", "doi", "title",
+    "publication_year", "author_names", "venue_name", "is_oa",
+]
+
+sample = pd.concat([sample_recent, sample_earlier])[SAMPLE_COLS].reset_index(drop=True)
+sample.index += 1
+
+# Write to citations/random/citations-by-time.csv
+out_dir = HERE / "random"
+out_dir.mkdir(exist_ok=True)
+out_csv = out_dir / "citations-by-time.csv"
+sample.to_csv(out_csv, index=False)
+print(f"Wrote {len(sample)} rows → {out_csv}")
+
+sample
+"""
+)
+
+# --------------------------------------------------------------------------
+md(
+    r"""
 ## Where to go next
 
 This notebook covers the metadata-only picture (Phases 1–2). The repo also has:
