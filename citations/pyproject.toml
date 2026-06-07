@@ -1,0 +1,26 @@
+[project]
+name = "taxondna-citations"
+version = "0.0.0"
+description = "Analysis of papers citing the SequenceMatrix paper (Vaidya, Lohman & Meier 2011). See README.md."
+requires-python = ">=3.12"
+dependencies = [
+    "httpx>=0.28",
+    "python-dotenv>=1.0",
+    "tenacity>=9.0",
+]
+
+[dependency-groups]
+# Everything the Analysis.ipynb notebook needs. Kept out of the core
+# dependencies so the data-collection scripts stay lightweight.
+#   uv sync --group notebook
+notebook = [
+    "pandas>=2.2",
+    "matplotlib>=3.9",
+    "jupyter>=1.1",
+    "nbformat>=5.10",
+    "nbconvert>=7.16",
+    "ipykernel>=6.29",
+]
+
+[tool.uv]
+package = false

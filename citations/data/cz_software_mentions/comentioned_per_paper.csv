@@ -1,0 +1,5512 @@
+subset,paper_id,canonical,surface_forms
+comm,2944183,MacClade,MacClade
+comm,2944183,PAUP*,PAUP*
+comm,3192703,BLAST,BLAST
+comm,3192703,FigTree,FigTree
+comm,3192703,GanBank,GanBank
+comm,3192703,MUSCLE,Muscle
+comm,3192703,Mesquite,Mesquite
+comm,3192703,Nexus,Nexus
+comm,3192703,PhyLoTA,PhyLoTA
+comm,3192703,Pthreads,Pthreads
+comm,3192703,RAxML,RAxML
+comm,3192703,TNT,TNT
+comm,3192703,atpA,atpA
+comm,3256190,BLAST,BLAST
+comm,3256190,BioEdit,Bioedit
+comm,3256190,CAOS,CAOS
+comm,3256190,CAOS workbench,CAOS Workbench; CAOS-workbench
+comm,3256190,CAOS-Analyzer,CAOS-Analyzer
+comm,3256190,CAOS-Barcoder,CAOS-Barcoder
+comm,3256190,Character Attribute Organization System (CAOS),Character Attribute Organization System (CAOS
+comm,3256190,Clone Manager,Clone Manager
+comm,3256190,ClustalX,CLUSTAL X
+comm,3256190,Decision Theory,Decision Theory
+comm,3256190,EINVERTED,EINVERTED
+comm,3256190,EMBOSS,EMBOSS
+comm,3256190,GATC,GATC
+comm,3256190,MEGA,MEGA
+comm,3256190,MatK,MatK
+comm,3256190,MrBayes,MrBayes
+comm,3256190,Nexus,NEXUS
+comm,3256190,PhyML,PHYML
+comm,3256190,TreeJuxtaposer,TreeJuxtaposer
+comm,3256190,jModelTest,jModel Test
+comm,3256190,matK,matK
+comm,3256190,megablast,Megablast
+comm,3256190,rbcL,rbcL
+comm,3360049,ArcMap,ArcMap
+comm,3360049,Arlequin,Arlequin
+comm,3360049,ClustalW,ClustalW
+comm,3360049,DnaSP,DNAsp
+comm,3360049,Isolation by Distance,Isolation by Distance
+comm,3360049,MEGA,MEGA
+comm,3360049,MIGRATE,MIGRATE
+comm,3360049,MaxEnt,Maxent
+comm,3360049,Network,Network
+comm,3360049,WorldClim2,Worldclim
+comm,3369884,(AMOVA,(AMOVA
+comm,3369884,Arlequin,Arlequin
+comm,3369884,BEAST,BEAST
+comm,3369884,BLAST,BLAST
+comm,3369884,BioEdit,BioEdit
+comm,3369884,CLC Genomics Workbench,CLC Main Workbench
+comm,3369884,ClustalW,ClustalW
+comm,3369884,DIVA-GIS,DIVA-GIS
+comm,3369884,DnaSP,DnaSP
+comm,3369884,Ensembl,Ensembl
+comm,3369884,Geneious,Geneious
+comm,3369884,Genome Browser,Genome Browser
+comm,3369884,IMgc,IMgc
+comm,3369884,LogCombiner,LogCombiner
+comm,3369884,MEGA,MEGA
+comm,3369884,PHASE,PHASE
+comm,3369884,Plots,Plots
+comm,3369884,Primer3,Primer3
+comm,3369884,RAxML,RAxML; RaxML
+comm,3369884,RepeatMasker,RepeatMasker
+comm,3369884,STRUCTURAMA,STRUCTURAMA
+comm,3369884,Skyline Plot,Skyline Plots
+comm,3369884,Structure,Structure
+comm,3369884,Tracer,Tracer
+comm,3369884,UCSC genome browser,UCSC Genome Browser
+comm,3369884,of,of
+comm,3460966,BEAST,BEAST
+comm,3460966,BayesTraits,BayesTraits
+comm,3460966,G-INS-i,G-INS-i
+comm,3460966,MAFFT,MAFFT
+comm,3460966,MAFFT G-INS-i,MAFFT G-INS-i
+comm,3460966,MUSCLE,MUSCLE
+comm,3460966,Mesquite,Mesquite
+comm,3460966,New Technology Search,New Technology Search
+comm,3460966,RAxML,RAxML
+comm,3460966,RAxML-HPC2,RAxML-HPC2
+comm,3460966,Sequencher,Sequencher
+comm,3460966,TNT,TNT
+comm,3460966,TreeAnnotator,TreeAnnotator
+comm,3496728,BLAST,BLASTp; Blastp
+comm,3496728,CWOCD - Clockwork,CWOCD - Clockwork
+comm,3496728,ClustalW,CLUSTALW
+comm,3496728,ClustalX,CLUSTALX
+comm,3496728,EBI Global Alignment,EBI Global Alignment
+comm,3496728,ExPASy ProtParam,ExPASy
+comm,3496728,Jalview,JalView
+comm,3496728,MAKER,MAKER2
+comm,3496728,MATLAB,MATLAB
+comm,3496728,MEGA,MEGA
+comm,3496728,ProSite,ProSite
+comm,3496728,SDS,SDS
+comm,3496728,SMART,SMART
+comm,3496728,Stata,STATA
+comm,3496728,TBLASTN,TBLASTN
+comm,3496728,TNT,TNT
+comm,3500307,),)
+comm,3500307,AUTOhard,AUTOhard
+comm,3500307,AUTOsoft,AUTOsoft
+comm,3500307,DEC*,DEC
+comm,3500307,GTRCAT,GTRCAT
+comm,3500307,GTRGAMMA,GTRGAMMA
+comm,3500307,IRhard,IRhard
+comm,3500307,IRsoft,IRsoft
+comm,3500307,MAC,MAC
+comm,3500307,Mcmctree,Mcmctree
+comm,3500307,PAML,PAML
+comm,3500307,RAxML,RAxML
+comm,3500307,RAxML phylogram,RAxML phylogram
+comm,3500307,Se-Al,Se-Al
+comm,3500307,TimeTree,Timetrees
+comm,3500307,TreePar,TreePar
+comm,3500307,mcmctree,mcmctree
+comm,3500307,rgene_gamma,rgene_gamma
+comm,3538695,BLAST,BLAST
+comm,3538695,BOLD Systems,BOLD
+comm,3538695,BioEdit,BioEdit
+comm,3538695,CLUSTAL,CLUSTAL
+comm,3538695,CodonCode Aligner,CodonCode Aligner
+comm,3538695,MEGA,MEGA
+comm,3538695,MP,MP
+comm,3538695,MUSCLE,MUSCLE
+comm,3538695,Nexus Class Library,Nexus Class Library
+comm,3538695,PAUP*,PAUP
+comm,3538695,Phylomatic,Phylomatic
+comm,3538695,iTOL,iTOL
+comm,3538695,matK,matK
+comm,3538695,rbcL,rbcL
+comm,3538695,transAlign,TransAlign; transAlign
+comm,3543462,BEAST,Beast
+comm,3543462,FASTA,FASTA
+comm,3543462,HMMER,HMMER
+comm,3543462,LogCombiner,LogCombiner
+comm,3543462,MEGA,MEGA
+comm,3543462,MUSCLE,Muscle
+comm,3543462,PhyML,PhyML
+comm,3543462,SeaView,Seaview
+comm,3543462,Tracer,Tracer
+comm,3543462,TreeAnnotator,TreeAnnotator
+comm,3543462,Usearch,Usearch
+comm,3543462,ggsearch,ggsearch
+comm,3543462,pplacer,pplacer
+comm,3553075,BLASTN,blastn
+comm,3553075,BLASTX,blastx
+comm,3553075,Bowtie,Bowtie
+comm,3553075,DOGMA,DOGMA
+comm,3553075,GS De Novo Assembler,GS de novo Assembler
+comm,3553075,Gblocks,Gblocks
+comm,3553075,Geneious,Geneious
+comm,3553075,MrBayes,MrBayes
+comm,3553075,PhyloBayes,PhyloBayes
+comm,3553075,RAxML,RAxML
+comm,3553075,SSPACE,SSPACE
+comm,3553075,Velvet,Velvet; velvet
+comm,3553075,evecta,evecta
+comm,3644299,BEAST,BEAST; BEAST34
+comm,3644299,Betancur-R,Betancur-R
+comm,3644299,Builders,Builder
+comm,3644299,CIPRES,CIPRES
+comm,3644299,CodonCode Aligner,CodonCode Aligner
+comm,3644299,DeepFin,DeepFin
+comm,3644299,EToL,EToL
+comm,3644299,Ensembl,Ensembl
+comm,3644299,Euteleost,Euteleost
+comm,3644299,Geneious,Geneious
+comm,3644299,LogCombiner,LogCombiner
+comm,3644299,MAFFT,MAFFT
+comm,3644299,MAFFT aligner,MAFFT aligner53
+comm,3644299,OneZoom,OneZoom
+comm,3644299,PartitionFinder,PartitionFinder; PartitionFinder59
+comm,3644299,Pro,Pro
+comm,3644299,RAxML,RAxML
+comm,3644299,RogueNaRok,RogueNaRok
+comm,3644299,Sequencher,Sequencher
+comm,3644299,TNT,TNT
+comm,3644299,Tracer,Tracer
+comm,3644299,TranslatorX,TranslatorX52
+comm,3644299,TreeAnnotator,TreeAnnotator
+comm,3644299,treePL,treePL
+comm,3777957,-,-
+comm,3777957,BioEdit,BioEdit
+comm,3777957,DNAstart,DNAstar
+comm,3777957,MAFFT,MAFFT
+comm,3777957,MrBayes,MrBayes
+comm,3777957,PAUP*,PAUP*
+comm,3777957,RAxML,RAxML
+comm,3777957,SeqMan,SeqMan
+comm,3777957,SplitsTree,SplitsTree
+comm,3777957,jModelTest,jModelTest
+comm,3777957,matK,matK
+comm,3777957,nrITS,nrITS
+comm,3866145,ARWEN,ARWEN
+comm,3866145,BLAST,BLAST Tools
+comm,3866145,DNAstart,DNAstar
+comm,3866145,GenomeVx,GenomeVx
+comm,3866145,MEGA,MEGA
+comm,3866145,MITOS,MITOS
+comm,3866145,MUSCLE,MUSCLE
+comm,3866145,Mesquite,Mesquite
+comm,3866145,MrBayes,MrBayes
+comm,3866145,MrModeltest,MrModeltest
+comm,3866145,PAML,PAML
+comm,3866145,PhyML,PhyML
+comm,3866145,Primer Premier,Primer Premier
+comm,3866145,ProtTest,ProtTest
+comm,3866145,RAxML,RAxML
+comm,3866145,RNAfold WebServer,RNAfold WebServer
+comm,3866145,SeqMan,SeqMan
+comm,3866145,mreps,mreps
+comm,3866145,raxmlGUI,raxmlGUI
+comm,3866145,testcode,Testcode
+comm,4029975,BEAST,BEAST
+comm,4029975,CIPRES,CIPRES
+comm,4029975,DAMBE,DAMBE
+comm,4029975,FigTree,FigTree
+comm,4029975,Gateway,Gateway
+comm,4029975,LogCombiner,LogCombiner
+comm,4029975,MAFFT,MAFFT
+comm,4029975,MrBayes,MrBayes
+comm,4029975,Mya,Mya
+comm,4029975,RAxML,RAxML
+comm,4029975,RAxML BlackBox,RAxML BlackBox
+comm,4029975,Tracer,Tracer
+comm,4029975,TreeAnnotator,TreeAnnotator
+comm,4029975,jModelTest,jModelTest
+comm,4043755,-,-
+comm,4043755,BLAST,BLAST
+comm,4043755,FigTree,FigTree
+comm,4043755,Frame Finder,Frame Finder
+comm,4043755,Gblocks,Gblocks
+comm,4043755,MAFFT,MAFFT
+comm,4043755,MrBayes,MrBayes; MrBayes3
+comm,4043755,Open,Open
+comm,4043755,PhyML,PhyML; PhyML3
+comm,4043755,ProtTest,ProtTest
+comm,4043755,SeqMan,SeqMan
+comm,4043755,tRNAscan-SE,tRNAscan-SE
+comm,4079613,AA,AA
+comm,4079613,BLAST,BLAST
+comm,4079613,BioEdit,BioEdit
+comm,4079613,CGView,CGView
+comm,4079613,Gblocks,GBlocks
+comm,4079613,GenDecoder,GenDecoder
+comm,4079613,MAFFT,MAFFT
+comm,4079613,MEGA,MEGA
+comm,4079613,ML,ML
+comm,4079613,MXSCARNA,MXSCARNA
+comm,4079613,Mega,Mega
+comm,4079613,MrBayes,MrBayes
+comm,4079613,PROTGAMMAIMTART,PROTGAMMAIMTART
+comm,4079613,PartitionFinder,PartitionFinder
+comm,4079613,RAxML,RAxML
+comm,4079613,Science Gateway,Science Gateway
+comm,4079613,TranslatorX,TranslatorX
+comm,4079613,tRNAscan-SE,tRNAscan-SE
+comm,4156343,BEAST,BEAST
+comm,4156343,BLAST,blast
+comm,4156343,CEGMA,CEGMA
+comm,4156343,CLC Genomics Workbench,CLC Genomics Workbench
+comm,4156343,Geneious,Geneious
+comm,4156343,MrBayes,MrBayes
+comm,4156343,Pal_finder,Palfinder
+comm,4156343,PartitionFinder,PartitionFinder
+comm,4156343,Perl script,Perl script
+comm,4156343,Phred,PHRED
+comm,4156343,RepeatMasker,RepeatMasker
+comm,4156343,Tracer,Tracer
+comm,4156343,TreeAnnotator,TreeAnnotator
+comm,4156343,dryad,Dryad
+comm,4182490,GMYC,GMYC
+comm,4182490,Geneious,Geneious
+comm,4182490,MUSCLE,MUSCLE
+comm,4182490,MrBayes,MrBayes
+comm,4182490,PartitionFinder,Partition Finder
+comm,4182490,RAxML,RAxML
+comm,4182490,bPTP,bPTP
+comm,4207677,(AMOVA,AMOVA
+comm,4207677,BioEdit,BioEdit
+comm,4207677,CIPRES,CIPRES
+comm,4207677,Gblock,Gblock
+comm,4207677,Gblocks,Gblocks
+comm,4207677,GenAlEx,GenAlEx
+comm,4207677,GraphPad Prism,GraphPad
+comm,4207677,Infinity Camera,Infinity Camera
+comm,4207677,MEGA,MEGA
+comm,4207677,MedCalc,MedCalc
+comm,4207677,MrBayes,MrBayes
+comm,4207677,MrModeltest,MrModelTest
+comm,4207677,PAUP* v,PAUP* v
+comm,4207677,PhiPT,PhiPT
+comm,4207677,Prism,Prism6
+comm,4207677,Quantitative Parasitology,Quantitative Parasitology
+comm,4207677,R,R
+comm,4207677,Sequencher,Sequencher
+comm,4207677,Tracer,Tracer
+comm,4207677,ape package,ape package
+comm,4207677,webPRANK,webPRANK
+comm,4229182,CIPRES,CIPRES Science Gateway
+comm,4229182,Gblocks,Gblocks
+comm,4229182,MUSCLE,MUSCLE
+comm,4229182,POY,POY
+comm,4229182,RAxML,RaxML
+comm,4243772,CLUSTAL,CLUSTAL
+comm,4243772,CONCATENATOR,CONCATENATOR
+comm,4243772,FASconCAT,FASconCAT
+comm,4243772,FASconCAT-G,FASconCAT-G
+comm,4243772,FcC-G,FcC-G
+comm,4243772,Linux®,Linux
+comm,4243772,Mac OS®,Mac OS
+comm,4243772,MrBayes,MrBayes
+comm,4243772,Nexus,NEXUS
+comm,4243772,PAUP*,PAUP
+comm,4243772,PHYLIP,PHYLIP
+comm,4243772,Perl,Perl
+comm,4243772,PhyML,PhyML
+comm,4243772,ProtTest,ProtTest
+comm,4243772,RAxML,RAxML
+comm,4243772,SCaFoS,SCaFoS
+comm,4243772,TranslatorX,TranslatorX
+comm,4243772,Windows PC,Windows PCs
+comm,4243772,matrix,2matrix
+comm,4264551,Geneious,Geneious
+comm,4264551,MAFFT,MAFFT
+comm,4264551,MrBayes,MrBayes
+comm,4264551,R,R
+comm,4264551,RAxML,RAxML
+comm,4264551,Tracer,Tracer
+comm,4264551,ape,R package Ape
+comm,4331094,BLAST,BLAST
+comm,4331094,ClustalW,ClustalW
+comm,4331094,MAFFT,MAFFT
+comm,4331094,MEGA,MEGA
+comm,4331094,MrBayes,MrBayes
+comm,4331094,Nexus,NEXUS
+comm,4331094,PHYLIP,PHYLIP
+comm,4331094,PartitionFinder,PartitionFinder
+comm,4331094,RAxML,RAxML
+comm,4331094,TranslatorX,TranslatorX
+comm,4331094,tRNAscan-SE,tRNAscan-SE
+comm,4331094,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,4355296,BEAST,BEAST
+comm,4355296,ClustalW,Clustal W
+comm,4355296,FigTree,FigTree
+comm,4355296,Lagrange,Lagrange
+comm,4355296,Mega,Mega
+comm,4355296,MrBayes,MrBayes
+comm,4355296,MrModeltest,MrModeltest
+comm,4355296,OAXACA,OAXACA
+comm,4355296,PAUP*,PAUP*
+comm,4355296,RAxML,RAxML
+comm,4355296,Se-Al,Se-Al
+comm,4355296,Sequencher,Sequencher
+comm,4355296,Tracer,Tracer
+comm,4355296,TreeAnnotator,Tree Annotator
+comm,4380458,BioEdit,BioEdit
+comm,4380458,CGView,CGView
+comm,4380458,MEGA,MEGA
+comm,4380458,MITOS,MITOS
+comm,4380458,MrBayes,MrBayes
+comm,4380458,MtTERM,MtTERM
+comm,4380458,PartitionFinder,PartitionFinder
+comm,4380458,RAxML,RAxML
+comm,4380458,tRNAscan,tRNAScan
+comm,4380458,tRNAscan-SE,tRNAScan-SE
+comm,4380458,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,4455531,BioEdit,BioEdit
+comm,4455531,DNAStar7,DNAStar
+comm,4455531,ETE (Python Environment for Tree Exploration),ETE (Python Environment for Tree Exploration)
+comm,4455531,GTRGAMMA,GTRGAMMAI
+comm,4455531,MEGA,MEGA
+comm,4455531,MUSCLE,MUSCLE
+comm,4455531,MrBayes,MrBayes
+comm,4455531,PartitionFinder,PartitionFinder
+comm,4455531,Perl script,Perl script
+comm,4455531,R,R
+comm,4455531,RAxML,RaxML
+comm,4455531,SeqMan,SeqMan
+comm,4455531,perl,perl
+comm,4455531,stats,stats
+comm,4455531,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,4465667,AMOS,AMOS
+comm,4465667,BLAST,BLAST; BLAST+
+comm,4465667,DAVID,DAVID
+comm,4465667,E-INS,E-INS
+comm,4465667,Geneious,Geneious
+comm,4465667,MAFFT,mafft
+comm,4465667,MEGA,MEGA5
+comm,4465667,MrBayes,MrBayes
+comm,4465667,Perl,Perl
+comm,4465667,Perl script,Perl scripts
+comm,4465667,RAxML,RAxML
+comm,4465667,Roche 454,Roche 454
+comm,4465667,SAMtools,samtools
+comm,4465667,Sequence Data Explorer,Sequence Data Explorer
+comm,4465667,bank-transact,bank-transact
+comm,4465667,bank2contig,bank2contig
+comm,4465667,jModelTest,jModelTest; jModeltest
+comm,4465667,runMapping,runMapping
+comm,4465667,sff_extract,sff_extract
+comm,4465667,toAmos,toAmos
+comm,4468836,BioNJ,BioNJ
+comm,4468836,ClustalW,ClustalW
+comm,4468836,DAMBE,DAMBE
+comm,4468836,DOGMA,DOGMA; Dual Organellar GenoMe Annotator (DOGMA
+comm,4468836,MEGA,MEGA5
+comm,4468836,Modeltest,Modeltest
+comm,4468836,OGDRAW,OGDRAW
+comm,4468836,PAUP∗,PAUP∗4
+comm,4468836,Perl script MISA,Perl script MISA
+comm,4468836,PhyML,PhyML
+comm,4468836,REPuter,REPuter
+comm,4468836,SSPACE Premium,SSPACE premium
+comm,4468836,Tandem Repeats Finder,Tandem Repeats Finder
+comm,4468836,Velvet assembler,Velvet Assembler
+comm,4468836,tRNAscan-SE,tRNAscan-SE
+comm,4468836,trimAl,trimAL
+comm,4498522,BLAST,BLAST
+comm,4498522,BioEdit,BioEdit
+comm,4498522,Geneious,Geneious
+comm,4498522,MAFFT,MAFFT
+comm,4498522,Mesquite,Mesquite
+comm,4498522,MrBayes,MrBayes
+comm,4498522,RAxML,RAxML
+comm,4498522,TreeGraph,TreeGraph
+comm,4498522,jModelTest,jModeltest
+comm,4498522,nrITS,nrITS
+comm,4498522,phyllotaxy,phyllotaxy
+comm,4501515,BioEdit,BioEdit
+comm,4501515,ClustalX,ClustalX
+comm,4511787,BEAST,BEAST
+comm,4511787,BioEdit,BioEdit
+comm,4511787,Dictyoptera,Dictyoptera
+comm,4511787,MUSCLE,MUSCLE
+comm,4511787,MrBayes,MrBayes
+comm,4511787,Mrmodeltest,Mrmodeltest
+comm,4511787,R,R
+comm,4511787,RAxML,RAxML
+comm,4511787,ape,R package ape
+comm,4511787,locfit,R package Locfit
+comm,4511787,r8s,r8s
+comm,4520480,BEAST,BEAST
+comm,4520480,BioEdit,BioEdit
+comm,4520480,ClustalW,ClustalW
+comm,4520480,Delia,Delia
+comm,4520480,FigTree,FigTree
+comm,4520480,GCView,GCView
+comm,4520480,MEGA,MEGA
+comm,4520480,MrBayes,MrBayes
+comm,4520480,PartitionFinder,PartitionFinder
+comm,4520480,RAxML,RAxML
+comm,4520480,Tracer,Tracer
+comm,4520480,TreeAnnotator,TreeAnnotator
+comm,4520480,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,4523765,Gateway,Gateway
+comm,4523765,Gblocks,Gblocks
+comm,4523765,MUSCLE,MUSCLE
+comm,4523765,POY,POY
+comm,4523765,PageBreakparaphyletic,PageBreakparaphyletic
+comm,4523765,RAxML,RAxML
+comm,4523765,Se-Al,Se-Al
+comm,4537560,BEAST,BEAST
+comm,4537560,Dispersal-Vicariance Analysis (S-DIVA),Dispersal–Vicariance Analysis (S-DIVA)
+comm,4537560,Geneious,Geneious
+comm,4537560,MAFFT,MAFFT
+comm,4537560,MrBayes,MrBayes
+comm,4537560,OUwie,R package OUwie
+comm,4537560,PhyML,PhyML
+comm,4537560,Primula,Primula
+comm,4537560,R,R
+comm,4537560,RASP,RASP
+comm,4537560,S-DIVA),S-DIVA
+comm,4537560,Statistical Dispersal-Vicariance Analysis (S-DIVA),Statistical Dispersal Vicariance Analysis (S-DIVA); Statistical Dispersal–Vicariance Analysis (S-DIVA)
+comm,4537560,Tracer,Tracer
+comm,4537560,TreeAnnotator,TreeAnnotator
+comm,4537560,WorldClim2,WorldClim
+comm,4537560,jModelTest,jModelTest
+comm,4537560,raster,raster
+comm,4537560,stats package of R,stats package of R
+comm,4541255,ClustalX,Clustal
+comm,4541255,MFOLD,MFOLD
+comm,4541255,Mesquite,Mesquite
+comm,4541255,MrBayes,MrBayes3
+comm,4541255,MrModeltest,MrModeltest2
+comm,4541255,PAUP*,PAUP*4
+comm,4541255,Tandem Repeat Finder,Tandem Repeat Finder
+comm,4551086,Adobe Photoshop,Adobe Photoshop CS
+comm,4551086,AxioVison,AxioVison
+comm,4551086,DualBrothers,DualBrothers
+comm,4551086,FastGap,FastGap
+comm,4551086,Fastgap,Fastgap
+comm,4551086,GISH,GISH
+comm,4551086,Geneious,Geneious
+comm,4551086,MUSCLE,Muscle
+comm,4551086,Minin,Minin
+comm,4551086,MrBayes,MrBayes
+comm,4551086,PAUP*,PAUP*
+comm,4551086,Phred,Phred
+comm,4551086,QUANT,QUANT®
+comm,4551086,R,R
+comm,4551086,SplitsTree,SplitsTree
+comm,4551086,Tracer,Tracer
+comm,4593675,GARLI,GARLI
+comm,4593675,Geneious,Geneious
+comm,4593675,MAFFT,MAFFT
+comm,4593675,MITOS Web Server,MITOS WebServer
+comm,4593675,MPI,MPI
+comm,4593675,MrBayes,MrBayes
+comm,4593675,OpenMP,OpenMP
+comm,4593675,PartitionFinder,PartitionFinder
+comm,4593675,TNT,TNT
+comm,4593675,Tracer,Tracer
+comm,4593675,jModelTest,jModeltest
+comm,4657503,ClustalX,Clustal
+comm,4657503,DIYABC,diyabc
+comm,4657503,GeneMapper,genemapper
+comm,4657503,Jalview,Jalview
+comm,4657503,Micro-Checker,microchecker
+comm,4657503,PartitionFinder,PartitionFinder
+comm,4657503,PopART,popart
+comm,4657503,QGIS,qgis
+comm,4665016,Geneious,Geneious
+comm,4665016,MCMCTree,MCMCTree31
+comm,4665016,MCMCtree,MCMCtree; MCMCtree31
+comm,4665016,Mesquite,Mesquite
+comm,4665016,PHYLIP,phylip
+comm,4665016,PhyloBayes,Phylobayes; Phylobayes32
+comm,4665016,ProTest,ProTest
+comm,4665016,RAxML,RAxML
+comm,4665016,RAxMLGUI,RAxML GUI
+comm,4665016,SATé,SATé
+comm,4665016,SIMMAP,SIMMAP
+comm,4731775,Aliscore,Aliscore
+comm,4731775,BLAST,BLAST
+comm,4731775,CALYPTOBLASTEA,CALYPTOBLASTEA
+comm,4731775,CIPRES portal,CIPRES portal150
+comm,4731775,Cladograms,Cladogram
+comm,4731775,GeneCodes Sequencer,GeneCodes Sequencer
+comm,4731775,Geneious,Geneious
+comm,4731775,HYDROIDA,HYDROIDA
+comm,4731775,MAFFT,MAFFT
+comm,4731775,PhyML,PhyML
+comm,4731775,RAxML,RAxML
+comm,4731775,Statocyst,Statocysta
+comm,4732383,Adobe Photoshop,Adobe Photoshop
+comm,4732383,BEAST,BEAST
+comm,4732383,BEAUTi,BEAUTi
+comm,4732383,BioGeoBEARS,BioGeoBEARS
+comm,4732383,GeoMapApp,GeoMapApp
+comm,4732383,MAFFT,MAFFT
+comm,4732383,MUSCLE,MUSCLE73
+comm,4732383,Mesquite,Mesquite89
+comm,4732383,MrBayes,MrBayes
+comm,4732383,PAUP*,PAUP*
+comm,4732383,PartitionFinder,PartitionFinder
+comm,4732383,QGIS,QGIS
+comm,4732383,R,R
+comm,4732383,R package BioGeoBEARS,R package BioGeoBEARS
+comm,4732383,Sequencher,Sequencher
+comm,4732383,Tracer,Tracer
+comm,4732383,TreeAnnotator,TreeAnnotator
+comm,4735579,ARWEN,ARWEN20
+comm,4735579,BLAST,BLAST
+comm,4735579,CGView Comparison Tool (CCT),CG View Comparison Tool (CCT)
+comm,4735579,DNAstart,DNAstar
+comm,4735579,DOGMA,DOGMA19
+comm,4735579,GTRCAT,GTRCAT
+comm,4735579,Gblocks,Gblocks; gblocks
+comm,4735579,MEGA,MEGA; MEGA5
+comm,4735579,MITOS,MITOS18
+comm,4735579,ModelGenerator,ModelGenerator
+comm,4735579,MrMTgui,MrMTgui
+comm,4735579,MrModeltest,MrModeltest
+comm,4735579,Mrbayes,Mrbayes3
+comm,4735579,PRTtri,PRTtri
+comm,4735579,PRtri,PRtri
+comm,4735579,PartitionFinder,PartitionFinder
+comm,4735579,raxmlGUI,raxmlGUI25
+comm,4735579,tRNAscan-SE,tRNAscan-SE21
+comm,4735579,trimAl,trimAl
+comm,4814057,Agnotecous,Agnotecous
+comm,4814057,Avisoft Triggering Harddisk Recorder,Avisoft Triggering Harddisk Recorder
+comm,4814057,Avisoft-SASLab,Avisoft-SASLab
+comm,4814057,BEAST,BEAST
+comm,4814057,BioEdit,BioEdit
+comm,4814057,CIPRES,CIPRES Science Gateway
+comm,4814057,ESDM,ESDM
+comm,4814057,FigTree,FigTree
+comm,4814057,LOCKSS,LOCKSS
+comm,4814057,MAXENT,MAXENT
+comm,4814057,MUSCLE,Muscle
+comm,4814057,MrBayes,MrBayes
+comm,4814057,PUBMED,PubMed
+comm,4814057,Phylogeny,Phylogeny
+comm,4814057,R,R
+comm,4814057,RAxML,RAxML
+comm,4814057,Sequencher,Sequencher
+comm,4814057,Tracer,Tracer
+comm,4814057,TreeAnnotator,TreeAnnotator
+comm,4814057,jModelTest,jModelTest
+comm,4858670,4SALE,4SALE52
+comm,4858670,BEAST,BEAST
+comm,4858670,Illustrator,Illustrator
+comm,4858670,MAFFT,mafft
+comm,4858670,Mega,Mega
+comm,4858670,MrBayes,MrBayes
+comm,4858670,PartitionFinder,PartitionFinder
+comm,4858670,Phylogenetic Species Recognition58,Phylogenetic Species Recognition58
+comm,4858670,Primer3,Primer 350
+comm,4858670,R,R
+comm,4858670,RAxML,RaxML
+comm,4858670,Tracer,Tracer
+comm,4858670,maptools,maptools
+comm,4870793,,not_disambiguated
+comm,4870793,),)
+comm,4870793,Alike,Alike
+comm,4870793,Bayes,Bayes
+comm,4870793,CODEML,CODEML
+comm,4870793,CoEvol,CoEvol
+comm,4870793,DAVID,"DAVID; Database for Annotation, Visualization and Integrated Discovery (DAVID"
+comm,4870793,Ensembl,ENSEMBL; Ensembl
+comm,4870793,Ensembl BioMart,Ensembl Biomart
+comm,4870793,MEPE,MEPE
+comm,4870793,MUSCLE,MUSCLE
+comm,4870793,PAML,PAML
+comm,4870793,PhyML,PhyML
+comm,4870793,Q-Value,Q-Value
+comm,4870793,QuickGO,QuickGO
+comm,4870793,SPSS,SPSS
+comm,4870793,TREE-PUZZLE,TREE-PUZZLE
+comm,4870793,TimeTree,TimeTree
+comm,4870793,VENNY,VENNY
+comm,4870793,aLRT,aLRT
+comm,4887867,Chromas,Chromas
+comm,4887867,FigTree,FigTree
+comm,4887867,Gblocks,Gblocks
+comm,4887867,MEGA,MEGA
+comm,4887867,Mesquite,Mesquite
+comm,4887867,MrBayes,MrBayes
+comm,4887867,PartitionFinder,PartitionFinder54
+comm,4887867,RAxML,RAxML
+comm,4887867,RAxML-HPC BlackBox,RAxML-HPC BlackBox
+comm,4887867,XSEDE,XSEDE
+comm,4887867,iTOL (Interactive Tree of Life),ITOL (Interactive Tree Of Life)
+comm,4905661,FigTree,FigTree
+comm,4905661,Geneious,Geneious
+comm,4905661,MUSCLE,MUSCLE
+comm,4905661,MrBayes,MrBayes
+comm,4905661,PhyML,PhyML; phyML
+comm,4905661,RAxML,RAxML
+comm,4905661,SeqState,SeqState
+comm,4905661,SplitsTree,Splitstree
+comm,4905661,jModelTest,jModelTest
+comm,4920351,AWTY,AWTY
+comm,4920351,BioEdit,BioEdit
+comm,4920351,CGView,CGView
+comm,4920351,MEGA,MEGA
+comm,4920351,MrBayes,MrBayes
+comm,4920351,PartitionFinder,PartitionFinder
+comm,4920351,tRNAscan,tRNAscan
+comm,4920351,tRNAscan-SE,tRNAscan-SE
+comm,4922825,(AMOVA,AMOVA
+comm,4922825,ALTER,Alter
+comm,4922825,Arlequin,Arlequin
+comm,4922825,BLAST,BLAST
+comm,4922825,CodonCode Aligner,CodonCode Aligner
+comm,4922825,CytB,CytB
+comm,4922825,Geographic Distance Matrix Generator,Geographic Distance Matrix Generator
+comm,4922825,HP-RARE,HP-RARE
+comm,4922825,HP-Rare,HP-Rare
+comm,4922825,Linda,linda
+comm,4922825,SMOGD,SMOGD
+comm,4989296,MEGA,MEGA
+comm,4989296,PolyPhred,Polyphred
+comm,5004484,ArcGIS,ArcGIS
+comm,5004484,DIVA-GIS,DIVA-GIS
+comm,5004484,DnaSP,DnaSP
+comm,5004484,FigTree,FigTree
+comm,5004484,GenAIEx,GenAIEx
+comm,5004484,GeneMarker,GENEMARKER
+comm,5004484,HP-RARE,HP-RARE
+comm,5004484,MEGA,MEGA
+comm,5004484,MICROCHEKER,MICROCHEKER
+comm,5004484,MUSCLE,MUSCLE
+comm,5004484,Microsatellite Analyzer (MSA),Microsatellite Analyzer (MSA)
+comm,5004484,NewHybrids,NewHybrids
+comm,5004484,PHYLIP,PHYLIP
+comm,5004484,PowerMarker,Powermarker
+comm,5004484,STRUCTURE,STRUCTURE
+comm,5004484,STRUCTURE HARVESTER,STRUCTURE HARVESTER
+comm,5004484,nSSR,nSSR
+comm,5027107,BAMM,BAMM
+comm,5027107,BEAST,BEAST
+comm,5027107,Bammtools,Bammtools
+comm,5027107,GEIGER,GEIGER
+comm,5027107,GeoSSE,GeoSSE
+comm,5027107,Mesquite,Mesquite
+comm,5027107,MuSSE,MuSSE
+comm,5027107,MuSSE (Multiple State Speciation and Extinction),MuSSE (Multiple State Speciation and Extinction)
+comm,5027107,PartitionFinder,PartitionFinder
+comm,5027107,R,R
+comm,5027107,RAxML,RAxML
+comm,5027107,RELTIME,RELTIME
+comm,5027107,TRACER,TRACER
+comm,5027107,coda,coda
+comm,5027107,diversitree,diversitree
+comm,5052871,BLAST,BLAST; BLASTp
+comm,5052871,CellR,CellR
+comm,5052871,IQ-TREE,IQ-TREE
+comm,5052871,ImageJ,ImageJ
+comm,5052871,MAFFT,MAFFT
+comm,5052871,MitoProt,Mitoprot
+comm,5052871,ProtTest,ProtTest
+comm,5052871,RAxML,RAxML
+comm,5052871,RAxML-HPC2,RAxML-HPC2
+comm,5052871,TBLASTN,tBLASTn
+comm,5052871,TargetP,TargetP
+comm,5090004,Agilent ChemStation,Agilent Chemstation
+comm,5090004,BioEdit,Bioedit
+comm,5090004,MAFFT,MAFFT
+comm,5090004,Mega,Mega
+comm,5090004,PhyML,PhyML
+comm,5090004,Seqmatch,Seqmatch
+comm,5090004,jModelTest,JModeltest
+comm,5095552,ARWEN,ARWEN39
+comm,5095552,BLAST,BLAST
+comm,5095552,BLASTN,BLASTn
+comm,5095552,CGView,CGView40
+comm,5095552,Gblocks,GBlocks
+comm,5095552,IDBA-UD,IDBA-UD; IDBA-UD23
+comm,5095552,MAFFT,MAFFT
+comm,5095552,MEGA,MEGA
+comm,5095552,MrBayes,MrBayes
+comm,5095552,PartitionFinder,PartitionFinder
+comm,5095552,RAxML,RAxML
+comm,5095552,TranslatorX,TranslatorX
+comm,5095552,Trimmomatic,Trimmomatic
+comm,5095552,tRNAscan-SE,tRNAscan-SE38
+comm,5104439,BLAST,BLAST
+comm,5104439,BLASTN,blastn
+comm,5104439,BLASTX,blastx
+comm,5104439,BioEdit Sequence Alignment Editor,BioEdit Sequence Alignment Editor
+comm,5104439,ClustalW,ClustalW
+comm,5104439,Coco,Coco
+comm,5104439,FigTree,Figtree
+comm,5104439,MEGA,MEGA
+comm,5104439,MrBayes,MrBayes
+comm,5104439,PartitionFinder,PartitionFinder
+comm,5104439,RAxML,RaxML
+comm,5104439,SMART,Simple Modular Architecture Research Tool
+comm,5104439,Sequence Alignment,Sequence Alignment
+comm,5172622,Accelrys—Discovery Studio,Accelrys—Discovery Studio
+comm,5172622,ClustalW,ClustalW
+comm,5172622,FigTree,FigTree
+comm,5172622,GROMACS,GROMACS
+comm,5172622,MEGA,MEGA
+comm,5172622,MODELLER,MODELLER
+comm,5172622,MrBayes,MrBayes
+comm,5172622,PROCHECK,PROCHECK
+comm,5172622,Verify,Verify
+comm,5266277,BEAST,BEAST
+comm,5266277,BUCKy,BUCKy
+comm,5266277,Bayesian Concordance Analysis (BCA),Bayesian Concordance Analysis (BCA)
+comm,5266277,CONSEL,CONSEL
+comm,5266277,FigTree,FigTree
+comm,5266277,GTRCAT,GTRCAT
+comm,5266277,Gamotion,Gamotion
+comm,5266277,Geneious,Geneious
+comm,5266277,Hedysarum,Hedysarum
+comm,5266277,LogCombiner,LogCombiner
+comm,5266277,MCMCMC,MCMCMC
+comm,5266277,MEGA,MEGA
+comm,5266277,MUSCLE,MUSCLE
+comm,5266277,MrBayes,MrBayes
+comm,5266277,PAUP*,PAUP*
+comm,5266277,PartitionFinder,PartitionFinder
+comm,5266277,RAxML,RAxML
+comm,5266277,SeqState,SeqState
+comm,5266277,Tracer,Tracer
+comm,5266277,TreeAnnotator,TreeAnnotator
+comm,5266277,bucky,bucky
+comm,5266277,jModelTest,jModelTest
+comm,5266277,mbsum,mbsum
+comm,5300163,BioEdit,BioEdit
+comm,5300163,ClustalX,Clustal X
+comm,5300163,ITS+matK,ITS+matK
+comm,5300163,ITS2,ITS
+comm,5300163,MEGA,MEGA
+comm,5300163,SPSS,SPSS Statistics
+comm,5300163,TaxonDNA,TaxonDNA
+comm,5300163,Web of Sciences,Web of Sciences
+comm,5300163,matK,matK
+comm,5300163,nrITS,nrITS
+comm,5304391,BLAST,blastp
+comm,5304391,BLASTX,blastx
+comm,5304391,Bowtie,Bowtie2
+comm,5304391,Cutadapt,Cutadapt
+comm,5304391,IQ-TREE,IQ-TREE
+comm,5304391,Integrative Genomic Viewer,Integrative Genomic Viewer
+comm,5304391,MAFFT,MAFFT
+comm,5304391,MetaCentrum,MetaCentrum
+comm,5304391,PhyloBayes,PhyloBayes
+comm,5304391,PhyloBayes MPI,PhyloBayes MPI
+comm,5304391,RAxML,RAxML
+comm,5304391,RStudio,RStudio
+comm,5304391,SAMtools,Samtools
+comm,5304391,SWISSPROT,trEMBL
+comm,5304391,Sequencher,Sequencher
+comm,5304391,TBLASTN,tblastn
+comm,5304391,TSA,TSA
+comm,5304391,Tablet,Tablet
+comm,5304391,Trimmomatic,Trimmomatic
+comm,5304391,Trinity package,Trinity package
+comm,5311727,ABySS assembler,AbySS assembler
+comm,5311727,ApMAT,ApMAT
+comm,5311727,BLAST,BLAST
+comm,5311727,DnaSP,DNASP
+comm,5311727,Gblocks,Gblocks
+comm,5311727,ILLUMINA,illumina
+comm,5311727,In-house,in-house
+comm,5311727,MEGA,MEGA; MEGA7
+comm,5311727,MFannot,MFannot
+comm,5311727,Mauve,Mauve
+comm,5311727,MrBayes,MrBayes
+comm,5311727,MrModeltest,MrModelTest; MrModeltest
+comm,5311727,ProtTest,ProtTest
+comm,5311727,tRNAscan-SE,tRNAscan-SE
+comm,5330476,Adobe Photoshop,Adobe Photoshop
+comm,5330476,Aliscore,Aliscore
+comm,5330476,COTEC,COTEC
+comm,5330476,Geneious,Geneious R8
+comm,5330476,IQ-TREE,IQ-TREE; IQ-TREE1
+comm,5330476,MP,MP
+comm,5330476,Mesquite,Mesquite
+comm,5330476,Modeltest,ModelTest
+comm,5330476,PartitionFinder,PartitionFinder
+comm,5330476,TNT,TNT
+comm,5330476,Translation Align,Translation Align
+comm,5330476,jModelTest,jModelTest
+comm,5345029,Geographic Distance Matrix Generator,Geographic Distance Matrix Generator
+comm,5345029,Isolation-by-Distance Web Service’ (IBDWS,Isolation-by-Distance Web Service’ (IBDWS
+comm,5345029,MP,MP
+comm,5345029,Nexus,NEXUS
+comm,5345029,PAUP*,PAUP*
+comm,5345029,PopART,PopART
+comm,5345029,RAxML,RAxML
+comm,5345029,Se-Al,Se-Al
+comm,5345029,Sequencher,Sequencher®
+comm,5376084,Geneious,Geneious
+comm,5376084,Mesquite,Mesquite
+comm,5376084,MrBayes,MrBayes
+comm,5376084,PAUP*,PAUP
+comm,5376084,RAxML,RAxML
+comm,5376084,jModelTest,jModeltest
+comm,5412357,AT-Skew,AT-Skew
+comm,5412357,BioEdit,BioEdit
+comm,5412357,CGView,CGView
+comm,5412357,MEGA,MEGA
+comm,5412357,MUSCLE,Muscle
+comm,5412357,MXSCARNA,MXSCARNA
+comm,5412357,MrBayes,MrBayes
+comm,5412357,PartitionFinder,PartitionFinder
+comm,5412357,RAxML,RAxML
+comm,5412357,TranslatorX,TranslatorX
+comm,5412357,sumtrees,Sumtrees
+comm,5412357,tRNAscan-SE,tRNAscan-SE
+comm,5412357,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,5413554,BLASTN,blastn
+comm,5413554,CLC Genomics Workbench,CLC Genomics Workbench
+comm,5413554,DOGMA,DOGMA
+comm,5413554,DnaSP,DnaSP
+comm,5413554,GMATo,GMATo
+comm,5413554,Genomics Workbench,Genomics Workbench
+comm,5413554,MUSCLE,MUSCLE
+comm,5413554,Mayas,Mayas
+comm,5413554,MrBayes,MrBayes
+comm,5413554,PartitionFinder,PartitionFinder
+comm,5413554,RAxML,RAxML
+comm,5413554,tRNAscan-SE,tRNAscan-SE
+comm,5415509,BEAST,BEAST
+comm,5415509,BEAUTi,BEAUTi
+comm,5415509,BLAST,BLAST
+comm,5415509,BioEdit,BioEdit
+comm,5415509,Gateway,Gateway
+comm,5415509,MAFFT,MAFFT
+comm,5415509,MCMCglmm,MCMCglmm
+comm,5415509,MacClade,MacClade
+comm,5415509,Mesquite,Mesquite
+comm,5415509,MrBayes,MrBayes
+comm,5415509,Pisione,Pisione
+comm,5415509,R,R
+comm,5415509,RAxML,RaxML
+comm,5415509,Sequencher,Sequencher
+comm,5415509,TRACER,TRACER
+comm,5415509,Tracer,Tracer
+comm,5415509,TreeAnnotator,TreeAnnotator
+comm,5415509,jModelTest,jModelTest
+comm,5415509,mapdata,mapdata
+comm,5415509,maps,maps
+comm,5415509,phylotools,R package phylotools
+comm,5415509,quantreg,quantreg
+comm,5418863,BEAST,BEAST
+comm,5418863,GARLI,GARLI
+comm,5418863,LogCombiner,LogCombiner
+comm,5418863,MAFFT,MAFFT
+comm,5418863,Mesquite,Mesquite
+comm,5418863,OUwie,OUwie
+comm,5418863,R packages geiger,R packages geiger
+comm,5418863,Stochastic Mutational Mapping on Phylogenies (SIMMAP),Stochastic Mutational Mapping on Phylogenies (SIMMAP)
+comm,5418863,Tracer,Tracer
+comm,5418863,TreeAnnotator,TreeAnnotator
+comm,5418863,ZEISS),ZEISS
+comm,5418863,bipartite,R package bipartite
+comm,5418863,caper,R package caper; caper
+comm,5418863,contMap,contMap
+comm,5418863,geiger,R package geiger; geiger
+comm,5418863,geomorph,R package geomorph
+comm,5418863,jModelTest,jModelTest
+comm,5418863,phytools,R package phytools; phytools
+comm,5430756,BEAST,BEAST
+comm,5430756,BLASTX,BlastX
+comm,5430756,CTMC,CTMC
+comm,5430756,CodeML,CodeML
+comm,5430756,FastQC,FastQC
+comm,5430756,FigTree,FigTree
+comm,5430756,GBLOCKS,GBLOCKS
+comm,5430756,Geneious,Geneious
+comm,5430756,LogCombiner,LogCombiner
+comm,5430756,MESQUITE,MESQUITE
+comm,5430756,OrthoMCL,OrthoMCL
+comm,5430756,PAML,PAML
+comm,5430756,Parsimony Ancestral States,Parsimony Ancestral States
+comm,5430756,R,R
+comm,5430756,R Phytools,R Phytools
+comm,5430756,RAxML,RAxML
+comm,5430756,STRAP,strap
+comm,5430756,Tracer,Tracer
+comm,5430756,TreeAnnotator,TreeAnnotator
+comm,5430756,Trimmomatic,Trimmomatic
+comm,5430756,Trinity de novo assembler,Trinity de novo Assembler
+comm,5430756,Virtual Ribosome,Virtual Ribosome
+comm,5430756,jModelTest,Jmodeltest
+comm,5430756,phyloch,phyloch
+comm,5430859,BioNumerics,BioNumerics
+comm,5430859,Chromas,Chromas
+comm,5430859,ClustalW,ClustalW
+comm,5430859,MEGA,MEGA
+comm,5430859,MLSA,MLSA
+comm,5430859,Modeltest,Modeltest
+comm,5430859,MrBayes,MrBayes
+comm,5430859,PHYMLv3,PHYMLv3
+comm,5430859,R,R
+comm,5430859,R (R Development Core Team,R Development Core Team
+comm,5437043,DOGMA,DOGMA
+comm,5437043,DnaSP,DnaSP
+comm,5437043,GMATo,GMATo
+comm,5437043,Genomics Workbench,Genomics Workbench
+comm,5437043,MAFFT,MAFFT
+comm,5437043,MUSCLE,MUSCLE
+comm,5437043,Mega,Mega
+comm,5437043,RAxML,RAxML
+comm,5437043,SPSS,SPSS Statistics
+comm,5437043,tRNAscan-SE,tRNAscan-SE
+comm,5446773,BEAST,BEAST
+comm,5446773,BP&P,BP&P
+comm,5446773,BioEdit,BioEdit
+comm,5446773,FinchTV,FinchTV
+comm,5446773,GUIDANCE,GUIDANCE2
+comm,5446773,Garli,Garli
+comm,5446773,LogCombiner,LogCombiner
+comm,5446773,MAFFT,MAFFT
+comm,5446773,MEGA,MEGA
+comm,5446773,MrBayes,MrBayes
+comm,5446773,ORF Finder,ORF Finder
+comm,5446773,PHASE,PHASE
+comm,5446773,PartitionFinder,PartitionFinder
+comm,5446773,PopArt,PopArt
+comm,5446773,R,R
+comm,5446773,R (R Development Core Team,R Development Core Team
+comm,5446773,STRAP,strap
+comm,5446773,Tracer,Tracer
+comm,5446773,TreeAnnotator,TreeAnnotator
+comm,5446773,coda,coda
+comm,5446773,jModelTest,jModeltest
+comm,5446773,phyloch,phyloch
+comm,5446773,phytools,phytools
+comm,5446773,rjMCMC,rjMCMC
+comm,5446773,seqphase,Seqphase
+comm,5480257,BEAST,Beast
+comm,5480257,GenGank,GenGank
+comm,5480257,Geneious,Geneious
+comm,5480257,Hedera,Hedera
+comm,5480257,LogCombiner,Log Combiner
+comm,5480257,MCC Beast,MCC Beast
+comm,5480257,MUSCLE,MUSCLE
+comm,5480257,R,R
+comm,5480257,R package LASER,R-package LASER
+comm,5480257,R script,R script
+comm,5480257,TCS,TCS
+comm,5480257,Tracer,Tracer
+comm,5480257,TreeAnnotator,TreeAnotator
+comm,5480257,ape,R-package ape
+comm,5480257,jModelTest,jModeltest
+comm,5480257,nrITS Beast,nrITS Beast
+comm,5480257,picante,R-package Picante
+comm,5481375,(AMOVA,AMOVA
+comm,5481375,ArcGIS,ArcGIS
+comm,5481375,Arlequin,Arlequin
+comm,5481375,BLAST,BLAST
+comm,5481375,DIVA-GIS,DIVA-GIS
+comm,5481375,DnaSP,DnaSP
+comm,5481375,FSTAT,FSTAT
+comm,5481375,GenAlEx,GenAlEx
+comm,5481375,GeneMarker,GeneMarker
+comm,5481375,MEGA,MEGA
+comm,5481375,PHYLIP,Phylip
+comm,5481375,R,R
+comm,5481375,STRUCTURE,STRUCTURE
+comm,5481375,StAMPP,StAMPP; StAMPP R
+comm,5481375,gplots,gplots
+comm,5481933,Aligner,Aligner
+comm,5481933,Astral,Astral
+comm,5481933,BLASTX,BLASTx
+comm,5481933,Bowtie,bowtie2
+comm,5481933,CateGOrizer,CateGOrizer
+comm,5481933,CoGepedia,CoGepedia
+comm,5481933,Cutadapt,Cutadapt
+comm,5481933,DESeq2,Bioconductor DESeq2 package
+comm,5481933,EGGnog,EGGnog
+comm,5481933,Evo-Devo,Evo-Devo
+comm,5481933,HybPiper,HybPiper
+comm,5481933,MAFFT,MAFFT
+comm,5481933,MarkerMiner,MarkerMiner
+comm,5481933,OrthoMCL,OrthoMCL
+comm,5481933,OrthoVenn,OrthoVenn
+comm,5481933,PartitionFinder,PartitionFinder
+comm,5481933,RAxML,RAxML
+comm,5481933,Sickle,Sickle
+comm,5481933,Trinity,Trinity
+comm,5481933,Trinotate,Trinotate
+comm,5493631,BEAST,BEAST
+comm,5493631,CGView,CGView
+comm,5493631,ClustalW,ClustalW
+comm,5493631,ContigExpress,ContigExpress
+comm,5493631,FigTree,FigTree
+comm,5493631,G-blocks,G-blocks
+comm,5493631,LogCombiner,LogCombiner
+comm,5493631,MEGA,MEGA
+comm,5493631,MrBayes,MrBayes
+comm,5493631,PartitionFinder,PartitionFinder
+comm,5493631,RAxML,RAxML
+comm,5493631,TreeAnnotator,TreeAnnotator
+comm,5493631,tRNAscan-SE Search,tRNAscan-SE Search
+comm,5523398,CarBio,CarBio
+comm,5523398,GYZ,GYZ
+comm,5523398,Geneious,Geneious
+comm,5523398,Imias,Imias
+comm,5523398,MAFFT,MAFFT
+comm,5523398,RAxML,RAxML
+comm,5523398,RSA),RSA
+comm,5529561,BioGEOBEARS,BioGEOBEARS
+comm,5529561,BioGeoBEARS,BioGeoBEARS
+comm,5529561,CLC Genomics Workbench,CLC Genomics Workbench
+comm,5529561,DIVALIKE,DIVALIKE
+comm,5529561,Fragment Analyzer,Fragment Analyzer
+comm,5529561,Geneious,Geneious
+comm,5529561,Geneious mapper,Geneious mapper
+comm,5529561,MAFFT,MAFFT
+comm,5529561,MITOS,MITOS
+comm,5529561,MITObim,MITObim
+comm,5529561,MUSCLE,MUSCLE
+comm,5529561,MrBayes,MrBayes
+comm,5529561,PartitionFinder,PartitionFinder
+comm,5529561,R,R
+comm,5529561,R package BioGeoBEARS,R package BioGeoBEARS
+comm,5529561,RAxML,RAxML
+comm,5529561,Tracer,Tracer
+comm,5529561,XSEDE,XSEDE
+comm,5529561,phytools,phytools
+comm,5529561,to Reference,to Reference
+comm,5558824,BELIZE -,BELIZE
+comm,5558824,BLAST,BLAST
+comm,5558824,BOLIVIA,BOLIVIA
+comm,5558824,COLOMBIA,COLOMBIA
+comm,5558824,CUBA,CUBA
+comm,5558824,GPL3,GPL
+comm,5558824,GUATEMALA,GUATEMALA
+comm,5558824,Gagnep,Gagnep
+comm,5558824,Geneious,Geneious
+comm,5558824,JAVA,JAVA
+comm,5558824,MALESIA,MALESIA
+comm,5558824,MEXICO,MEXICO
+comm,5558824,MYANMAR,MYANMAR
+comm,5558824,Madagascar,MADAGASCAR
+comm,5558824,Metcalfe,Metcalf
+comm,5558824,MrBayes,MrBayes
+comm,5558824,MrModeltest,MrModeltest
+comm,5558824,PAUP*,PAUP*
+comm,5558824,RAxML,RaxML
+comm,5558824,SeqState,SeqState
+comm,5558824,Sumatra,SUMATRA
+comm,5558824,Tracer,Tracer
+comm,5558824,VIETNAM,VIETNAM
+comm,5558824,Webbia,Webbia
+comm,5558960,BOLD Systems,BOLD System
+comm,5558960,BioEdit,BioEdit
+comm,5558960,Dimeregramma,Dimeregramma
+comm,5558960,LOCKSS,LOCKSS
+comm,5558960,Likelihood RAxML,Likelihood (RAxML
+comm,5558960,MUSCLE,MUSCLE
+comm,5558960,MrBayes,MrBayes
+comm,5558960,PUBMED,PubMed
+comm,5558960,Plagiogramma,Plagiogramma
+comm,5558960,QCapture Pro,QCapture Pro
+comm,5558960,RAxML,RAxML
+comm,5558960,dmfMeasure,dmfMeasure
+comm,5567239,Adobe Illustrator,Adobe Illustrator
+comm,5567239,Adobe Photoshop,Adobe Photoshop
+comm,5567239,BLASTN,BLASTN
+comm,5567239,Copepoda,Copepoda
+comm,5567239,Geneious,Geneious
+comm,5567239,Linux®,Linux
+comm,5567239,MAFFT,MAFFT
+comm,5567239,MrBayes,MrBayes
+comm,5567239,Pancrustacea,Pancrustacea
+comm,5567239,QGIS,QGIS
+comm,5567239,RAxML,RAxML
+comm,5567239,jModelTest,jModeltest
+comm,5567239,treeBASE,TreeBASE
+comm,5580441,ABC,ABC
+comm,5580441,BAPS,BAPS
+comm,5580441,BEAST,*BEAST; BEAST
+comm,5580441,BayesTraits,BayesTraits
+comm,5580441,Datamonkey,Datamonkey
+comm,5580441,DensiTree,DensiTree
+comm,5580441,DnaSP,DnaSP
+comm,5580441,FigTree,FigTree
+comm,5580441,HKA,HKA
+comm,5580441,LogCombiner,LogCombiner
+comm,5580441,MEGA,MEGA; MEGA6
+comm,5580441,MP-EST,MP-EST
+comm,5580441,PHASE,PHASE
+comm,5580441,PopArt,PopArt
+comm,5580441,R,R
+comm,5580441,RAVEN PRO,RAVEN PRO
+comm,5580441,RAxML,RAxML
+comm,5580441,RAxMLGUI,RAxML GUI
+comm,5580441,SITES,SITES
+comm,5580441,STRAW,STRAW
+comm,5580441,Tracer,Tracer
+comm,5580441,TreeAnnotator,TreeAnnotator
+comm,5580441,abc,R package ABC
+comm,5580441,arlsumstat,arlsumstats
+comm,5580441,coda,coda
+comm,5580441,fastsimcoal2,Fastsimcoal; fastsimcoal2
+comm,5580441,genetic analysis for recombinant detection (GARD),genetic analysis for recombinant detection (GARD)
+comm,5580441,jModelTest,jModelTest
+comm,5624197,BEAST,BEAST
+comm,5624197,BUILDER,BUILDER
+comm,5624197,Boostrap,Boostrap
+comm,5624197,COMBINER,COMBINER
+comm,5624197,FIGTREE,FIGTREE
+comm,5624197,GUIDANCE,GUIDANCE
+comm,5624197,Geneious,GENEIOUS
+comm,5624197,Hyptiocarpa,Hyptiocarpa
+comm,5624197,JMODELTEST,JMODELTEST
+comm,5624197,Jalview,JALVIEW
+comm,5624197,MAFFT,MAFFT
+comm,5624197,MEGA,MEGA
+comm,5624197,MrBayes,MRBAYES
+comm,5624197,PAUP* PageBreakPageBreakPageBreak,PAUP* PageBreakPageBreakPageBreak
+comm,5624197,PageBreakPageBreakare,PageBreakPageBreakare
+comm,5624197,TREEANNOTATOR,TREE ANNOTATOR
+comm,5624197,Tracer,Tracer
+comm,5624197,dryad,Dryad
+comm,5644147,ClustalX,CLUSTAL X
+comm,5644147,DnaSP,DnaSP
+comm,5644147,Geneious,Geneious
+comm,5644147,MEGA,MEGA
+comm,5644147,MrBayes,MrBayes
+comm,5644147,PAUP*,PAUP*
+comm,5644147,PhyML,PhyML
+comm,5644147,Tcbat,Tcbat
+comm,5644147,jModelTest,jModelTest
+comm,5660246,DnaSP,DnaSP
+comm,5660246,Gblocks,GBlocks
+comm,5660246,Genomics Workbench,Genomics Workbench
+comm,5660246,MAFFT,MAFFT
+comm,5660246,MEGA,MEGA
+comm,5660246,MITOS WebSever,MITOS WebSever
+comm,5660246,MITObim,MITObim
+comm,5660246,MUSCLE,MUSCLE
+comm,5660246,MrBayes,MrBayes
+comm,5660246,PAUP⁄4,PAUP⁄4
+comm,5660246,PartitionFinder,PartitionFinder
+comm,5660246,RAxML,RAxML
+comm,5660246,raxmlGUI,raxmlGUI
+comm,5660246,tRNAScan-SE server,tRNAScan-SE server
+comm,5664827,Adobe Illustrator,Adobe Illustrator
+comm,5664827,BEAST,BEAST2
+comm,5664827,BLAST,BLAST
+comm,5664827,DISSECT,DISSECT
+comm,5664827,FigTree,FigTree
+comm,5664827,Gblocks,Gblocks
+comm,5664827,GeneSnap,GeneSnap
+comm,5664827,Geneious,Geneious
+comm,5664827,Lifeportal,Lifeportal
+comm,5664827,LogCombiner,LogCombiner
+comm,5664827,MAFFT,MAFFT
+comm,5664827,MUSCLE,MUSCLE
+comm,5664827,Mesquite,Mesquite
+comm,5664827,MrBayes,MrBayes
+comm,5664827,PartitionFinder,Partition Finder; PartitionFinder
+comm,5664827,PhyML,PhyML
+comm,5664827,R,R
+comm,5664827,RAxML,RAxML
+comm,5664827,STACEY,STACEY
+comm,5664827,SpeciesDelimitationAnalyser,SpeciesDelimitationAnalyser
+comm,5664827,Stacey,Stacey
+comm,5664827,Tracer,Tracer
+comm,5664827,TreeAnnotator,TreeAnnotator
+comm,5664827,pheatmap,R package pheatmap
+comm,5664827,popPriorScale,popPriorScale
+comm,5664827,raxmlGUI,raxmlGUI
+comm,5673861,Adobe Photoshop,Photoshop
+comm,5673861,BioSCAN,BioSCAN
+comm,5673861,Final Cut Pro,Final Cut Pro
+comm,5673861,MAFFT,MAFFT
+comm,5673861,PageBreaktest,PageBreaktest
+comm,5673861,SpeciesIdentifier,SpeciesIdentifier
+comm,5695614,BLAST,BLAST; BLASTp; blastp
+comm,5695614,BLAST Ring Image Generator (BRIG),BLAST Ring Image Generator (BRIG) map
+comm,5695614,BLASTX,BLASTx
+comm,5695614,CLC Genomics Workbench,CLC Genomics Workbench
+comm,5695614,CLC de,CLC de
+comm,5695614,DOGMA,DOGMA
+comm,5695614,Geneious Pro,Geneious Pro
+comm,5695614,GenomeVx,GenomeVx
+comm,5695614,I-TASSER,I-TASSER
+comm,5695614,IQ-Tree,IQ-Tree
+comm,5695614,MAFFT,MAFFT
+comm,5695614,MIRA assembler,MIRA assembler
+comm,5695614,Mauve,Mauve
+comm,5695614,Mummer plotting,Mummer plotting
+comm,5695614,PhySortR,R library PhySortR
+comm,5695614,R,R
+comm,5695614,RNAmmer,RNAmmer
+comm,5695614,Se-Al,Se-Al
+comm,5695614,TranslatorX,TranslatorX
+comm,5695614,UniMoG,UniMoG
+comm,5695614,assembler,assembler
+comm,5695614,genoPlotR,R library genoPlotR; genoPlotR
+comm,5695614,seqinr,R library seqinr
+comm,5695614,tRNAscan-SE,tRNA scan-SE
+comm,5702240,BioEdit,BioEdit
+comm,5702240,CIPRES,CIPRES
+comm,5702240,ContigExpress,ContigExpress
+comm,5702240,ITS2,ITS
+comm,5702240,MAFFT,MAFFT
+comm,5702240,MrBayes,MrBayes
+comm,5702240,MrModeltest,MrModeltest
+comm,5702240,PAUP*,PAUP
+comm,5702240,RAxML-HPC2,RAxML-HPC2
+comm,5702240,Vector NTI Suite,Vector NTI Suite
+comm,5702240,XSEDE,XSEDE
+comm,5702240,nrITS,nrITS
+comm,5709374,BLAST,BLAST
+comm,5709374,ClustalW,ClustalW
+comm,5709374,DNAMAN,DNAMAN
+comm,5709374,FigTree,FigTree
+comm,5709374,Gblocks,Gblocks
+comm,5709374,Geneious,Geneious
+comm,5709374,MEGA,MEGA
+comm,5709374,MITOS Web Server,MITOS WebServer
+comm,5709374,MrBayes,MrBayes
+comm,5709374,PhyML,PHYML
+comm,5709374,jModelTest,Jmodeltest
+comm,5709374,tRNAscan-SE,tRNAscan-SE
+comm,5713276,BLAST,BLAST
+comm,5713276,CLC Genomics Workbench,CLC Genomics Workbench
+comm,5713276,DAMBE,DAMBE
+comm,5713276,DOGMA,DOGMA
+comm,5713276,Genomics Workbench,Genomics Workbench
+comm,5713276,MAFFT,MAFFT
+comm,5713276,MUSCLE,MUSCLE
+comm,5713276,Mega,Mega
+comm,5713276,MrBayes,MrBayes
+comm,5713276,PAML,PAML
+comm,5713276,PHYLIP,PHYLIP
+comm,5713276,SOAPdenovo,SOAPdenovo
+comm,5713276,SPSS,SPSS Statistics
+comm,5713276,codeml,codeml
+comm,5713276,mVISTA,mVISTA
+comm,5713276,tRNAscan-SE,tRNAscan-SE
+comm,5714952,CLC Genomics Workbench,CLC Genomics Workbench
+comm,5714952,DAMBE,DAMBE
+comm,5714952,DnaSP,DnaSP
+comm,5714952,Gblocks,GBlocks
+comm,5714952,MAFFT,MAFFT
+comm,5714952,MEGA,MEGA
+comm,5714952,MITOS WebSever,MITOS WebSever
+comm,5714952,MITObim,MITObim
+comm,5714952,MrBayes,MrBayes
+comm,5714952,PartitionFinder,PartitionFinder
+comm,5714952,RAxML,RaxML
+comm,5714952,raxmlGUI,raxmlGUI
+comm,5714952,tRNAScan-SE server,tRNAScan-SE server
+comm,5788969,ABCtoolbox,ABC toolbox
+comm,5788969,Arlequin,ARLEQUIN
+comm,5788969,BLAST,BLAST
+comm,5788969,Computing (ABC,Computing (ABC; Computing (ABC)
+comm,5788969,DnaSP,DNASP
+comm,5788969,FSTAT,FSTAT
+comm,5788969,GenA1Ex,GenA1Ex
+comm,5788969,Geneious Pro,Geneious Pro
+comm,5788969,MEGA,MEGA
+comm,5788969,NETWORK,NETWORK
+comm,5788969,NewHybrids,NewHybrid; NewHybrids
+comm,5788969,R script,R script
+comm,5788969,STRUCTURE,STRUCTURE
+comm,5788969,STRUCTURE HARVESTER,STRUCTURE HARVESTER
+comm,5788969,Sequencher,Sequencher
+comm,5788969,fastsimcoal2,Fastsimcoal
+comm,5792937,BEAST,BEAST
+comm,5792937,ENMtools,ENMtools
+comm,5792937,MaxEnt,Maxent
+comm,5792937,Mosannona,Mosannona
+comm,5792937,MrBayes,MrBayes
+comm,5792937,PAUP*,PAUP*
+comm,5792937,PartitionFinder,PartitionFinder
+comm,5792937,RAxML,RAxML
+comm,5792937,SeqMan,SeqMan
+comm,5792937,TRACER,TRACER
+comm,5792937,dryad,Dryad
+comm,5812252,BEAST,BEAST
+comm,5812252,CladeAge,CladeAge
+comm,5812252,FigTree,FigTree
+comm,5812252,Geneious,Geneious
+comm,5812252,LogCombiner,LogCombiner
+comm,5812252,MAFFT,MAFFT
+comm,5812252,MEGA,MEGA
+comm,5812252,Mesquite,Mesquite
+comm,5812252,MrBayes,MrBayes
+comm,5812252,PAUP*,PAUP
+comm,5812252,RAxML,RAxML
+comm,5812252,SplitsTree,SplitsTree
+comm,5812252,TimeTree,TimeTree
+comm,5812252,Tracer,Tracer
+comm,5812252,TreeAnnotator,TreeAnnotator
+comm,5812252,TreeGraph,TreeGraph
+comm,5812252,jModelTest,jModeltest
+comm,5812252,nrITS,nrITS
+comm,5817127,BEAST,BEAST
+comm,5817127,Jane,Jane
+comm,5817127,LogCombiner,LogCombiner
+comm,5817127,MCMCglmm,MCMCglmm
+comm,5817127,MrBayes,MrBayes
+comm,5817127,R,R
+comm,5817127,RAxML,RAxML
+comm,5817127,Sequencer,Sequencer
+comm,5817127,jModelTest,jModelTest
+comm,5853613,BEAST,BEAST
+comm,5853613,BEAST (Bayesian Evolutionary Analysis Sampling Trees),BEAST (Bayesian Evolutionary Analysis by Sampling Trees
+comm,5853613,ImageJ,ImageJ
+comm,5853613,Leica Application Suite,Leica Application Suite
+comm,5853613,Mesquite,Mesquite
+comm,5853613,RAxML,RAxML
+comm,5853613,Sequencher,Sequencher
+comm,5853613,Statistica,Statistica
+comm,5853613,jModelTest,jModelTest; jModeltest
+comm,5859262,Adobe Illustrator,Adobe Illustrator
+comm,5859262,BEAST,BEAST2
+comm,5859262,BLAST,BLAST
+comm,5859262,DAMBE,DAMBE6
+comm,5859262,DnaSP,DnaSP
+comm,5859262,GenAlEx,GenAlEx
+comm,5859262,GeneSnap,GeneSnap
+comm,5859262,Geneious,Geneious
+comm,5859262,MAFFT,MAFFT
+comm,5859262,MEGA,MEGA7
+comm,5859262,MUSCLE,MUSCLE
+comm,5859262,PartitionFinder,Partition Finder
+comm,5859262,PhyML,PhyML
+comm,5859262,QGIS,QGIS
+comm,5859262,RAxML,RAxML
+comm,5859262,STACEY,STACEY
+comm,5859262,STACEY package for,STACEY package for
+comm,5884435,ClustalX,Clustal X
+comm,5884435,DnaSP,DnaSP
+comm,5884435,Modeltest,ModelTest
+comm,5884435,MrBayes,MrBayes
+comm,5884435,MulTrees,MulTrees
+comm,5884435,PAUP*,PAUP
+comm,5884435,Photinia,Photinia
+comm,5884435,RAxML,RAxML
+comm,5884435,Se-Al,Se-Al
+comm,5904430,Cipres,Cipres
+comm,5904430,DNASTAR®,DNASTAR
+comm,5904430,MAFFT,MAFFT
+comm,5904430,MEGA,MEGA
+comm,5904430,MrBayes,MrBayes
+comm,5904430,RAxML,RAxML
+comm,5904430,RAxML BlackBox,RAxML BlackBox
+comm,5904430,RAxML-HPC BlackBox,RAxML HPC BlackBox
+comm,5904430,SeqMan Pro,SeqMan Pro
+comm,5904430,treeBASE,TreeBASE
+comm,5928055,GTRCAT,GTRCAT
+comm,5928055,INVMAR,INVMAR
+comm,5928055,MADEEP,MADEEP
+comm,5928055,MAFFT,MAFFT
+comm,5928055,MIRIKY,MIRIKY
+comm,5928055,MUSORSTOM,MUSORSTOM
+comm,5928055,Maxillule,Maxillule
+comm,5928055,PANGLAO,PANGLAO
+comm,5928055,PageBreakPageBreakshield,PageBreakPageBreakshield
+comm,5928055,RAxML,RAxML
+comm,5995902,BioEdit,BioEdit
+comm,5995902,DOGMA,Dual Organellar GenoMe Annotator (DOGMA
+comm,5995902,DnaSP,DnaSP
+comm,5995902,MAFFT,MAFFT
+comm,5995902,MrBayes,MrBayes
+comm,5995902,NGS QC Toolkit,NGS QC Tool Kit
+comm,5995902,OGDRAW,OrganellarGenomeDRAW
+comm,5995902,R,R
+comm,5995902,RAxML,RAxML
+comm,5995902,Sequencher,Sequencher
+comm,5995902,jModelTest,jModelTest
+comm,6002367,BLAST,BLAST; BLASTp
+comm,6002367,BLASTN,BLASTn
+comm,6002367,Bowtie,bowtie2
+comm,6002367,DnaSP,DnaSP
+comm,6002367,Lasergene,Lasergene
+comm,6002367,MAFFT,MAFFT
+comm,6002367,MEGA,MEGA
+comm,6002367,MFannot,MFannot
+comm,6002367,MITOS,MITOS
+comm,6002367,MITObim,MITObim
+comm,6002367,Mauve,Mauve
+comm,6002367,ModelGenerator,Modelgenerator
+comm,6002367,MrBayes,MrBayes
+comm,6002367,RAxML,RAxML
+comm,6002367,REPuter,REPuter
+comm,6002367,SPAdes,SPAdes
+comm,6002367,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,6002367,tRNAscan-SE,tRNAscan-SE
+comm,6010815,DNAstart,DNAstar
+comm,6010815,MEGA,MEGA
+comm,6010815,MUSCLE,Muscle
+comm,6010815,R,R
+comm,6010815,R (R Development Core Team,R Development Core Team
+comm,6010815,R package car,R package car
+comm,6010815,SeqMan,SeqMan
+comm,6010815,mat K,mat K
+comm,6010815,multcomp,multcomp
+comm,6023506,ABI Peak Scanner,ABI Peak Scanner
+comm,6023506,BioEdit,BioEdit
+comm,6023506,Chem Station,ChemStation
+comm,6023506,MAFFTv7,MAFFTv
+comm,6023506,Mega,Mega
+comm,6023506,PAUP*,PAUP*
+comm,6023506,PartitionFinder,PartitionFinder
+comm,6023506,TreeGraph,TreeGraph
+comm,6023506,Treebase,Treebase
+comm,6032552,ALTER,ALTER
+comm,6032552,ARWEN,ARWEN
+comm,6032552,CREx,CREx
+comm,6032552,DAMBE,DAMBE
+comm,6032552,DnaSP,DnaSP
+comm,6032552,Gblocks,Gblocks
+comm,6032552,GenBank 2 Sequin,GenBank 2 Sequin
+comm,6032552,Geneious,Geneious
+comm,6032552,IQ-TREE,IQ-TREE
+comm,6032552,MAFFT,MAFFT
+comm,6032552,MITOS,MITOS
+comm,6032552,MUSCLE,MUSCLE
+comm,6032552,MiSeq®,MiSeq
+comm,6032552,ModelFinder,ModelFinder
+comm,6032552,MrBayes,MrBayes
+comm,6032552,OGDRAW,OGDRAW
+comm,6032552,PAL2NAL,PAL2NAL
+comm,6032552,PAML,PAML
+comm,6032552,Q-INS-i,Q-INS-i
+comm,6032552,RAxML,RAxML
+comm,6032552,RNAmmer,RNAmmer
+comm,6032552,Repeats Finder,Repeats Finder
+comm,6032552,SeaView,SeaView
+comm,6032552,TREE-PUZZLE,TREE-PUZZLE
+comm,6032552,TranslatorX,TranslatorX
+comm,6032552,YASS,YASS
+comm,6032552,raxmlGUI,raxmlGUI
+comm,6032552,tRNAscan-SE,tRNAscan-SE
+comm,6053231,DNASTAR®,DNASTAR
+comm,6053231,ECDCT,ECDCT
+comm,6053231,Lasergene,Lasergene
+comm,6053231,MEGA,MEGA
+comm,6053231,Network,Network
+comm,6053231,Statistica,STATISTICA
+comm,6053231,mlst,MLST
+comm,6059158,AliView,AliView
+comm,6059158,BLAST,BLAST
+comm,6059158,BLASTN,blastn
+comm,6059158,Discontiguous MegaBLAST,discontiguous megablast
+comm,6059158,MAFFT,MAFFT
+comm,6059158,Macrogen®,Macrogen
+comm,6059158,MrBayes,MrBayes
+comm,6059158,MrModeltest,MrModeltest
+comm,6059158,RAxML,RAxML
+comm,6059426,Geneious,Geneious
+comm,6059426,MAFFT,MAFFT
+comm,6059426,MEGA,MEGA
+comm,6059426,MrBayes,MrBayes
+comm,6059426,RAxML,RAxML
+comm,6059426,jModelTest,jModelTest; jModeltest
+comm,6059426,pLOS ONE,PLOS ONE
+comm,6066202,DNASTAR®,DNASTAR
+comm,6066202,Lasergene,Lasergene
+comm,6066202,MEGA,MEGA; MEGA6
+comm,6066202,Network,Network
+comm,6066202,RStudio,RStudio
+comm,6066202,mlst,MLST
+comm,6082535,Inference,Inference
+comm,6082535,MEGA,MEGA
+comm,6082535,MUSCLE,MUSCLE
+comm,6082535,MrBayes,MrBayes
+comm,6082535,MusselP,MusselP
+comm,6082535,PAUP*,PAUP*
+comm,6082535,PartitionFinder,PartitionFinder
+comm,6082535,RAxML,RAxML
+comm,6082535,raxmlGUI,raxmlGUI
+comm,6095929,BLAST,BLAST; BLASTp
+comm,6095929,BLASTN,BLASTn
+comm,6095929,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6095929,CRISPRFinder,CRISPR finder
+comm,6095929,Cytoscape,Cytoscape
+comm,6095929,Easyfig,Easyfig
+comm,6095929,KronaTools,Kronatools
+comm,6095929,MEGA,MEGA
+comm,6095929,MUSCLE,MUSCLE
+comm,6095929,MetVir,MetVir
+comm,6095929,MetaVir,MetaVir; MetaVir2
+comm,6095929,PHAST,PHAST
+comm,6095929,Primer3,Primer
+comm,6095929,RefseqVirus,RefseqVirus
+comm,6095929,VirSorter,VirSorter
+comm,6095929,Virsorter,Virsorter
+comm,6095929,crAss,crAss
+comm,6095929,vConTACT,vConTACT
+comm,6154544,Adobe Photoshop,Adobe Photoshop
+comm,6154544,BLAST,BLAST
+comm,6154544,BioEdit,BioEdit
+comm,6154544,CombineZP,CombineZM
+comm,6154544,Corel Draw X7,CorelDrawX7
+comm,6154544,Excel,Excel
+comm,6154544,RAxML,RAxML
+comm,6154544,TreeView,TreeView
+comm,6160798,Bayesian Analysis (BA,Bayesian Analysis (BA
+comm,6160798,FigTree,FigTree
+comm,6160798,Gblocks,Gblocks
+comm,6160798,Geneious,Geneious
+comm,6160798,ITS2,ITS
+comm,6160798,MAFFT,Mafft
+comm,6160798,MEXICO,MEXICO
+comm,6160798,MrBayes,MrBayes
+comm,6160798,NextSeq,Nextseq
+comm,6160798,RAxML-HPC2,RAxML-HPC2
+comm,6160798,XSEDE,XSEDE
+comm,6160798,jModelTest,jModelTest
+comm,6160798,mtSSU,mtSSU
+comm,6160798,nuLSU,nuLSU
+comm,6192594,BioEdit,BioEdit
+comm,6192594,Corel Photo-Paint,Corel Photo-Paint
+comm,6192594,FigTree,FigTree
+comm,6192594,LOCKSS,LOCKSS
+comm,6192594,MAFFT,MAFFT
+comm,6192594,MEGA,MEGA7
+comm,6192594,MrBayes,MrBayes
+comm,6192594,PUBMED,PubMed
+comm,6192594,Parachela,Parachela
+comm,6192594,PartitionFinder,PartitionFinder
+comm,6192594,Quick Photo Camera,QuickPhoto Camera
+comm,6192594,Spitsb,Spitsb
+comm,6192594,Tracer,Tracer
+comm,6198026,AliView,AliView
+comm,6198026,BioEdit,BioEdit
+comm,6198026,ExaBayes,ExaBayes
+comm,6198026,FigTree,FigTree
+comm,6198026,Geneious,Geneious
+comm,6198026,MAFFT,MAFFT
+comm,6198026,MEGA,MEGA7
+comm,6198026,Naturalis OpenStack,Naturalis OpenStack
+comm,6198026,P4,P4
+comm,6198026,PhylOStack,PhylOstack
+comm,6198026,RAxML,RAxML
+comm,6198026,Tracer,Tracer
+comm,6207741,Assembly,Assembly
+comm,6207741,BMGE,BMGE
+comm,6207741,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6207741,Geneious Pro,Geneious Pro
+comm,6207741,IQ-TREE,IQ-TREE
+comm,6207741,MAFFT,MAFFT
+comm,6207741,MFannot,MFannot
+comm,6207741,Mauve,Mauve
+comm,6207741,ModelFinder,ModelFinder
+comm,6207741,OGDRAW,OGDRAW
+comm,6207741,Python,Python
+comm,6207741,RNAmmer,RNAmmer
+comm,6207741,Rfam,Rfam
+comm,6207741,assembler,Assemble
+comm,6209132,ARWEN,ARWEN
+comm,6209132,Adobe Photoshop,Adobe Photoshop
+comm,6209132,Alignment (BWA),Alignment (BWA)
+comm,6209132,BLAST (BLASTn),BLAST (BLASTn)
+comm,6209132,BLAST (BLASTp),BLAST (BLASTp)
+comm,6209132,Burrows,Burrows
+comm,6209132,CGView,CGView
+comm,6209132,CREx,CREx
+comm,6209132,Clustal Omega,Clustal Omega
+comm,6209132,ClustalX,ClustalX
+comm,6209132,Common Interval Rearrangement Explorer),Common Interval Rearrangement Explorer)
+comm,6209132,DAMBE,DAMBE5
+comm,6209132,FigTree,FigTree
+comm,6209132,Gblocks,GBlocks
+comm,6209132,LAS EZ,LAS EZ
+comm,6209132,Leica,Leica
+comm,6209132,MAFFT,MAFFT
+comm,6209132,MEGAX,MEGAX
+comm,6209132,MrBayes,MrBayes
+comm,6209132,NGS Toolkit,NGS Toolkit
+comm,6209132,RAxML,RaxML
+comm,6209132,RNAstructure,RNAstructure
+comm,6209132,SPAdes,SPAdes
+comm,6209132,Sequin,Sequin
+comm,6209132,TranslatorX,TranslatorX
+comm,6209132,jModelTest,jModelTest
+comm,6211570,(AMOVA,AMOVA
+comm,6211570,ArcGIS,ArcGIS
+comm,6211570,Arlequin,Arlequin
+comm,6211570,BEAST,BEAST
+comm,6211570,ClustalW,Clustal W
+comm,6211570,DNASTAR Lasergene,DNASTAR Lasergene
+comm,6211570,DnaSP,DnaSP
+comm,6211570,IBDWS,IBDWS
+comm,6211570,JMODELTEST,jMODELTEST
+comm,6211570,MEGA,MEGA7
+comm,6211570,MaxEnt,MaxEnt
+comm,6211570,PartitionFinder,Partition Finder
+comm,6211570,PopART,PopART
+comm,6211570,RAxML,RaxML
+comm,6211570,Seqman,Seqman
+comm,6231483,Arlequin,Arlequin
+comm,6231483,CLUMPP,CLUMPP
+comm,6231483,DISTRUCT,DISTRUCT
+comm,6231483,DNASTAR Lasergene package,DNASTAR Lasergene package
+comm,6231483,DNASTAR®,DNASTAR
+comm,6231483,DnaSP,DnaSP
+comm,6231483,FORMATOMATIC,FORMATOMATIC
+comm,6231483,INTROGRESS,INTROGRESS
+comm,6231483,LOCPRIOR,LOCPRIOR
+comm,6231483,MEGA,MEGA
+comm,6231483,MIGRPRIOR,MIGRPRIOR
+comm,6231483,MUSCLE,MUSCLE
+comm,6231483,PCA3,PCA
+comm,6231483,PGDSpider,PGDSpider
+comm,6231483,PopART,POPART
+comm,6231483,R package INTROGRESS,R package INTROGRESS
+comm,6231483,SNPRelate,R package SNPRelate; SNPRelate
+comm,6231483,SOAP,SOAP
+comm,6231483,STRUCTURE,STRUCTURE
+comm,6231483,STRUCTURE HARVESTER,STRUCTURE HARVESTER
+comm,6231483,STRUCTURE analyse,STRUCTURE analyse
+comm,6231483,Stacks,Stacks
+comm,6231483,custom Perl script,custom Perl script
+comm,6231483,divMigrate‐online,divMigrate‐online
+comm,6255766,ARWEN,ARWEN
+comm,6255766,Adobe Photoshop,Adobe Photoshop CS
+comm,6255766,CGView,CGView
+comm,6255766,ClustalX,ClustalX
+comm,6255766,DnaSPv5,DnaSPv5
+comm,6255766,Excel,Excel
+comm,6255766,Finder,Finder
+comm,6255766,Frame Finder,Frame Finder
+comm,6255766,MAFFT,MAFFT
+comm,6255766,MEGA,MEGA6
+comm,6255766,Mfold,Mfold
+comm,6255766,Open,Open
+comm,6255766,SPAdes,SPAdes-3
+comm,6255766,TranslatorX,TranslatorX
+comm,6255766,tRNAscan,tRNAscan
+comm,6255766,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,6267336,BLASTN,BLASTN
+comm,6267336,BWA,BWA
+comm,6267336,Canu,Canu
+comm,6267336,Circos,Circos
+comm,6267336,Gblocks,Gblocks
+comm,6267336,MAFFT,MAFFT
+comm,6267336,MEGA,MEGA7
+comm,6267336,Mugsy,Mugsy
+comm,6267336,NUCmer,NUCmer
+comm,6267336,NanoFilt,Nanofilt
+comm,6267336,PanGP,PanGP
+comm,6267336,Pilon,Pilon
+comm,6267336,QUAST,QUAST
+comm,6267336,R,R
+comm,6267336,RAxML,RAxML
+comm,6267336,RNAmmer,RNAmmer
+comm,6267336,SAMtools,SAMtools
+comm,6267336,SOAPdenovo,SOAPdenovo2
+comm,6267336,SOAPdenovo-Illumina,SOAPdenovo-Illumina
+comm,6267336,SPAdes,SPAdes
+comm,6267336,SPAdes Illumina,SPAdes-Illumina
+comm,6267336,SRA-Tools,SRA-Tools
+comm,6267336,Trimmomatic,Trimmomatic
+comm,6267336,UGENE,UGENE
+comm,6267336,jModelTest,jModelTest
+comm,6267336,makeblastdb,makeblastdb
+comm,6267336,pheatmap,pheatmap
+comm,6267336,tRNAscan-SE,tRNAscan-SE
+comm,6290046,LASERGENE,LASERGENE
+comm,6290046,MAFFT,MAFFT
+comm,6290046,MEGA,MEGA
+comm,6290046,MrBayes,MRBAYES
+comm,6290046,MrModeltest,MrModeltest
+comm,6290046,PAUP*,PAUP*
+comm,6290046,RAxML,RAxML
+comm,6290046,Stemborer,Stemborer
+comm,6290046,TREEGRAPH,TREEGRAPH
+comm,6301696,Adobe Photoshop,Adobe Photoshop
+comm,6301696,BLAST,BLAST
+comm,6301696,ClustalW,ClustalW
+comm,6301696,Fluoview,Fluoview
+comm,6301696,GraphPad Prism,GraphPad Prism
+comm,6301696,ImageJ,ImageJ
+comm,6301696,MEGA,MEGA6
+comm,6301696,Mauve,MAUVE
+comm,6301696,MetaVue,MetaVue
+comm,6301696,PATRIC,PATRIC
+comm,6305119,Adobe Photoshop,Adobe Photoshop CS
+comm,6305119,CLOCKSS,CLOCKSS
+comm,6305119,FigTree,FigTree
+comm,6305119,Geneious,Geneious
+comm,6305119,MAFFT,MAFFT
+comm,6305119,MEGA,MEGA
+comm,6305119,MUSCLE,MUSCLE
+comm,6305119,MrBayes,MrBayes
+comm,6305119,PUBMED,PubMed
+comm,6305119,PartitionFinder,PartitionFinder
+comm,6305119,PeerJ,PeerJ
+comm,6305119,RNAviz,RNAviz
+comm,6305119,Tracer,Tracer
+comm,6305119,VARNA,VARNA
+comm,6305119,Zoobank,Zoobank
+comm,6307670,ALLMAPS,ALLMAPS
+comm,6307670,Analyzer,analyze
+comm,6307670,BLAST,BLASTp
+comm,6307670,BLASTN,BLASTn
+comm,6307670,BLASTX,BLASTx
+comm,6307670,BWA,BWA
+comm,6307670,Bowtie,Bowtie2
+comm,6307670,CAP3,CAP3
+comm,6307670,Cutadapt,cutadapt
+comm,6307670,EMBOSS,EMBOSS
+comm,6307670,FastQC,FastQC
+comm,6307670,GATK,GATK
+comm,6307670,Gblocks,Gblocks
+comm,6307670,KaKs_Calculator,KaKs_calculator
+comm,6307670,MEGA,MEGA
+comm,6307670,MUSCLE,MUSCLE
+comm,6307670,MrBayes,MrBayes
+comm,6307670,NCBI ORFfinder,NCBI ORF finder
+comm,6307670,PAL2NAL,PAL2NAL
+comm,6307670,RAxML,RAxML
+comm,6307670,REPFIND,REPFIND
+comm,6307670,RMBlast,RMBlast
+comm,6307670,RSEM,RSEM
+comm,6307670,RepeatMasker,RepeatMasker
+comm,6307670,Sequence Dereplicator and Database Curator (SDDC),Sequence Dereplicator and Database Curator (SDDC)
+comm,6307670,SmartBlast,SmartBlast
+comm,6307670,SortMeRNA,SortMeRNA
+comm,6307670,TTOL,TTOL
+comm,6307670,TimeTree of Life (TTOL),TimeTree of Life (TTOL)
+comm,6307670,Trinity,Trinity
+comm,6307670,Trinity scripts,Trinity scripts
+comm,6307670,VCFtools,vcftools
+comm,6307670,blastPlus,blastPlus
+comm,6307670,getorf,getorf
+comm,6307670,ngs_te_mapper,ngs_te_mapper
+comm,6307670,tBLASTx,tBLASTx
+comm,6328525,IQ-TREE,IQ-TREE
+comm,6328525,MEGA,MEGA
+comm,6328525,MUSCLE,MUSCLE
+comm,6328525,ModelFinder,ModelFinder
+comm,6328525,MrBayes,MrBayes
+comm,6328525,PAUP*,PAUP*
+comm,6328525,PageBreakPageBreakin IQ-TREE,PageBreakPageBreakin IQ-TREE
+comm,6328525,PartitionFinder,PartitionFinder
+comm,6328525,Photogaphs,Photogaphs
+comm,6328525,RAxML,RAxML
+comm,6328525,raxmlGUI,raxmlGUI
+comm,6336932,ARWEN,ARWEN
+comm,6336932,Adobe Photoshop,Adobe Photoshop; Adobe Photoshop CS
+comm,6336932,Alignment (BWA),Alignment (BWA)
+comm,6336932,BLAST,BLASTp
+comm,6336932,BLASTN,BLASTn
+comm,6336932,Bayes,Bayes
+comm,6336932,Burrows,Burrows
+comm,6336932,CGView,CGView
+comm,6336932,CREx,CREx
+comm,6336932,CREx (Common Interval Rearrangement Explorer),CREx (Common Interval Rearrangement Explorer)
+comm,6336932,ClustalW,ClustalW
+comm,6336932,ClustalX,ClustalX
+comm,6336932,FigTree,FigTree
+comm,6336932,Gblocks,GBlocks
+comm,6336932,LAS EZ,LAS EZ
+comm,6336932,Leica,Leica
+comm,6336932,MEGA,MEGA6
+comm,6336932,MITOS,MITOS
+comm,6336932,MLGO,MLGO
+comm,6336932,MrBayes,MrBayes
+comm,6336932,NGS Toolkit,NGS-Toolkit
+comm,6336932,ORF Finder,ORF Finder
+comm,6336932,PartitionFinder,PartitionFinder
+comm,6336932,RNAstructure,RNAstructure
+comm,6336932,SPAdes,SPAdes
+comm,6336932,TranslatorX,TranslatorX
+comm,6338057,AMPHORA,AMPHORA; AMPHORA2
+comm,6338057,ANI,ANI
+comm,6338057,ARB,ARB
+comm,6338057,AliView,AliView
+comm,6338057,BLAST,BLAST; BLASTp
+comm,6338057,Basic Local Alignment Tool (BLAST),Basic Local Alignment Tool (BLAST
+comm,6338057,BayesHammer,BayesHammer
+comm,6338057,Bowtie,bowtie2
+comm,6338057,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6338057,CONCOCT,CONCOCT
+comm,6338057,CheckM,CheckM
+comm,6338057,Cluster,Cluster
+comm,6338057,Cutadapt,Cutadapt
+comm,6338057,DESeq2,DESeq2
+comm,6338057,FastQC,FastQC
+comm,6338057,IMG,Integrated Microbial Genomes
+comm,6338057,Linux®,Linux
+comm,6338057,MEGA,MEGA7
+comm,6338057,MUSCLE align,MUSCLE align
+comm,6338057,Microbiome Expert Reviewer (IMG/M ER),Microbiome Expert Reviewer (IMG/M ER)
+comm,6338057,Nexus,Nexus
+comm,6338057,PHYML (Amino Acids),PHYML (Amino Acids)
+comm,6338057,Parsimony,parsimony
+comm,6338057,PhyML (DNA),PhyML (DNA)
+comm,6338057,Phyla,Phyla
+comm,6338057,Phyla-AMPHORA,Phyla_AMPHORA
+comm,6338057,Phyla_Amphora,Phyla_Amphora
+comm,6338057,PhyloSift,PhyloSift
+comm,6338057,Prokka,Prokka
+comm,6338057,RAST,RAST
+comm,6338057,Rapid Annotations,Rapid Annotation
+comm,6338057,SEED Technology),SEED Technology)
+comm,6338057,SOM,SOM
+comm,6338057,SPAdes,SPAdes Genome Assembler
+comm,6338057,SRM,SRM
+comm,6338057,TreeView,Treeview
+comm,6338057,workflow suite,workflow suite
+comm,6356338,ASTRAL,ASTRAL
+comm,6356338,BLAST,BLAST
+comm,6356338,BLASTX,blastx
+comm,6356338,CONSEL,CONSEL
+comm,6356338,ContigExpress,ContigExpress
+comm,6356338,DAMBE,DAMBE
+comm,6356338,Ensembl,Ensembl
+comm,6356338,FastQC,fastqc
+comm,6356338,Gblocks,Gblocks
+comm,6356338,MCMCTREE,MCMCTREE
+comm,6356338,MEGA,MEGA
+comm,6356338,MrBayes,MrBayes
+comm,6356338,OrthoMCL,OrthoMCL
+comm,6356338,PartitionFinder,PartitionFinder
+comm,6356338,Perl script,Perl script; Perl scripts
+comm,6356338,RAxML,RAxML
+comm,6356338,SRA Toolkit,SRA Toolkit
+comm,6356338,TREE-PUZZLE,TREE-PUZZLE
+comm,6356338,Tracer,Tracer
+comm,6356338,TransDecoder,TransDecoder
+comm,6356338,TreeAnnotator,TreeAnnotator
+comm,6356338,Trimmomatic,Trimmomatic
+comm,6356338,Trinity,Trinity
+comm,6356338,Vector NIT,Vector NIT
+comm,6356338,cytb,cytb
+comm,6356338,fastq-dump,fastq-dump
+comm,6363710,BLAST,BLAST; BLASTP
+comm,6363710,BWA,BWA
+comm,6363710,MAFFT,MAFFT
+comm,6363710,MrBayes,MrBayes
+comm,6363710,PhyloBayes,Phylobayes
+comm,6363710,ProTest,ProTest
+comm,6363710,R,R
+comm,6363710,RAxMLGUI,RAxML GUI
+comm,6363710,SPAdes,SPAdes
+comm,6363710,TBLASTN,tBLASTn
+comm,6363710,Tracer,Tracer
+comm,6363710,Trimmomatic,Trimmomatic
+comm,6363710,genoPlotR,genoPlotR
+comm,6363710,ggplot2,ggplot2
+comm,6363710,rapidnj,rapidnj
+comm,6363710,tracecomp,Tracecomp
+comm,6389645,A,A
+comm,6389645,Geneious,Geneious
+comm,6389645,MAFFT FFT-NS-i,MAFFT FFT-NS-I
+comm,6389645,MrBayes,MrBayes
+comm,6389645,PartitionFinder,PartitionFinder
+comm,6389645,RAxML,RAxML
+comm,6389645,RHODOLITH,RHODOLITH
+comm,6392390,BOLD Systems,BOLD
+comm,6392390,ClustalW,ClustalW
+comm,6392390,CodonCode Aligner,CodonCode Aligner
+comm,6392390,EFForTS,EFForTS
+comm,6392390,ExcaliBAR,ExcaliBAR
+comm,6392390,Excel,Excel
+comm,6392390,MEGA,MEGA6
+comm,6392390,Sequence Analysis,Sequence Analysis
+comm,6392390,TaxonDNA,TaxonDNA
+comm,6392390,matK,matK
+comm,6392390,rbcL,rbcL
+comm,6395032,FigTree,FigTree
+comm,6395032,Geneious,Geneious
+comm,6395032,MAFFT,MAFFT
+comm,6395032,MrBayes,MrBayes
+comm,6395032,Nurudea,Nurudea
+comm,6395032,PAUP*,PAUP*
+comm,6395032,RAxML,RAxML
+comm,6395032,SPAdes,SPAdes
+comm,6395032,SeqState,SeqState
+comm,6395032,jModelTest,JModelTest; jModelTest
+comm,6403193,BEDTools,bedtools
+comm,6403193,ChloroSeq,ChloroSeq
+comm,6403193,Circos,Circos
+comm,6403193,GeSeq,GeSeq
+comm,6403193,Geneious,Geneious
+comm,6403193,Geneious assembler,Geneious assembler
+comm,6403193,IQ-TREE,IQ-TREE
+comm,6403193,IRscope,IRscope
+comm,6403193,LASTZ,LASTZ; LASTz
+comm,6403193,MACSE,MACSE
+comm,6403193,MISA,MISA
+comm,6403193,MUMmer,MuMMER
+comm,6403193,ModelFinder,ModelFinder
+comm,6403193,NOVOPlasty,NOVOPlasty
+comm,6403193,OGDRAW,OGDraw
+comm,6403193,REPUTER,REPUTER
+comm,6403193,SAMtools,SAMtools
+comm,6403193,TopHat,tophat2
+comm,6403193,Trimmomatic,Trimmomatic
+comm,6403193,Velvet,Velvet
+comm,6403193,Winclada,winclada
+comm,6403193,ggbio,ggbio
+comm,6403193,nona,nona
+comm,6403193,trimAl,trimAL
+comm,6422929,ALTER,ALTER
+comm,6422929,Adobe Photoshop CS3 Extended,Adobe Photoshop CS3 Extended
+comm,6422929,BioEdit,BioEdit
+comm,6422929,Fasta,Fasta
+comm,6422929,FigTree,FigTree
+comm,6422929,MAFFT,MAFFT
+comm,6422929,MrBayes,MrBayes
+comm,6422929,MrModeltest,MrModeltest
+comm,6422929,Nexus,Nexus
+comm,6422929,RAxML,RAxML
+comm,6422929,RAxML-HPC BlackBox,RAxML-HPC Blackbox
+comm,6435229,Adobe Photoshop Creative Cloud,Adobe Photoshop Creative Cloud
+comm,6435229,CIPRES,CIPRES Science Gateway
+comm,6435229,Leica Application Suite,Leica Application Suite (LAS)
+comm,6435229,MAFFT,MAFFT
+comm,6435229,MEGA,MEGA7
+comm,6435229,MrBayes,MrBayes
+comm,6435229,RAxML,RAxML
+comm,6435229,RAxML-HPC2,RAxML-HPC
+comm,6435229,Statistica,STATISTICA
+comm,6435229,jModelTest,jModelTest
+comm,6435635,BLAST,BLAST; BLASTP
+comm,6435635,BLAST (Basic Local Alignment Search Tool),BLAST (Basic Local Alignment Search Tool)
+comm,6435635,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6435635,CLC Sequence Viewer,CLC Sequence Viewer
+comm,6435635,DNAPlotter,DNAplotter
+comm,6435635,Gapped SOLiD Alignment,Gapped SOLiD Alignment
+comm,6435635,Genomics Workbench,Genomics Workbench
+comm,6435635,PHAST,PHAST
+comm,6435635,PHAST (PHAge Search Tool),PHAST (Phage Search Tool)
+comm,6435635,PRANK,PRANK
+comm,6435635,RAxML,RAxML
+comm,6435635,SOLiD4,SOLiD; SOLiD®
+comm,6435635,antiSMASH (antibiotics and Secondary Metabolite Analysis Shell),antiSMASH (antibiotics and Secondary Metabolite Analysis Shell)
+comm,6435635,raxmlGUI,raxmlGUI
+comm,6447387,Anvi’o,Anvi’o
+comm,6447387,BLAST,BLAST
+comm,6447387,FastQC,FASTQC
+comm,6447387,Filtlong,Filtlong
+comm,6447387,FreeRate,FreeRate
+comm,6447387,HMMER,HMMER
+comm,6447387,IQ-TREE,IQ-TREE
+comm,6447387,MEGA,MEGA
+comm,6447387,ModelFinder,ModelFinder
+comm,6447387,NanoFilt,NanoFilt
+comm,6447387,NanoLyse,NanoLyse
+comm,6447387,NanoPlot,NanoPlot
+comm,6447387,NanoStat,NanoStat
+comm,6447387,P4,P4
+comm,6447387,Phyla-AMPHORA,Phyla-AMPHORA
+comm,6447387,Phyla-AMPOHRA,Phyla-AMPOHRA
+comm,6447387,PhyloBayes,PhyloBayes
+comm,6447387,PhyloBayes MPI,PhyloBayes MPI
+comm,6447387,Porechop,Porechop
+comm,6447387,Prokka,Prokka
+comm,6447387,RNAmmer,RNAmmer
+comm,6447387,SINA,SINA
+comm,6447387,SPAdes,SPAdes
+comm,6447387,SilVA,SILVA
+comm,6447387,SiteStripper,SiteStripper
+comm,6447387,Trimmomatic,Trimmomatic
+comm,6447387,ZORRO,ZORRO
+comm,6447387,chisq,chisq
+comm,6447387,eLife,eLife
+comm,6447387,minmax-chisq,minmax-chisq
+comm,6456250,Basic Local Alignment Search Tool (BLAST),Basic Local Alignment Search Tool (BLAST)
+comm,6456250,CIPRES,CIPRES
+comm,6456250,ClustalW,Clustal W
+comm,6456250,FigTree,Figtree
+comm,6456250,GTRGAMMA,GTRGAMMA
+comm,6456250,MEGA,MEGA
+comm,6456250,Minitab,Minitab
+comm,6456250,MrBays,MrBays
+comm,6456250,PAUP*,PAUP
+comm,6456250,RAxML,RAxML
+comm,6456250,SAS,SAS
+comm,6468374,BEAST,*BEAST; *BEAST2; BEAST
+comm,6468374,BEAUTi,BEAUTi
+comm,6468374,BLASTN,BLASTn
+comm,6468374,BOLD Systems,BOLD
+comm,6468374,Barcode of Life Data System (BOLD),Barcode of Life Data Systems (BOLD)
+comm,6468374,ClustalW,ClustalW
+comm,6468374,Fiji,Fiji
+comm,6468374,Geneious,Geneious
+comm,6468374,Gonolabis,Gonolabis
+comm,6468374,ISCapture,ISCapture
+comm,6468374,LogCombiner,LogCombiner
+comm,6468374,MEGA,MEGA
+comm,6468374,MEGA X,MEGA X
+comm,6468374,PAUP*,PAUP*
+comm,6468374,Primer3,Primer3
+comm,6468374,R,R
+comm,6468374,RAxML,RAxML
+comm,6468374,RStudio,RStudio
+comm,6468374,RogueNaRok,RogueNaRok
+comm,6468374,Tracer,Tracer
+comm,6468374,TreeAnnotator,TreeAnnotator
+comm,6468374,bModelTest,bModelTest
+comm,6468374,combined *BEAST,combined *BEAST
+comm,6468374,ggtree,ggtree R package
+comm,6477871,Adobe Photoshop,Adobe Photoshop
+comm,6477871,AliView,AliView
+comm,6477871,BLAST,BLAST
+comm,6477871,BioEdit,BioEdit
+comm,6477871,Image Frame Work,Image FrameWork
+comm,6477871,MAFFT,MAFFT
+comm,6477871,MEGA,MEGA
+comm,6477871,MP,MP
+comm,6477871,MrBayes,MrBayes
+comm,6477871,MrModeltest,MrModeltest
+comm,6477871,PAUP*,PAUP*4
+comm,6477871,RAxML,RAxML
+comm,6477871,TreeView,TreeView
+comm,6477871,megablast,megablast
+comm,6477871,raxmlGUI,raxmlGUI
+comm,6480918,AUGUSTUS,Augustus
+comm,6480918,BLAST,BLAST; BlastP
+comm,6480918,BLASTN,BLASTn
+comm,6480918,BLASTX,BLASTx
+comm,6480918,CLC Genomic Workbench,CLC Genomic Workbench
+comm,6480918,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6480918,Dendroscope,Dendroscope
+comm,6480918,FGENESH,FGENESH
+comm,6480918,FIESC,FIESC
+comm,6480918,Genealogical Concordance Phylogenetic Species Recognition (GCPSR),Genealogical Concordance Phylogenetic Species Recognition (GCPSR)
+comm,6480918,IQ-TREE,IQ-TREE
+comm,6480918,IQ-Tree,IQ-Tree
+comm,6480918,MAFFT,Mafft
+comm,6480918,MEGA,MEGA; MEGA7
+comm,6480918,MUSCLE,MUSCLE; Muscle
+comm,6480918,NOTUNG,NOTUNG
+comm,6480918,PAML,PAML
+comm,6480918,RAxML,RAxML
+comm,6480918,Sequencher,Sequencher
+comm,6480918,antiSMASH,antiSMASH
+comm,6482596,Adobe Illustrator,Adobe Illustrator
+comm,6482596,Adobe Photoshop,Adobe Photoshop CC
+comm,6482596,Geneious,Geneious
+comm,6482596,Helicon Focus,Helicon Focus
+comm,6482596,Leica Application Suite,Leica Application Suite
+comm,6482596,MEGA,MEGA
+comm,6482596,Mesquite,Mesquite
+comm,6482596,RAxML,RAxML
+comm,6482596,T-REX,T-REX
+comm,6482596,TNT,TNT
+comm,6482596,VI–HPC,VI–HPC
+comm,6482596,Winclada,Winclada
+comm,6482596,aquickie,aquickie
+comm,6486959,Garli,Garli
+comm,6486959,Geneious (Biomatters,Geneious (Biomatters
+comm,6486959,ImageJ,ImageJ
+comm,6486959,ML,ML
+comm,6486959,MrBayes,MrBayes
+comm,6486959,R,R
+comm,6486959,RAxML,RAxML
+comm,6486959,Repandae,Repandae
+comm,6486959,TPS,TPS
+comm,6486959,ade4,ade4
+comm,6486959,dryad,Dryad
+comm,6486959,jModelTest,jModelTest
+comm,6486959,phytools,phytools
+comm,6486959,surface,surface
+comm,6500721,Adobe Photoshop,Adobe Photoshop CS
+comm,6500721,Anhoplocampa,Anhoplocampa
+comm,6500721,BLASTX,BlastX
+comm,6500721,CLOCKSS,CLOCKSS
+comm,6500721,Geneious,Geneious
+comm,6500721,Hoplocampini,Hoplocampini
+comm,6500721,IQ-TREE,IQ-TREE
+comm,6500721,MARNA,MARNA
+comm,6500721,MEGA,MEGA
+comm,6500721,MITOS,MITOS
+comm,6500721,MITObim,MITObim
+comm,6500721,MUSCLE,MUSCLE
+comm,6500721,MrBayes,MrBayes
+comm,6500721,NOVOPlasty,NOVOPlasty
+comm,6500721,PUBMED,PubMed
+comm,6500721,PartitionFinder,PartitionFinder
+comm,6500721,PeerJ,PeerJ
+comm,6500721,RnaViz,RnaViz
+comm,6500721,SOAPdenovo,SOAPdenovo
+comm,6500721,SSU-ALIGN,SSU-ALIGN
+comm,6500721,Symphytan,Symphytan
+comm,6500721,VARNA,VARNA
+comm,6502327,MAFFT,MAFFT
+comm,6502327,MEGA,MEGA
+comm,6502327,Matrix,Matrix
+comm,6502327,MrBayes,MrBayes
+comm,6502327,RAxML,RAxML
+comm,6502327,XSEDE,XSEDE
+comm,6502327,in-house R script,in-house R script
+comm,6502327,jModelTest,jModelTest
+comm,6502327,trimAl,trimAL
+comm,6509377,CIPRES,CIPRES
+comm,6509377,Cyberinfrastructure for Phylogenetic Research (CIPRES),Cyberinfrastructure for Phylogenetic Research (CIPRES)
+comm,6509377,FigTree,FigTree
+comm,6509377,ImageJ,ImageJ
+comm,6509377,MAFFT,MAFFT
+comm,6509377,Mesquite,Mesquite
+comm,6509377,MrBayes,MrBayes
+comm,6509377,PAUP*,PAUP*
+comm,6509377,PartitionFinder,PartitionFinder
+comm,6509377,RAxML,RAxML
+comm,6509377,Tracer,Tracer
+comm,6509377,TreeGraph,TreeGraph2
+comm,6509377,phytools,phytools
+comm,6520677,,not_disambiguated
+comm,6520677,(,(
+comm,6520677,Analysis,Analysis
+comm,6520677,Cytoscape,Cytoscape
+comm,6520677,Evolutionary,Evolutionary
+comm,6520677,GNPS,GNPS
+comm,6520677,Genetics,Genetics
+comm,6520677,MEGA,MEGA
+comm,6520677,MS-Cluster,MS-Cluster
+comm,6520677,MUSCLE,MUSCLE
+comm,6520677,Molecular,Molecular
+comm,6520677,MrBayes,MrBayes
+comm,6520677,Xcalibur,Xcalibur
+comm,6520677,jModelTest,jModelTest
+comm,6523959,Geneious,Geneious
+comm,6523959,MEGA,MEGA
+comm,6523959,Modeltest,Modeltest
+comm,6523959,MrBayes,MRBAYES
+comm,6523959,PAUP*,PAUP
+comm,6523959,PartitionFinder,PartitionFinder
+comm,6523959,RAxML,RAxML
+comm,6523959,TRACER,TRACER
+comm,6532204,ASSISTAT,ASSISTAT®
+comm,6532204,BLAST,BLAST
+comm,6532204,BLASTN,BLASTN
+comm,6532204,MEGA,MEGA
+comm,6532204,Molecular Evolutionary Genetics Analysis (Mega BLAST),Molecular Evolutionary Genetics Analysis (Mega BLAST)
+comm,6532204,RAxML-HPC2,RAxML-HPC2
+comm,6532204,Staden Package,Staden Package; Staden package
+comm,6532204,megablast,Mega BLAST
+comm,6553701,APE,APE
+comm,6553701,AliView,AliView
+comm,6553701,BEAST,BEAST; BEAST2
+comm,6553701,BOLD Systems,Barcode of Life Data System
+comm,6553701,CIPRES,CIPRES
+comm,6553701,FigTree,FigTree
+comm,6553701,Genome Compiler,Genome Compiler
+comm,6553701,LogCombiner,LogCombiner
+comm,6553701,MAFFT,MAFFT
+comm,6553701,Mompha,Mompha
+comm,6553701,MrBayes,MrBayes
+comm,6553701,PartitionFinder,PartitionFinder
+comm,6553701,Primer-BLAST,Primer-Blast
+comm,6553701,RAxML,RAxML
+comm,6553701,RAxMLv8,RAxMLv8
+comm,6553701,RStudio,RStudio
+comm,6553701,SPLITS R-package,SPLITS R package
+comm,6553701,StarBEAST2,StarBEAST2
+comm,6553701,TRACER,TRACER
+comm,6553701,TreeAnnotator,TreeAnnotator
+comm,6553701,UGENE,UGENE
+comm,6553701,adegenet,R package Adegenet
+comm,6553701,bModelTest,bModelTest
+comm,6553701,ggtree,GGTree
+comm,6553701,phytools,R package Phytools
+comm,6567464,Automatic Annotation Server,Automatic Annotation Server
+comm,6567464,BLAST,BLAST; BLASTP
+comm,6567464,CGView,CGView
+comm,6567464,CGView Server,CGview Server
+comm,6567464,CRISPRs Finder,CRISPRs Finder
+comm,6567464,MEGA,MEGA
+comm,6567464,MUMmer,MUMmer
+comm,6567464,MUSCLE,MUSCLE
+comm,6567464,Mauve,Mauve
+comm,6567464,PacBio SMRT Analysis,PacBio SMRT Analysis
+comm,6567464,R,R
+comm,6567464,RAST,RAST
+comm,6567464,RNAmmer,RNAmmer
+comm,6567464,SigMol,SigMol
+comm,6567464,SignalP,SignalP
+comm,6567464,TMHMM,TMHMM
+comm,6567464,Viroblast,Viroblast
+comm,6567464,tRNAscan-SE,tRNAscan-SE
+comm,6580989,AMAS,AMAS
+comm,6580989,ASTRAL,ASTRAL
+comm,6580989,AliView,AliView
+comm,6580989,BLAST,BLAST
+comm,6580989,BLASTN,blastn
+comm,6580989,FastQC,FastQC
+comm,6580989,FastTree,FastTree
+comm,6580989,GTRGAMMA,GTRGAMMA
+comm,6580989,Geneious,Geneious; Geneious R11
+comm,6580989,HybPiper,HybPiper
+comm,6580989,HybPiper script,HybPiper script
+comm,6580989,MAFFT,MAFFT
+comm,6580989,MLB,MLB
+comm,6580989,MarkerMiner,MarkerMiner
+comm,6580989,PartitionFinder,PartitionFinder2
+comm,6580989,RAxML,RAxML
+comm,6580989,Retrieve,retrieve
+comm,6580989,Trimmomatic,Trimmomatic
+comm,6580989,dryad,Dryad
+comm,6580989,makeblastdb,makeblastdb
+comm,6580989,trimAl,trimAl
+comm,6595004,BLASTN,BLASTn
+comm,6595004,FigTree,FigTree
+comm,6595004,Genetics,Genetics
+comm,6595004,MEGA,MEGA
+comm,6595004,MUSCLE,MUSCLE
+comm,6595004,MrBayes,MrBayes
+comm,6595004,RAxML,RAxML
+comm,6595004,Sequencer,Sequencer
+comm,6595004,jModelTest,jModelTest
+comm,6595004,treeBASE,TreeBASE
+comm,6595004,trimAl,TrimAl
+comm,6598499,ClustalW,ClustalW
+comm,6598499,Mega,Mega
+comm,6598499,MrBayes,MrBayes
+comm,6598499,MrModeltest,MrModeltest
+comm,6598499,Ocean Biogeographic Information System (OBIS),Ocean Biogeographic Information System (OBIS
+comm,6598499,R,R
+comm,6598499,RAxML,RAxML
+comm,6598499,Tracer,Tracer
+comm,6598499,ape,ape
+comm,6598499,bPTP,bPTP
+comm,6598499,ggplot2,ggplot
+comm,6598499,minpack.lm,minpack.lm
+comm,6598499,nls.lm,nls.lm
+comm,6598499,nlsLM,nlsLM
+comm,6598499,phylotools,Phylotools
+comm,6598499,rootSolve,rootSolve
+comm,6635496,BEAST,BEAST
+comm,6635496,BLAST,BLAST
+comm,6635496,Cytb,Cytb
+comm,6635496,Dnasp,Dnasp
+comm,6635496,Gblock,Gblock
+comm,6635496,MAFFT,MAFFT
+comm,6635496,MEGA,MEGA5
+comm,6635496,MrModeltest,MrModeltest
+comm,6635496,Network,Network
+comm,6635496,PAUP*,PAUP*4
+comm,6635496,Primer Premier,Primer Premier
+comm,6646888,(AMOVA,AMOVA
+comm,6646888,ArcGIS,ArcGIS
+comm,6646888,Arlequin,Arlequin
+comm,6646888,Barrier,Barrier
+comm,6646888,BayesAss,BayesAss
+comm,6646888,Clumpp,Clumpp
+comm,6646888,ClustalW,Clustal W
+comm,6646888,Distruct,Distruct
+comm,6646888,DnaSP,DnaSP
+comm,6646888,ESM,ESM
+comm,6646888,Earth System,Earth System
+comm,6646888,Ecological Niche Modeling (ENM),Ecological Niche Modeling (ENM
+comm,6646888,Free4,Free
+comm,6646888,GENEPOP,GenePop
+comm,6646888,GenAlEx,GenAlEx; GenAlex
+comm,6646888,GeneMarker,GeneMarker
+comm,6646888,MEGA X,MEGA X
+comm,6646888,MIGRATE-N,MIGRATE-N
+comm,6646888,MIROC5,MIROC
+comm,6646888,MaxEnt,MaxEnt
+comm,6646888,Microsatellite Analyzer (MSA),Microsatellite Analyzer (MSA)
+comm,6646888,MrBayes,MrBayes
+comm,6646888,Populations,Populations
+comm,6646888,RAxML,RAxML
+comm,6646888,SDM,SDM
+comm,6646888,STRUCTURE,STRUCTURE
+comm,6646888,STRUCTURE HARVESTER,Structure Harvester
+comm,6646888,STRUCTURE-nSSR,STRUCTURE-nSSR
+comm,6646888,Se-Al,Se-Al
+comm,6646888,Sequencher,Sequencher
+comm,6646888,Tracer,Tracer
+comm,6646888,TreeGraph,TreeGraph2
+comm,6646888,TreeView,TreeView
+comm,6646888,for Interdisciplinary,for Interdisciplinary
+comm,6646888,jModelTest,jModelTest
+comm,6646888,nSSR,nSSR
+comm,6656784,Candèze,Candèze
+comm,6656784,Interactive Tree of Life (iTOL),Interactive Tree of Life (ITOL)
+comm,6656784,MAFFT,Mafft
+comm,6656784,Mega,Mega7
+comm,6656784,PartitionFinder,PartitionFinder
+comm,6656784,RAxML,RAxML
+comm,6656784,SPAdes,SPAdes
+comm,6656784,mereps,mereps
+comm,6656784,mrsFAST,mrsFAST
+comm,6659665,BioEdit,Bioedit
+comm,6659665,Cladograms,Cladogram
+comm,6659665,DAMBE,DAMBE
+comm,6659665,Dendrolims,Dendrolims
+comm,6659665,DnaSP,DnaSP
+comm,6659665,MEGA,MEGA
+comm,6659665,MUSCLE,MUSCLE
+comm,6659665,Modeltest,Modeltest
+comm,6659665,MrBayes,MrBayes
+comm,6659665,PartitionFinder,PartitionFinder
+comm,6659665,R package,R package
+comm,6659665,RAxML,RAxML; RaxML
+comm,6659665,Tracer,Tracer
+comm,6659665,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,6662396,(AMOVA,AMOVA
+comm,6662396,ArcGIS,ArcGIS
+comm,6662396,Arlequin,Arlequin
+comm,6662396,BEAST,BEAST
+comm,6662396,BioEdit,Bioedit
+comm,6662396,DNASTAR®,DNASTAR
+comm,6662396,DnaSP,DNASP; DnaSP
+comm,6662396,ENMeval,ENMeval
+comm,6662396,FigTree,FigTree
+comm,6662396,Geneious,Geneious
+comm,6662396,Lasergene,Lasergene
+comm,6662396,MEGA,MEGA
+comm,6662396,MaxEnt,Maxent
+comm,6662396,MrBayes,MrBayes
+comm,6662396,MrModeltest,MrModeltest
+comm,6662396,Network,Network
+comm,6662396,PAUP*,PAUP*
+comm,6662396,R,R
+comm,6662396,Tracer,Tracer
+comm,6662396,TreeAnnotator,TreeAnnotator
+comm,6670200,Arlequin,ARLEQUIN
+comm,6670200,BEAST,BEAST
+comm,6670200,BLAST,BLAST
+comm,6670200,DNASTAR®,DNASTAR
+comm,6670200,DnaSP,DnaSP
+comm,6670200,IQ-TERR,IQ-TERR
+comm,6670200,MEGA,MEGA
+comm,6670200,MrBayes,MrBayes
+comm,6670200,Network,Network
+comm,6670200,PartitionFinder,PartitionFinder
+comm,6670200,Tracer,Tracer
+comm,6670200,jModelTest,jModelTest
+comm,6681236,BAMM,BAMM
+comm,6681236,BAMMtools,BAMMtools
+comm,6681236,BEAST,BEAST
+comm,6681236,CONSEL,CONSEL
+comm,6681236,DAMBE,DAMBE
+comm,6681236,FigTree,FigTree
+comm,6681236,Gblocks,Gblocks0
+comm,6681236,IQ-TREE,IQ-TREE
+comm,6681236,IQtree,IQtree
+comm,6681236,LogCombiner,LogCombiner
+comm,6681236,MEGA,MEGA
+comm,6681236,MrBayes,MrBayes
+comm,6681236,PAUP*,PAUP
+comm,6681236,R,R
+comm,6681236,STRAP,strap
+comm,6681236,TimeTree,TimeTree
+comm,6681236,Tracer,Tracer
+comm,6681236,Tree-Puzzle,TreePuzzle
+comm,6681236,TreeAnnotator,TreeAnnotator
+comm,6681236,jModelTest,jmodeltest
+comm,6684935,BLAST,BLAST
+comm,6684935,CAT,CAT
+comm,6684935,Gblocks,Gblocks
+comm,6684935,IQ-TREE,IQ-TREE
+comm,6684935,IQTree,IQTree
+comm,6684935,MUSCLE,MUSCLE
+comm,6684935,MoSuMa,MoSuMa
+comm,6684935,ModelFinder,ModelFinder
+comm,6684935,OMA,OMA
+comm,6684935,PAUP*,PAUP4
+comm,6684935,Perl script,Perl script
+comm,6684935,PhyloBayes,PhyloBayes
+comm,6684935,PhyloBayes MPI,PhyloBayes MPI
+comm,6684935,PhyloPic,Phylopic
+comm,6684935,Remipedia,Remipedia
+comm,6684935,TransDecoder,TransDecoder
+comm,6684935,Trimmomatic,Trimmomatic
+comm,6684935,Trinity,Trinity
+comm,6684935,bpcomp,bpcomp
+comm,6684935,custom Perl script,custom Perl script
+comm,6684935,tracecomp,tracecomp
+comm,6694076,DNASTAR®,DNASTAR
+comm,6694076,IQ-TREE,IQ-TREE
+comm,6694076,Lasergene,Lasergene
+comm,6694076,MAFFT,MAFFT
+comm,6694076,MEGA,MEGA
+comm,6694076,Modeltest,Modeltest
+comm,6694076,MrBayes,MrBayes
+comm,6694076,Tracer,Tracer
+comm,6694076,cellSens,cellSens
+comm,6698373,ABGD,ABGD
+comm,6698373,BEAST,BEAST
+comm,6698373,BLAST,BLAST
+comm,6698373,BOLD Systems,BOLD
+comm,6698373,BPP,BPP
+comm,6698373,CLOCKSS,CLOCKSS
+comm,6698373,DendroPy,DendroPy
+comm,6698373,GUIDANCE,GUIDANCE2
+comm,6698373,Geneious,Geneious
+comm,6698373,Ligia,Ligia
+comm,6698373,MAFFT,MAFFT
+comm,6698373,MEGA,MEGA
+comm,6698373,MSDAs,MSDAs
+comm,6698373,PUBMED,PubMed
+comm,6698373,PartitionFinder,PartitionFinder
+comm,6698373,PeerJ,PeerJ
+comm,6698373,R,R
+comm,6698373,RAxML,RAxML
+comm,6698373,bPTP,bPTP
+comm,6698373,jModelTest,jModeltest
+comm,6718372,AliView,AliView
+comm,6718372,BioEdit,BioEdit
+comm,6718372,ExaBayes,ExaBayes
+comm,6718372,FigTree,FigTree
+comm,6718372,Geneious,Geneious
+comm,6718372,MACSE,MACSE
+comm,6718372,MAFFT,MAFFT
+comm,6718372,MEGA X,MEGA X
+comm,6718372,P4,P4
+comm,6718372,RAX-ML,RAX-ML
+comm,6718372,TARP,TARP
+comm,6729053,AliView,AliView
+comm,6729053,Avizo,Avizo
+comm,6729053,BEAST,BEAST
+comm,6729053,DataDryad,DataDryad
+comm,6729053,Lite,Lite
+comm,6729053,LogCombiner,LogCombiner
+comm,6729053,MAFFT,MAFFT
+comm,6729053,MrBayes,MrBayes
+comm,6729053,PartitionFinder,PartitionFinder
+comm,6729053,Path Sampler,PathSampler
+comm,6729053,Selection,Selection
+comm,6729053,Tracer,Tracer
+comm,6729053,TreeAnnotator,TreeAnnotator
+comm,6729053,iNaturalist,iNaturalist
+comm,6745856,Arlequin,Arlequin
+comm,6745856,ChromasPro,ChromasPro
+comm,6745856,ClonalFrameML,ClonalFrameML
+comm,6745856,ClustalX,ClustalX
+comm,6745856,CodeML,CodeML
+comm,6745856,DnaSP,DnaSP
+comm,6745856,FigTree,FigTree
+comm,6745856,MrBayes,MrBayes
+comm,6745856,PAML,PAML
+comm,6745856,PAUP*,PAUP
+comm,6745856,PamlX,PamlX
+comm,6745856,RAxML,RAxML
+comm,6745856,TreeGraph,TreeGraph
+comm,6745856,jModelTest,jModelTest
+comm,6775174,DNASTAR Lasergene,DNASTAR Lasergene
+comm,6775174,Fasta,Fasta
+comm,6775174,Leafhopper,Leafhopper
+comm,6775174,MAFFT,MAFFT
+comm,6775174,MrBayes,MrBayes
+comm,6775174,PAUP*,PAUP4
+comm,6775174,RAxML,RAxML
+comm,6775174,Tracer,Tracer
+comm,6781463,AliView,AliView
+comm,6781463,FigTree,FigTree
+comm,6781463,MAFFT,MAFFT
+comm,6781463,Modeltest,Modeltest
+comm,6781463,MrBayes,MrBayes
+comm,6781463,RAxML,RAxML
+comm,6786251,Adobe Photoshop,Adobe Photoshop CS
+comm,6786251,Bayesian,Bayesian
+comm,6786251,CLOCKSS,CLOCKSS
+comm,6786251,FASTA,fasta
+comm,6786251,Geneious,Geneious
+comm,6786251,Iqtree,Iqtree
+comm,6786251,MAFFT,MAFFT
+comm,6786251,MARNA,MARNA
+comm,6786251,MEGA,MEGA
+comm,6786251,MITOS,MITOS
+comm,6786251,MITObim,MITObim
+comm,6786251,MUSCLE,MUSCLE
+comm,6786251,MrBayes,MrBayes
+comm,6786251,NOVOPlasty,NOVOPlasty
+comm,6786251,PUBMED,PubMed
+comm,6786251,PartitionFinder,PartitionFinder
+comm,6786251,PeerJ,PeerJ
+comm,6786251,RNAviz,RNAviz
+comm,6786251,SOAPdenovo,SOAPdenovo
+comm,6786251,SSU-ALIGN,SSU-ALIGN
+comm,6786251,Sequencher,Sequencher
+comm,6786251,Symphytan,Symphyta; Symphytan
+comm,6786251,VARNA,VARNA
+comm,6786251,figshare,Figshare
+comm,6787814,ARWEN,ARWEN
+comm,6787814,Adobe Photoshop,Adobe Photoshop; Adobe Photoshop CS
+comm,6787814,Bayes,Bayes
+comm,6787814,CGView,CGView
+comm,6787814,DnaSPv5,DnaSPv5
+comm,6787814,Excel,Excel
+comm,6787814,Finder,Finder
+comm,6787814,Frame Finder,Frame Finder
+comm,6787814,Gblocks,GBlocks
+comm,6787814,IQ‐Tree,IQ‐Tree
+comm,6787814,Interactive Tree of Life,Interactive Tree of Life
+comm,6787814,Itol,Itol
+comm,6787814,MEGA,MEGA6
+comm,6787814,MITOS,MITOS
+comm,6787814,Open,Open
+comm,6787814,PartitionFinder,PartitionFinder
+comm,6787814,Repeats Finder,Repeats Finder
+comm,6787814,SPAdes,SPAdes
+comm,6787814,Sequin,Sequin
+comm,6787814,TranslatorX,TranslatorX
+comm,6787814,iTOL,iTOL
+comm,6787814,tRNAscan-SE,tRNAscan‐SE Search Server
+comm,6787814,treeBASE,TreeBASE
+comm,6787831,(ANOSIM,ANOSIM
+comm,6787831,Analysis of Variance (PERMANOVA,analysis of variance (PERMANOVA)
+comm,6787831,BEAST,BEAST
+comm,6787831,Geneious,Geneious
+comm,6787831,ImageJ,ImageJ
+comm,6787831,MEGA,MEGA
+comm,6787831,PERMANOVA+,PERMANOVA
+comm,6787831,R,R
+comm,6787831,USEARCH,USEARCH
+comm,6787831,VSEARCH,VSEARCH
+comm,6787831,ecodist,ecodist
+comm,6787831,fastx,fastx
+comm,6787831,jModelTest,jModelTest
+comm,6787831,picante,picante
+comm,6787831,stats,stats
+comm,6787831,vegan,vegan
+comm,6791353,BLAST,BLAST
+comm,6791353,BioEdit,BioEdit
+comm,6791353,CLOCKSS,CLOCKSS
+comm,6791353,G-INS,G-INS
+comm,6791353,MAFFT,MAFFT
+comm,6791353,MrBayes,MrBayes
+comm,6791353,PAUP*,PAUP*
+comm,6791353,PUBMED,PubMed
+comm,6791353,PartitionFinder,PartitionFinder
+comm,6791353,PeerJ,PeerJ
+comm,6791353,Prepollex,Prepollex
+comm,6791353,Sequencher,Sequencher
+comm,6791353,Sound Forge Pro,Sound Forge Pro
+comm,6791353,TNT,TNT
+comm,6791353,TRACER,TRACER
+comm,6805402,ABGD,ABGD
+comm,6805402,Affinity Designer,Affinity Designer
+comm,6805402,Bold Systems,Bold Systems
+comm,6805402,Dendroscope,Dendroscope
+comm,6805402,FigTree,FigTree
+comm,6805402,Gblocks,Gblocks
+comm,6805402,Geneious,Geneious Prime
+comm,6805402,Life,Life
+comm,6805402,MAFFT,MAFFT
+comm,6805402,MEGA,MEGA
+comm,6805402,MEGA X,MEGA X
+comm,6805402,MPI,MPI
+comm,6805402,ModelTest-NG,ModelTest-NG
+comm,6805402,MrBayes,MrBayes
+comm,6805402,Nucleotide Blast Tool (BLASTn),Nucleotide Blast Tool (BLASTn)
+comm,6805402,ProtTest,ProtTest3
+comm,6805402,R,R
+comm,6805402,RAxML,RAxML
+comm,6805402,RAxML-NG,RAxML-NG
+comm,6805402,SPIDER,SPIDER
+comm,6805402,SPIDER (Species Identity and Evolution in R),SPIDER (Species Identity and Evolution in R)
+comm,6805402,SPIDER package,SPIDER R package
+comm,6805402,jModelTest,jModelTest2
+comm,6805863,APE,APE
+comm,6805863,Adobe Illustrator,Illustrator CC
+comm,6805863,Adobe Photoshop,Adobe Photoshop® CC
+comm,6805863,Anathallis,Anathallis
+comm,6805863,BEAST,BEAST
+comm,6805863,BTprocessR,BTprocessR
+comm,6805863,BaseClear,BaseClear
+comm,6805863,BayesTraits,BayesTraits
+comm,6805863,FigTree,FigTree
+comm,6805863,Geneious,Geneious®
+comm,6805863,MAFFT,MAFFT
+comm,6805863,MrBayes,MrBayes
+comm,6805863,Multistate,Multistate
+comm,6805863,PAUP*,PAUP; PAUP*
+comm,6805863,PAUPRat,PAUPRat
+comm,6805863,Procrustean Approach to Cophylogeny (PACo),Procrustean Approach to Cophylogeny (PACo)
+comm,6805863,R,R
+comm,6805863,R Studio,R Studio
+comm,6805863,RAxML-HPC2,RAxML-HPC2
+comm,6805863,SIMMAP,SIMMAP
+comm,6805863,SplitsTree,Splits Tree4
+comm,6805863,Tracer,Tracer
+comm,6805863,XSEDE,XSEDE
+comm,6805863,btrtools,btrtools
+comm,6805863,ggtree,ggtree
+comm,6805863,jModelTest,jModelTest2
+comm,6805863,matK,matK
+comm,6805863,phytools,R-package phytools; phytools
+comm,6805863,simmap,simmap
+comm,6805933,Gblocks,GBlocks
+comm,6805933,IQ-TREE,IQ-TREE
+comm,6805933,MAFFT,MAFFT
+comm,6805933,MrBayes,MrBayes
+comm,6805933,PartitionFinder,PartitionFinder2
+comm,6805933,TNT,TNT
+comm,6805933,Tracer,Tracer
+comm,6812824,BEAST,BEAST
+comm,6812824,CIPRES,CIPRES; CIPRES Science Gateway
+comm,6812824,ChromEvol,Chromevol
+comm,6812824,FigTree,FigTree
+comm,6812824,MAFFT,MAFFT
+comm,6812824,MEGA,MEGA
+comm,6812824,Mesquite,Mesquite
+comm,6812824,MrBayes,MrBayes
+comm,6812824,Theory,Theory
+comm,6812824,Tracer,Tracer
+comm,6812824,TreeAnnotator,TreeAnnotator
+comm,6820731,Automated Barcode Gap Discovery (ABGD),Automated Barcode Gap Discovery (ABGD)
+comm,6820731,BEAST,BEAST
+comm,6820731,BEAUTi (Bayesian Evolutionary Analysis Utility,BEAUTi (Bayesian Evolutionary Analysis Utility)
+comm,6820731,BioEdit,Bioedit
+comm,6820731,L-INS-i,L-INS-I
+comm,6820731,MAFFT,MAFFT
+comm,6820731,Mega,Mega
+comm,6820731,Mesquite,Mesquite
+comm,6820731,MrBayes,MrBayes
+comm,6820731,R,R
+comm,6820731,RAxML,RAxML; RaxML
+comm,6820731,SPLITS,SPLITS
+comm,6820731,TRACER,TRACER
+comm,6820731,TreeAnnotator,TreeAnnotator
+comm,6820731,jModelTest,jModelTest
+comm,6829451,BLAST,BLASTP
+comm,6829451,BLASTN,BLASTn
+comm,6829451,DnaSP,DnaSP
+comm,6829451,Exonerate,exonerate
+comm,6829451,Lasergene,Lasergene
+comm,6829451,MAFFT,MAFFT
+comm,6829451,MEGA,MEGA
+comm,6829451,MFannot,MFannot
+comm,6829451,MITOS,MITOS
+comm,6829451,MITObim,MITObim
+comm,6829451,Mauve,Mauve
+comm,6829451,MrBayes,MrBayes
+comm,6829451,ORF Finder,Open Reading Frame Finder
+comm,6829451,PartitionFinder,PartitionFinder
+comm,6829451,RA × ML,RA × ML
+comm,6829451,REPuter,REPuter
+comm,6829451,SPAdes,SPAdes
+comm,6829451,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,6829451,Tandem Repeats Finder,Tandem Repeats Finder
+comm,6829451,tRNAscan-SE,tRNAscan-SE
+comm,6833022,BLAST,BLAST
+comm,6833022,BLASTN,BLASTn
+comm,6833022,CLC,CLC
+comm,6833022,CLC Genomics Workbench,CLC Genomics Workbench
+comm,6833022,IQ-Tree,IQ-Tree
+comm,6833022,JMP,JMP
+comm,6833022,MEGA,MEGA; MEGA7
+comm,6833022,MUSCLE,MUSCLE
+comm,6833022,Office Excel,Office Excel
+comm,6833022,RA×ML,RA×ML
+comm,6877775,BLASTN,BLASTn
+comm,6877775,FigTree,Figtree
+comm,6877775,Finder,Finder
+comm,6877775,InterProScan,InterProScan
+comm,6877775,Lasergene,Lasergene
+comm,6877775,MFannot,MFannot
+comm,6877775,MITOS,MITOS
+comm,6877775,MITObim,MITObim
+comm,6877775,Mauve,Mauve
+comm,6877775,ModelGenerator,Modelgenerator
+comm,6877775,MrBayes,MrBayes
+comm,6877775,OGDRAW,OGDRAW
+comm,6877775,OrganellarGenomeDRAW (OGDRAW),OrganellarGenomeDraw (OGDRAW)
+comm,6877775,REPuter,REPuter
+comm,6877775,SPAdes,SPAdes
+comm,6877775,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,6877775,TranslatorX,TranslatorX
+comm,6877775,mitos2,mitos
+comm,6877775,tRNAscan-SE,tRNAscan-SE
+comm,6884534,ASTRAL,ASTRAL
+comm,6884534,CASAVA,Casava
+comm,6884534,ExaML,ExaML
+comm,6884534,Exonerate,Exonerate
+comm,6884534,Fastq,Fastq
+comm,6884534,Geneious,Geneious
+comm,6884534,Jane,Jane
+comm,6884534,MCMCTree,MCMCTree
+comm,6884534,MCMCtree,MCMCtree
+comm,6884534,OrthoDb,OrthoDB
+comm,6884534,PACo,PACo
+comm,6884534,PAML,PAML
+comm,6884534,PASTA,PASTA
+comm,6884534,Parafit,Parafit
+comm,6884534,PartitionFinder,PartitionFinder
+comm,6884534,R,R
+comm,6884534,RAxML,RAxML
+comm,6884534,SumTrees,SumTrees
+comm,6884534,Tracer,Tracer
+comm,6884534,ape,ape
+comm,6884534,bcl2fastq,bcl2fastq
+comm,6884534,custom Python script,custom Python script
+comm,6884534,paco,paco
+comm,6913905,AliGROOVE,AliGROOVE
+comm,6913905,BI-PCGRNA,BI-PCGRNA
+comm,6913905,DAMBE,DAMBE
+comm,6913905,Geneious,Geneious
+comm,6913905,MEGA,MEGA
+comm,6913905,MITOS,MITOS
+comm,6913905,ML- PCGRNA,ML- PCGRNA
+comm,6913905,MUSCLE,MUSCLE
+comm,6913905,MrBayes,MrBayes3
+comm,6913905,PhyDesign,PhyDesign
+comm,6913905,RAxML,RAxML
+comm,6913905,jModelTest,jModeltest
+comm,6927662,BEAST,Beast
+comm,6927662,BioEdit,BioEdit
+comm,6927662,ClustalX,ClustalX
+comm,6927662,CodonCode Aligner,CodonCode Aligner
+comm,6927662,Cytb,Cytb
+comm,6927662,FigTree,FigTree
+comm,6927662,FinchTV,FinchTV
+comm,6927662,Garcia,Garcia
+comm,6927662,PAUP*,PAUP*
+comm,6927662,PartitionFinder,Partitionfinder
+comm,6927662,PopART,POPART
+comm,6927662,RAxML,RAxML
+comm,6927662,SPSS,SPSS
+comm,6927662,Tracer,Tracer
+comm,6927662,TreeAnnotator,TreeAnnotator
+comm,6948215,BAMM,BAMM
+comm,6948215,BAMMtools,R package BAMMtools
+comm,6948215,BEAST,BEAST; BEAST2
+comm,6948215,BayesRate,BayesRate
+comm,6948215,CHELSA,CHELSA
+comm,6948215,Geneious,Geneious
+comm,6948215,LogCombiner,LogCombiner
+comm,6948215,MAFFT,MAFFT
+comm,6948215,R,R
+comm,6948215,R package,R package
+comm,6948215,R package coda (Plummer,R package coda (Plummer
+comm,6948215,RAxML,RaxML
+comm,6948215,STRAPP,STRAPP
+comm,6948215,Tracer,Tracer
+comm,6948215,TreeAnnotator,TreeAnnotator
+comm,6948215,geiger,R package geiger
+comm,6948215,jModelTest,jModelTest
+comm,6948215,raster,raster package
+comm,6948215,rjmcmc,rjmcmc
+comm,6963576,Adobe Illustrator,Adobe Illustrator
+comm,6963576,BLASTN,BLASTn
+comm,6963576,BioEdit,BioEdit
+comm,6963576,Chem Station,ChemStation
+comm,6963576,FigTree,FigTree
+comm,6963576,MAFFTv7,MAFFTv
+comm,6963576,MyBayes,MyBayes
+comm,6963576,PartitionFinder,PartitionFinder
+comm,6963576,TreeGraph,TreeGraph
+comm,6971079,ARWEN,ARWEN
+comm,6971079,Alignment (BWA),Alignment (BWA)
+comm,6971079,BLAST,BLASTp
+comm,6971079,BLASTN,BLASTn
+comm,6971079,Bayes,Bayes
+comm,6971079,CGView,CGView
+comm,6971079,CREx,CREx
+comm,6971079,ClustalW,ClustalW
+comm,6971079,FigTree,FigTree
+comm,6971079,Finder,Finder
+comm,6971079,GBlock,GBlock
+comm,6971079,Gateway,Gateway
+comm,6971079,Gblocks,GBlocks
+comm,6971079,IQ tree,IQ tree
+comm,6971079,MAFFT,MAFFT
+comm,6971079,MEGAX,MEGAX
+comm,6971079,MITOS,MITOS
+comm,6971079,MLGO,MLGO
+comm,6971079,NGS Toolkit,NGS-Toolkit
+comm,6971079,ORF Finder,ORF Finder
+comm,6971079,PartitionFinder,PartitionFinder
+comm,6971079,SPAdes,SPAdes
+comm,6971079,TranslatorX,TranslatorX
+comm,6971079,TreeREx,TreeREx
+comm,6971079,mfold,mfold
+comm,6971079,tRNAscan-SE,tRNAscan-SE
+comm,6974680,ANI calculator,ANIcalculator
+comm,6974680,BioEdit,Bioedit
+comm,6974680,DFAST,DFAST
+comm,6974680,DIFFIND,DIFFIND
+comm,6974680,Diffind,Diffind
+comm,6974680,Distance Calculator,Distance Calculator
+comm,6974680,FastQC,FastQC
+comm,6974680,FastTree,FastTree
+comm,6974680,Geneious,Geneious Prime
+comm,6974680,IDENTIFY,IDENTIFY
+comm,6974680,MAFFT,MAFFT
+comm,6974680,MEGA,MEGA
+comm,6974680,MEGA X,MEGA X
+comm,6974680,OrthoFinder,OrthoFinder
+comm,6974680,Quast (QUality ASsesment Tool),Quast (QUality ASsesment Tool)
+comm,6974680,SPAdes,SPAdes Genome Assembler
+comm,6974680,Trim Galore,TrimGalore
+comm,6979410,BBDuk,BBDuk
+comm,6979410,CLOCKSS,CLOCKSS
+comm,6979410,FastQC,FastQC
+comm,6979410,Galaxy,Galaxy
+comm,6979410,Geneious,Geneious; Geneious Prime
+comm,6979410,IQ-TREE,IQ-TREE
+comm,6979410,MAFFT,MAFFT
+comm,6979410,PUBMED,PubMed
+comm,6979410,PeerJ,PeerJ
+comm,7019704,BLAST,BLAST
+comm,7019704,BTV-GLUE,BTV-GLUE
+comm,7019704,BWA-MEM,BWA-MEM
+comm,7019704,DiversiTools,DiversiTools
+comm,7019704,FastQC,FASTQC
+comm,7019704,GLUE,GLUE
+comm,7019704,IQ-Tree,IQ-Tree
+comm,7019704,MEGA,MEGA6
+comm,7019704,NAME,NAME
+comm,7019704,Numerical Atmospheric-dispersion Modelling Environment (NAME),Numerical Atmospheric-dispersion Modelling Environment (NAME)
+comm,7019704,SplitsTree,SplitsTree4
+comm,7019704,Tool for Assessing Pest and Pathogen Airborne Spread (TAPPAS),Tool for Assessing Pest and Pathogen Airborne Spread (TAPPAS)
+comm,7019704,Trim Galore,Trim Galore
+comm,7023390,BioEdit,Bioedit
+comm,7023390,MAFFT,MAFFT
+comm,7023390,MEGA,MEGA
+comm,7023390,MEGA X,MEGA X
+comm,7023390,doBy,doBy
+comm,7029067,BAMM,BAMM
+comm,7029067,BAMMtools,BAMMtools
+comm,7029067,BEAST,BEAST
+comm,7029067,BioEdit,BioEdit
+comm,7029067,FigTree,FigTree
+comm,7029067,Geneious,Geneious
+comm,7029067,MEGA,MEGA
+comm,7029067,Modeltest,Modeltest
+comm,7029067,R,R
+comm,7029067,RASP,RASP
+comm,7029067,RASP (Reconstruct Ancestral State in Phylogenies),RASP (Reconstruct Ancestral State in Phylogenies)
+comm,7029067,Tracer,Tracer
+comm,7029067,TreeAnnotator,TreeAnnotator
+comm,7029067,phylorate,phylorate
+comm,7029067,phytools,phytools
+comm,7039129,(MEME),MEME
+comm,7039129,ARWEN,ARWEN
+comm,7039129,BASEML,BASEML
+comm,7039129,CODEML,CODEML
+comm,7039129,DATAMONKEY webserver,DATAMONKEY webserver
+comm,7039129,European Molecular Biology Open Software Suite (EMBOSS),European Molecular Biology Open Software Suite (EMBOSS)
+comm,7039129,FUBAR,FUBAR
+comm,7039129,FigTree,FigTree
+comm,7039129,Geneious,Geneious; Geneious R9
+comm,7039129,Lighter,Lighter
+comm,7039129,MAFFT,MAFFT
+comm,7039129,MCMCTree,MCMCTree
+comm,7039129,MEGA,MEGA
+comm,7039129,MLGO,MLGO
+comm,7039129,Mfold,Mfold
+comm,7039129,MitoZ,MitoZ
+comm,7039129,MrBayes,MrBayes
+comm,7039129,OrganellarGenomeDRAW (OGDRAW),OrganellarGenomeDRAW (OGDRAW)
+comm,7039129,PAML,PAML; Phylogenetic Analysis by Maximum Likelihood (PAML)
+comm,7039129,PAUP*,PAUP
+comm,7039129,PartitionFinder,PartitionFinder
+comm,7039129,RAxML,RAxML
+comm,7039129,RNAviz,RNAviz
+comm,7039129,Tracer,Tracer
+comm,7039129,TreeSAAP,TreeSAAP
+comm,7039129,VARNA,VARNA
+comm,7039129,aBSREL,aBSREL
+comm,7039129,fastp,Fastp
+comm,7039129,for Gene Order Analysis (MLGO,for Gene Order Analysis (MLGO
+comm,7039129,jModelTest,jModelTest
+comm,7055844,AutoConverter,AutoConverter
+comm,7055844,BLAST,BLAST
+comm,7055844,Beagle,Beagle
+comm,7055844,BioEdit,Bioedit
+comm,7055844,Biotyper MBT Explorer,Biotyper MBT Explorer
+comm,7055844,ChromasPro,Chromas Pro
+comm,7055844,E-INS-i,E-INS-i
+comm,7055844,FlexControl,FlexControl
+comm,7055844,IQ-TREE,IQ-TREE
+comm,7055844,LOCKSS,LOCKSS
+comm,7055844,MAFFT,MAFFT
+comm,7055844,MAFFT E-INS-i,MAFFT E-INS-i
+comm,7055844,MALDI Biotyper,MALDI Biotyper
+comm,7055844,MSP Dendrogram Creation Standard Method,MSP Dendrogram Creation Standard Method
+comm,7055844,ModelFinder,ModelFinder
+comm,7055844,MrBayes,MrBayes
+comm,7055844,NIS-Elements,NIS Elements
+comm,7055844,Nikon®,Nikon
+comm,7055844,PAUP*,PAUP
+comm,7055844,PUBMED,PubMed
+comm,7055844,PartitionFinder,PartitionFinder; PartitionFinder2
+comm,7055844,Peak Scanner,PeakScanner
+comm,7055844,R CRAN,R CRAN
+comm,7055844,RawGeno,RawGeno
+comm,7055844,TrichOKEY,TrichOKEY; TrichOKEY2
+comm,7078340,Adobe Illustrator,Adobe Illustrator
+comm,7078340,BLASTN,BLASTn
+comm,7078340,FigTree,FigTree
+comm,7078340,MAFFT,MAFFT
+comm,7078340,MEGA,MEGA
+comm,7078340,MrBayes,MrBayes
+comm,7078340,MrModeltest,MrModeltest
+comm,7078340,NIS-Elements Imaging,NIS-elements imaging
+comm,7078340,PAUP*,PAUP
+comm,7078340,RAxML,RAxML
+comm,7078340,Seqman Pro,Seqman Pro
+comm,7098592,BEAST,BEAST
+comm,7098592,FigTree,FigTree
+comm,7098592,Geneious,Geneious
+comm,7098592,LogCombiner,LogCombiner
+comm,7098592,MEGA,MEGA7
+comm,7098592,Tracer,Tracer
+comm,7098592,TreeAnnotator,TreeAnotator
+comm,7136305,FigTree,FigTree
+comm,7136305,MUSCLE,MUSCLE
+comm,7136305,Modeltest,Modeltest
+comm,7136305,MrBayes,MrBayes
+comm,7136305,raxmlGUI,raxmlGUI
+comm,7143346,Batch Entrez,Batch Entrez
+comm,7143346,CAT-GTR,CAT-GTR
+comm,7143346,IQ-Tree,iq-tree
+comm,7143346,MAFFT,mafft
+comm,7143346,MUSCLE,MUSCLE
+comm,7143346,MrBayes,MrBayes
+comm,7143346,PartitionFinder,PartitionFinder
+comm,7143346,PhyloBayes,phylobayes
+comm,7143346,bpcomp,bpcomp
+comm,7143346,mega X,mega x
+comm,7143346,xsede,xsede
+comm,7148304,ArcGIS,ArcGIS
+comm,7148304,MEGA,MEGA
+comm,7148304,RAxML-HPC2,RAxML-HPCv
+comm,7148304,SeqManTMII,SeqManTMII
+comm,7148304,XSEDE,XSEDE
+comm,7148304,bPTP,bPTP
+comm,7168623,Canopy,Canopy
+comm,7168623,ImageJ,ImageJ
+comm,7168623,PRANK,PRANK
+comm,7168623,RAxML,RAxML
+comm,7168623,RAxML-NG,RAxML-NG
+comm,7179895,0,0
+comm,7179895,ARWEN,ARWEN
+comm,7179895,Adobe Photoshop,Adobe Photoshop; Adobe Photoshop CS
+comm,7179895,ArcGIS,ArcGIS
+comm,7179895,BLASTN,BLASTn
+comm,7179895,Bayes,Bayes
+comm,7179895,CGView,CGView
+comm,7179895,ClustalX,ClustalX
+comm,7179895,DIVA-GIS,DIVA-GIS
+comm,7179895,Excel,Excel
+comm,7179895,IQ-Tree,IQ-Tree
+comm,7179895,IQ‐Tree,IQ‐Tree
+comm,7179895,MEGA,MEGA6
+comm,7179895,MITOS,MITOS
+comm,7179895,Mfold,Mfold
+comm,7179895,NOVOPlasty,NOVOPlasty
+comm,7179895,ORF Finder,Open Reading Frame Finder
+comm,7179895,PartitionFinder,PartitionFinder
+comm,7179895,Sequin,Sequin
+comm,7179895,TimeTree of Life,TimeTree of Life
+comm,7179895,TranslatorX,TranslatorX
+comm,7179895,TreeREx,TreeREx
+comm,7179895,TreeRex,TreeRex
+comm,7179895,seqtk,Seqtk
+comm,7206934,CURE-Chloroplast,CURE-Chloroplast
+comm,7206934,Clustal Omega,Clustal Omega
+comm,7206934,MACSE,MACSE
+comm,7206934,MrBayes,MrBayes
+comm,7206934,PREP-Cp,PREP-Cp
+comm,7206934,PREPACT,PREPACT
+comm,7206934,Phobius,Phobius
+comm,7206934,RAxMLGUI,RAxMLGUI
+comm,7206934,SOPMA,SOPMA
+comm,7206934,flabellifer,flabellifer
+comm,7206934,jModelTest,jModelTest
+comm,7228111,BLAST,BLAST
+comm,7228111,Circos,Circos
+comm,7228111,DnaSP,DnaSP
+comm,7228111,EMBOSS,EMBOSS
+comm,7228111,Gepard,Gepard
+comm,7228111,MAFFT,MAFFT
+comm,7228111,MEGA,MEGA
+comm,7228111,Mauve,Mauve
+comm,7228111,Mesquite,Mesquite
+comm,7228111,Mfannot,Mfannot
+comm,7228111,Mitos,Mitos
+comm,7228111,MrBayes,MrBayes
+comm,7228111,Open Reading Frame (ORF) Finder,Open Reading Frame (ORF) Finder
+comm,7228111,R,R
+comm,7228111,RAxML,RAxML
+comm,7228111,RNAweasel,RNAweasel
+comm,7228111,RNAweasel webserver,RNAweasel webserver
+comm,7228111,SMRTTM,SMRTTM
+comm,7228111,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7228111,jModelTest,Jmodeltest
+comm,7228111,tRNAscan-SE,tRNAScan-SE
+comm,7236349,CONSEL,CONSEL
+comm,7236349,Dayhoff,Dayhoff
+comm,7236349,FastMG,FastMG
+comm,7236349,FreeRate,FreeRate
+comm,7236349,Geneious,Geneious Prime
+comm,7236349,IQ-TREE,IQ-TREE
+comm,7236349,JTT_tree,JTT_tree
+comm,7236349,LG_tree,LG_tree
+comm,7236349,MEGAX,MEGAX
+comm,7236349,MIRA,Mira
+comm,7236349,MITObim,MITObim
+comm,7236349,MUSCLE,MUSCLE
+comm,7236349,ModelFinder,ModelFinder
+comm,7236349,MtArt,MtArt
+comm,7236349,MtOrt,MtOrt
+comm,7236349,MtZOA,MtZOA
+comm,7236349,PhyML,PhyML
+comm,7236349,Phylo.io,Phylo.io
+comm,7236349,SPSS,SPSS Statistics
+comm,7236349,TreeCmp,TreeCmp
+comm,7236349,WAG_tree,WAG_tree
+comm,7236349,XRate,XRate
+comm,7236349,mtArt,mtArt
+comm,7236349,mtDeu_tree,mtDeu_tree
+comm,7236349,mtFish,mtFish
+comm,7236349,mtInv,mtInv
+comm,7236349,mtInv_tree,mtInv_tree
+comm,7236349,mtMam,mtMam
+comm,7236349,mtMet,mtMet
+comm,7236349,mtMet_tree,mtMet_tree
+comm,7236349,mtOrt,mtOrt
+comm,7236349,mtOrt_tree,mtOrt_tree
+comm,7236349,mtPan,mtPan; mtPan2013
+comm,7236349,mtPan2013_tree,mtPan2013_tree
+comm,7236349,mtPro_tree,mtPro_tree
+comm,7236349,mtREV,mtREV
+comm,7236349,mtZoa,mtZoa
+comm,7236349,mtZoa_tree,mtZoa_tree
+comm,7236349,tree,tree
+comm,7237507,Assembly,Assembly
+comm,7237507,Bayes,Bayes
+comm,7237507,Geneious,Geneious
+comm,7237507,MAFFT,MAFFT
+comm,7237507,Mesquite,Mesquite
+comm,7237507,PAUP*,PAUP*
+comm,7237507,PopART,PopART
+comm,7237507,RAxML,RAxML
+comm,7237507,jModelTest,jModelTest
+comm,7238176,AUGUSTUS,AUGUSTUS
+comm,7238176,ApMAT,ApMAT
+comm,7238176,BPTP,BPTP
+comm,7238176,CIPRES,CIPRES Science Gateway
+comm,7238176,DNASTAR®,DNASTAR
+comm,7238176,GPS-LIPID,GPS-LIPID
+comm,7238176,GTRCAT,GTRCAT
+comm,7238176,HMMER,HMMER
+comm,7238176,INTERPRO,INTERPRO
+comm,7238176,JMODELTEST,JMODELTEST
+comm,7238176,Jmol,Jmol
+comm,7238176,Leica Application Suite,Leica Application Suite (LAS)
+comm,7238176,MAFFT,MAFFT
+comm,7238176,MEGA,MEGA7
+comm,7238176,MUSCLE,MUSCLE
+comm,7238176,MrBayes,MrBayes
+comm,7238176,NetPhos,NETPHOS
+comm,7238176,PROSITE,PROSITE
+comm,7238176,Phobius,Phobius
+comm,7238176,Phyre2,PHYRE2; Phyre2
+comm,7238176,Protein Model Portal,Protein Model Portal
+comm,7238176,RAxML,RAxML
+comm,7238176,RAxML-HPC2,RAxML-HPC
+comm,7238176,SeqMan,SeqMan
+comm,7238176,SignalP,SignalP
+comm,7238176,Statistica,STATISTICA
+comm,7238176,TMHMM,TMHMM
+comm,7238176,TREEBASE,TREEBASE
+comm,7238176,TargetP,TargetP
+comm,7238176,UNIPROT3,UNIPROT
+comm,7238176,XSEDE,XSEDE
+comm,7265640,BLASTN,BLASTn
+comm,7265640,Canonical Analysis of Principal coordinates (CAP),Canonical Analysis of Principal Coordinates (CAP)
+comm,7265640,FigTree,FigTree
+comm,7265640,Genetics,Genetics
+comm,7265640,GraphPad Prism,GraphPad; GraphPad Prism
+comm,7265640,MEGA,MEGA
+comm,7265640,MUSCLE,MUSCLE
+comm,7265640,MrBayes,MrBayes
+comm,7265640,Multivariate Analysis of Variance (PERMANOVA),Multivariate ANalysis Of Variance (PERMANOVA
+comm,7265640,PERMANOVA+,PERMANOVA
+comm,7265640,Panno,Panno
+comm,7265640,Primer3,PRIMER
+comm,7265640,Principal Coordinate Analysis (PCoA),Principal Coordinate Analysis (PCO
+comm,7265640,RAxML,RAxML
+comm,7265640,SIMPER,SIMPER
+comm,7265640,SIMilarity PERcentage (SIMPER),SIMilarity PERcentage (SIMPER)
+comm,7265640,jModelTest,jModelTest
+comm,7265640,trimAl,TrimAl
+comm,7266837,Adobe Photoshop,Adobe Photoshop
+comm,7266837,ArcGIS,ArcGIS
+comm,7266837,BioEdit,BioEdit
+comm,7266837,ClustalX,Clustal X
+comm,7266837,FigTree,FigTree
+comm,7266837,MrBayes,MrBayes
+comm,7266837,RAxM,RAxM
+comm,7266837,Sequencer,Sequencer
+comm,7266837,XSEDE,XSEDE
+comm,7277287,MEGA,MEGA
+comm,7277287,Mesquite,Mesquite
+comm,7277287,PAST,PAST
+comm,7277287,RAxML,RAxML
+comm,7277287,TNT,TNT
+comm,7277287,Yap,Yap
+comm,7277287,xmult,xmult
+comm,7280319,Adobe Illustrator,Adobe Illustrator CS6
+comm,7280319,Adobe Photoshop,Adobe Photoshop
+comm,7280319,AliView,AliView
+comm,7280319,BEAST,BEAST
+comm,7280319,BEAUti,BEAUti
+comm,7280319,CIPRES,CIPRES
+comm,7280319,FigTree,FigTree
+comm,7280319,IQ-Tree,IQ-tree
+comm,7280319,Image Frame Work,Image Frame Work
+comm,7280319,MAFFT,MAFFT
+comm,7280319,PAUP*,PAUP
+comm,7280319,Tarosoft,Tarosoft
+comm,7280319,Tracer,Tracer
+comm,7280319,TreeAnnotator,TreeAnnotator
+comm,7280319,XSEDE,XSEDE
+comm,7280319,jModelTest,jModelTest2
+comm,7280319,trimAl,trimAl
+comm,7283232,Arlequin,ARLEQUIN
+comm,7283232,BEAST,BEAST
+comm,7283232,BLASTN,BLASTn
+comm,7283232,CGView,CGView
+comm,7283232,DnaSP,DnaSP
+comm,7283232,MAFFT,MAFFT
+comm,7283232,MIRA,MIRA4
+comm,7283232,MITOBim,MITOBim
+comm,7283232,MrBayes,MrBayes
+comm,7283232,PartitionFinder,PartitionFinder
+comm,7283232,tRNAscan-SE,tRNAscan-SE
+comm,7284791,BLAST,Basic Local Alignment Search Tool
+comm,7284791,CODEML,CODEML
+comm,7284791,GENEWIZ®,GENEWIZ
+comm,7284791,MEGA,MEGA
+comm,7284791,MUSCLE,MUSCLE
+comm,7284791,Modeltest,Modeltest
+comm,7284791,MrBayes,MrBayes
+comm,7284791,PAML,PAML
+comm,7287133,BEAST,BEAST
+comm,7287133,BLASTN,BLASTN
+comm,7287133,Bowtie,Bowtie2; bowtie-2
+comm,7287133,ClustalX,Clustal
+comm,7287133,DNA,DNA
+comm,7287133,GTRGAMMA,GTRGAMMA
+comm,7287133,Gap Discovery,Gap Discovery
+comm,7287133,Identifier,Identifier
+comm,7287133,LoFreq,LoFreq
+comm,7287133,LogCombiner,LogCombiner
+comm,7287133,MAFFT L-INS-i,MAFFT LINSI
+comm,7287133,MEGA X,MEGA X
+comm,7287133,MITOS,MITOS
+comm,7287133,MITObim,MITObim
+comm,7287133,PartitionFinder,PartitionFinder
+comm,7287133,Picard,PICARD
+comm,7287133,RAxML,RAxML
+comm,7287133,RISTEKDIKTI,RISTEKDIKTI
+comm,7287133,SAMtools,SAMtools; samtools
+comm,7287133,Tracer,Tracer
+comm,7287133,TreeAnnotator,TreeAnnotator
+comm,7287133,Trimmomatic,Trimmomatic
+comm,7287133,bModelTest,bModelTest
+comm,7287133,custom Python script,custom
+comm,7287133,gatk FastaAlternateReferenceMaker,gatk FastaAlternateReferenceMaker
+comm,7287138,ARAGORN,ARAGORN
+comm,7287138,BLASTN,BLASTN
+comm,7287138,BLASTX,BLASTX
+comm,7287138,ClustalW,ClustalW
+comm,7287138,DOGMA,DOGMA
+comm,7287138,Gblocks,Gblocks
+comm,7287138,HyPhy,HyPhy
+comm,7287138,MAFFT,MAFFT
+comm,7287138,MEGA,MEGA7
+comm,7287138,OGDRAW,OGDRAW
+comm,7287138,PAML,PAML
+comm,7287138,RAxML,RAxML
+comm,7287138,Trimmomatic,Trimmomatic
+comm,7287138,Velvet,Velvet
+comm,7287138,r8s,r8s
+comm,7287138,tRNAscan-SE,tRNAscan-SE
+comm,7310197,-,-
+comm,7310197,BLAST,BLAST
+comm,7310197,BMGE,BMGE
+comm,7310197,CGView,CGView
+comm,7310197,ExPASy ProtParam,ExPASy
+comm,7310197,FORNA,FORNA
+comm,7310197,MAFFT,MAFFT
+comm,7310197,MIRA,MIRA
+comm,7310197,MITFI,MITFI
+comm,7310197,MITOS,MITOS
+comm,7310197,MITObim,MITObim
+comm,7310197,Manipulation Suite (SMS),Manipulation Suite (SMS)
+comm,7310197,MiTFi,MiTFi
+comm,7310197,NOVOPlasty,NOVOPlasty
+comm,7310197,PHYLIP,Phylip
+comm,7310197,Phylogeny,Phylogeny
+comm,7310197,RNAFold,RNAFold
+comm,7310197,Repeats Finder,Repeats Finder
+comm,7310197,SMS,SMS
+comm,7310197,Trimmomatic,Trimmomatic
+comm,7310197,iTOL,iTOL
+comm,7318869,AdapterRemoval,AdapterRemoval
+comm,7318869,BLAST,BLASTP
+comm,7318869,BLASTN,BLASTN
+comm,7318869,DNASTAR Lasergene,DNASTAR Lasergene
+comm,7318869,MAFFT,MAFFT
+comm,7318869,MEGA,MEGA
+comm,7318869,MFannot,MFannot
+comm,7318869,MITOS,MITOS
+comm,7318869,MITObim,MITObim
+comm,7318869,Mauve,Mauve
+comm,7318869,MrBayes,MrBayes
+comm,7318869,OGDRAW,OGDraw
+comm,7318869,ORF Finder,Open Reading Frame Finder
+comm,7318869,PartitionFinder,PartitionFinder
+comm,7318869,RAxML,RAxML
+comm,7318869,REPuter,REPuter
+comm,7318869,Repeats Finder,Repeats Finder
+comm,7318869,ngsShoRT,ngsShoRT
+comm,7318869,tRNAscan-SE,tRNAscan-SE
+comm,7324783,CODEML,CODEML
+comm,7324783,DAMBE,DAMBE
+comm,7324783,EasyCodeML,EasyCodeML
+comm,7324783,FastQC,FastQC
+comm,7324783,GRIMM,GRIMM
+comm,7324783,Geneious,Geneious
+comm,7324783,MCMCTREE,MCMCTREE
+comm,7324783,MEGA,MEGA
+comm,7324783,MLGO,MLGO
+comm,7324783,MUSCLE,MUSCLE
+comm,7324783,MrBayes,MrBayes
+comm,7324783,MrModeltest,MrModelTest
+comm,7324783,NOVOPlasty,NOVOPlasty
+comm,7324783,PAML,PAML
+comm,7324783,R,R
+comm,7324783,R package FactoMineR,FactoMineR
+comm,7324783,RAxML,RAxML
+comm,7324783,REPuter,REPuter
+comm,7324783,Ray,Ray
+comm,7324783,TimeTree,TimeTree
+comm,7324783,Tracer,Tracer
+comm,7324783,Trimmomatic,Trimmomatic
+comm,7324783,jModelTest,jModelTest
+comm,7324783,tRNAscan-SE,tRNAscan-SE
+comm,7331741,Clustal Omega,Clustal Omega
+comm,7331741,FigTree,FigTree
+comm,7331741,Gephi,Gephi
+comm,7331741,MuMIn,MuMIn
+comm,7331741,Nexus,NEXUS
+comm,7331741,PAUP*,PAUP
+comm,7331741,R,R
+comm,7331741,R package car,R package car
+comm,7331741,brglm,R package brglm2
+comm,7331741,lsmeans,R package lsmeans; lsmeans
+comm,7331741,nnet,R package nnet
+comm,7333402,AdapterRemoval,AdapterRemoval
+comm,7333402,BLAST,BLAST; BLASTP
+comm,7333402,BLASTN,BLASTN; BLASTn
+comm,7333402,DnaSP,DnaSP
+comm,7333402,Lasergene,Lasergene
+comm,7333402,MAFFT,MAFFT
+comm,7333402,MEGA,MEGA
+comm,7333402,MFannot,MFannot
+comm,7333402,MITOS,MITOS
+comm,7333402,MITObim,MITObim
+comm,7333402,MrBayes,MrBayes
+comm,7333402,OGDRAW,OGDraw
+comm,7333402,ORF Finder,Open Reading Frame Finder
+comm,7333402,PartitionFinder,PartitionFinder
+comm,7333402,RAxML,RAxML
+comm,7333402,REPuter,REPuter
+comm,7333402,SPAdes,SPAdes
+comm,7333402,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7333402,WebLogo,WebLogo
+comm,7333402,ngsShoRT,ngsShoRT
+comm,7333402,tRNAscan-SE,tRNAscan-SE
+comm,7338416,Adobe Illustrator,Adobe Illustrator
+comm,7338416,AliView,AliView
+comm,7338416,ApMat,ApMat
+comm,7338416,Ape,Ape
+comm,7338416,BEAGLE,BEAGLE
+comm,7338416,DendroPy,DendroPy
+comm,7338416,GCPSR,GCPSR
+comm,7338416,Gblocks,Gblocks
+comm,7338416,Geneious,Geneious
+comm,7338416,Geneious Pro,Geneious Pro
+comm,7338416,GraphPad Prism,Graph Pad Prism; GraphPad; GraphPad Prism
+comm,7338416,MAFFT,MAFFT
+comm,7338416,Mesquite,Mesquite
+comm,7338416,MrBayes,MrBayes
+comm,7338416,PartitionFinder,PartitionFinder
+comm,7338416,PhyML,PhyML
+comm,7338416,R,R
+comm,7338416,RAxML,RAxML
+comm,7338416,RStudio,RStudio
+comm,7338416,SumLabels,SumLabels
+comm,7338416,SumTrees,SumTrees
+comm,7347972,BLASTX,BLASTX
+comm,7347972,CLC Genomics Workbench,CLC Genomics Workbench
+comm,7347972,DOGMA,Dual Organellar GenoMe Annotator
+comm,7347972,DnaSP,DnaSP
+comm,7347972,FigTree,FigTree
+comm,7347972,Geneious,Geneious R7
+comm,7347972,Genome DRAW,Genome DRAW
+comm,7347972,Heatmapper,Heatmapper
+comm,7347972,IQ-Tree,IQ-tree
+comm,7347972,MAFFT,MAFFT
+comm,7347972,MISA,MISA
+comm,7347972,MISA-web,MISA-web
+comm,7347972,ModelFinder,ModelFinder
+comm,7347972,MrBayes,MrBayes
+comm,7347972,PAUP*,PAUP
+comm,7347972,REPuter,REPuter
+comm,7347972,Selecton,Selecton
+comm,7347972,Websat,Websat
+comm,7347972,jModelTest,jModeltest
+comm,7347972,nrITS,nrITS
+comm,7347972,seqinr,R package SeqinR
+comm,7376913,-,-
+comm,7376913,AUGUSTUS,AUGUSTUS
+comm,7376913,BLAST,BLAST; BLASTp
+comm,7376913,BLASTN,BLASTn
+comm,7376913,BLASTX,BLASTx
+comm,7376913,Basic Local Alignment Search Tool (BLAST),Basic Local Alignment Search Tool (BLAST)
+comm,7376913,Blast2GO,Blast2GO
+comm,7376913,CLC Genomics Workbench,CLC Genomics Workbench
+comm,7376913,Excel,Excel
+comm,7376913,HMMPfam,HMMPfam
+comm,7376913,IQ-Tree,IQ-Tree
+comm,7376913,MAFFT,MAFFT
+comm,7376913,MEGA,MEGA
+comm,7376913,MUSCLE,MUSCLE
+comm,7376913,NOTUNG,NOTUNG
+comm,7376913,OrthoFinder,OrthoFinder; Orthofinder
+comm,7376913,SH-AU,SH-AU
+comm,7376913,Sequencher,Sequencher
+comm,7376913,Significance Analysis of Microarrays,SAM; SAM4; SAM5
+comm,7376913,Thermo Xcalibur LC-MS,Thermo Xcalibur LC-MS
+comm,7376913,antiSMASH,antiSMASH
+comm,7376913,custom Perl script,custom Perl scripts
+comm,7391345,BEAST,BEAST
+comm,7391345,FigTree,Figtree
+comm,7391345,GBlock,GBlock
+comm,7391345,Geneious,Geneious
+comm,7391345,MAFFT,MAFFT
+comm,7391345,MrBayes,MrBayes
+comm,7391345,PartitionFinder,PartitionFinder
+comm,7391345,PhyDesign,PhyDesign
+comm,7391345,Primer3,Primer
+comm,7391345,RAxML,RAxML
+comm,7391345,Tracer,Tracer
+comm,7391345,TreeAnnotator,Treeannotator
+comm,7432440,AdapterRemoval,AdapterRemoval
+comm,7432440,BLAST,BLASTP
+comm,7432440,BLASTN,BLASTN
+comm,7432440,ClustalW,Clustal W
+comm,7432440,DNASTAR Lasergene,DNASTAR Lasergene
+comm,7432440,Exonerate,exonerate
+comm,7432440,MAFFT,MAFFT
+comm,7432440,MFannot,MFannot
+comm,7432440,MITOS,MITOS
+comm,7432440,MITObim,MITObim
+comm,7432440,MrBayes,MrBayes
+comm,7432440,OGDRAW,OGDraw
+comm,7432440,ORF Finder,Open Reading Frame Finder
+comm,7432440,PartitionFinder,PartitionFinder
+comm,7432440,RAxML,RAxML
+comm,7432440,REPuter,REPuter
+comm,7432440,Repeats Finder,Repeats Finder
+comm,7432440,SPAdes,SPAdes
+comm,7432440,Sequence Read Archive (SRA),Sequence Read Archive (SRA)
+comm,7432440,tRNAscan-SE,tRNAscan-SE
+comm,7449498,BEAST,BEAST
+comm,7449498,ClustalX,Clustal X
+comm,7449498,GMYC,GMYC
+comm,7449498,IQ-TREE,IQ-TREE
+comm,7449498,MEGA,MEGA7
+comm,7449498,ModelFinder,ModelFinder
+comm,7449498,ONE2,ONE
+comm,7449498,PACE,PACE
+comm,7449498,Preflight Analysis and Conversion Engine ( PACE ),Preflight Analysis and Conversion Engine (PACE)
+comm,7449498,R,R
+comm,7449498,Staden Package,Staden Package
+comm,7449498,TCS,TCS1
+comm,7449498,Tracer,Tracer
+comm,7449498,UFBoot,UFBoot2
+comm,7449498,W-IQ-TREE,W-IQ-TREE
+comm,7449498,Windows10,Windows
+comm,7449498,pLOS ONE,PLOS ONE
+comm,7455576,BioEdit,BioEdit
+comm,7455576,ClustalW,CLUSTAL W
+comm,7455576,Modeltest,Modeltest
+comm,7455576,MrBayes,MrBayes
+comm,7455576,PAUP*,PAUP
+comm,7455576,TIMef,TIMef
+comm,7456527,BioEdit,BioEdit
+comm,7456527,CLOCKSS,CLOCKSS
+comm,7456527,FigTree,FigTree
+comm,7456527,IQtree,IQtree
+comm,7456527,MEGA,MEGA
+comm,7456527,MUSCLE,MUSCLE
+comm,7456527,Nexus,NEXUS
+comm,7456527,PUBMED,PubMed
+comm,7456527,PeerJ,PeerJ
+comm,7456527,SH-aLRT,SH-aLRT
+comm,7456527,aBayes,aBayes
+comm,7467941,BioEdit,BioEdit
+comm,7467941,DnaSP,DNASP
+comm,7467941,FIGTREE,FIGTREE
+comm,7467941,GenAlEx,GENALEX
+comm,7467941,Haplonst,Haplonst
+comm,7467941,MEGA,MEGA
+comm,7467941,MRMODELTEST,MRMODELTEST
+comm,7467941,MrBayes,MrBayes
+comm,7467941,NETWORK,NETWORK
+comm,7467941,PAUP*,PAUP*
+comm,7467941,SPSS,SPSS
+comm,7467941,STRUCTURE,STRUCTURE
+comm,7467941,STRUCTURE HARVESTER,Structure Harvester
+comm,7467941,STUCTURE,STUCTURE
+comm,7467941,Tracer,Tracer
+comm,7467946,AIC,AIC
+comm,7467946,MEGA,MEGA7
+comm,7467946,MUSCLE,MUSCLE
+comm,7467946,MrBayes,MRBAYES; MrBayes
+comm,7467946,PAUP*,PAUP*4
+comm,7467946,RAxML,RAxML; RAxML8
+comm,7467946,Smart Model Selection (SMS),Smart Model Selection (SMS)
+comm,7471474,ArcMap GIS,ArcMap GIS
+comm,7471474,BioEdit,BioEdit
+comm,7471474,CAOS,CAOS
+comm,7471474,CAOS (Character Attribute Organization System,CAOS (Character Attribute Organization System
+comm,7471474,CONABIO,CONABIO
+comm,7471474,ClustalX,Clustal X
+comm,7471474,Google Earth Pro®,Google Earth Pro
+comm,7471474,MacClade,MacClade
+comm,7471474,Nexus,Nexus
+comm,7471474,P-gnome,P-gnome
+comm,7471474,Sequencher,Sequencher
+comm,7471474,TNT,TNT
+comm,7472804,ClustalW,ClustalW
+comm,7472804,DNAMAN,DNAMAN
+comm,7472804,InterProScan,InterProScan
+comm,7472804,Mega,Mega
+comm,7472804,PAUP*,PAUP
+comm,7472804,Primer3,Primer
+comm,7472804,TMHMM Server,TMHMM Server
+comm,7472804,trimAl,trimAl
+comm,7515930,ATTA,ATTA
+comm,7515930,ClustalX,ClustalX2
+comm,7515930,Geneious,Geneious Prime
+comm,7515930,Genomics Workbench,Genomics Workbench
+comm,7515930,IQ-TREE,IQ-TREE
+comm,7515930,MEGA,MEGA; MEGA6
+comm,7515930,MIRA,Mira
+comm,7515930,MITObim,MITObim
+comm,7515930,ModelFinder,ModelFinder
+comm,7515930,MrBayes,MrBayes
+comm,7515930,PartitionFinder,PartitionFinder
+comm,7515930,Repeats Finder,Repeats Finder
+comm,7515930,Species File,Species File
+comm,7515930,tRNAscan-SE,tRNAscan-SE1
+comm,7536210,BLAST,BLASTP
+comm,7536210,BLASTN,BLASTn
+comm,7536210,BLASTn search,BLASTn search
+comm,7536210,DNASTAR Lasergene,DNASTAR Lasergene
+comm,7536210,DnaSP,DnaSP
+comm,7536210,Exonerate,exonerate
+comm,7536210,Finder,Finder
+comm,7536210,MAFFT,MAFFT
+comm,7536210,MEGA,MEGA
+comm,7536210,MITOS,MITOS
+comm,7536210,MITObim,MITObim
+comm,7536210,Mauve,Mauve
+comm,7536210,MrBayes,MrBayes
+comm,7536210,PartitionFinder,PartitionFinder
+comm,7536210,RAxML,RAxML
+comm,7536210,REPuter,REPuter
+comm,7536210,SPAdes,SPAdes
+comm,7536210,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,7536210,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7536210,mfannot,mfannot
+comm,7536210,tRNAscan-SE,tRNAscan-SE
+comm,7546225,BLAST,BLAST
+comm,7546225,CGView,CGView
+comm,7546225,CREx,CREx
+comm,7546225,CREx (Common Interval Rearrangement Explorer),CREx (Common Interval Rearrangement Explorer)
+comm,7546225,DNAMAN,DNAMAN
+comm,7546225,DnaSP,DnaSP
+comm,7546225,FigTree,FigTree
+comm,7546225,GapFiller,GapFiller
+comm,7546225,MAFFT,MAFFT
+comm,7546225,MEGA,MEGA
+comm,7546225,MITOS,MITOS
+comm,7546225,MrBayes,MrBayes
+comm,7546225,PartitionFinder,PartitionFinder
+comm,7546225,RAxML,RAxML
+comm,7546225,SOAPdenovo,SOAPdenovo2
+comm,7546225,Tandem,Tandem
+comm,7546225,Tracer,Tracer
+comm,7588496,BLAST,BLAST
+comm,7588496,Lasergene,Lasergene
+comm,7588496,MAFFT,MAFFT
+comm,7588496,MrBayes,MrBayes
+comm,7588496,PAUP*,PAUP4
+comm,7588496,RAxML,RAxML
+comm,7588496,RAxMLGUI,RAxMLGUI
+comm,7588496,Tracer,Tracer
+comm,7588496,jModelTest,jModelTest
+comm,7593144,BEAST,BEAST
+comm,7593144,MEGA,MEGA
+comm,7593144,TPSDig,TPSDig
+comm,7593144,Tracer,Tracer
+comm,7593144,geomorph,R package “geomorph”
+comm,7593144,jModelTest,jModeltest
+comm,7593144,phylomorphospace,phylomorphospace
+comm,7601144,Aligner (BWA),Aligner (BWA)
+comm,7601144,Burrows,Burrows
+comm,7601144,DOGMA,DOGMA; Dual Organellar GenoMe Annotator (DOGMA)
+comm,7601144,DnaSP,DNAsp; DnaSP
+comm,7601144,GTRGAMMA,GTRGAMA
+comm,7601144,Gblocks,Gblocks
+comm,7601144,Kmernator,Kmernator
+comm,7601144,MAFFT,MAFFT
+comm,7601144,MEGA X,MEGA X
+comm,7601144,MrBayes,MrBayes
+comm,7601144,OGDRAW,OGDRAW
+comm,7601144,Perl script MISA,Perl script MISA
+comm,7601144,RAxML,RAxML
+comm,7601144,RAxML-HPC2,RAxML-HPC
+comm,7601144,REPuter,REPuter
+comm,7601144,Trimmomatic,Trimmomatic
+comm,7601144,mVISTA,mVISTA
+comm,7601144,tRNAscan-SE,tRNAscan-SE
+comm,7641614,ALTER,ALTER
+comm,7641614,BLASTN,BLASTn
+comm,7641614,Basic Local Alignment Search Tool (BLAST),Basic Local Alignment Search Tool (Blast
+comm,7641614,ClustalX,Clustal X
+comm,7641614,MAFFT,MAFFT
+comm,7641614,MrBayes,MrBayes
+comm,7641614,PartitionFinder,PartitionFinder
+comm,7641614,RAxML,RAxML
+comm,7641614,Sequencher,Sequencher
+comm,7641614,TranslatorX,Translator X
+comm,7641614,jModelTest,JModeltest
+comm,7642397,DNASTAR®,DNASTAR
+comm,7642397,LASERGENE,LASERGENE
+comm,7642397,MAFFT,MAFFT
+comm,7642397,MEGA,MEGA
+comm,7642397,MrBayes,MRBAYES
+comm,7642397,MrModeltest,MrModeltest
+comm,7642397,PAUP∗,PAUP∗
+comm,7642397,RAxML,RAxML
+comm,7642397,SPSS,SPSS
+comm,7642397,TREEGRAPH,TREEGRAPH
+comm,7644776,BLASTN,BLASTN; BLASTn
+comm,7644776,BLASTX,BLASTX
+comm,7644776,Bowtie,bowtie2
+comm,7644776,ClustalW,Clustal W
+comm,7644776,Lasergene,Lasergene
+comm,7644776,MAFFT,MAFFT
+comm,7644776,MEGA,MEGA
+comm,7644776,MFannot,MFannot
+comm,7644776,MITOS,MITOS
+comm,7644776,MITObim,MITObim
+comm,7644776,Mauve,Mauve
+comm,7644776,ModelGenerator,Modelgenerator
+comm,7644776,MrBayes,MrBayes
+comm,7644776,OGDRAW,OGDraw
+comm,7644776,ORF Finder,Open Reading Frame Finder
+comm,7644776,Repeats Finder,Repeats Finder
+comm,7644776,SPAdes,SPAdes
+comm,7644776,Velvet,Velvet
+comm,7644776,mega,mega
+comm,7644776,tRNAscan-SE,tRNAscan-SE
+comm,7658094,FigTree,FigTree
+comm,7658094,GZAC,GZAC
+comm,7658094,GZUIFR CY,GZUIFR CY
+comm,7658094,IQ-TREE,IQ-TREE
+comm,7658094,MAFFT,MAFFT
+comm,7658094,Modeltest,ModelTest
+comm,7658094,MrBayes,MrBayes
+comm,7658094,PAUP*,PAUP4
+comm,7658094,SeqMan,SeqMan
+comm,7658094,Tracer,Tracer
+comm,7658094,treeBASE,TreeBASE
+comm,7666478,AdapterRemoval,AdapterRemoval
+comm,7666478,BLAST,BLAST; BLASTP
+comm,7666478,BLASTN,BLASTN; BlastN
+comm,7666478,DNASTAR®,DNASTAR
+comm,7666478,DnaSP,DnaSP
+comm,7666478,Exonerate,exonerate
+comm,7666478,MAFFT,MAFFT
+comm,7666478,MEGA,MEGA
+comm,7666478,MFannot,MFannot
+comm,7666478,MITOS,MITOS
+comm,7666478,MITObim,MITObim
+comm,7666478,MrBayes,MrBayes
+comm,7666478,OGDRAW,OGDraw
+comm,7666478,PartitionFinder,PartitionFinder
+comm,7666478,RAxML,RAxML
+comm,7666478,REPuter,REPuter
+comm,7666478,Repeats Finder,Repeats Finder
+comm,7666478,SPAdes,SPAdes
+comm,7666478,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,7666478,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7666478,tRNAscan-SE,tRNAscan-SE
+comm,7693328,(MEME),MEME
+comm,7693328,BEAST,BEAST
+comm,7693328,BEAUTi,BEAUTi
+comm,7693328,BLAST,BLAST
+comm,7693328,ClustalW,ClustalW
+comm,7693328,DataMonkey HyPhy server,DataMonkey HyPhy server
+comm,7693328,Datamonkey,DataMonkey
+comm,7693328,DnaSP,DnaSP
+comm,7693328,FigTree,FigTree
+comm,7693328,GPIP,GPIP
+comm,7693328,Geneious,Geneious
+comm,7693328,LogCombiner,LogCombiner
+comm,7693328,MC1R,MC1R
+comm,7693328,MEGA,MEGA
+comm,7693328,MJN,MJN
+comm,7693328,Map,Map
+comm,7693328,ModelGenerator,ModelGenerator
+comm,7693328,PartitionFinder,PartitionFinder; PartitionFinder2
+comm,7693328,PopArt,PopArt
+comm,7693328,RAxML-NG,RAxML-NG
+comm,7693328,SeqTrace,SeqTrace
+comm,7693328,Tracer,Tracer
+comm,7693328,TreeAnnotator,TreeAnnotator
+comm,7694756,AliView,AliView
+comm,7694756,BBDuk,BBDuk
+comm,7694756,BOOSTER,BOOSTER
+comm,7694756,FastQC,FastQC
+comm,7694756,Fiji,FIJI
+comm,7694756,Geneious,Geneious; Geneious Prime
+comm,7694756,MAFFT,MAFFT
+comm,7694756,MEGA X,MEGA X
+comm,7694756,MITOS,MITOS
+comm,7694756,Mesepimeron,Mesepimeron
+comm,7694756,MrBayes,MrBayes
+comm,7694756,PartitionFinder,PartitionFinder
+comm,7694756,RAxML,RAxML
+comm,7694756,Tracer,Tracer
+comm,7694756,iTOL,iTOL
+comm,7694756,tRNAscan-SE,tRNAscan-SE
+comm,7694756,trimAl,trimAL
+comm,7707367,MEGA,MEGA
+comm,7707367,MFannot,MFannot
+comm,7707367,MITOS,MITOS2
+comm,7707367,MITObim,MITObim
+comm,7707367,tRNAscan-SE,tRNAscan-SE
+comm,7707410,Geneious,Geneious
+comm,7707410,IDBA-UD,IDBA-UD
+comm,7707410,MEGA,MEGA
+comm,7707410,tRNAscan-SE,tRNAscan-SE
+comm,7707410,transAlign,Trans Align
+comm,7707448,Geneious,Geneious
+comm,7707448,IDBA-UD,IDBA-UD
+comm,7707448,MEGA,MEGA
+comm,7707448,TranAlign,Tran Align
+comm,7707448,tRNAscan-SE,tRNAscan-SE
+comm,7707660,MEGA,MEGA
+comm,7707660,MFannot,MFannot
+comm,7707660,MIRA,MIRA
+comm,7707660,MITOS,MITOS2
+comm,7707660,MITObim,MITObim
+comm,7707660,mega,mega
+comm,7707660,tRNAscan-SE,tRNAscan-SE2
+comm,7708463,CGView Server,CGView Server
+comm,7708463,ClustalX,ClustalX
+comm,7708463,CodonCode Aligner,CodonCode Aligner
+comm,7708463,DAMBE,DAMBE
+comm,7708463,DNAMAN,DNAMAN
+comm,7708463,FigTree,FigTree
+comm,7708463,IQ-Tree,IQ-Tree
+comm,7708463,MAFFT,MAFFT
+comm,7708463,MEGA,MEGA
+comm,7708463,MITOS,MITOS
+comm,7708463,MrBayes,MrBayes
+comm,7708463,PartitionFinder,PartitionFinder
+comm,7708463,Tracer,Tracer
+comm,7708463,TreeView,TreeView
+comm,7716436,APIweb,APIweb
+comm,7716436,CLC Genomic Workbench,CLC Genomic workbench
+comm,7716436,CLC Genomics Workbench,CLC Genomics Workbench; CLC Genomics workbench
+comm,7716436,CLC Workbench,CLC workbench
+comm,7716436,Celera Assembler,Celera Assembler
+comm,7716436,DNAPlotter,DNA plotter
+comm,7716436,FastQC,FastQC
+comm,7716436,Genomics Workbench,Genomics Workbench
+comm,7716436,GraphPad Prism,GraphPad; GraphPad Prism
+comm,7716436,IslandPath-DIMOB,IslandPath-DIMOB
+comm,7716436,IslandPick,IslandPick
+comm,7716436,IslandViewer,IslandViewer
+comm,7716436,MALDI Biotyper,MALDI Biotyper
+comm,7716436,MEGA X,MEGA X
+comm,7716436,MLSA,MLSA
+comm,7716436,Mauve,Mauve
+comm,7716436,PacBio®,PacBio
+comm,7716436,RAST,RAST
+comm,7716436,SIGH-HMM,SIGH-HMM
+comm,7716436,SIGI-HMM,SIGI-HMM
+comm,7716436,Workbench,workbench
+comm,7716436,analysis (MLSA,analysis (MLSA
+comm,7720951,Geneious,Geneious
+comm,7720951,IDBA-UD,IDBA-UD
+comm,7720951,MrBayes,MrBayes
+comm,7720951,tRNAscan-SE,tRNAscan-SE
+comm,7720951,transAlign,TransAlign
+comm,7721053,BioEdit,BioEdit
+comm,7721053,Geneious,Geneious
+comm,7721053,IQtree,IQtree
+comm,7748853,ClustalW,CLUSTAL W
+comm,7748853,Gblocks,GBlocks
+comm,7748853,PartitionFinder,PartitionFinder
+comm,7748853,PhyML,PhyML
+comm,7752887,Adobe,Adobe
+comm,7752887,Adobe Illustrator,Adobe Illustrator
+comm,7752887,Adobe Photoshop,Adobe Photoshop CC
+comm,7752887,BLASTN,BLASTn
+comm,7752887,BioEdit,BioEdit
+comm,7752887,CIPRES,CIPRES Science Gateway
+comm,7752887,FigTree,FigTree
+comm,7752887,Image Frame Work,Image Frame Work
+comm,7752887,MAFFT,MAFFT
+comm,7752887,ML,ML
+comm,7752887,MP,MP
+comm,7752887,MrBayes,MrBayes
+comm,7752887,MrModeltest,MrModeltest
+comm,7752887,PAUP*,PAUP
+comm,7752887,RAxML,RAxML; RaxML
+comm,7752887,RAxML-HPC2,RAxML-HPC
+comm,7752887,XSEDE,XSEDE
+comm,7752887,trimAl,trimAl
+comm,7756005,BLAST,BLASTP
+comm,7756005,BLASTN,BLASTN; BlastN
+comm,7756005,DNASTAR Lasergene,DNASTAR Lasergene
+comm,7756005,Exonerate,exonerate
+comm,7756005,MAFFT,MAFFT
+comm,7756005,MFannot,MFannot
+comm,7756005,MIRA,MIRA
+comm,7756005,MITOS,MITOS
+comm,7756005,MITObim,MITObim
+comm,7756005,MrBayes,MrBayes
+comm,7756005,NOVOPlasty,NOVO Plasty
+comm,7756005,OGDRAW,OGDraw
+comm,7756005,ORF Finder,Open Reading Frame Finder
+comm,7756005,PartitionFinder,PartitionFinder
+comm,7756005,RAxML,RAxML
+comm,7756005,REPuter,REPuter
+comm,7756005,Repeats Finder,Repeats Finder
+comm,7756005,SPAdes,SPAdes
+comm,7756005,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7756005,tRNAscan-SE,tRNAscan-SE
+comm,7758309,Adobe Photoshop,Photoshop
+comm,7758309,CIPRES,CIPRES
+comm,7758309,InDesign,InDesign
+comm,7758309,MAFFT,MAFFT7
+comm,7758309,MEGA,MEGA
+comm,7758309,Mesquite,Mesquite
+comm,7758309,NIS-Elements Microscope Imaging Software,NIS-Elements Microscope Imaging Software
+comm,7758309,RAxML,RAxML
+comm,7758309,Sequencher,Sequencher
+comm,7758309,TNT,TNT
+comm,7758309,xmult,xmult
+comm,7759273,ClustalW,ClustalW
+comm,7759273,Geneious,Geneious R10
+comm,7759273,IQ Tree,IQ Tree
+comm,7759273,MEGA,MEGA5
+comm,7759273,MITOS,MITOS
+comm,7759273,MrBayes,MrBayes
+comm,7759273,PartitionFinder,PartitionFinder
+comm,7759273,XSEDE,XSEDE
+comm,7782136,Geneious,Geneious
+comm,7782136,MITObim,MITObim
+comm,7782136,MITOchondrial,MITOchondrial
+comm,7782136,PartitionFinder,PartitionFinder
+comm,7782136,RAxML,RaxML
+comm,7782284,BioEdit,BioEdit
+comm,7782284,ChromasPro,ChromasPro
+comm,7782284,GUIDANCE,GUIDANCE2
+comm,7782284,MAFFT,MAFFT
+comm,7782284,MitoZ,MitoZ
+comm,7782284,MrBayes,MrBayes
+comm,7782284,PartitionFinder,PartitionFinder2
+comm,7782284,RAxML-HPC BlackBox,RAxML-HPC BlackBox
+comm,7782284,XSEDE,XSEDE
+comm,7782312,BankIt,BankIt
+comm,7782312,MAFFT,MAFFT
+comm,7782312,MEGA,MEGA
+comm,7782312,Mesquite,Mesquite
+comm,7782312,MrBayes,MrBayes
+comm,7782312,MrModeltest,MrModeltest
+comm,7782312,SeqMan,SeqMan
+comm,7782312,Sequin,Sequin
+comm,7782312,raxmlGUI,raxmlGUI
+comm,7783027,Geneious,Geneious
+comm,7783027,IDBA-UD,IDBA-UD
+comm,7783027,MEGA,MEGA
+comm,7783027,tRNAscan-SE,tRNAscan-SE
+comm,7783027,transAlign,Trans Align
+comm,7783146,MITOS,MITOS
+comm,7783146,MitoZ,MitoZ
+comm,7783146,PhyloBayes,PhyloBayes; Phylobayes
+comm,7783146,TranslatorX,TranslatorX
+comm,7799433,DAMBE,DAMBE
+comm,7799433,FigTree,FigTree
+comm,7799433,MAFFT,MAFFT
+comm,7799433,MEGA,MEGA
+comm,7799433,MUSCLE,MUSCLE
+comm,7799433,MitoZ,MitoZ
+comm,7799433,MrBayes,MrBayes
+comm,7799433,NGS QC Toolkit,NGSQC-Toolkit
+comm,7799433,PRINSEQ,Prinseq
+comm,7799433,RAxML,RAxML; RaxML
+comm,7799433,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7799433,Tracer,Tracer
+comm,7799433,Trimmomatic,Trimmomatic
+comm,7799433,tRNAscan-SE,tRNAscan-SE
+comm,7799975,Geneious,Geneious
+comm,7799975,MrBayes,MrBayes
+comm,7799975,SOAPdenovo-Trans,SOAPdenovo-Trans
+comm,7799975,tRNAscan-SE,tRNAscan-SE
+comm,7799975,transAlign,TransAlign
+comm,7800549,Mrbayes,Mrbayes
+comm,7800549,jModelTest,jModelTest
+comm,7804350,AdapterRemoval,AdapterRemoval
+comm,7804350,BLAST,BLASTP
+comm,7804350,BLASTN,BLASTN; BlastN
+comm,7804350,ClustalW,Clustal W
+comm,7804350,DnaSP,DnaSP
+comm,7804350,Exonerate,exonerate
+comm,7804350,Lasergene,Lasergene
+comm,7804350,MAFFT,MAFFT
+comm,7804350,MEGA,MEGA
+comm,7804350,MFannot,MFannot
+comm,7804350,MITOS,MITOS
+comm,7804350,MITObim,MITObim
+comm,7804350,Mauve,Mauve
+comm,7804350,MrBayes,MrBayes
+comm,7804350,NOVOPlasty,NOVO Plasty
+comm,7804350,OGDRAW,OGDraw
+comm,7804350,ORF Finder,Open Reading Frame Finder
+comm,7804350,PartitionFinder,PartitionFinder
+comm,7804350,RAxML,RAxML
+comm,7804350,SPAdes,SPAdes
+comm,7804350,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7804350,ngsShoRT,ngsShoRT
+comm,7804350,tRNAscan-SE,tRNAscan-SE
+comm,7814964,Dendroscope,Dendroscope
+comm,7814964,IQ,IQ
+comm,7814964,IQ‐TREE,IQ‐TREE
+comm,7814964,MAFFT,MAFFT
+comm,7814964,ModelFinder,Model Finder
+comm,7814964,Primer3,Primer3
+comm,7814964,SPSS,SPSS Statistics
+comm,7814964,TOPALi,TOPALi
+comm,7814964,TREE,TREE
+comm,7814964,W‐IQ‐TREE,W‐IQ‐TREE
+comm,7843977,AdapterRemoval,AdapterRemoval
+comm,7843977,BLAST,BLASTP
+comm,7843977,BLASTN,BlastN
+comm,7843977,ClustalW,Clustal W
+comm,7843977,DNASTAR Lasergene,DNASTAR Lasergene
+comm,7843977,DnaSP,DnaSP
+comm,7843977,Exonerate,Exonerate
+comm,7843977,MAFFT,MAFFT
+comm,7843977,MEGA,MEGA
+comm,7843977,MFannot,MFannot
+comm,7843977,MITOS,MITOS
+comm,7843977,MITObim,MITObim
+comm,7843977,Mauve,Mauve
+comm,7843977,MrBayes,MrBayes
+comm,7843977,NOVOPlasty,NOVOPlasty
+comm,7843977,OGDRAW,OGDRAW
+comm,7843977,ORF Finder,ORF) Finder
+comm,7843977,Open Reading Frame,Open Reading Frame
+comm,7843977,PartitionFinder,PartitionFinder
+comm,7843977,RAxML,RAxML
+comm,7843977,Repeat Finder,Repeat Finder
+comm,7843977,SPAdes,SPAdes
+comm,7843977,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,7843977,Tandem Repeats Finder,Tandem Repeats Finder
+comm,7843977,ngsShoRT,ngsShoRT
+comm,7843977,tRNAscan-SE,tRNAscan-SE
+comm,7860113,(RWTY),(RWTY)
+comm,7860113,ASTRAL-III,ASTRAL-III
+comm,7860113,BEAST,BEAST; BEAST2
+comm,7860113,BEAUti,BEAUti
+comm,7860113,BLAST,BLAST
+comm,7860113,CIBIV,CIBIV
+comm,7860113,CodonCode Aligner,CodonCode Aligner
+comm,7860113,Dendroscope,Dendroscope; Dendroscope-3
+comm,7860113,Discovery (ABGD),Discovery (ABGD)
+comm,7860113,FFT-NS-i,FFT-NS-i
+comm,7860113,GMYC,GMYC
+comm,7860113,IQ-TREE,IQ-TREE
+comm,7860113,MAFFT,MAFFT
+comm,7860113,MEGA-X,MEGA-X
+comm,7860113,ModelFinder,ModelFinder
+comm,7860113,PTP,PTP
+comm,7860113,R,R
+comm,7860113,R We There Yet,R We There Yet
+comm,7860113,R-Open & MKL,R-Open & MKL
+comm,7860113,STACEY,STACEY
+comm,7860113,Tracer,Tracer
+comm,7860113,TreeAnnotator,TreeAnnotator
+comm,7860113,UFbootstrap2,UFbootstrap2
+comm,7860113,W-IQ-TREE,W-IQ-TREE
+comm,7860113,bGMYC,bGMYC
+comm,7860113,dnaSP,dnaSP
+comm,7860113,excisa,excisa
+comm,7860113,mPTP,mPTP
+comm,7860113,speciesDA,speciesDA
+comm,7860113,splits,splits
+comm,7860113,tr2,tr2
+comm,7866285,FigTree,FigTree
+comm,7866285,Geneious,Geneious R9
+comm,7866285,IQ-Tree,IQ-Tree
+comm,7866285,MEGA,MEGA
+comm,7866285,MUSCLE,Muscle
+comm,7866285,MitoZ,MitoZ
+comm,7866285,MrBayes,MrBayes
+comm,7866285,PartitionFinder,PartitionFinder
+comm,7866285,PhyloSuite,PhyloSuite
+comm,7866285,R,R
+comm,7866285,fmsb,fmsb
+comm,7866285,tRNAscan-SE,tRNAscan-SE
+comm,7873960,Adobe,Adobe®
+comm,7873960,Adobe Photoshop,Adobe Photoshop
+comm,7873960,BioEdit,BioEdit
+comm,7873960,ClustalX,ClustalX2
+comm,7873960,FigTree,FigTree
+comm,7873960,Image Frame Work,Image Frame Work
+comm,7873960,MAFFT,MAFFT
+comm,7873960,MrBayes,MrBayes
+comm,7873960,MrModeltest,MrModeltest
+comm,7873960,Ostiole,Ostiole
+comm,7873960,PAUP*,PAUP
+comm,7873960,RAxML,RAxML
+comm,7873960,Sequencing Project Management (SeqMan),Sequencing Project Management (SeqMan)
+comm,7873960,Tarosoft,Tarosoft
+comm,7873960,XSEDE,XSEDE
+comm,7873960,treeBASE,TreeBASE
+comm,7883577,BEAST,BEAST
+comm,7883577,MEGA,MEGA7
+comm,7883577,MUSCLE,MUSCLE
+comm,7883577,PartitionFinder,PartitionFinder2
+comm,7883577,R,R
+comm,7883577,corHMM,R package corHMM; corHMM
+comm,7883577,phangorn,phangorn package
+comm,7889097,Genious,Genious
+comm,7889097,IQ-TREE,IQ-TREE
+comm,7889097,MEGA,MEGA
+comm,7889097,MITObim,MITObim
+comm,7889097,PartitionFinder,PartitionFinder
+comm,7889097,SH-aLRT,SH-aLRT
+comm,7917209,AdapterRemoval,AdapterRemoval
+comm,7917209,BLASTN,BLASTn
+comm,7917209,ClustalW,Clustal W
+comm,7917209,DnaSP,DnaSP
+comm,7917209,Lasergene,Lasergene
+comm,7917209,MAFFT,MAFFT
+comm,7917209,MEGA,MEGA
+comm,7917209,MFannot,MFannot
+comm,7917209,MITOS,MITOS
+comm,7917209,MITObim,MITObim
+comm,7917209,MrBayes,MrBayes
+comm,7917209,OGDRAW,OGDRAW
+comm,7917209,PartitionFinder,PartitionFinder
+comm,7917209,RAxML,RAxML
+comm,7917209,REPuter,REPuter
+comm,7917209,Repeats Finder,Repeats Finder
+comm,7917209,SPAdes,SPAdes
+comm,7917209,Sequence Manipulation Suite,Sequence Manipulation Suite
+comm,7917209,ngsShoRT,ngsShoRT
+comm,7935548,MEGA,MEGA
+comm,7935548,SIFT,SIFT
+comm,7935548,mlst,MLST
+comm,7935548,pubmlst,PubMLST
+comm,7954433,Gblocks,Gblocks
+comm,7954433,MEGA X,MEGA X
+comm,7954433,MitoZ,MitoZ
+comm,7954433,MrBayes,MrBayes
+comm,7954433,PartitionFinder,PartitionFinder
+comm,7959010,Aliview,Aliview
+comm,7959010,BEAST,BEAST
+comm,7959010,FigTree,FigTree
+comm,7959010,GISAID),GISAID
+comm,7959010,Graph-incompatibility-based Reassortment Finder (GiRaF),Graph-incompatibility-based Assortment Finder (GiRaF)
+comm,7959010,IQ-TREE,IQ-TREE
+comm,7959010,Iterative Refinement Meta-Assembler (IRMA),Iterative Refinement Meta-Assembler (IRMA
+comm,7959010,MAFFT,MAFFT
+comm,7959010,PopART,POPART; PopART
+comm,7959010,RAxML,RaxML
+comm,7959010,SPREAD,SPREAD3
+comm,7959010,Stata,STATA
+comm,7959010,TempEst,TempEst
+comm,7959010,Tracer,Tracer
+comm,7959010,TreeAnnotator,TreeAnnotator
+comm,7959404,CIPRES,CIPRES
+comm,7959404,Geneious,Geneious
+comm,7959404,MP,MP
+comm,7959404,Mesquite,Mesquite
+comm,7959404,MrBayes,MrBayes
+comm,7959404,PartitionFinder,PartitionFinder
+comm,7959404,Provenzano,Provenzano
+comm,7959404,RAxML,RAxML
+comm,7959404,Rapp,Rapp
+comm,7959404,Rapp Py-Daniel,Rapp Py-Daniel
+comm,7959404,TNT,TNT
+comm,7959404,TRACER,TRACER
+comm,7959404,Tree Analysis,Tree analysis
+comm,7959404,explorer,Explorer
+comm,7971261,CIPRES,CIPRES
+comm,7971261,Geneious,Geneious
+comm,7971261,MITOS,MITOS
+comm,7971261,MitoZ,MitoZ
+comm,7971261,PhyloBayes,PhyloBayes; Phylobayes
+comm,7971261,TranslatorX,TranslatorX
+comm,7971323,GapCloser,GapCloser
+comm,7971323,MEGA-X,MEGA-X
+comm,7971323,PartitionFinder,PartitionFinder
+comm,7971323,RAxML,RAxML
+comm,7971323,SOAPdenovo-Trans,SOAPdenovo-Trans
+comm,7971323,trimAl,TrimAl
+comm,7980273,BEDTools,BEDtools
+comm,7980273,BLAST,BLAST
+comm,7980273,BWA‐MEM,BWA‐MEM
+comm,7980273,Bayescan,Bayescan
+comm,7980273,Blast2GO,Blast2GO
+comm,7980273,CLUMPP,CLUMPP
+comm,7980273,EvolMarkers,EvolMarkers
+comm,7980273,FastQC,FastQC
+comm,7980273,FastUniq,FastUniq
+comm,7980273,FigTree,FigTree
+comm,7980273,GATK,GATK
+comm,7980273,HybPiper,HybPiper
+comm,7980273,Indel Realigner,IndelRealigner
+comm,7980273,MAFFT,MAFFT
+comm,7980273,MYcoarray,MYcoarray
+comm,7980273,Mega,Mega7
+comm,7980273,PHYLIP,phylip
+comm,7980273,PLINK,PLINK
+comm,7980273,Phyutility,Phyutility
+comm,7980273,Picard,PICARD
+comm,7980273,Qualimap,Qualimap
+comm,7980273,RAxML‐NG,RAxML‐NG
+comm,7980273,RealignerTargetCreator,RealignerTargetCreator
+comm,7980273,RepeatMasker,RepeatMasker
+comm,7980273,SAMtools,Samtools
+comm,7980273,SNPRelate,R package SNPRelate; SNPRelate
+comm,7980273,STRUCTURE,STRUCTURE
+comm,7980273,STRUCTURE HARVESTER,Structure Harvester
+comm,7980273,Trimmomatic,Trimmomatic
+comm,7980273,VCFtools,vcftools
+comm,7980273,WebGestalt,WebGestalt
+comm,7980273,bcftools,bcftools
+comm,7980273,eBird,eBird
+comm,7980273,fastp,fastp
+comm,7980273,hybpiper_stats,hybpiper_stats
+comm,7980273,jModelTest,jModelTest
+comm,7980273,mapDamage,mapDamage
+comm,7980273,mpileup,mpileup
+comm,7980273,multifasta,multifasta
+comm,7980273,reads,reads
+comm,7980273,vcflib,vcflib
+comm,8009913,(ARRIVE),ARRIVE
+comm,8009913,BLAST,BLAST
+comm,8009913,BLASTN,BLASTn
+comm,8009913,FigTree,FigTree
+comm,8009913,MEGA,MEGA
+comm,8009913,MrBayes,MrBayes
+comm,8009913,Sequencher,Sequencher
+comm,8009913,jModelTest,JModelTest; jModeltest
+comm,8024981,(ANOSIM,ANOSIM
+comm,8024981,AliView,AliView
+comm,8024981,BLASTN,BLASTn
+comm,8024981,Biopython,Biopython
+comm,8024981,Gblocks,Gblocks
+comm,8024981,Geneious,Geneious R7
+comm,8024981,MUSCLE,MUSCLE
+comm,8024981,NMDS,NMDS
+comm,8024981,PERMANOVA+,PERMANOVA
+comm,8024981,PERMDISP2,PERMDISP
+comm,8024981,Python,Python
+comm,8024981,R,R
+comm,8024981,RAxML,RAxML
+comm,8024981,RStudio,RStudio
+comm,8024981,RVAideMemoire,R package RVAideMemoire
+comm,8024981,T-BAS,T-BAS
+comm,8024981,Tree-Based Alignment Selector (T-BAS),Tree-Based Alignment Selector (T-BAS)
+comm,8024981,UNITE,UNITE
+comm,8024981,UPARSE,UPARSE
+comm,8024981,USEARCH,USEARCH
+comm,8024981,compat.py,compat.py
+comm,8024981,ggplot2,ggplot2
+comm,8024981,ggtree,ggtree
+comm,8024981,metaMDS,metaMDS
+comm,8024981,vegan,R package vegan; vegan
+comm,8027217,BEAST,BEAST
+comm,8027217,BayesTraits,BayesTraits
+comm,8027217,BioEdit,BioEdit
+comm,8027217,BioGeoBEARS,BioGeoBEARS
+comm,8027217,ClustalW Multiple Alignment,ClustalW Multiple Alignment
+comm,8027217,Corel Photo-Paint X6,Corel Photo-Paint X6
+comm,8027217,DIVALIKE,DIVALIKE
+comm,8027217,FigTree,FigTree
+comm,8027217,IQ-TREE,IQ-TREE
+comm,8027217,MAFFT,MAFFT
+comm,8027217,ML,ML
+comm,8027217,MaxEnt,Maxent
+comm,8027217,ModelFinder,Model-Finder; ModelFinder
+comm,8027217,MrBayes,MrBayes
+comm,8027217,QGIS,QGIS
+comm,8027217,R,R
+comm,8027217,RASP,RASP
+comm,8027217,S-DIVA),S-DIVA
+comm,8027217,TREEANNOTATOR,TREEANNOTATOR
+comm,8027217,Tracer,Tracer
+comm,8027217,WorldClim2,WorldClim
+comm,8027217,adephylo,'adephylo
+comm,8027217,bPTP,bPTP
+comm,8027217,cloglog,cloglog
+comm,8027217,geiger,geiger
+comm,8027217,kuenm,kuenm
+comm,8040243,BEAST,BEAST
+comm,8040243,BioEdit,BioEdit
+comm,8040243,ClustalW Multiple Alignment,ClustalW Multiple Alignment
+comm,8040243,Corel Photo,Corel Photo
+comm,8040243,Corel Photo-Paint,Corel Photo-Paint
+comm,8040243,FigTree,FigTree
+comm,8040243,MAFFT,MAFFT
+comm,8040243,MEGA,MEGA7
+comm,8040243,Paint,Paint
+comm,8040243,PartitionFinder,PartitionFinder
+comm,8040243,RASP,RASP
+comm,8040243,S-DIVA),S-DIVA
+comm,8040243,TREEANNOTATOR,TREEANNOTATOR
+comm,8040243,Tracer,Tracer
+comm,8069873,API20NE,API20NE
+comm,8069873,Annotation Subsystem Technology,Annotation Subsystem Technology
+comm,8069873,BioSamples,BioSample
+comm,8069873,CGView Server,CGView Server; CGview Server
+comm,8069873,CLCGWB,CLCGWB
+comm,8069873,Celera Assembler,Celera Assembler
+comm,8069873,ClueGO,ClueGO
+comm,8069873,Cytoscape,Cytoscape
+comm,8069873,DIAMOND blastx,DIAMOND Blast
+comm,8069873,FastQC,FastQC
+comm,8069873,Genomics Workbench,Genomics Workbench
+comm,8069873,GraphPad Prism,GraphPad; GraphPad Prism
+comm,8069873,MEGA,MEGA
+comm,8069873,MEGA X,MEGA X
+comm,8069873,Prokaryotic Genome Annotation Pipeline,Prokaryotic Genome Annotation Pipeline (PGAP
+comm,8069873,RAST,RAST
+comm,8069873,RESM,RESM
+comm,8069873,ShinyGO,ShinyGO
+comm,8069873,Virtual Footprint,Virtual Footprint
+comm,8069873,Virtual Footprint suite,Virtual Footprint suite
+comm,8069873,eXpress,eXpress
+comm,8069873,ggplot2,ggplot2
+comm,8069873,reads,reads
+comm,8070449,AxioVision,AxioVision
+comm,8070449,BLAST,BLAST
+comm,8070449,FinchTV,FinchTV
+comm,8070449,MEGA,MEGA7
+comm,8070449,MUSCLE,MUSCLE
+comm,8070449,Mega,Mega
+comm,8070449,Statgraphics Plus,Statgraphics Plus
+comm,8072514,APG,APG
+comm,8072514,ASTRAL,ASTRAL
+comm,8072514,AliView,AliView
+comm,8072514,BLASTN,BLASTn
+comm,8072514,CLC Genomics Workbench,CLC Genomics Workbench
+comm,8072514,Cipres Science Gateway,Cipres Science Gateway
+comm,8072514,Geneious,Geneious
+comm,8072514,IQ-Tree,IQ-Tree
+comm,8072514,MAFFT,MAFFT
+comm,8072514,MrBayes,MrBayes
+comm,8072514,PAUP*,PAUP
+comm,8072514,PartitionFinder,PartitionFinder2
+comm,8072514,RAxML,RAxML
+comm,8072514,Science Gateway,Science Gateway
+comm,8072514,TreeGraph,TreeGraph
+comm,8072514,jModelTest,jModelTest2
+comm,8074845,BEAST,BEAST; BEAST2
+comm,8074845,BEAUti,BEAUti
+comm,8074845,BLAST,BLAST
+comm,8074845,BioGeoBEARS,BioGeoBEARS
+comm,8074845,DIVA-GIS,DIVA-GIS7
+comm,8074845,DIVALAKE,DIVALAKE
+comm,8074845,DIVALIKE,DIVALIKE
+comm,8074845,DnaSP,DnaSP
+comm,8074845,GPlates,GPlates
+comm,8074845,INS,INS
+comm,8074845,IQ-TREE,IQ-TREE
+comm,8074845,J,J
+comm,8074845,MAFFT,MAFFT
+comm,8074845,MEGA-X,MEGA-X
+comm,8074845,Microsoft R-Open and MKL,Microsoft R-Open and MKL
+comm,8074845,ModelFinder,ModelFinder
+comm,8074845,PALEOMAP PaleoAtlas,PALEOMAP PaleoAtlas
+comm,8074845,PalaeoAtlas,PalaeoAtlas
+comm,8074845,PhyML,PhyML
+comm,8074845,PopART,popART
+comm,8074845,R,R
+comm,8074845,RASP,RASP4
+comm,8074845,STACEY,STACEY
+comm,8074845,STACEY (Species,STACEY (Species
+comm,8074845,Tracer,Tracer
+comm,8074845,Tree,Tree
+comm,8074845,TreeAnnotator,TreeAnnotator
+comm,8074845,UFboot,UFboot2
+comm,8074845,W-IQ-TREE,W-IQ-TREE
+comm,8074845,bGMYC,bGMYC
+comm,8074845,mBLAST,mBLAST
+comm,8074845,speciesDA,speciesDA
+comm,8074845,uGENE,uGENE
+comm,8079056,Geneious,GENEIOUS
+comm,8079056,MAFFT,MAFFT
+comm,8079056,MITObim,MITObim
+comm,8079056,MrBayes,MrBayes
+comm,8079056,PartitionFinder,PartitionFinder
+comm,8093184,BioEdit,BIOEDIT
+comm,8093184,ITS-BLAST,ITS-BLAST
+comm,8093184,MAFFT,MAFFT
+comm,8093184,MRMODELTEST,MRMODELTEST
+comm,8093184,MrBayes,MRBAYES
+comm,8093184,RAxML,RAXML
+comm,8093184,nrLSU-BLAST,nrLSU-BLAST
+comm,8106913,BLAST,BLAST
+comm,8106913,CGView Server,CGView Server
+comm,8106913,DAMBE,DAMBE
+comm,8106913,DnaSP,DnaSP
+comm,8106913,G-INS,G-INS
+comm,8106913,Geneious,Geneious
+comm,8106913,IDBA-UD,IDBA-UD
+comm,8106913,MAFFT,MAFFT
+comm,8106913,MEGA X,MEGA X
+comm,8106913,MITObim,MITObim
+comm,8106913,MUSCLE,Muscle
+comm,8106913,MrBayes,MrBayes
+comm,8106913,Open Reading Frame Finder (ORF Finder,Open Reading Frame Finder (ORF Finder
+comm,8106913,PartitionFinder,PartitionFinder
+comm,8106913,RAxML,RAxML
+comm,8106913,Tracer,Tracer
+comm,8106913,Trimmomatic,Trimmomatic
+comm,8124063,BLAST,BLAST
+comm,8124063,DNASTAR®,DNASTAR
+comm,8124063,Lasergene,Lasergene
+comm,8124063,MAFFT,MAFFT
+comm,8124063,MEGA,MEGA6
+comm,8124063,ModelFinder,ModelFinder
+comm,8124063,MrBayes,MrBayes
+comm,8124063,PhyloSuite,PhyloSuite
+comm,8124063,RAxML,RAxML
+comm,8124063,RAxMLGUI,RAxMLGUI
+comm,8124063,Tracer,Tracer
+comm,8132446,Aliview,Aliview
+comm,8132446,BEAST,BEAST2
+comm,8132446,BioGeoBEARS R package,BioGeoBEARS R package
+comm,8132446,DAGEO,DAGEO
+comm,8132446,DALIN,DALIN
+comm,8132446,DnaSP,DnaSP
+comm,8132446,ETHFLAVO,ETHFLAVO
+comm,8132446,FigTree,FigTree
+comm,8132446,Gap Discovery,Gap Discovery
+comm,8132446,IQ-TREE,IQ-TREE
+comm,8132446,L,L
+comm,8132446,LogCombiner,LogCombiner
+comm,8132446,MEGA X,MEGA X
+comm,8132446,MEGAX,MEGAX
+comm,8132446,MUSCLE,MUSCLE
+comm,8132446,ModelFinder,ModelFinder
+comm,8132446,MorphoJ,MorphoJ
+comm,8132446,MrBayes,MrBayes
+comm,8132446,NONETHFLAVO2,NONETHFLAVO; NONETHFLAVO1; NONETHFLAVO2
+comm,8132446,PerMANOVAs,PerMANOVA
+comm,8132446,PhyloSuite,PhyloSuite
+comm,8132446,PopART,PopART
+comm,8132446,R,R
+comm,8132446,RASP,RASP
+comm,8132446,SPSS,SPSS Statistics
+comm,8132446,STACEY,STACEY
+comm,8132446,StarBEAST2,StarBEAST2
+comm,8132446,TPSDig,TPSDig2
+comm,8132446,TPSUtil,TPSUtil
+comm,8132446,Tracer,Tracer
+comm,8132446,TreeAnnotator,TreeAnnotator
+comm,8132446,mPTP,mPTP
+comm,8132446,rita,rita
+comm,8132446,splits,splits
+comm,8134742,Cytoscape,Cytoscape
+comm,8134742,MAFFT,MAFFT
+comm,8134742,R,R
+comm,8134742,iqtree,iqtree
+comm,8158263,BioEdit,BioEdit
+comm,8158263,MFannot,MFannot
+comm,8158263,NOVOPlasty,NOVOPlasty
+comm,8158263,RAxML,RAxML
+comm,8158263,tRNAscan-SE,tRNAscan-SE
+comm,8183557,BioEdit,BioEdit
+comm,8183557,MFannot,MFannot
+comm,8183557,Norgal,Norgal
+comm,8183557,raxmlGUI,raxmlGUI
+comm,8183557,tRNAscan-SE,tRNAscan-SE
+comm,8193148,BLAST,BLASTp
+comm,8193148,BLASTN,BlastN
+comm,8193148,DNASTAR Lasergene,DNASTAR Lasergene
+comm,8193148,DnaSP,DnaSP
+comm,8193148,MAFFT,MAFFT
+comm,8193148,MEGA,MEGA
+comm,8193148,MFannot,MFannot
+comm,8193148,MITOS,MITOS
+comm,8193148,Mauve,Mauve
+comm,8193148,MrBayes,MrBayes
+comm,8193148,OGDRAW,OGDraw
+comm,8193148,ORF Finder,Open Reading Frame Finder
+comm,8193148,PartitionFinder,PartitionFinder
+comm,8193148,Pilon,Pilon
+comm,8193148,RAxML,RAxML
+comm,8193148,custom Python script,custom
+comm,8193148,tRNAscan-SE,tRNAscan-SE
+comm,8227683,BEAST,BEAST
+comm,8227683,ClustalW,ClustalW
+comm,8227683,DOGMA,DOGMA
+comm,8227683,FastQC,FastQC
+comm,8227683,FigTree,FigTree
+comm,8227683,Geneious,Geneious; Geneious R11; Geneious R9
+comm,8227683,MEGA,MEGA
+comm,8227683,MIRA assembler,MIRA assembler
+comm,8227683,MrBayes,MrBayes
+comm,8227683,ORF,ORF
+comm,8227683,PAUP*,PAUP
+comm,8227683,PartitionFinder,PartitionFinder
+comm,8227683,R,R
+comm,8227683,RAxML,RAXML
+comm,8227683,RNAviz,RNAviz
+comm,8227683,Tracer,Tracer
+comm,8227683,TreeAnnotator,TreeAnnotator
+comm,8227683,VARNA,VARNA
+comm,8227683,jModelTest,jModelTest2
+comm,8227683,tRNAscan-SE,tRNAscan-SE
+comm,8236233,Adobe Illustrator,Adobe Illustrator
+comm,8236233,BLAST,BLAST
+comm,8236233,BLASTN,blastn
+comm,8236233,CLOCKSS,CLOCKSS
+comm,8236233,FigTree,FigTree
+comm,8236233,Geneious,Geneious
+comm,8236233,IQ-TREE,IQ-TREE
+comm,8236233,ModelFinder,ModelFinder; Modelfinder
+comm,8236233,PUBMED,PubMed
+comm,8236233,PeerJ,PeerJ
+comm,8236233,R,R
+comm,8236233,R CoreTeam,R CoreTeam
+comm,8236233,R package stats,R package ‘stats
+comm,8236233,ZONE,ZONE
+comm,8236233,megablast,Megablast
+comm,8236233,vegan,vegan R package
+comm,8250867,BEAST,Beast
+comm,8250867,BioEdit,BioEdit
+comm,8250867,ClustalW,ClustalW
+comm,8250867,LogCombiner,LogCombiner
+comm,8250867,Mesquite,Mesquite
+comm,8250867,NeuroExplorer,Neuroexplorer
+comm,8250867,Neurolucida,Neurolucida
+comm,8250867,PartitionFinder,PartitionFinder
+comm,8250867,StatSoft®,StatSoft
+comm,8250867,Statistica,STATISTICA
+comm,8250867,Stereology,Stereology
+comm,8250867,Tracer,Tracer
+comm,8250867,TreeAnnotator,TreeAnnotator
+comm,8253198,CIPRES,CIPRES
+comm,8253198,PartitionFinder,PartitionFinder
+comm,8253198,RevTrans,RevTrans
+comm,8259866,Geneious,Geneious; Geneious Prime
+comm,8259866,MITO,MITO
+comm,8259866,Package,Package
+comm,8259866,RAxML,RAxML
+comm,8259866,tRNAscan-SE,tRNAscan-SE
+comm,8259871,GeSeq,GeSeq
+comm,8259871,MAFFT,MAFFT
+comm,8259871,MrBayes,MrBayes
+comm,8259871,NOVOPlasty,NOVOPlasty
+comm,8259871,PartitionFinder,PartitionFinder
+comm,8261143,BEAST,BEAST
+comm,8261143,BLAST,BLAST
+comm,8261143,BayesTraits,BayesTrait; BayesTraits
+comm,8261143,ClustalW,ClustalW
+comm,8261143,GeneWise,GeneWise
+comm,8261143,HMMER,HMMER
+comm,8261143,Infernal,infernal
+comm,8261143,MEGA,MEGA7
+comm,8261143,Mesquite,Mesquite
+comm,8261143,MiFFi,MiFFi
+comm,8261143,MitoZ,MitoZ
+comm,8261143,MrBayes,MrBayes
+comm,8261143,PartitionFinder,PartitionFinder; PartitionFinder2
+comm,8261143,Perl script,Perl script
+comm,8261143,R,R
+comm,8261143,RAxML,RaxML
+comm,8261143,SOAPdenovo-Trans,SOAPdenovo-Trans
+comm,8261143,SPSS,SPSS Statistics
+comm,8261143,Tracer,Tracer
+comm,8261143,TreeAnnotator,TreeAnnotator
+comm,8261143,adephylo,adephylo
+comm,8261143,caper,R package caper
+comm,8261143,fastAnc,fastAnc
+comm,8261143,phytools,phytools
+comm,8261143,stats,stats
+comm,8266238,MAFFT,MAFFT
+comm,8266238,MITOS,MITOS
+comm,8266238,MrBayes,MrBayes
+comm,8266238,NOVOPlasty,NOVOPlasty
+comm,8266238,PartitionFinder,PartitionFinder
+comm,8266238,tRNAscan-SE,tRNAscan-SE
+comm,8266248,BLAST,BLASTp
+comm,8266248,BLASTN,BLASTn
+comm,8266248,Bayes,Bayes
+comm,8266248,GetOrganelle,GetOrganelle
+comm,8266248,IQ,IQ
+comm,8266248,MITOS Web Server,MITOS Web Server
+comm,8266248,ORF Finder,ORF Finder
+comm,8266248,PartitionFinder,PartitionFinder
+comm,8266248,TranslatorX tool,TranslatorX tool
+comm,8284135,Geneious,GENEIOUS
+comm,8284135,MITObim,MITObim
+comm,8284135,RAxML,RaxML
+comm,8284135,raxmlGUI,raxmlGUI
+comm,8287656,AdapterRemoval,AdapterRemoval
+comm,8287656,BLAST,BLASTP
+comm,8287656,BLASTN,BLASTN; BlastN
+comm,8287656,ClustalW,Clustal W
+comm,8287656,DNASTAR Lasergene,DNASTAR Lasergene
+comm,8287656,DnaSP,DnaSP
+comm,8287656,Exonerate,exonerate
+comm,8287656,MAFFT,MAFFT
+comm,8287656,MEGA,MEGA
+comm,8287656,MFannot,MFannot
+comm,8287656,MITOS,MITOS
+comm,8287656,MITObim,MITObim
+comm,8287656,Mauve,Mauve
+comm,8287656,MrBayes,MrBayes
+comm,8287656,OGDRAW,OGDraw
+comm,8287656,ORF Finder,Open Reading Frame Finder
+comm,8287656,PartitionFinder,PartitionFinder
+comm,8287656,RAxML,RAxML
+comm,8287656,SPAdes,SPAdes
+comm,8287656,Tandem Repeats Finder,Tandem Repeats Finder
+comm,8287656,ngsShoRT,ngsShoRT
+comm,8287656,tRNAscan-SE,tRNAscan-SE
+comm,8291066,BLAST,BLASTP
+comm,8291066,MAFFT,MAFFT
+comm,8291066,MITOS,MITOS
+comm,8291066,MrBayes,MrBayes
+comm,8291066,NOVOPlasty,NOVOPlasty
+comm,8291066,ORF Finder,ORF) Finder
+comm,8291066,Open Reading Frame,Open Reading Frame
+comm,8291066,PartitionFinder,PartitionFinder
+comm,8291066,tRNAscan-SE,tRNAscan-SE
+comm,8307253,BioEdit Alignment Editor,BioEdit Alignment Editor
+comm,8307253,ClustalX,ClustalX2
+comm,8307253,DENDEXTEND,DENDEXTEND
+comm,8307253,DnaSP,DnaSP
+comm,8307253,MEGA,MEGA
+comm,8307253,MrBayes,MrBayes
+comm,8307253,PAUP*,PAUP*
+comm,8307253,Phylogenetic Species Recognition (GCPSR,Phylogenetic Species Recognition (GCPSR)
+comm,8307253,R Statistical,R Statistical
+comm,8307253,SplitsTree,SplitsTree
+comm,8307253,TreeView,TreeView
+comm,8307346,ARWEN,ARWEN
+comm,8307346,CGView,CGView
+comm,8307346,DnaSP,DnaSP
+comm,8307346,Gblocks,Gblocks
+comm,8307346,Geneious,Geneious
+comm,8307346,IDBA-UD,IDBA-UD
+comm,8307346,MAFFT,MAFFT
+comm,8307346,MEGA,MEGA
+comm,8307346,MrBayes,MrBayes
+comm,8307346,PCG12rRNA,PCG12rRNA
+comm,8307346,PCGRNA,PCGRNA
+comm,8307346,PCGrRNA,PCGrRNA
+comm,8307346,PhyloBayes MPI,PhyloBayes MPI
+comm,8307346,PhyloSuite,PhyloSuite
+comm,8307346,SymTest,SymTest
+comm,8307346,Tandem Repeat Finder,Tandem Repeat Finder
+comm,8307346,TranslatorX,TranslatorX
+comm,8307346,rRNA,2rRNA
+comm,8307346,tRNAscan-SE Search Server,tRNAscan-SE Search Server
+comm,8308049,(AMOVA,AMOVA
+comm,8308049,Arlequin,Arlequin
+comm,8308049,Bloc,Bloc
+comm,8308049,DnaSP,DnaSP
+comm,8308049,GenAlEx,GenAlEx
+comm,8308049,IQ-Tree,IQ-tree
+comm,8308049,LIAN,LIAN
+comm,8308049,MEGA,MEGA
+comm,8308049,MEGA X,MEGA X
+comm,8308049,MUSCLE,MUSCLE
+comm,8308049,R,R
+comm,8308049,SplitsTree,SplitsTree
+comm,8308049,Vector NTI Advance,Vector NTI Advance
+comm,8308049,ggplot2,ggplot2
+comm,8308049,iNEXT,R package “iNEXT”
+comm,8308049,jModelTest,jModelTest
+comm,8308049,maps,maps
+comm,8308049,phytools,phytools
+comm,8308049,plotrix,plotrix
+comm,8312585,Geneious,GENEIOUS
+comm,8312585,MITObim,MITObim
+comm,8312585,RAxML,RaxML
+comm,8312585,raxmlGUI,raxmlGUI
+comm,8316311,BLAST,BLAST
+comm,8316311,DNASTAR®,DNASTAR
+comm,8316311,Lasergene,Lasergene
+comm,8316311,MAFFT,MAFFT
+comm,8316311,MEGA,MEGA6
+comm,8316311,ModelFinder,ModelFinder
+comm,8316311,MrBayes,MrBayes
+comm,8316311,PAUP*,PAUP4
+comm,8316311,PhyloSuite,PhyloSuite
+comm,8316311,RAxML,RAxML
+comm,8316311,RAxMLGUI,RAxMLGUI
+comm,8316311,Tracer,Tracer
+comm,8330779,BLAST,BLASTP
+comm,8330779,MAFFT,MAFFT
+comm,8330779,MITOS,MITOS
+comm,8330779,MrBayes,MrBayes
+comm,8330779,NOVOPlasty,NOVOPlasty
+comm,8330779,ORF Finder,ORF Finder
+comm,8330779,PartitionFinder,PartitionFinder
+comm,8330779,tRNAscan-SE,tRNAscan-SE
+comm,8346447,Adobe Illustrator,Adobe Illustrator; Adobe Illustrator CS6
+comm,8346447,AliView,AliView
+comm,8346447,BLASTN,BLASTn
+comm,8346447,BioEdit,BioEdit
+comm,8346447,DNASTAR®,DNASTAR
+comm,8346447,FigTree,FigTree
+comm,8346447,IQ-TREE,IQ-TREE
+comm,8346447,MAFFT,MAFFT
+comm,8346447,MrBayes,MrBayes
+comm,8346447,MrModeltest,MrModeltest
+comm,8346447,PowerPoint,PowerPoint
+comm,8346447,RAxML,RAxML
+comm,8346447,SeqMan,SeqMan
+comm,8346447,XSEDE,XSEDE
+comm,8346447,jModelTest,jModelTest2
+comm,8358223,BLAST,BLAST
+comm,8358223,BLASTN,BlastN
+comm,8358223,Bio3d,Bio3d
+comm,8358223,Bowtie,Bowtie2
+comm,8358223,EcolUtils package,EcolUtils package
+comm,8358223,FastQC,FastQC
+comm,8358223,Gblocks,GBlocks
+comm,8358223,Geneious,Geneious Prime
+comm,8358223,HMMER,HMMER
+comm,8358223,IQ-TREE,IQ-TREE
+comm,8358223,JSpecies,JSpecies
+comm,8358223,MUMmer,MuMmer
+comm,8358223,MUSCLE,MUSCLE
+comm,8358223,ModelFinder,ModelFinder
+comm,8358223,OrthoFinder,OrthoFinder
+comm,8358223,PERMANOVA+,PERMANOVA
+comm,8358223,Prokka,PROKKA
+comm,8358223,QUAST,Quast
+comm,8358223,R,R
+comm,8358223,R script,R script
+comm,8358223,RAST,RAST
+comm,8358223,RASTtk,RASTtk
+comm,8358223,Roary,Roary
+comm,8358223,SAMtools,SAMtools
+comm,8358223,SPAdes,SPADES
+comm,8358223,SSPACE,SSPACE
+comm,8358223,UFBoot,UFBoot2
+comm,8358223,adephylo,adephylo
+comm,8358223,ape,ape
+comm,8358223,betareg,betareg
+comm,8358223,car,car
+comm,8358223,custom R script,custom R script
+comm,8358223,dendextend,dendextend
+comm,8358223,eggNOG-mapper,Eggnog Mapper
+comm,8358223,emmeans,emmeans
+comm,8358223,ggtree,ggtree
+comm,8358223,lmtest,lmtest
+comm,8358223,pegas,pegas
+comm,8358223,phytools,phytools
+comm,8358223,pvclust,pvclust
+comm,8358223,vegan,vegan
+comm,8401334,-,-
+comm,8401334,BEAST,BEAST2
+comm,8401334,BLAST,BLAST
+comm,8401334,Circos,Circos
+comm,8401334,ClustalW,ClustalW
+comm,8401334,DnaSP,DnaSP
+comm,8401334,EMBOSS,EMBOSS
+comm,8401334,FigTree,FigTree
+comm,8401334,Gepard,Gepard
+comm,8401334,HyPhy,HyPhy
+comm,8401334,MAFFT,MAFFT
+comm,8401334,MEGA,MEGA
+comm,8401334,MrBayes,MrBayes
+comm,8401334,NCBI ORFfinder,NCBI-ORF Finder
+comm,8401334,Open Reading Frame (ORF) Finder,Open Reading Frame (ORF) Finder
+comm,8401334,R,R
+comm,8401334,RAxML,RAxML
+comm,8401334,SMRTTM,SMRTTM
+comm,8401334,Tandem Repeats Finder,Tandem Repeats Finder
+comm,8401334,Tracer,Tracer
+comm,8401334,TreeAnnotator,TreeAnnotator
+comm,8401334,ggplot2,ggplot2
+comm,8401334,jModelTest,jModelTest
+comm,8401334,tRNAscan-SE,tRNAScan-SE
+comm,8405070,ClustalW,ClustalW
+comm,8405070,Geneious,Geneious; Geneious Prime
+comm,8405070,IQ-TREE,IQ-TREE
+comm,8405070,MITOS,MITOS
+comm,8405070,MitoZ,MitoZ
+comm,8406197,BEAGLE,BEAGLE
+comm,8406197,BLAST,BLAST
+comm,8406197,Biopython,BioPython
+comm,8406197,Cytoscape,Cytoscape
+comm,8406197,Dendroscope,Dendroscope
+comm,8406197,EFI Genome-Neighborhood Tool,EFI Genome-Neighborhood Tool
+comm,8406197,EFI-EST,EFI-EST
+comm,8406197,EFI-Enzyme Similarity Tool (EFI-EST),EFI Enzyme Similarity Tool (EFI-EST
+comm,8406197,EFI-GNN,EFI-GNN
+comm,8406197,Enzyme Function Initiative toolset (EFI),Enzyme Function Initiative toolset (EFI)
+comm,8406197,FigTree,FigTree
+comm,8406197,Gene Phyloprofile,Gene Phyloprofile
+comm,8406197,Gephi,Gephi
+comm,8406197,MUSCLE,Muscle
+comm,8406197,Magnifying Genome (MaGe) platform,Magnifying Genome (MaGe) platform
+comm,8406197,MicroScope/MaGe,MicroScope MaGe
+comm,8406197,Modettes,Modettes
+comm,8406197,MrBayes,MrBayes
+comm,8406197,Phyre2 (Protein Homology/analogY Recognition Engine,Phyre2 Protein Homology/analogy Recognition Engine
+comm,8406197,Protean,Protean
+comm,8406197,RAxML,RAxML
+comm,8406197,RODEO,RODEO
+comm,8406197,SignalP,SignalP
+comm,8406197,TXISS,TXISS
+comm,8406197,Taxonomy Browser,Taxonomy Browser
+comm,8406197,google,Google
+comm,8406197,jModelTest,JmodelTest
+comm,8406197,trimAl,TrimAL
+comm,8420037,BLAST,BLAST
+comm,8420037,DnaSP,DnaSP
+comm,8420037,FigTree,FigTree
+comm,8420037,Gblocks,Gblocks
+comm,8420037,Geneious,Geneious
+comm,8420037,IQ-TREE,IQ-TREE
+comm,8420037,MAFFT,MAFFT
+comm,8420037,MEGA,MEGA
+comm,8420037,MITOS,MITOS
+comm,8420037,MrBayes,MrBayes
+comm,8420037,NGS QC Toolkit,NGS QC Toolkit
+comm,8420037,OGDRAW,OGDRAW1
+comm,8420037,OriginPro,OriginPro
+comm,8420037,PartitionFinder,PartitionFinder
+comm,8420037,Repeats Finder,Repeats Finder
+comm,8420037,SPAdes,SPAdes
+comm,8420037,TranslatorX,TranslatorX
+comm,8425693,BLAST,BLASTP
+comm,8425693,Frame,Frame
+comm,8425693,MAFFT,MAFFT
+comm,8425693,MITOS,MITOS
+comm,8425693,MrBayes,MrBayes
+comm,8425693,NOVOPlasty,NOVOPlasty
+comm,8425693,ORF Finder,ORF) Finder
+comm,8425693,PartitionFinder,PartitionFinder
+comm,8425693,tRNAscan-SE,tRNAscan-SE
+comm,8425699,BLAST,BLASTp
+comm,8425699,BLASTN,BLASTn
+comm,8425699,GetOrganelle,GetOrganelle
+comm,8425699,MITOS Web Server,MITOS Web Server
+comm,8425699,Mr.Bayes,Mr.Bayes
+comm,8425699,ORF Finder,ORF Finder
+comm,8425699,PartitionFinder,PartitionFinder
+comm,8425699,TranslatorX,TranslatorX
+comm,8435205,BLAST,BLAST
+comm,8435205,BREMER,BREMER
+comm,8435205,CAOS,CAOS
+comm,8435205,CLOCKSS,CLOCKSS
+comm,8435205,DeSignate,DeSignate
+comm,8435205,Fiji,Fiji
+comm,8435205,Geneious,Geneious; Geneious Prime
+comm,8435205,IQ-TREE,IQ-TREE
+comm,8435205,MAFFT,MAFFT
+comm,8435205,ModelFinder,ModelFinder
+comm,8435205,P-Elf,P-Elf
+comm,8435205,P-Gnome,P-Gnome
+comm,8435205,POY,POY
+comm,8435205,PUBMED,PubMed
+comm,8435205,PeerJ,PeerJ
+comm,8435205,QUIDDICH,QUIDDICH
+comm,8435205,R,R
+comm,8435205,SH-aLRT,SH-aLRT
+comm,8435205,TNT,TNT
+comm,8435205,YBYRÁ,YBYRÁ
+comm,8439222,ClustalX,Clustal
+comm,8439222,Geneious,Geneious
+comm,8439222,MITOBim,MITOBim
+comm,8439222,PartitionFinder,Partitionfinder
+comm,8439222,RAxML,RAxML
+comm,8439222,finder (TRF),finder (TRF)
+comm,8439222,tRNAscan-SE,tRNAscan-SE
+comm,8455504,BioEdit,BioEdit
+comm,8455504,ClustalW,CLUSTAL_W
+comm,8455504,Modeltest,Modeltest
+comm,8455504,MrBayes,MrBayes
+comm,8455504,PAUP*,PAUP; PAUP*
+comm,8455504,RAxML,RAxML
+comm,8489844,Adobe,Adobe
+comm,8489844,Adobe Photoshop,Photoshop
+comm,8489844,BLASTX,BLASTX
+comm,8489844,BioEdit,BioEdit
+comm,8489844,FigTree,FigTree
+comm,8489844,Gblocks,Gblocks
+comm,8489844,MAFFT,mafft
+comm,8489844,MIRA assembler,MIRA assembler
+comm,8489844,MrBayes,MrBayes
+comm,8489844,Olympus Software Imaging for,Olympus Software Imaging for
+comm,8489844,PAUP*,PAUP*
+comm,8489844,Pascal,Pascal
+comm,8489844,SOAPdenovo,SOAPdenovo
+comm,8489844,Trimmomatic,Trimmomatic
+comm,8489844,Velvet,Velvet
+comm,8489844,Zeiss LSM Image Browser,Zeiss LSM Image Browser
+comm,8489844,jModelTest,JModelTest
+non_comm,3971597,BlastN,BlastN
+non_comm,3971597,Bowtie,Bowtie
+non_comm,3971597,DOGMA,DOGMA
+non_comm,3971597,Gblocks,Gblocks
+non_comm,3971597,Geneious,Geneious
+non_comm,3971597,MAFFT,MAFFT
+non_comm,3971597,MUSCLE,MUSCLE
+non_comm,3971597,Mauve,Mauve
+non_comm,3971597,RAxML,RAxML
+non_comm,3971597,Velvet,Velvet
+non_comm,3971597,custom Perl script,custom Perl script
+non_comm,4245821,BLAST,BLAST
+non_comm,4245821,GBlocks,GBlocks
+non_comm,4245821,JModelTest,JModelTest
+non_comm,4245821,MUSCLE,MUSCLE
+non_comm,4245821,PHYML,PHYML
+non_comm,4245821,SPSS,SPSS
+non_comm,4713102,AUSTRIA,AUSTRIA
+non_comm,4713102,BELGIUM,BELGIUM
+non_comm,4713102,Biolomics,Biolomics
+non_comm,4713102,CIPRES,CIPRES
+non_comm,4713102,DENMARK,DENMARK
+non_comm,4713102,ENGLAND,ENGLAND
+non_comm,4713102,ESTONIA,ESTONIA
+non_comm,4713102,FastGap,FastGap
+non_comm,4713102,FigTree,FigTree
+non_comm,4713102,Fortun,Fortun
+non_comm,4713102,GERMANY,GERMANY
+non_comm,4713102,ICELAND,ICELAND
+non_comm,4713102,Leica IM1000,Leica IM1000
+non_comm,4713102,Leica QWin,Leica QWin
+non_comm,4713102,MOROCCO,MOROCCO
+non_comm,4713102,Mafft,Mafft
+non_comm,4713102,Mesquite,Mesquite
+non_comm,4713102,NETHERLANDS,NETHERLANDS
+non_comm,4713102,NORWAY,NORWAY
+non_comm,4713102,POLAND,POLAND
+non_comm,4713102,PartitionFinder,PartitionFinder
+non_comm,4713102,R,R
+non_comm,4713102,R Core Team,R Core Team
+non_comm,4713102,RAxML,RAxML
+non_comm,4713102,RAxML-HPC BlackBox,RAxML-HPC BlackBox
+non_comm,4713102,SCOTLAND,SCOTLAND
+non_comm,4713102,SVALBARD,SVALBARD
+non_comm,4713102,SWEDEN,SWEDEN
+non_comm,4713102,Sequencher,Sequencher
+non_comm,4713102,Tislet,Tislet
+non_comm,4713102,UNITE,UNITE
+non_comm,4713102,Zaventem,Zaventem
+non_comm,4807417,BLAST,BLAST
+non_comm,4807417,BioEdit,BioEdit
+non_comm,4807417,DNAMAN,DNAMAN
+non_comm,4807417,Ktreedist,Ktreedist
+non_comm,4807417,MEGA,MEGA
+non_comm,4807417,MITOS,MITOS
+non_comm,4807417,MUSCLE,MUSCLE
+non_comm,4807417,MrBayes,MrBayes
+non_comm,4807417,MrModeltest,MrModeltest
+non_comm,4807417,PartitionFinder,PartitionFinder
+non_comm,4807417,RaxML,RaxML
+non_comm,4807417,SeqMan,SeqMan
+non_comm,4807417,lrRNA,lrRNA
+non_comm,4807417,srRNA,srRNA
+non_comm,4943178,CODEML,CODEML
+non_comm,4943178,CONSEL,CONSEL
+non_comm,4943178,DOGMA,DOGMA
+non_comm,4943178,Genomics Workbench,Genomics Workbench
+non_comm,4943178,MEGA6,MEGA6
+non_comm,4943178,MUSCLE,MUSCLE
+non_comm,4943178,MrBayes,MrBayes
+non_comm,4943178,MrModeltest,MrModeltest
+non_comm,4943178,OGDraw,OGDraw
+non_comm,4943178,RAxML,RAxML
+non_comm,4943178,jModelTest,jModelTest
+non_comm,4943178,mVISTA,mVISTA
+non_comm,4943178,pamlX,pamlX
+non_comm,4943178,raxmlGUI,raxmlGUI
+non_comm,4943178,tRNAscan-SE,tRNAscan-SE
+non_comm,4987110,BLAST,BLAST
+non_comm,4987110,BLASTN,BLASTN
+non_comm,4987110,CODEML,CODEML
+non_comm,4987110,DOGMA,DOGMA
+non_comm,4987110,Datamonkey,Datamonkey
+non_comm,4987110,GENEIOUS,GENEIOUS
+non_comm,4987110,MAFFT,MAFFT
+non_comm,4987110,MrBayes,MrBayes
+non_comm,4987110,MrModeltest,MrModeltest
+non_comm,4987110,NGSQCTOOLKIT,NGSQCTOOLKIT
+non_comm,4987110,OGDRAW,OGDRAW
+non_comm,4987110,PAML,PAML
+non_comm,4987110,R,R
+non_comm,4987110,RAXML,RAXML
+non_comm,4987110,RELAX,RELAX
+non_comm,4987110,REPUTER,REPUTER
+non_comm,4987110,SOAPDENOVO2,SOAPDENOVO2
+non_comm,4987110,SSPACE,SSPACE
+non_comm,4987110,TerUAG,TerUAG
+non_comm,4987110,custom Perl script,custom Perl script
+non_comm,4987110,ggplot2,ggplot2
+non_comm,5220211,CONSEL,CONSEL
+non_comm,5220211,ClustalW,ClustalW
+non_comm,5220211,Dendropy,Dendropy
+non_comm,5220211,FastGap,FastGap
+non_comm,5220211,IMA,IMA
+non_comm,5220211,IQ,IQ
+non_comm,5220211,IQ-TREE,IQ-TREE
+non_comm,5220211,IQ-Tree,IQ-Tree
+non_comm,5220211,IQ-Tree-omp,IQ-Tree-omp
+non_comm,5220211,JModelTest2,JModelTest2
+non_comm,5220211,JmodelTest,JmodelTest
+non_comm,5220211,MEGA7,MEGA7
+non_comm,5220211,Mesquite,Mesquite
+non_comm,5220211,MrBayes,MrBayes
+non_comm,5220211,Muscle,Muscle
+non_comm,5220211,PRANK,PRANK
+non_comm,5220211,Partition Finder,Partition Finder
+non_comm,5220211,PartitionFinder,PartitionFinder
+non_comm,5220211,PhyML,PhyML
+non_comm,5220211,PhySortR,PhySortR
+non_comm,5220211,R,R
+non_comm,5220211,RAxML,RAxML
+non_comm,5220211,RAxML-HPC2,RAxML-HPC2
+non_comm,5220211,RWTY,RWTY
+non_comm,5220211,RaxML,RaxML
+non_comm,5220211,RogueNaRok,RogueNaRok
+non_comm,5220211,SH-aLRT,SH-aLRT
+non_comm,5220211,Science Gateway,Science Gateway
+non_comm,5220211,SumTrees,SumTrees
+non_comm,5220211,T-Coffee,T-Coffee
+non_comm,5220211,Tracer,Tracer
+non_comm,5220211,TreeSetVis,TreeSetVis
+non_comm,5220211,TreeSetViz,TreeSetViz
+non_comm,5220211,UFML,UFML
+non_comm,5220211,aLRT,aLRT
+non_comm,5220211,raxmlGUI,raxmlGUI
+non_comm,5479652,ArcGIS,ArcGIS
+non_comm,5479652,BEAST,BEAST
+non_comm,5479652,FD,FD
+non_comm,5479652,LogCombiner,LogCombiner
+non_comm,5479652,MAFFT,MAFFT
+non_comm,5479652,Mesquite,Mesquite
+non_comm,5479652,PERMANOVA,PERMANOVA
+non_comm,5479652,R,R
+non_comm,5479652,Tracer,Tracer
+non_comm,5479652,TreeAnnotator,TreeAnnotator
+non_comm,5479652,ade4,ade4
+non_comm,5479652,ape,ape
+non_comm,5479652,picante,picante
+non_comm,5479652,vegan,vegan
+non_comm,5479652,vegan R,vegan R
+non_comm,6166771,BLAST,BLAST
+non_comm,6166771,BLASTN,BLASTN
+non_comm,6166771,BLASTX,BLASTX
+non_comm,6166771,Bowtie2,Bowtie2
+non_comm,6166771,CIPRES Science Gateway,CIPRES Science Gateway
+non_comm,6166771,Datamonkey,Datamonkey
+non_comm,6166771,Gblocks,Gblocks
+non_comm,6166771,Geneious,Geneious
+non_comm,6166771,MAFFT,MAFFT
+non_comm,6166771,MEGA,MEGA
+non_comm,6166771,MORFFO,MORFFO
+non_comm,6166771,MrBayes,MrBayes
+non_comm,6166771,NOVOPlasty,NOVOPlasty
+non_comm,6166771,PartitionFinder2,PartitionFinder2
+non_comm,6166771,Pilon,Pilon
+non_comm,6166771,RAxML,RAxML
+non_comm,6166771,RepeatMasker,RepeatMasker
+non_comm,6166771,Science Gateway,Science Gateway
+non_comm,6166771,TBLASTN,TBLASTN
+non_comm,6166771,Tracer,Tracer
+non_comm,6166771,VecScreen,VecScreen
+non_comm,6166771,Velvet,Velvet
+non_comm,6317584,FastTree,FastTree
+non_comm,6317584,Geneious,Geneious
+non_comm,6317584,MAFFT,MAFFT
+non_comm,6317584,MEGA,MEGA
+non_comm,6317584,Minimum Evolution,Minimum Evolution
+non_comm,6317584,MrBayes,MrBayes
+non_comm,6317584,RAxML,RAxML
+non_comm,6317584,TrEase,TrEase
+non_comm,6319453,Bremia,Bremia
+non_comm,6319453,MAFFT,MAFFT
+non_comm,6319453,MEGA6,MEGA6
+non_comm,6319453,RAxML,RAxML
+non_comm,6319453,RAxML BlackBox,RAxML BlackBox
+non_comm,6344813,Cipres,Cipres
+non_comm,6344813,MAFFT,MAFFT
+non_comm,6344813,MEGA,MEGA
+non_comm,6344813,MrBayes,MrBayes
+non_comm,6344813,MrModeltest,MrModeltest
+non_comm,6344813,RAxML,RAxML
+non_comm,6344813,RAxML BlackBox,RAxML BlackBox
+non_comm,6344813,RAxML HPC BlackBox,RAxML HPC BlackBox
+non_comm,6344813,SeqMan Pro,SeqMan Pro
+non_comm,6344813,TreeBASE,TreeBASE
+non_comm,6482417,-,-
+non_comm,6482417,BLAST,BLAST
+non_comm,6482417,BWA,BWA
+non_comm,6482417,BlastN,BlastN
+non_comm,6482417,Canu,Canu
+non_comm,6482417,Circos,Circos
+non_comm,6482417,FreeBayes,FreeBayes
+non_comm,6482417,Gblocks,Gblocks
+non_comm,6482417,HISAT2,HISAT2
+non_comm,6482417,MAFFT,MAFFT
+non_comm,6482417,MEGA7,MEGA7
+non_comm,6482417,MITOFY webserver,MITOFY webserver
+non_comm,6482417,Mauve,Mauve
+non_comm,6482417,NUCmer,NUCmer
+non_comm,6482417,ORFfinder,ORFfinder
+non_comm,6482417,QUAST,QUAST
+non_comm,6482417,Quiver,Quiver
+non_comm,6482417,RAxML,RAxML
+non_comm,6482417,RNAmmer,RNAmmer
+non_comm,6482417,SAMtools,SAMtools
+non_comm,6482417,SPAdes,SPAdes
+non_comm,6482417,SnpEff,SnpEff
+non_comm,6482417,Trimmomatic,Trimmomatic
+non_comm,6482417,arguta,arguta
+non_comm,6482417,jModelTest,jModelTest
+non_comm,6482417,tRNAscan-SE,tRNAscan-SE
+non_comm,6526698,AdaptorRemoval,AdaptorRemoval
+non_comm,6526698,Augustus,Augustus
+non_comm,6526698,BLAST,BLAST
+non_comm,6526698,BLAT,BLAT
+non_comm,6526698,BUSCO,BUSCO
+non_comm,6526698,CLC Genomics Workbench,CLC Genomics Workbench
+non_comm,6526698,CLC Genomics workbench,CLC Genomics workbench
+non_comm,6526698,CLC genomics workbench,CLC genomics workbench
+non_comm,6526698,CLCgenomics,CLCgenomics
+non_comm,6526698,L_RNA_scaffolder,L_RNA_scaffolder
+non_comm,6526698,MAFFT,MAFFT
+non_comm,6526698,MAKER2,MAKER2
+non_comm,6526698,MITOS2,MITOS2
+non_comm,6526698,MrBayes,MrBayes
+non_comm,6526698,RepeatMasker,RepeatMasker
+non_comm,6526698,RepeatModeler,RepeatModeler
+non_comm,6526698,SGA assembler,SGA assembler
+non_comm,6526698,SPAdes,SPAdes
+non_comm,6526698,SPAdes assembler,SPAdes assembler
+non_comm,6526698,Trinity,Trinity
+non_comm,6526698,Universal Single Copy Orthologs BUSCO,Universal Single Copy Orthologs BUSCO
+non_comm,6526698,preQC,preQC
+non_comm,6526698,trimmomatic,trimmomatic
+non_comm,6712544,BLASTn,BLASTn
+non_comm,6712544,Cipres,Cipres
+non_comm,6712544,MAFFT,MAFFT
+non_comm,6712544,MEGA,MEGA
+non_comm,6712544,MrBayes,MrBayes
+non_comm,6712544,MrModel,MrModel
+non_comm,6712544,MrModeltest,MrModeltest
+non_comm,6712544,NIS-Elements,NIS-Elements
+non_comm,6712544,RAxML,RAxML
+non_comm,6712544,RAxML HPC BlackBox,RAxML HPC BlackBox
+non_comm,6712544,SeqMan Pro (DNASTAR,SeqMan Pro (DNASTAR
+non_comm,6712544,TreeBASE,TreeBASE
+non_comm,6777426,Anvi’o,Anvi’o
+non_comm,6777426,BLAST,BLAST
+non_comm,6777426,BLASTp,BLASTp
+non_comm,6777426,BUSCO,BUSCO
+non_comm,6777426,Bowtie2,Bowtie2
+non_comm,6777426,ChloroP,ChloroP
+non_comm,6777426,DIAMOND,DIAMOND
+non_comm,6777426,FastQC,FastQC
+non_comm,6777426,HMMER,HMMER
+non_comm,6777426,IQ-TREE,IQ-TREE
+non_comm,6777426,IQTREE,IQTREE
+non_comm,6777426,L-INS,L-INS
+non_comm,6777426,MAFFT,MAFFT
+non_comm,6777426,NOVOPlasty,NOVOPlasty
+non_comm,6777426,Nephromyces,Nephromyces
+non_comm,6777426,OGDraw,OGDraw
+non_comm,6777426,PhyloBayes,PhyloBayes
+non_comm,6777426,PhyloBayes MPI,PhyloBayes MPI
+non_comm,6777426,PhyloMCOA,PhyloMCOA
+non_comm,6777426,RNAmmer,RNAmmer
+non_comm,6777426,SPAdes,SPAdes
+non_comm,6777426,SignalP,SignalP
+non_comm,6777426,SiteStripper,SiteStripper
+non_comm,6777426,TargetP,TargetP
+non_comm,6777426,TransDecoder,TransDecoder
+non_comm,6777426,Trimmomatic,Trimmomatic
+non_comm,6777426,Trinity,Trinity
+non_comm,6777426,Trinotate,Trinotate
+non_comm,6777426,custom Perl script,custom Perl script
+non_comm,6777426,tRNA-scan-SE,tRNA-scan-SE
+non_comm,6777426,trimAl,trimAl
+non_comm,6810231,BEAST,BEAST
+non_comm,6810231,Caret,Caret
+non_comm,6810231,DLTdv,DLTdv
+non_comm,6810231,Freehand Selection,Freehand Selection
+non_comm,6810231,Geneious,Geneious
+non_comm,6810231,ImageJ,ImageJ
+non_comm,6810231,LogCombiner,LogCombiner
+non_comm,6810231,MATLAB,MATLAB
+non_comm,6810231,MATLAB and Statistics Toolbox,MATLAB and Statistics Toolbox
+non_comm,6810231,MCMCglmm,MCMCglmm
+non_comm,6810231,Momocs,Momocs
+non_comm,6810231,PartitionFinder,PartitionFinder
+non_comm,6810231,Phantom Camera Control,Phantom Camera Control
+non_comm,6810231,Procrustes,Procrustes
+non_comm,6810231,R,R
+non_comm,6810231,R package sensiPhy,R package sensiPhy
+non_comm,6810231,RAxML,RAxML
+non_comm,6810231,TreeAnnotator,TreeAnnotator
+non_comm,6810231,alphashape3d,alphashape3d
+non_comm,6810231,easyWand,easyWand
+non_comm,6810231,inashape3d,inashape3d
+non_comm,6810231,pPCA,pPCA
+non_comm,6810231,pPCAs,pPCAs
+non_comm,7164779,BLAST,BLAST
+non_comm,7164779,Clustal X,Clustal X
+non_comm,7164779,Cucujiformia,Cucujiformia
+non_comm,7164779,FigTree,FigTree
+non_comm,7164779,GeSeq,GeSeq
+non_comm,7164779,Geneious,Geneious
+non_comm,7164779,IQ-TREE,IQ-TREE
+non_comm,7164779,MEGA,MEGA
+non_comm,7164779,MITOS Web Server,MITOS Web Server
+non_comm,7164779,Minimap2,Minimap2
+non_comm,7164779,MrBayes,MrBayes
+non_comm,7164779,ProtTest,ProtTest
+non_comm,7164779,Repeats Finder,Repeats Finder
+non_comm,7164779,Workbench,Workbench
+non_comm,7164779,jModeltest,jModeltest
+non_comm,7252517,FastTree,FastTree
+non_comm,7252517,Geneious,Geneious
+non_comm,7252517,MAFFT,MAFFT
+non_comm,7252517,MEGA,MEGA
+non_comm,7252517,Mesquite,Mesquite
+non_comm,7252517,Minimum Evolution (ME,Minimum Evolution (ME
+non_comm,7252517,MrBayes,MrBayes
+non_comm,7252517,TrEase,TrEase
+non_comm,7252517,TrEase webserver,TrEase webserver
+non_comm,7415360,BLASTn,BLASTn
+non_comm,7415360,ClustalW,ClustalW
+non_comm,7415360,Domain Database (CDD),Domain Database (CDD)
+non_comm,7415360,ES,ES
+non_comm,7415360,GeneMark,GeneMark
+non_comm,7415360,Genome Analyzer IIx,Genome Analyzer IIx
+non_comm,7415360,Interactive Tree Of Life (iTOL),Interactive Tree Of Life (iTOL)
+non_comm,7415360,MAKER,MAKER
+non_comm,7415360,MrBayes,MrBayes
+non_comm,7415360,Prottest,Prottest
+non_comm,7415360,SOAP denovo,SOAP denovo
+non_comm,7415360,SOAPdenovo,SOAPdenovo
+non_comm,7415360,Tracer,Tracer
+non_comm,7415360,Velvet,Velvet
+non_comm,7415360,Xcalibur,Xcalibur
+non_comm,7415360,antiSMASH,antiSMASH
+non_comm,7415360,fungiSMASH,fungiSMASH
+non_comm,7415360,jModelTest,jModelTest
+non_comm,7452269,BLAST,BLAST
+non_comm,7452269,DNASTAR,DNASTAR
+non_comm,7452269,Darriba,Darriba
+non_comm,7452269,FigTree,FigTree
+non_comm,7452269,MAFFT,MAFFT
+non_comm,7452269,MEGA,MEGA
+non_comm,7452269,MrBayes,MrBayes
+non_comm,7452269,Q-bank,Q-bank
+non_comm,7452269,RAxML,RAxML
+non_comm,7452269,Seqman Pro,Seqman Pro
+non_comm,7452269,TreeBASE,TreeBASE
+non_comm,7452269,jModeltest,jModeltest
+non_comm,7476525,AxioVision LE,AxioVision LE
+non_comm,7476525,DNAStar,DNAStar
+non_comm,7476525,GTRCAT,GTRCAT
+non_comm,7476525,MAFFT,MAFFT
+non_comm,7476525,MEGA,MEGA
+non_comm,7476525,RAxML,RAxML
+non_comm,7476525,obducens,obducens
+non_comm,7476525,raxmlGUI,raxmlGUI
+non_comm,7533067,Ape,Ape
+non_comm,7533067,Bioconductor,Bioconductor
+non_comm,7533067,Cufflinks,Cufflinks
+non_comm,7533067,CyVerse,CyVerse
+non_comm,7533067,CyVerse Atmosphere,CyVerse Atmosphere
+non_comm,7533067,DGT,DGT
+non_comm,7533067,Discovery Environment,Discovery Environment
+non_comm,7533067,Ensembl,Ensembl
+non_comm,7533067,Geneious,Geneious
+non_comm,7533067,InferNetwork_ML,InferNetwork_ML
+non_comm,7533067,Interaction Network,Interaction Network
+non_comm,7533067,MAFFT,MAFFT
+non_comm,7533067,OrthoFinder,OrthoFinder
+non_comm,7533067,PAML,PAML
+non_comm,7533067,ParaAT,ParaAT
+non_comm,7533067,PhyloNet,PhyloNet
+non_comm,7533067,Phytools,Phytools
+non_comm,7533067,R,R
+non_comm,7533067,R package,R package
+non_comm,7533067,RAxML,RAxML
+non_comm,7533067,RMTA,RMTA
+non_comm,7533067,SAMtools,SAMtools
+non_comm,7533067,TICR,TICR
+non_comm,7533067,Tree Incongruence Checking in R (TICR),Tree Incongruence Checking in R (TICR)
+non_comm,7533067,igraph,igraph
+non_comm,7533067,perl,perl
+non_comm,7533067,phylolm,phylolm
+non_comm,7533067,shell,shell
+non_comm,7606094,DOGMA,DOGMA
+non_comm,7606094,DnaSP,DnaSP
+non_comm,7606094,Gblocks,Gblocks
+non_comm,7606094,Genomics Workbench,Genomics Workbench
+non_comm,7606094,MAFFT,MAFFT
+non_comm,7606094,MEGA,MEGA
+non_comm,7606094,MUSCLE,MUSCLE
+non_comm,7606094,RAxML,RAxML
+non_comm,7606094,REPuter,REPuter
+non_comm,7606094,SPSS Statistics,SPSS Statistics
+non_comm,7606094,tRNAscan-SE,tRNAscan-SE
+non_comm,7748874,GBlocks,GBlocks
+non_comm,7748874,MAFFT,MAFFT
+non_comm,7748874,MITOS webserver,MITOS webserver
+non_comm,7748874,MrBayes,MrBayes
+non_comm,7748874,NOVOPlasty,NOVOPlasty
+non_comm,7748874,Tracer,Tracer
+non_comm,7748874,jModelTest,jModelTest
+non_comm,7872550,Adobe Photoshop CS,Adobe Photoshop CS
+non_comm,7872550,BLASTn,BLASTn
+non_comm,7872550,Bankit,Bankit
+non_comm,7872550,Bayes,Bayes
+non_comm,7872550,CGView,CGView
+non_comm,7872550,ClustalX,ClustalX
+non_comm,7872550,DIVA-GIS,DIVA-GIS
+non_comm,7872550,Excel,Excel
+non_comm,7872550,Gateway,Gateway
+non_comm,7872550,MEGA,MEGA
+non_comm,7872550,NOVOPlasty,NOVOPlasty
+non_comm,7872550,PartitionFinder,PartitionFinder
+non_comm,7872550,TranslatorX,TranslatorX
+non_comm,8048450,MAFFT,MAFFT
+non_comm,8048450,Mesquite,Mesquite
+non_comm,8048450,MorphoSource,MorphoSource
+non_comm,8048450,Morphogenera,Morphogenera
+non_comm,8048450,PRANK,PRANK
+non_comm,8048450,R,R
+non_comm,8048450,R package phangorn,R package phangorn
+non_comm,8048450,RAxML,RAxML
+non_comm,8048450,ape,ape
+non_comm,8048450,claddis,claddis
+non_comm,8322432,ARWEN,ARWEN
+non_comm,8322432,BLASTN,BLASTN
+non_comm,8322432,BLASTP,BLASTP
+non_comm,8322432,IQ-TREE,IQ-TREE
+non_comm,8322432,MAFFT,MAFFT
+non_comm,8322432,MEGA,MEGA
+non_comm,8322432,ML,ML
+non_comm,8322432,MrBayes,MrBayes
+non_comm,8322432,SPAdes,SPAdes
+non_comm,8322432,jModeltest,jModeltest
+non_comm,8322432,tRNAscan-SE,tRNAscan-SE
+non_comm,8361735,BEAST,BEAST
+non_comm,8361735,BioEdit,BioEdit
+non_comm,8361735,FigTree,FigTree
+non_comm,8361735,MAFFT,MAFFT
+non_comm,8361735,MEGA X,MEGA X
+non_comm,8361735,MrBayes,MrBayes
+non_comm,8361735,PartitionFinder,PartitionFinder
+non_comm,8361735,RASP,RASP
+non_comm,8361735,TRACER,TRACER
+non_comm,8361735,TREEANNOTATOR,TREEANNOTATOR
+non_comm,8455474,AIDA,AIDA
+non_comm,8455474,AIS,AIS
+non_comm,8455474,Arlequin,Arlequin
+non_comm,8455474,BEAST,BEAST
+non_comm,8455474,Cyclopes,Cyclopes
+non_comm,8455474,DNAsp,DNAsp
+non_comm,8455474,ExPASy,ExPASy
+non_comm,8455474,Gateway,Gateway
+non_comm,8455474,Gblocks,Gblocks
+non_comm,8455474,MEGA X,MEGA X
+non_comm,8455474,MITOS,MITOS
+non_comm,8455474,MJN,MJN
+non_comm,8455474,MMDA,MMDA
+non_comm,8455474,Network,Network
+non_comm,8455474,PartitionFinder,PartitionFinder
+non_comm,8455474,RAxML,RAxML
+non_comm,8455474,Sequencher,Sequencher
+non_comm,8455474,Tracer,Tracer
+non_comm,8455474,jModelTest,jModelTest
+non_comm,8489119,AMAS,AMAS
+non_comm,8489119,Bremer.run,Bremer.run
+non_comm,8489119,CONSEL,CONSEL
+non_comm,8489119,Cipres Science Gateway,Cipres Science Gateway
+non_comm,8489119,DAMBE,DAMBE
+non_comm,8489119,DNAStar,DNAStar
+non_comm,8489119,FIGTREE,FIGTREE
+non_comm,8489119,IQ-TREE,IQ-TREE
+non_comm,8489119,MAFFT,MAFFT
+non_comm,8489119,MEGA,MEGA
+non_comm,8489119,MRBAYES,MRBAYES
+non_comm,8489119,PartitionFinder,PartitionFinder
+non_comm,8489119,Q-INS,Q-INS
+non_comm,8489119,SeqMan II,SeqMan II
+non_comm,8489119,TNT,TNT
+non_comm,8489119,TREE-PUZZLE,TREE-PUZZLE
+non_comm,8489119,TranslatorX,TranslatorX
+non_comm,8489119,Winclada-ASADO,Winclada-ASADO
+non_comm,8489119,tracer,tracer
+publishers,10.1002/ece3.2853,BioEdit,BioEdit
+publishers,10.1002/ece3.2853,MAFFT,MAFFT
+publishers,10.1002/ece3.2853,MCMCglmm,MCMCglmm
+publishers,10.1002/ece3.2853,Mesquite,Mesquite
+publishers,10.1002/ece3.2853,MrBayes,MrBayes
+publishers,10.1002/ece3.2853,RaxML,RaxML
+publishers,10.1002/ece3.2853,Sequencher,Sequencher
+publishers,10.1002/ece3.5301,AMOVA,AMOVA
+publishers,10.1002/ece3.5301,DnaSP,DnaSP
+publishers,10.1007/s10493-018-0256-9,ABGD,ABGD
+publishers,10.1007/s10493-018-0256-9,HyPhy,HyPhy
+publishers,10.1007/s10493-018-0256-9,K2P,K2P
+publishers,10.1007/s10493-018-0256-9,MEGA,MEGA
+publishers,10.1007/s10493-018-0256-9,MEME,MEME
+publishers,10.1007/s10493-018-0256-9,Sequencher,Sequencher
+publishers,10.1007/s10592-020-01257-7,-LG,-LG
+publishers,10.1007/s10592-020-01257-7,All,All
+publishers,10.1007/s10592-020-01257-7,CLC Genomics Workbench,CLC Genomics Workbench
+publishers,10.1007/s10592-020-01257-7,ClustalW2,ClustalW2
+publishers,10.1007/s10592-020-01257-7,STRUCTURE,STRUCTURE
+publishers,10.1007/s10592-020-01257-7,paths,paths
+publishers,10.1007/s11295-017-1113-4,Arlequin,Arlequin
+publishers,10.1007/s11295-017-1113-4,BOTTLENECK,BOTTLENECK
+publishers,10.1007/s11295-017-1113-4,DIYABC,DIYABC
+publishers,10.1007/s11295-017-1113-4,GenAlEx,GenAlEx
+publishers,10.1007/s11295-017-1113-4,HKA,HKA
+publishers,10.1007/s11295-017-1113-4,LOSITAN,LOSITAN
+publishers,10.1007/s11295-017-1113-4,MEGA,MEGA
+publishers,10.1007/s11295-017-1113-4,MIGRATE,MIGRATE
+publishers,10.1007/s11295-017-1113-4,STRUCTURE,STRUCTURE
+publishers,10.1007/s11295-017-1113-4,nSSR,nSSR
+publishers,10.1007/s11557-018-1396-3,DNAstar,DNAstar
+publishers,10.1007/s11557-018-1396-3,MAFFT,MAFFT
+publishers,10.1007/s11557-018-1396-3,Mega6,Mega6
+publishers,10.1007/s11557-018-1396-3,Mesquite302,Mesquite302
+publishers,10.1007/s11557-018-1396-3,MrModeltest2,MrModeltest2
+publishers,10.1007/s11557-018-1396-3,RaxmlHPC,RaxmlHPC
+publishers,10.1007/s11557-018-1396-3,SeqMan,SeqMan
+publishers,10.1007/s12229-018-9202-0,MAFFT,MAFFT
+publishers,10.1007/s12229-018-9202-0,MrBayes,MrBayes
+publishers,10.1007/s12229-018-9202-0,RAxML,RAxML
+publishers,10.1007/s12229-018-9202-0,TNT,TNT
+publishers,10.1038/s41559-018-0494-6,BASEML,BASEML
+publishers,10.1038/s41559-018-0494-6,Dryad,Dryad
+publishers,10.1038/s41559-018-0494-6,ExaBayes,ExaBayes
+publishers,10.1038/s41559-018-0494-6,MCMCTree,MCMCTree
+publishers,10.1038/s41559-018-0494-6,MPI,MPI
+publishers,10.1038/s41559-018-0494-6,PAML,PAML
+publishers,10.1038/s41559-018-0494-6,PHYLUCE,PHYLUCE
+publishers,10.1038/s41559-018-0494-6,PartitionFinder,PartitionFinder
+publishers,10.1038/s41559-018-0494-6,Python,Python
+publishers,10.1038/s41559-018-0494-6,Python script,Python script
+publishers,10.1038/s41559-018-0494-6,RAxML,RAxML
+publishers,10.1038/s41559-018-0494-6,SortaDate,SortaDate
+publishers,10.1038/s41559-018-0494-6,custom,custom
+publishers,10.1038/s41598-017-14703-3,MAFFT,MAFFT
+publishers,10.1038/s41598-017-14703-3,MEGA,MEGA
+publishers,10.1038/s41598-017-14703-3,MrBayes,MrBayes
+publishers,10.1038/s41598-017-14703-3,PartitionFinder,PartitionFinder
+publishers,10.1038/s41598-017-14703-3,RAxML,RAxML
+publishers,10.1038/s41598-017-14703-3,SE server,SE server
+publishers,10.1038/s41598-017-14703-3,raxmlGUI,raxmlGUI
+publishers,10.1038/s41598-017-14703-3,tRNAScan,tRNAScan
+publishers,10.1038/s41598-017-17145-z,CLC Genomics Workbench,CLC Genomics Workbench
+publishers,10.1038/s41598-017-17145-z,MAFFT,MAFFT
+publishers,10.1038/s41598-017-17145-z,MEGA,MEGA
+publishers,10.1038/s41598-017-17145-z,TranslatorX,TranslatorX
+publishers,10.1038/s41598-017-17145-z,raxmlGUI,raxmlGUI
+publishers,10.1038/srep13227,Clustal,Clustal
+publishers,10.1038/srep13227,Mesquite,Mesquite
+publishers,10.1038/srep13227,Tandem Repeat Finder,Tandem Repeat Finder
+publishers,10.1038/srep26486,CIPRES Science Gateway,CIPRES Science Gateway
+publishers,10.1038/srep26486,Chromas,Chromas
+publishers,10.1038/srep26486,DAMBE,DAMBE
+publishers,10.1038/srep26486,Gblocks,Gblocks
+publishers,10.1038/srep26486,PartitionFinder,PartitionFinder
+publishers,10.1038/srep26486,RAxML,RAxML
+publishers,10.1080/14772000.2017.1317672,CLSM,CLSM
+publishers,10.1080/14772000.2020.1787550,BioGeoBEARS,BioGeoBEARS
+publishers,10.1080/14772000.2020.1787550,CODONCODEALIGNER,CODONCODEALIGNER
+publishers,10.1080/14772000.2020.1787550,JMODELTEST,JMODELTEST
+publishers,10.1080/14772000.2020.1787550,MRBAYES,MRBAYES
+publishers,10.1080/14772000.2020.1787550,NADH,NADH
+publishers,10.1080/14772000.2020.1787550,PAUP,PAUP
+publishers,10.1080/14772000.2020.1787550,PHYML,PHYML
+publishers,10.1080/21501203.2018.1461142,BLAST,BLAST
+publishers,10.1080/21501203.2018.1461142,MrModeltest,MrModeltest
+publishers,10.1080/21501203.2018.1461142,RAxML,RAxML
+publishers,10.1080/21501203.2018.1461142,blastn,blastn
+publishers,10.1080/21501203.2018.1461142,discontiguous megablast,discontiguous megablast
+publishers,10.1111/eva.12696,Arlequin,Arlequin
+publishers,10.1111/eva.12696,FORMATOMATIC,FORMATOMATIC
+publishers,10.1111/eva.12696,PCA,PCA
+publishers,10.1111/eva.12696,STRUCTURE,STRUCTURE
+publishers,10.1111/eva.12696,Stacks,Stacks
+publishers,10.1111/eva.12696,custom Perl script,custom Perl script
+publishers,10.1111/eva.12696,divMigrate,divMigrate
+publishers,10.1111/eva.12696,online,online
+publishers,10.1126/sciadv.aaw6670,BEAST,BEAST
+publishers,10.1126/sciadv.aaw6670,Freehand Selection,Freehand Selection
+publishers,10.1126/sciadv.aaw6670,Geneious,Geneious
+publishers,10.1126/sciadv.aaw6670,ImageJ,ImageJ
+publishers,10.1126/sciadv.aaw6670,LogCombiner,LogCombiner
+publishers,10.1126/sciadv.aaw6670,MCMCglmm,MCMCglmm
+publishers,10.1126/sciadv.aaw6670,Phantom Camera Control,Phantom Camera Control
+publishers,10.1126/sciadv.aaw6670,R,R
+publishers,10.1126/sciadv.aaw6670,easyWand,easyWand
+publishers,10.1126/sciadv.aaw6670,pPCA,pPCA
+publishers,10.1186/s12862-015-0445-7,BEAST,BEAST
+publishers,10.1186/s12862-015-0445-7,DIVA,DIVA
+publishers,10.1186/s12862-015-0445-7,MrBayes,MrBayes
+publishers,10.1186/s12862-015-0445-7,RASP,RASP
+publishers,10.1186/s12862-015-0445-7,WorldClim,WorldClim
+publishers,10.1186/s12862-019-1477-1,BEAST,BEAST
+publishers,10.1186/s12862-019-1477-1,jModelTest,jModelTest
+publishers,10.1186/s12864-017-3868-2,Astral,Astral
+publishers,10.1186/s12864-017-3868-2,BLASTx,BLASTx
+publishers,10.1186/s12864-017-3868-2,Bioconductor DESeq2 package,Bioconductor DESeq2 package
+publishers,10.1186/s12864-017-3868-2,Devo,Devo
+publishers,10.1186/s12864-017-3868-2,Evo,Evo
+publishers,10.1186/s12864-017-3868-2,OrthoVenn,OrthoVenn
+publishers,10.1186/s12864-017-3868-2,Trinity,Trinity
+publishers,10.1186/s12870-019-1771-5,Garli,Garli
+publishers,10.1186/s12870-019-1771-5,Geneious (Biomatters,Geneious (Biomatters
+publishers,10.1186/s12870-019-1771-5,ML,ML
+publishers,10.1186/s12870-019-1771-5,R,R
+publishers,10.1186/s12870-019-1771-5,RAxML,RAxML
+publishers,10.1186/s12870-019-1771-5,phytools,phytools
+publishers,10.1186/s12870-019-1771-5,surface,surface
+publishers,10.1186/s12983-014-0081-x,CLUSTAL,CLUSTAL
+publishers,10.1186/s12983-014-0081-x,FASconCAT,FASconCAT
+publishers,10.1186/s12983-014-0081-x,FcC,FcC
+publishers,10.1186/s12983-014-0081-x,Linux,Linux
+publishers,10.1186/s12983-014-0081-x,Mac,Mac
+publishers,10.1186/s12983-014-0081-x,MrBayes,MrBayes
+publishers,10.1186/s12983-014-0081-x,NEXUS,NEXUS
+publishers,10.1186/s12983-014-0081-x,OS,OS
+publishers,10.1186/s12983-014-0081-x,PAUP,PAUP
+publishers,10.1186/s12983-014-0081-x,PHYLIP,PHYLIP
+publishers,10.1186/s12983-014-0081-x,Perl,Perl
+publishers,10.1186/s12983-014-0081-x,ProtTest,ProtTest
+publishers,10.1186/s12983-014-0081-x,RAxML,RAxML
+publishers,10.1186/s12983-014-0081-x,Windows PCs,Windows PCs
+publishers,10.1186/s13027-016-0089-2,MEGA,MEGA
+publishers,10.1186/s13027-016-0089-2,Polyphred,Polyphred
+publishers,10.1186/s40851-021-00172-0,DIVA,DIVA
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,BEAST,BEAST
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,Betancur,Betancur
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,EToL,EToL
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,Geneious,Geneious
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,RAxML,RAxML
+publishers,10.1371/currents.tol.53ba26640df0ccaee75bb165c8c26288,TranslatorX,TranslatorX
+publishers,10.1371/journal.pone.0101375,BioEdit,BioEdit
+publishers,10.1371/journal.pone.0101375,GenDecoder,GenDecoder
+publishers,10.1371/journal.pone.0101375,Mega,Mega
+publishers,10.1371/journal.pone.0101375,PartitionFinder,PartitionFinder
+publishers,10.1371/journal.pone.0112461,Gblocks,Gblocks
+publishers,10.1371/journal.pone.0112461,MUSCLE,MUSCLE
+publishers,10.1371/journal.pone.0128181,DAVID,DAVID
+publishers,10.1371/journal.pone.0128181,MEGA5,MEGA5
+publishers,10.1371/journal.pone.0128181,Perl,Perl
+publishers,10.1371/journal.pone.0128181,Perl scripts,Perl scripts
+publishers,10.1371/journal.pone.0128181,RAxML,RAxML
+publishers,10.1371/journal.pone.0128181,jModelTest,jModelTest
+publishers,10.1371/journal.pone.0128181,mafft,mafft
+publishers,10.1371/journal.pone.0128181,samtools,samtools
+publishers,10.1371/journal.pone.0168464,ClustalW,ClustalW
+publishers,10.1371/journal.pone.0168464,MEGA,MEGA
+publishers,10.1371/journal.pone.0168464,MODELLER,MODELLER
+publishers,10.1371/journal.pone.0200956,MEGA,MEGA
+publishers,10.1371/journal.pone.0200956,RAxML,RAxML
+publishers,10.1371/journal.pone.0200956,raxmlGUI,raxmlGUI
+publishers,10.2994/sajh-d-17-00054.1,Finder,Finder
+publishers,10.2994/sajh-d-17-00054.1,MAFFT,MAFFT
+publishers,10.2994/sajh-d-17-00054.1,Partition,Partition
+publishers,10.2994/sajh-d-17-00054.1,PartitionFinder,PartitionFinder
+publishers,10.2994/sajh-d-17-00054.1,RAxML,RAxML
+publishers,10.2994/sajh-d-17-00054.1,TBAD,TBAD
+publishers,10.3389/fcimb.2020.618747,MEGA,MEGA
+publishers,10.3389/fcimb.2020.618747,MLST,MLST
+publishers,10.3389/fcimb.2020.618747,PubMLST,PubMLST
+publishers,10.3389/fmicb.2019.01395,ClustalW,ClustalW
+publishers,10.3389/fmicb.2019.01395,Mega,Mega
+publishers,10.3389/fmicb.2019.01395,ape,ape
+publishers,10.3389/fmicb.2019.01395,lm,lm
+publishers,10.3389/fmicb.2019.01395,minpack,minpack
+publishers,10.3389/fmicb.2019.01395,nlsLM,nlsLM
+publishers,10.3389/fpls.2017.02270,NETWORK,NETWORK
+publishers,10.3389/fpls.2017.02270,NewHybrid,NewHybrid
+publishers,10.3389/fpls.2017.02270,NewHybrids,NewHybrids
+publishers,10.3389/fpls.2017.02270,STRUCTURE,STRUCTURE
+publishers,10.3389/fpls.2017.02270,Sequencher,Sequencher
+publishers,10.3389/fpls.2020.00799,Dual Organellar GenoMe Annotator,Dual Organellar GenoMe Annotator
+publishers,10.3389/fpls.2020.00799,Geneious R7,Geneious R7
+publishers,10.3389/fpls.2020.00799,IQ,IQ
+publishers,10.3389/fpls.2020.00799,MAFFT,MAFFT
+publishers,10.3389/fpls.2020.00799,MISA,MISA
+publishers,10.3389/fpls.2020.00799,MrBayes,MrBayes
+publishers,10.3389/fpls.2020.00799,PAUP,PAUP
+publishers,10.3389/fpls.2020.00799,PRIMER3,PRIMER3
+publishers,10.3389/fpls.2020.00799,REPuter,REPuter
+publishers,10.3389/fpls.2020.00799,Selecton,Selecton
+publishers,10.3389/fpls.2020.00799,nrITS,nrITS
+publishers,10.3389/fpls.2020.00799,tree,tree
+publishers,10.3390/jof7040294,BLAST,BLAST
+publishers,10.3390/jof7040294,FinchTV,FinchTV
+publishers,10.3390/jof7040294,Statgraphics Plus,Statgraphics Plus
+publishers,10.3390/v12010096,FASTQC,FASTQC
+publishers,10.3390/v12010096,GLUE,GLUE
+publishers,10.3390/v12010096,MEGA6,MEGA6
+publishers,10.3390/v12010096,NAME,NAME
+publishers,10.3897/phytokeys.71.9203,Geneious,Geneious
+publishers,10.3897/phytokeys.71.9203,JAVA,JAVA
+publishers,10.3897/phytokeys.71.9203,MADAGASCAR,MADAGASCAR
+publishers,10.3897/phytokeys.71.9203,MEXICO,MEXICO
+publishers,10.3897/phytokeys.71.9203,SOMALIA,SOMALIA
+publishers,10.3897/phytokeys.71.9203,VIETNAM,VIETNAM
+publishers,10.3897/zookeys.872.36288,MAFFT,MAFFT
+publishers,10.7717/peerj.10804,ASTRAL,ASTRAL
+publishers,10.7717/peerj.10804,BEAST2,BEAST2
+publishers,10.7717/peerj.10804,BLAST,BLAST
+publishers,10.7717/peerj.10804,III,III
+publishers,10.7717/peerj.10804,IQ,IQ
+publishers,10.7717/peerj.10804,MEGA,MEGA
+publishers,10.7717/peerj.10804,STACEY,STACEY
+publishers,10.7717/peerj.10804,TREE,TREE
+publishers,10.7717/peerj.10804,tr2,tr2

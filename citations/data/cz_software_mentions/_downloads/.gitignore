@@ -1,0 +1,4 @@
+# Everything in this directory is bulk-downloaded from Dryad and re-deletable.
+# Never commit.
+*
+!.gitignore

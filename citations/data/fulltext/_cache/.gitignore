@@ -1,0 +1,3 @@
+# Cached upstream API responses. Re-fetchable; never commit.
+*
+!.gitignore
