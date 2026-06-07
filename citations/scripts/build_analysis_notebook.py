@@ -175,18 +175,24 @@ by_type
 # --------------------------------------------------------------------------
 md(
     r"""
-## Citations per year since publication
+## Peer-reviewed citations per year since publication
 
-The headline number for the proposal: usage is **steady at ~250–300 citations a
-year, with no decline 15 years after publication.** 2026 is partial (the pull was
+The headline number for the proposal: usage is **steady among peer-reviewed
+publications, with no decline 15 years after publication.** This chart counts
+only **peer-reviewed works** — OpenAlex types `article`, `review`, and `letter`
+— which make up the vast majority of the corpus. 2026 is partial (the pull was
 2026-05-24) and is drawn in a lighter shade so nobody reads the dip as a trend.
 """
 )
 
 code(
     r"""
+PEER_REVIEWED_TYPES = {"article", "review", "letter"}
+
+peer_df = df.loc[df["type"].isin(PEER_REVIEWED_TYPES)]
+
 per_year = (
-    df["publication_year"]
+    peer_df["publication_year"]
     .dropna()
     .loc[lambda s: s >= PAPER_YEAR]   # 2 stray 2010 "early view" records pre-date publication
     .value_counts()
@@ -200,9 +206,9 @@ fig, ax = plt.subplots(figsize=(11, 5))
 bars = ax.bar(per_year.index.astype(int), per_year.values, color=colors)
 ax.bar_label(bars, padding=2, fontsize=8)
 
-ax.set_title("Citations of SequenceMatrix (Vaidya et al. 2011) per year — OpenAlex", fontsize=13)
+ax.set_title("Peer-reviewed citations of SequenceMatrix (Vaidya et al. 2011) per year — OpenAlex", fontsize=13)
 ax.set_xlabel("Publication year of the citing work")
-ax.set_ylabel("Number of citing works")
+ax.set_ylabel("Number of peer-reviewed citing works")
 ax.set_xticks(per_year.index.astype(int))
 ax.tick_params(axis="x", rotation=45)
 ax.margins(y=0.12)
@@ -218,10 +224,68 @@ plt.show()
 
 complete = per_year.loc[:CURRENT_YEAR - 1]
 recent = complete.loc[CURRENT_YEAR - 5:]  # last 5 complete years — the proposal window
-print(f"Total since {PAPER_YEAR}: {int(per_year.sum()):,} citing works")
+print(f"Peer-reviewed total since {PAPER_YEAR}: {int(per_year.sum()):,} citing works")
 print(f"Mean over all complete years {PAPER_YEAR}–{CURRENT_YEAR - 1}: {complete.mean():.0f}/yr")
 print(f"Mean over the last 5 complete years {CURRENT_YEAR - 5}–{CURRENT_YEAR - 1}: "
       f"{recent.mean():.0f}/yr  (no decline 15 years on)")
+"""
+)
+
+# --------------------------------------------------------------------------
+md(
+    r"""
+## Non-peer-reviewed citations per year
+
+For completeness, citations from works OpenAlex does **not** classify as
+peer-reviewed journal publications (`article` / `review` / `letter`). The
+dominant non-peer-reviewed types here are **preprints** (112), **standalone
+peer-review reports** (68 — OpenAlex's `peer-review` type covers the referee
+reports published by journals like PeerJ or F1000Research, not a quality flag),
+and **dissertations** (38).
+"""
+)
+
+code(
+    r"""
+non_peer_df = df.loc[~df["type"].isin(PEER_REVIEWED_TYPES)]
+
+non_peer_by_year = (
+    non_peer_df["publication_year"]
+    .dropna()
+    .loc[lambda s: s >= PAPER_YEAR]
+    .value_counts()
+    .sort_index()
+)
+
+colors_np = ["#bdbdbd" if y == CURRENT_YEAR else "#744210" for y in non_peer_by_year.index]
+
+fig, ax = plt.subplots(figsize=(11, 5))
+bars = ax.bar(non_peer_by_year.index.astype(int), non_peer_by_year.values, color=colors_np)
+ax.bar_label(bars, padding=2, fontsize=8)
+
+ax.set_title("Non-peer-reviewed citations of SequenceMatrix per year — OpenAlex", fontsize=13)
+ax.set_xlabel("Publication year of the citing work")
+ax.set_ylabel("Number of non-peer-reviewed citing works")
+ax.set_xticks(non_peer_by_year.index.astype(int))
+ax.tick_params(axis="x", rotation=45)
+ax.margins(y=0.12)
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+
+cur_val = non_peer_by_year.get(CURRENT_YEAR, None)
+if cur_val is not None:
+    ax.text(CURRENT_YEAR, cur_val + 0.5,
+            "partial", ha="center", va="bottom", fontsize=8, color="#666")
+fig.tight_layout()
+plt.show()
+
+by_type_np = (
+    non_peer_df["type"].fillna("(unknown)").value_counts()
+    .rename_axis("Type").reset_index(name="Works")
+)
+by_type_np.index += 1
+print(f"Non-peer-reviewed total: {len(non_peer_df):,} works")
+by_type_np
 """
 )
 
