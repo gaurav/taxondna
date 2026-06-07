@@ -372,11 +372,17 @@ print(f"Mean sp. nov. papers/yr ({PAPER_YEAR}–{CURRENT_YEAR-1}): "
 # --------------------------------------------------------------------------
 md(
     r"""
-## Top 10 journals and top 10 authors
+## Top 10 journals and top 10 authors (peer-reviewed only)
 
-**Journals** are counted one row per paper. **Authors** are counted once per paper
-they appear on — so the leaders are people who repeatedly publish multi-gene
-phylogenies, the bread-and-butter SequenceMatrix workflow.
+Both tables are restricted to **peer-reviewed works** (`article`, `review`,
+`letter`) so preprints and dissertation citations do not dilute venue counts.
+
+**Journals** are counted one row per paper; the **% of peer-reviewed corpus**
+column shows each journal's share of all peer-reviewed citing works, giving a
+sense of how concentrated usage is. **Authors** are counted once per paper they
+appear on — the leaders are people who repeatedly publish multi-gene phylogenies,
+the bread-and-butter SequenceMatrix workflow. Their percentages are similarly
+relative to the peer-reviewed corpus total.
 """
 )
 
@@ -384,14 +390,19 @@ code(split_multi())
 
 code(
     r"""
+n_peer = len(peer_df)
+
 top_journals = (
-    df.loc[df["venue_type"].eq("journal"), "venue_name"]
+    peer_df.loc[peer_df["venue_type"].eq("journal"), "venue_name"]
     .dropna()
     .value_counts()
     .head(10)
     .rename_axis("Journal")
     .reset_index(name="Citing papers")
 )
+top_journals["% of peer-reviewed corpus"] = (
+    100 * top_journals["Citing papers"] / n_peer
+).round(1)
 top_journals.index += 1
 top_journals
 """
@@ -400,12 +411,15 @@ top_journals
 code(
     r"""
 top_authors = (
-    split_multi(df["author_names"])
+    split_multi(peer_df["author_names"])
     .value_counts()
     .head(10)
     .rename_axis("Author")
     .reset_index(name="Citing papers")
 )
+top_authors["% of peer-reviewed corpus"] = (
+    100 * top_authors["Citing papers"] / n_peer
+).round(1)
 top_authors.index += 1
 top_authors
 """
