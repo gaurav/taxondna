@@ -498,6 +498,21 @@ def title_phrases(titles):
 
 phrase_counts = title_phrases(peer_df["title"])
 
+# Unigram document frequencies — same preprocessing as the bigram pass so the
+# denominator is consistent: count how many titles contain each word at least once.
+word_doc_freq = Counter()
+for _title in peer_df["title"].dropna().astype(str):
+    _words = re.findall(r"[a-z]+", _title.lower())
+    _seen = set()
+    for _w in _words:
+        if len(_w) >= 3 and _w not in PHRASE_STOPWORDS:
+            _seen.add(_w)
+    word_doc_freq.update(_seen)
+
+def fmt_word(word):
+    n = word_doc_freq.get(word, 0)
+    return f"{word}: {n} ({100 * n / n_peer:.1f}%)"
+
 top_phrases = (
     pd.Series(dict(phrase_counts.most_common()))
     .loc[lambda s: s >= MIN_PAPERS]
@@ -508,6 +523,8 @@ top_phrases = (
 top_phrases["% of peer-reviewed corpus"] = (
     100 * top_phrases["Papers"] / n_peer
 ).round(1)
+top_phrases["word 1 (papers, %)"] = top_phrases["Phrase"].str.split().str[0].map(fmt_word)
+top_phrases["word 2 (papers, %)"] = top_phrases["Phrase"].str.split().str[1].map(fmt_word)
 top_phrases.index += 1
 print(f"{len(top_phrases)} phrases in ≥10 of "
       f"{peer_df['title'].notna().sum():,} peer-reviewed titles (floor {MIN_PAPERS}, cap {TOP_N})")
