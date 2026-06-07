@@ -428,18 +428,21 @@ top_authors
 # --------------------------------------------------------------------------
 md(
     r"""
-## Most common two-word phrases in citing-paper titles
+## Most common two-word phrases in citing-paper titles (peer-reviewed only)
 
-A quick qualitative read on *what kind of study* cites SequenceMatrix. Rather
-than a word cloud, we count **two-word phrases** in the titles — bigrams carry
-the domain signal that single words wash out (*"molecular phylogeny"*,
+A quick qualitative read on *what kind of study* cites SequenceMatrix, restricted
+to **peer-reviewed works** so preprint titles don't skew the counts. Rather than
+a word cloud, we count **two-word phrases** in the titles — bigrams carry the
+domain signal that single words wash out (*"molecular phylogeny"*,
 *"species delimitation"*, *"mitochondrial genome"*). We strip generic
 research-paper filler ("new", "study", "analysis", "based", …) and the
 taxonomic abbreviations ("sp.", "nov.") so only content phrases remain.
 
-Counts are **document frequency**: the number of distinct citing papers whose
-title contains the phrase. We list phrases down to a floor of **10 papers** —
-below that the long tail is mostly one-off taxon names, not a usage pattern.
+Counts are **document frequency**: the number of distinct peer-reviewed citing
+papers whose title contains the phrase; the **% of peer-reviewed corpus** column
+is that count divided by the total number of peer-reviewed citing works. We list
+phrases down to a floor of **10 papers** — below that the long tail is mostly
+one-off taxon names, not a usage pattern.
 This is impressionistic; the curated topic and software-co-mention breakdowns in
 [`phase2_metadata.md`](phase2_metadata.md) are the rigorous version.
 
@@ -493,7 +496,7 @@ def title_phrases(titles):
     return counts
 
 
-phrase_counts = title_phrases(df["title"])
+phrase_counts = title_phrases(peer_df["title"])
 
 top_phrases = (
     pd.Series(dict(phrase_counts.most_common()))
@@ -502,9 +505,12 @@ top_phrases = (
     .rename_axis("Phrase")
     .reset_index(name="Papers")
 )
+top_phrases["% of peer-reviewed corpus"] = (
+    100 * top_phrases["Papers"] / n_peer
+).round(1)
 top_phrases.index += 1
 print(f"{len(top_phrases)} phrases in ≥10 of "
-      f"{df['title'].notna().sum():,} titles (floor {MIN_PAPERS}, cap {TOP_N})")
+      f"{peer_df['title'].notna().sum():,} peer-reviewed titles (floor {MIN_PAPERS}, cap {TOP_N})")
 top_phrases
 """
 )
