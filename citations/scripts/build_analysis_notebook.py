@@ -364,7 +364,7 @@ of citing papers stratified by time:
 | `recent` | 2025–2026 | 10 |
 | `earlier` | up to 2024 | 10 |
 
-The sample is written to **`random/citations-by-time.csv`** (relative to the
+The sample is written to **`outputs/random-citations-by-timing.csv`** (relative to the
 `citations/` directory) for manual review. Add your own columns there — the file
 is intentionally sparse so it stays easy to fill in by hand.
 
@@ -398,9 +398,9 @@ sample = pd.concat([sample_recent, sample_earlier])[SAMPLE_COLS].reset_index(dro
 sample.index += 1
 
 # Write to citations/random/citations-by-time.csv
-out_dir = HERE / "random"
+out_dir = HERE / "outputs"
 out_dir.mkdir(exist_ok=True)
-out_csv = out_dir / "citations-by-time.csv"
+out_csv = out_dir / "random-citations-by-timing.csv"
 sample.to_csv(out_csv, index=False)
 print(f"Wrote {len(sample)} rows → {out_csv}")
 
