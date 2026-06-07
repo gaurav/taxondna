@@ -228,6 +228,86 @@ print(f"Mean over the last 5 complete years {CURRENT_YEAR - 5}–{CURRENT_YEAR -
 # --------------------------------------------------------------------------
 md(
     r"""
+## New-taxon papers over time: *sp. nov.* and *gen. nov.*
+
+In taxonomy, ***sp. nov.*** ("species nova") marks a paper that formally describes
+a new species; ***gen. nov.*** ("genus novum") marks one that erects a new genus.
+Counting how many citing papers carry these terms in their titles tells us what
+fraction of SequenceMatrix's user base is actively doing primary taxonomic work —
+as opposed to, say, population-level or ecological phylogenetics.
+
+The stacked bars below show paper counts per year:
+
+- **blue (bottom):** papers with *sp. nov.* in the title — the core species-description signal
+- **light blue (top):** papers that additionally carry *gen. nov.* — new genera always accompany a new species definition, so they stack on top rather than overlap
+
+2026 is partial and drawn in lighter shades, consistent with the chart above.
+"""
+)
+
+code(
+    r"""
+import re
+
+def has_term(series, term):
+    escaped = re.escape(term)
+    return series.fillna("").str.contains(escaped, case=False, regex=True)
+
+sp_nov_mask = has_term(df["title"], "sp. nov.")
+gen_nov_mask = has_term(df["title"], "gen. nov.")
+
+year_range = range(int(PAPER_YEAR), int(per_year.index.max()) + 1)
+
+sp_by_year  = df.loc[sp_nov_mask,  "publication_year"].value_counts().reindex(year_range, fill_value=0).sort_index()
+gen_by_year = df.loc[gen_nov_mask, "publication_year"].value_counts().reindex(year_range, fill_value=0).sort_index()
+
+# gen. nov. almost always co-occurs with sp. nov.; draw only the gen-nov-only increment
+# so the two layers truly stack to "papers with at least one of the two terms"
+gen_only_by_year = df.loc[gen_nov_mask & ~sp_nov_mask, "publication_year"].value_counts().reindex(year_range, fill_value=0).sort_index()
+
+years = list(year_range)
+sp_vals  = sp_by_year.values
+gen_vals = gen_only_by_year.values   # stacked on top of sp_nov layer
+
+sp_colors  = ["#bdd7ee" if y == CURRENT_YEAR else "#2b6cb0" for y in years]
+gen_colors = ["#e8c9a0" if y == CURRENT_YEAR else "#c07b2b" for y in years]
+
+fig, ax = plt.subplots(figsize=(11, 5))
+bars_sp  = ax.bar(years, sp_vals,  color=sp_colors,  label="sp. nov. papers")
+bars_gen = ax.bar(years, gen_vals, bottom=sp_vals, color=gen_colors, label="gen. nov. only (additional)")
+
+# Label total height on bars that have any content
+for x, s, g in zip(years, sp_vals, gen_vals):
+    total = int(s) + int(g)
+    if total > 0:
+        ax.text(x, total + 1.5, str(total), ha="center", va="bottom", fontsize=7)
+
+ax.set_title("Papers with sp. nov. / gen. nov. in title, by year — SequenceMatrix citers", fontsize=13)
+ax.set_xlabel("Publication year")
+ax.set_ylabel("Number of citing papers")
+ax.set_xticks(years)
+ax.tick_params(axis="x", rotation=45)
+ax.margins(y=0.12)
+ax.legend(frameon=False)
+for spine in ("top", "right"):
+    ax.spines[spine].set_visible(False)
+ax.text(CURRENT_YEAR, sp_vals[years.index(CURRENT_YEAR)] + gen_vals[years.index(CURRENT_YEAR)] + 3,
+        "partial", ha="center", va="bottom", fontsize=8, color="#666")
+fig.tight_layout()
+plt.show()
+
+complete_years = [y for y in years if y < CURRENT_YEAR]
+print(f"sp. nov. papers (all years):     {int(sp_by_year.sum()):,}")
+print(f"gen. nov. papers (all years):    {int(gen_by_year.sum()):,}")
+print(f"sp. nov. share of corpus:        {100 * sp_nov_mask.sum() / len(df):.1f}%")
+print(f"Mean sp. nov. papers/yr ({PAPER_YEAR}–{CURRENT_YEAR-1}): "
+      f"{sp_by_year.loc[sp_by_year.index < CURRENT_YEAR].mean():.1f}")
+"""
+)
+
+# --------------------------------------------------------------------------
+md(
+    r"""
 ## Top 10 journals and top 10 authors
 
 **Journals** are counted one row per paper. **Authors** are counted once per paper
